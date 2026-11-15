@@ -1,0 +1,14 @@
+# The first look: the editor, the switch folder, a lamp and a switch on
+# the worksheet. Coordinates are the editor's (menu bar at the top).
+shot start
+click 330 53          # the tray's fifth folder: switches
+wait 500
+shot folder5
+drag 160 92 200 260   # its first part onto the worksheet
+wait 500
+shot placed
+click 128 53          # the first folder: lights and displays
+wait 500
+drag 157 92 360 260
+wait 500
+shot two

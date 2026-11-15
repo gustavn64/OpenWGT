@@ -1,0 +1,26 @@
+# A switch wired to a lamp, run, switched on and off.
+click 330 53          # the tray's fifth folder: switches
+wait 400
+drag 160 92 200 260   # the switch onto the worksheet
+wait 400
+click 148 53          # the first folder: lights and displays
+wait 400
+drag 176 90 360 250   # the lamp
+wait 400
+dump
+shot placed
+drag 214 259 359 275  # a wire from the switch's output to the lamp
+wait 400
+shot wired
+click 27 47           # GO
+wait 1000
+shot running
+click 200 262         # the switch on
+wait 1000
+shot on
+click 200 262         # and off
+wait 1000
+shot off
+click 27 68           # STOP
+wait 1000
+shot stopped
