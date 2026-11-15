@@ -97,7 +97,7 @@ its fragment, which the browser never sends to the server, so the site
 still never sees a widget.
 
 ```
-https://doridian.github.io/GadgetGenerator/widget.html#n=CLOCK.WGT&w=Ae1a…
+https://gustavn64.github.io/OpenWGT/widget.html#n=CLOCK.WGT&w=Ae1a…
 ```
 
 `n` is the widget's name (optional, percent-encoded); `w` is base64url,

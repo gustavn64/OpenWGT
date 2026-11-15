@@ -1,14 +1,22 @@
-# Gadget Generator
+# OpenWGT
 
-Gadget Generator is a decompilation and native port of **Widget
-Workshop: A Mad Scientist's Laboratory** (Maxis, 1995) to Rust, for
-Linux, Windows, macOS and WebAssembly.
+An open engine for **Widget Workshop: A Mad Scientist's Laboratory**
+(Maxis, 1995), in Rust, for Linux, Windows, macOS and WebAssembly: a
+non-matching decompilation of the game, with its own graphics
+(OpenWGFX), sounds (OpenWSFX) and data (OpenWDATA), as OpenTTD has
+OpenGFX, OpenSFX and OpenMSX, so it runs without the original CD.
 
-**Play it in your browser:** <https://doridian.github.io/GadgetGenerator/> (the
-page asks for the CD image, [docs/web.md](docs/web.md)), or download it for
-Linux, Windows or macOS from the
-[releases](https://github.com/Doridian/GadgetGenerator/releases)
+**Play it in your browser:** <https://gustavn64.github.io/OpenWGT/>
+([docs/web.md](docs/web.md)), or download it for Linux, Windows or macOS
+from the [releases](https://github.com/gustavn64/OpenWGT/releases)
 ([Packages](#packages)).
+
+OpenWGT is a fork of Doridian's port,
+[Doridian/WidgetWorkshop](https://github.com/Doridian/WidgetWorkshop),
+under the same licence (AGPL-3.0-or-later). This fork adds the port's
+own graphics, sounds and data ([below](#without-the-cd-openwgfx-openwsfx-openwdata)),
+fixes, a Nix flake and tools that compare it with the original running
+in an emulator (`tools/compare/`).
 
 The port opens straight into the editor (the original's intro and main
 menu are left out): the parts tray, wiring, the worksheets, undo and the
@@ -20,12 +28,13 @@ for `WIDGET.HLP`. It's a non-matching decompilation of the Win95 build's
 the same bytes. The stack is winit, wgpu and cpal, with a resizable
 window, fullscreen and UI scaling.
 
-This repository contains **no game data files or original code**. You
-need your own copy of the game's CD.
+This repository contains **none of the game's pictures, sounds, texts
+or code**. It runs without the game's CD on its own pictures, sounds and
+data; with your own copy of the CD it can use the original's instead.
 
-## Getting the game
+## The original CD
 
-The port reads the **Mac/PC CD** (volume `WIDGETS`), as an `.iso` or as
+Not needed, but the port can use it. It reads the **Mac/PC CD** (volume `WIDGETS`), as an `.iso` or as
 a folder with its files. The Internet
 Archive has the `.iso`:
 [widget-workshop](https://archive.org/details/widget-workshop).
@@ -45,36 +54,39 @@ Mac/PC CD's own fonts (`WIN31/SVGA`) are there, they win.
 Every push builds the port as one file per platform
 (`.github/workflows/build.yml`); a `v*` tag publishes them on its release:
 
-- `gadget-generator-x86_64.AppImage`, `gadget-generator-aarch64.AppImage`
-  (built on Ubuntu 22.04: glibc 2.35 or newer)
-- `gadget-generator-windows-x86_64.exe` (the C runtime linked in)
-- `gadget-generator-macos.dmg`: `Gadget Generator.app`, for Apple silicon and
+- `openwgt-x86_64.AppImage`, `openwgt-aarch64.AppImage` (built on
+  Ubuntu 22.04: glibc 2.35 or newer)
+- `openwgt-windows-x86_64.exe` (the C runtime linked in)
+- `openwgt-macos.dmg`: `OpenWGT.app`, for Apple silicon and
   Intel (signed ad hoc only: the first start needs a right click, Open)
-- `gadget-generator-web.zip`: the browser build, as on the Pages site
+- `openwgt-web.zip`: the browser build
 
-None of them carries game data. Started without a CD (from its icon) and
-with no `.iso` or `orig` in the working directory, the port asks for the
-CD image with the system's file dialog and keeps its path in its data
-directory (`cd-path.txt` in `~/.local/share/gadget-generator`,
-`%APPDATA%\Gadget Generator`, `~/Library/Application Support/Gadget Generator`;
-the directories of the port's old name, `widget-workshop` or
-`Widget Workshop`, are moved there on the first start);
-it doesn't ask again while the file is there. On Linux the dialog is the
-desktop's (xdg-desktop-portal, else zenity); with neither (a minimal
-system), a window of the port's own asks for the CD image to be dropped on
-it, as Settings ▸ Change CD... does then in the game's window. The icon is
-the port's own (`tools/make-icon.py`).
+None of them carries game data. Started without a CD (from its icon), it
+uses an `.iso` or `orig` in the working directory, else the CD picked
+before; with none, it runs on its own pictures, sounds and data. Settings
+▸ Change CD... picks a CD image with the system's file dialog (on Linux
+the desktop's, xdg-desktop-portal, else zenity; with neither, the CD image
+is dropped on the game's window) and keeps its path in the data directory
+(`cd-path.txt` in `~/.local/share/openwgt`, `%APPDATA%\OpenWGT`,
+`~/Library/Application Support/OpenWGT`). The icon is the port's own
+(`tools/make-icon.py`).
 
 ## Running
 
 ```sh
-cargo run --release -p widget                       # the .iso here, else orig/
-cargo run --release -p widget -- CD.iso MY.WGT      # a CD and a widget to open
-cargo run --release -p widget -- CD.iso 'https://…/widget.html#w=…'   # a widget link
-cargo run --release -p widget -- --help
+cargo run --release -p openwgt                       # the .iso here, else orig/, else no CD
+cargo run --release -p openwgt -- CD.iso MY.WGT      # a CD and a widget to open
+cargo run --release -p openwgt -- CD.iso 'https://…/widget.html#w=…'   # a widget link
+cargo run --release -p openwgt -- --help
 ```
 
-Options: `--no-audio`, `--window-size=WxH`, `--fullscreen`, `--windowed`,
+With Nix: `nix develop` gives a shell with the Rust tools, the libraries
+the window and the sound load, and the Python tools' packages; `nix run
+. -- CD.iso` builds and starts it (`flake.nix`).
+
+Options: `--open`, `--opengfx`, `--opensfx` and `--opendata`
+([below](#without-the-cd-openwgfx-openwsfx-openwdata)), `--no-audio`,
+`--window-size=WxH`, `--fullscreen`, `--windowed`,
 `--ui-scale=N|auto` (remembered in the settings file), `--overrides=DIR`
 (resources that replace or add to the CD's) and `--export=DIR` (writes
 every resource there in that layout and quits). On Linux the sound needs
@@ -98,11 +110,45 @@ Widget Link (Ctrl+V) opens the one on the clipboard, natively too.
 
 The browser build: `tools/build-web.sh`, [docs/web.md](docs/web.md).
 
+## Without the CD: OpenWGFX, OpenWSFX, OpenWDATA
+
+OpenWGT has its own pictures (OpenWGFX), sounds (OpenWSFX) and data
+(OpenWDATA: the dialogs, menus, messages, the parts' texts and tables,
+the help, puzzles and sample widgets), built into the program, as OpenTTD
+has OpenGFX, OpenSFX and OpenMSX. Started with no CD given or found (or
+with `--open`) it runs on them alone; with a CD, `--opengfx`, `--opensfx`
+and `--opendata` use them instead of the CD's parts one at a time (in the
+browser `?open`, `?opengfx`, ...). Every part, toolbar, pointer, dialog
+and sound keeps the original's size, number and job (the knots where the
+wires plug in, the places the digits are drawn, the dialogs' controls),
+so widgets made with the original open and work the same; the pictures
+are drawn, the sounds synthesized and the texts, help, puzzles and
+samples written anew. The game has no music besides its intro, which the
+port leaves out, so there is no music set.
+
+```sh
+cargo run --release -p openwgt                         # no CD here: the packs alone
+cargo run --release -p openwgt -- --open               # the packs even with a CD here
+cargo run --release -p openwgt -- --opengfx --opensfx CD.iso   # the CD's data, own pictures and sounds
+cargo run --release -p openwgt -- --opengfx=DIR CD.iso # a pack from a folder
+```
+
+The packs are in `crates/engine/opengfx`, `crates/engine/opensfx` and
+`crates/engine/opendata`; how they're made, their layout and rules:
+[tools/opengfx/README.md](tools/opengfx/README.md),
+[tools/opensfx/README.md](tools/opensfx/README.md),
+[tools/opendata/README.md](tools/opendata/README.md).
+
 ## Tools
 
 - `tools/gh`, `tools/ghidra/`: headless Ghidra setup and CLI for the decompilation.
 - `tools/build-web.sh`: builds the browser version into `web/`.
 - `tools/make-icon.py`: draws the port's icon.
+- `tools/opengfx/`: draws OpenWGFX, the port's own graphics.
+- `tools/opensfx/`: synthesizes OpenWSFX, the port's own sounds.
+- `tools/opendata/`: builds OpenWDATA, the port's own data.
+- `tools/compare/`: plays the same scripts into the original (in a Windows
+  95 virtual machine) and the port, and compares the screens.
 
 ## Docs
 
@@ -121,6 +167,16 @@ The browser build: `tools/build-web.sh`, [docs/web.md](docs/web.md).
 
 ## Legal
 
-The port's code is under the AGPL-3.0-or-later ([LICENSE](LICENSE)).
-Widget Workshop is © Maxis; Gadget Generator is an unofficial port, and no
-game data is included.
+The port's code is under the AGPL-3.0-or-later ([LICENSE](LICENSE)):
+Doridian's original port and this fork's changes alike; the fork keeps the
+original authors' notices. OpenWGFX, OpenWSFX and OpenWDATA, and the
+tools that make them, are made for this project and under the same
+licence. The bundled fonts have their own
+([crates/engine/fonts](crates/engine/fonts/README.md)).
+
+None of the game's pictures, sounds, texts or code is included. OpenWDATA
+keeps the numbers the code and saved widgets rely on (where the knots
+are, the dialogs' layouts and ids, the palette), so that widgets made
+with the original work the same. Widget Workshop is © Maxis and a
+trademark of its owners; OpenWGT is an unofficial project, not
+affiliated with them.
