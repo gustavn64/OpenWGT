@@ -5,12 +5,12 @@ name: build
 # AppImage, an .exe, the app in a .dmg. None carries game data: the
 # player gives the port the CD image at run time, natively from a file
 # dialog when it isn't given (`pick`), in the browser on the page. A push
-# to main also deploys the page to GitHub Pages (docs/web.md); a tag v*
+# to master also deploys the page to GitHub Pages (docs/web.md); a tag v*
 # publishes every package on the tag's release.
 
 on:
   push:
-    branches: ['main']
+    branches: ['master']
     tags: ['v*']
   pull_request:
   workflow_dispatch:
@@ -206,16 +206,16 @@ jobs:
           name: openwgt-web
           path: openwgt-web.zip
 
-      - if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+      - if: github.event_name == 'push' && github.ref == 'refs/heads/master'
         uses: actions/configure-pages@v6
 
-      - if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+      - if: github.event_name == 'push' && github.ref == 'refs/heads/master'
         uses: actions/upload-pages-artifact@v5
         with:
           path: _site
 
   pages:
-    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    if: github.event_name == 'push' && github.ref == 'refs/heads/master'
     needs: web
     runs-on: ubuntu-26.04
     permissions:

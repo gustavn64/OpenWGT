@@ -33,7 +33,8 @@ installing the matching CLI.
 ## GitHub Pages
 
 `.github/workflows/build.yml` publishes the build on every push to
-`main` on the repository's GitHub Pages site (upstream: <https://doridian.github.io/WidgetWorkshop/>), without game data
+`master` on the repository's GitHub Pages site (upstream's:
+<https://doridian.github.io/WidgetWorkshop/>), without game data
 (the workflow fails if anything but the pages, the icon, the glue and
 the module is in the build). `crates/widget/web/front.html` is the
 site's front page: where to get the CD image, the downloads, and a link
