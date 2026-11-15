@@ -1,45 +1,37 @@
 //! The game's CD when the command line names none (a packaged app
 //! started from its icon): an `.iso` or `orig` in the working directory,
-//! as always; else the CD the player picked before; else the system's
-//! file dialog asks for the CD image. The choice is kept in the port's
-//! data directory (`platform::storage::data_dir`, `cd-path.txt`).
-//! Settings ▸ Change CD... asks again ([`choose`]).
+//! as always; else the CD the player picked before ([`found`]); else
+//! none, and OpenWGT runs on its own packs. Settings ▸ Change CD... asks
+//! for one in the system's file dialog ([`choose`]); the choice is kept
+//! in the port's data directory (`platform::storage::data_dir`,
+//! `cd-path.txt`).
 //!
 //! Where there's no file dialog to ask with ([`has_dialog`]: on Linux and
 //! the BSDs neither xdg-desktop-portal's `FileChooser` nor zenity, as on a
-//! minimal system or in the `AppImage` catalog's sandbox), a window of the
-//! port's own asks for the CD image to be dropped on it ([`DropScreen`],
-//! its text in the bundled fonts); Change CD... shows the same in the
-//! game's window.
+//! minimal system or in the `AppImage` catalog's sandbox), Change CD...
+//! asks for the CD image to be dropped on the game's window instead
+//! ([`DropScreen`], its text in the bundled fonts).
 //!
 //! Natively only; the browser build's page asks for the image itself
 //! (`web`).
 
-use std::cell::RefCell;
 use std::io::IsTerminal;
 use std::path::{Path, PathBuf};
-use std::rc::Rc;
 
 use engine::gfx::{IRect, Surface};
 use formats::fnt::Font;
-use platform::{App, Cursor, Frame, Input, WindowOptions};
+use platform::{Cursor, Frame};
 
-/// The game's CD image or folder: `default` if it's there, else the one
-/// picked before, else the one the player picks now (in the file dialog,
-/// or dropped on a window opened as `window` says where there's none).
-/// `None` if the player cancels.
-pub fn cd(default: &Path, window: &WindowOptions) -> Option<PathBuf> {
+/// The CD there is without asking: `default` if it's there, else the one
+/// picked before.
+pub fn found(default: &Path) -> Option<PathBuf> {
     if default.exists() {
         return Some(default.to_path_buf());
     }
-    let before = kept()
+    kept()
         .and_then(|k| std::fs::read_to_string(k).ok())
         .map(|s| PathBuf::from(s.trim_end_matches(['\r', '\n'])))
-        .filter(|p| p.exists());
-    if before.is_some() {
-        return before;
-    }
-    if has_dialog() { choose() } else { dropped(window) }
+        .filter(|p| p.exists())
 }
 
 /// Where the picked CD is kept.
@@ -177,57 +169,6 @@ pub fn fatal(message: &str) {
     eprintln!("{message}");
     if !std::io::stderr().is_terminal() {
         error_box(message);
-    }
-}
-
-/// The CD image dropped on a window of its own, opened as `window` says,
-/// kept for next time. `None` if the window is closed first.
-fn dropped(window: &WindowOptions) -> Option<PathBuf> {
-    let picked = Rc::new(RefCell::new(None));
-    let app = DropWindow {
-        screen: DropScreen::new(false, platform::theme::SystemTheme::new().dark()),
-        picked: Rc::clone(&picked),
-        closed: false,
-    };
-    if let Err(e) = platform::run("OpenWGT", window.clone(), app) {
-        eprintln!("{e}");
-    }
-    picked.take()
-}
-
-/// The window [`dropped`] asks with.
-struct DropWindow {
-    screen: DropScreen,
-    picked: Rc<RefCell<Option<PathBuf>>>,
-    closed: bool,
-}
-
-impl App for DropWindow {
-    fn update(&mut self, _elapsed: web_time::Duration) {}
-
-    fn input(&mut self, input: Input) {
-        if input == Input::Close {
-            self.closed = true;
-        }
-    }
-
-    fn frame(&self) -> Frame<'_> {
-        self.screen.frame()
-    }
-
-    fn finished(&self) -> bool {
-        self.closed || self.picked.borrow().is_some()
-    }
-
-    fn resize(&mut self, width: u32, height: u32) {
-        self.screen.resize(width, height);
-    }
-
-    fn dropped_path(&mut self, path: &Path) -> bool {
-        if self.screen.take(path) {
-            *self.picked.borrow_mut() = Some(path.to_path_buf());
-        }
-        true
     }
 }
 

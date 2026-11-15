@@ -34,7 +34,7 @@ installing the matching CLI.
 
 `.github/workflows/build.yml` publishes the build on every push to
 `master` on the repository's GitHub Pages site (upstream's:
-<https://doridian.github.io/WidgetWorkshop/>), without game data
+<https://doridian.github.io/WidgetWorkshop/>), without the CD's data
 (the workflow fails if anything but the pages, the icon, the glue and
 the module is in the build). `crates/widget/web/front.html` is the
 site's front page: where to get the CD image, the downloads, and a link
@@ -49,13 +49,15 @@ python3 -m http.server -d web 8000    # then open http://localhost:8000/
 ```
 
 On the first start the page asks for the game's CD image: the Mac/PC CD's
-`.iso` or the OS/2 CD's `WW1_01A.ISO`. **Start** reads
+`.iso` or the OS/2 CD's `WW1_01A.ISO`. **Play without the CD** (the
+query `?open`) skips it: the game runs on the port's own packs,
+OpenWGFX, OpenWSFX and OpenWDATA, built into the module. **Start** reads
 the image into memory and opens the editor. Later starts skip the form
 and open the editor on the image it kept. Options ▸ Settings ▸ **Change
 CD...** (after "Save changes?") reloads the page into the form, which
 shows the kept image: **Start** goes on with it, picking another file
 replaces it. If the kept image no longer reads or opens, the form asks
-for one again. The page never fetches or sends game data: the image
+for one again. The page never fetches or sends the CD's data: the image
 comes from the player.
 
 A browser won't let a page play sound before a click or key press: the
@@ -65,8 +67,8 @@ A browser won't let a page play sound before a click or key press: the
 ## Storage
 
 `web.js` keeps everything in the browser's IndexedDB (database
-`widget-workshop`, the port's name before it was renamed): the CD image
-as the `Blob` the file input gave (IndexedDB keeps it without reading it into memory), and the port's own
+`openwgt`): the CD image as the `Blob` the file input gave
+(IndexedDB keeps it without reading it into memory), and the port's own
 files, mounted at `/storage` (`platform::storage::WEB_STORAGE`): the
 widgets the player saves, `WIDGET.INI` (the solved puzzles) and
 `settings.ini`. The editor's file dialogs start and stay there.
@@ -134,8 +136,11 @@ Stand-Alone Widget).
 ## Options
 
 The page's query string takes the command line's options without their
-`--`: `?no-audio`, `?ui-scale=2`. A `.WGT` name opens that widget from
-the storage (`?MYWIDGET.WGT`). `--overrides`, `--export` and the window's
-size mean nothing there. A bad option stops the page with the reason
-shown at the bottom. What the port would print on the terminal goes to
+`--`: `?no-audio`, `?ui-scale=2`, `?open` (no CD), `?opengfx`,
+`?opensfx` and `?opendata` (the port's own graphics, sounds and data
+with the CD, the built-in packs; a folder after `=` means nothing
+there). A `.WGT` name opens that widget from the storage
+(`?MYWIDGET.WGT`). `--overrides`, `--export` and the window's size mean
+nothing there. A bad option stops the page with the reason shown at the
+bottom. What the port would print on the terminal goes to
 the browser's console.

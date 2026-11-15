@@ -1,7 +1,7 @@
 [Desktop Entry]
 Type=Application
 Name=OpenWGT
-Comment=An open engine for Widget Workshop (needs the game's CD image)
+Comment=An open engine for Widget Workshop
 Exec=openwgt %f
 Icon=openwgt
 Categories=Game;Education;Science;

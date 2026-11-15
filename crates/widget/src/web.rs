@@ -186,7 +186,9 @@ fn query_args() -> Vec<OsString> {
 }
 
 async fn run() -> Result<(), String> {
-    let cd = cd_image().await?;
+    // `?open`: no CD, the port's own packs alone.
+    let open = query_args().iter().any(|a| a == "--open");
+    let cd = if open { None } else { Some(cd_image().await?) };
     let files: js_sys::Array = wait(stored_files()).await?.unchecked_into();
     let files = files
         .iter()
@@ -217,6 +219,16 @@ async fn run() -> Result<(), String> {
             eprintln!("{what} means nothing in the browser");
         }
     }
-    let assets = crate::load(Path::new("CD"), Some(cd.as_ref()), None);
+    // `?opengfx`, `?opensfx`: the built-in packs (a folder means nothing
+    // here).
+    let graphics = (open || args.opengfx.is_some()).then(engine::opengfx::builtin);
+    let sounds = (open || args.opensfx.is_some()).then(engine::opensfx::builtin);
+    let data = (open || args.opendata.is_some()).then(engine::opendata::builtin);
+    let packs = engine::assets::Packs {
+        graphics: graphics.as_ref().map(|g| g as &dyn engine::assets::Source),
+        sounds: sounds.as_ref().map(|g| g as &dyn engine::assets::Source),
+        data: data.as_ref().map(|g| g as &dyn engine::assets::Source),
+    };
+    let assets = crate::load(Path::new("CD"), cd.as_deref(), packs, None);
     crate::start(&args, assets).map_err(|e| e.to_string())
 }

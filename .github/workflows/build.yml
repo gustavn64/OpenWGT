@@ -2,9 +2,10 @@ name: build
 
 # The port for Linux (x86-64, aarch64), Windows (x86-64), macOS (universal)
 # and the browser, on every push and pull request, each one file: an
-# AppImage, an .exe, the app in a .dmg. None carries game data: the
-# player gives the port the CD image at run time, natively from a file
-# dialog when it isn't given (`pick`), in the browser on the page. A push
+# AppImage, an .exe, the app in a .dmg. None carries the CD's data: they
+# run on the port's own packs (OpenWGFX, OpenWSFX, OpenWDATA), or on the
+# CD image the player gives at run time, natively on the command line or
+# in Change CD... (`pick`), in the browser on the page. A push
 # to master also deploys the page to GitHub Pages (docs/web.md); a tag v*
 # publishes every package on the tag's release.
 
@@ -161,8 +162,9 @@ jobs:
           name: openwgt-macos
           path: openwgt-macos.dmg
 
-  # The browser build (docs/web.md), without game data: the page asks the
-  # player for their CD image. crates/widget/web/front.html is the front
+  # The browser build (docs/web.md), without the CD's data: the page plays
+  # without it or asks the player for their CD image.
+  # crates/widget/web/front.html is the front
   # page, widget.html the game next to it.
   web:
     runs-on: ubuntu-26.04

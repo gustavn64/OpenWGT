@@ -5,7 +5,8 @@
 //! editor (the original's main menu is left out), with a new widget or
 //! the one given.
 //!
-//! `openwgt [--overrides=DIR] [--export=DIR] [--no-audio]
+//! `openwgt [--open] [--opengfx[=DIR]] [--opensfx[=DIR]]
+//! [--opendata[=DIR]] [--overrides=DIR] [--export=DIR] [--no-audio]
 //! [--window-size=WxH] [--fullscreen|--windowed] [--ui-scale=N|auto] [--help]
 //! [CD] [WIDGET.WGT|LINK]` ([`USAGE`]), where `CD` is the game's CD: an
 //! ISO image or a folder with its files (default: the one `.iso` in the
@@ -13,11 +14,13 @@
 //! (`engine::link`). `--overrides` names a folder whose
 //! files replace or add to the CD's resources (`engine::assets`);
 //! `--export` writes every resource there in that layout and quits.
-//! Started without a CD and with none here (a packaged app started from
-//! its icon), it asks for one (`pick`): in the file dialog, else in a
-//! window the CD image is dropped on. In the browser (`web`,
-//! `docs/web.md`) the page asks for the CD image and its query is the
-//! command line.
+//! `--opengfx`, `--opensfx` and `--opendata` use the port's own pictures,
+//! sounds and data instead of the CD's (`engine::opengfx`,
+//! `engine::opensfx`, `engine::opendata`); `--open` uses the three and no
+//! CD. Started without a CD and with none here or picked before (`pick`),
+//! it runs on the three packs, as with `--open`. In the browser (`web`,
+//! `docs/web.md`) the page asks for the CD image or plays without it, and
+//! its query is the command line.
 
 /// In the browser `std`'s standard output and error go nowhere: what the
 /// port says goes to the console (`platform::web::log`).
@@ -58,15 +61,26 @@ use crate::sound::Sound;
 /// project's site (`.github/workflows/build.yml`). In the browser they
 /// open the page they were made on.
 #[cfg(not(target_arch = "wasm32"))]
-const LINK_PAGE: &str = "https://doridian.github.io/GadgetGenerator/widget.html";
+const LINK_PAGE: &str = "https://gustavn64.github.io/OpenWGT/widget.html";
 
-const USAGE: &str = "usage: openwgt [--overrides=DIR] [--export=DIR] [--no-audio] [--window-size=WxH] \
+const USAGE: &str =
+    "usage: openwgt [--open] [--opengfx[=DIR]] [--opensfx[=DIR]] [--opendata[=DIR]] [--overrides=DIR] [--export=DIR] [--no-audio] [--window-size=WxH] \
 [--fullscreen|--windowed] [--ui-scale=N|auto] [--help] [CD] [WIDGET.WGT|LINK]
 
   CD               the game's CD: an ISO image or a folder with its files
                    (default: the .iso in the current directory, else orig)
   WIDGET.WGT       a widget to open
   LINK             a widget link to open (File > Copy Link to Widget's)
+  --opengfx        draw with the port's own graphics, OpenWGFX, instead
+                   of the CD's pictures
+  --opensfx        play the port's own sounds, OpenWSFX, instead of the
+                   CD's
+  --opendata       the port's own data (texts, dialogs, tables, help,
+                   puzzles, samples) instead of the CD's
+  --open           no CD at all: the three packs alone (also what it does
+                   when no CD is given or found)
+  --opengfx=DIR, --opensfx=DIR, --opendata=DIR
+                   the same from a folder of that pack's layout
   --overrides=DIR  resources that replace or add to the CD's:
                    DIR/<MODULE>/<type>/<id>.<ext>, fonts in DIR/fonts,
                    puzzles in DIR/WIDGET.PZL, help in DIR/WIDGET.HLP
@@ -85,8 +99,30 @@ struct Args {
     link: Option<String>,
     overrides: Option<PathBuf>,
     export: Option<PathBuf>,
+    /// `--opengfx`: the port's own graphics.
+    opengfx: Option<Pack>,
+    /// `--opensfx`: the port's own sounds.
+    opensfx: Option<Pack>,
+    /// `--opendata`: the port's own data (everything else).
+    opendata: Option<Pack>,
+    /// `--open`: no CD at all, only the port's own packs.
+    open: bool,
+    /// No CD given or found: the packs were switched on for it, not by
+    /// the player (so Change CD... starts again without them).
+    auto_open: bool,
     no_audio: bool,
     window: WindowOptions,
+}
+
+/// Where `--opengfx` or `--opensfx` takes the port's own graphics or
+/// sounds from.
+#[derive(Debug, Clone)]
+#[cfg_attr(target_arch = "wasm32", allow(dead_code))]
+enum Pack {
+    /// The pack built into the port.
+    Builtin,
+    /// `--opengfx=DIR`: a folder of the pack's layout.
+    Dir(PathBuf),
 }
 
 /// Ends the program with `code`. The browser build can't: the page
@@ -131,6 +167,11 @@ fn args(mut it: impl Iterator<Item = std::ffi::OsString>) -> Args {
         link: None,
         overrides: None,
         export: None,
+        opengfx: None,
+        opensfx: None,
+        opendata: None,
+        open: false,
+        auto_open: false,
         no_audio: false,
         window: WindowOptions {
             settings_file: platform::settings::settings_file(),
@@ -155,6 +196,19 @@ fn args(mut it: impl Iterator<Item = std::ffi::OsString>) -> Args {
             }
             "--overrides" => a.overrides = value().map(PathBuf::from),
             "--export" => a.export = value().map(PathBuf::from),
+            // Its folder only after `=`: a bare `--opengfx` takes no value.
+            "--opengfx" | "--opensfx" | "--opendata" => {
+                let pack = match s.split_once('=') {
+                    Some((_, dir)) => Pack::Dir(PathBuf::from(dir)),
+                    None => Pack::Builtin,
+                };
+                match key.as_str() {
+                    "--opengfx" => a.opengfx = Some(pack),
+                    "--opensfx" => a.opensfx = Some(pack),
+                    _ => a.opendata = Some(pack),
+                }
+            }
+            "--open" => a.open = true,
             "--no-audio" => a.no_audio = true,
             "--fullscreen" => a.window.fullscreen = Some(true),
             "--windowed" => a.window.fullscreen = Some(false),
@@ -440,30 +494,52 @@ fn main() {
             pick::error_box(&format!("OpenWGT stopped: {info}"));
         }
     }));
-    let args = args(std::env::args_os().skip(1));
-    let cd_path = match args.cd.clone() {
-        Some(p) => p,
-        // Started without a CD, and there's none here: the one picked
-        // before, or the player picks it (`pick`).
-        None if args.overrides.is_none() && args.export.is_none() => pick::cd(&default_cd(), &args.window)
-            .unwrap_or_else(|| {
-                fail("no CD: start it with the game's CD image or folder as its argument, or pick it when it asks")
-            }),
-        None => default_cd(),
+    let mut args = args(std::env::args_os().skip(1));
+    // The CD: the one given, else one here or picked before. With none
+    // (or `--open`) the game runs on the port's own packs alone.
+    let cd_path = if args.open {
+        None
+    } else {
+        args.cd.clone().or_else(|| pick::found(&default_cd()))
     };
-    let cd = match cd::open(&cd_path) {
+    if cd_path.is_none() {
+        args.auto_open = !args.open;
+        args.open = true;
+        for p in [&mut args.opengfx, &mut args.opensfx, &mut args.opendata] {
+            p.get_or_insert(Pack::Builtin);
+        }
+    }
+    let cd = cd_path.as_ref().and_then(|p| match cd::open(p) {
         Ok(cd) => Some(cd),
         Err(e) if args.overrides.is_some() => {
-            eprintln!("{}: {e}; using the overrides alone", cd_path.display());
+            eprintln!("{}: {e}; using the overrides alone", p.display());
             None
         }
-        Err(e) => fail(&format!("{}: {e}", cd_path.display())),
-    };
+        Err(e) => fail(&format!("{}: {e}", p.display())),
+    });
+    let cd_path = cd_path.unwrap_or_else(|| PathBuf::from("(no CD)"));
     let overrides = args
         .overrides
         .clone()
         .map(|d| Box::new(engine::assets::Dir(d)) as Box<dyn Source>);
-    let assets = load(&cd_path, cd.as_deref(), overrides.as_deref());
+    let graphics = args.opengfx.as_ref().map(|g| match g {
+        Pack::Dir(d) => Box::new(engine::assets::Dir(d.clone())) as Box<dyn Source>,
+        Pack::Builtin => Box::new(engine::opengfx::builtin()),
+    });
+    let sounds = args.opensfx.as_ref().map(|g| match g {
+        Pack::Dir(d) => Box::new(engine::assets::Dir(d.clone())) as Box<dyn Source>,
+        Pack::Builtin => Box::new(engine::opensfx::builtin()),
+    });
+    let data = args.opendata.as_ref().map(|g| match g {
+        Pack::Dir(d) => Box::new(engine::assets::Dir(d.clone())) as Box<dyn Source>,
+        Pack::Builtin => Box::new(engine::opendata::builtin()),
+    });
+    let packs = engine::assets::Packs {
+        graphics: graphics.as_deref(),
+        sounds: sounds.as_deref(),
+        data: data.as_deref(),
+    };
+    let assets = load(&cd_path, cd.as_deref(), packs, overrides.as_deref());
     if let Some(dir) = &args.export {
         match cd::export(&assets, dir) {
             Ok(n) => println!("{n} files written to {}", dir.display()),
@@ -486,6 +562,25 @@ fn restart_options(args: &Args) -> Vec<std::ffi::OsString> {
         a.push(d);
         o.push(a);
     }
+    // Another CD was chosen: not `--open`, nor the packs that stood in for
+    // having none.
+    if args.auto_open {
+        return o;
+    }
+    for (flag, pack) in [
+        ("--opengfx", &args.opengfx),
+        ("--opensfx", &args.opensfx),
+        ("--opendata", &args.opendata),
+    ] {
+        if let Some(p) = pack {
+            let mut a = std::ffi::OsString::from(flag);
+            if let Pack::Dir(d) = p {
+                a.push("=");
+                a.push(d);
+            }
+            o.push(a);
+        }
+    }
     if args.no_audio {
         o.push("--no-audio".into());
     }
@@ -498,10 +593,20 @@ fn main() {
     web::main();
 }
 
-/// The game's resources from `cd` and `overrides`; the end if they don't
-/// load.
-fn load(cd_path: &std::path::Path, cd: Option<&dyn Source>, overrides: Option<&dyn Source>) -> Assets {
-    Assets::load(cd, overrides).unwrap_or_else(|e| fail(&format!("{}: {e}", cd_path.display())))
+/// The game's resources from `cd`, the port's own `packs` (`--opengfx`,
+/// `--opensfx`) and `overrides`; the end if they don't load.
+fn load(
+    cd_path: &std::path::Path,
+    cd: Option<&dyn Source>,
+    packs: engine::assets::Packs<'_>,
+    overrides: Option<&dyn Source>,
+) -> Assets {
+    let assets =
+        Assets::load_with(cd, packs, overrides).unwrap_or_else(|e| fail(&format!("{}: {e}", cd_path.display())));
+    for p in &assets.pack_problems {
+        eprintln!("{p}");
+    }
+    assets
 }
 
 /// Opens the editor on `assets` as `args` say: the widget, the sound,
