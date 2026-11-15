@@ -1,0 +1,9 @@
+# OpenWGFX: the editor's pointers (cursor groups 5007 to 5013).
+# pointer hot-x hot-y
+0 0 0
+1 4 4
+2 2 8
+3 12 13
+4 7 7
+5 2 8
+6 12 13
