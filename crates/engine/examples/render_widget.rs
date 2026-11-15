@@ -1,5 +1,6 @@
 //! Draws a saved widget's gadgets into a PPM picture:
-//! `cargo run -p engine --example render_widget -- CD_DIR WIDGET.WGT OUT.ppm`.
+//! `cargo run -p engine --example render_widget -- CD_DIR WIDGET.WGT OUT.ppm [--opengfx]`
+//! (with the port's own graphics, `engine::opengfx`).
 
 use std::io::Write;
 
@@ -11,7 +12,14 @@ use engine::gfx::{Pictures, Surface};
 fn main() {
     let args: Vec<String> = std::env::args().collect();
     let cd = Dir(args[1].clone().into());
-    let assets = Assets::load(Some(&cd), None).unwrap();
+    let graphics = engine::opengfx::builtin();
+    let own = args.iter().any(|a| a == "--opengfx");
+    let packs = engine::assets::Packs {
+        graphics: own.then_some(&graphics as _),
+        sounds: None,
+        data: None,
+    };
+    let assets = Assets::load_with(Some(&cd), packs, None).unwrap();
     let bytes = std::fs::read(&args[2]).unwrap();
     let doc = Document::load(&assets, &bytes).unwrap();
     let ext = doc.extent();

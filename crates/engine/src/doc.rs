@@ -313,6 +313,10 @@ impl Document {
     }
 }
 
+/// The string with a fresh Billboard's text, in OpenWDATA (the original
+/// has its text in the code).
+const BILLBOARD_TEXT: u32 = 20000;
+
 /// A new gadget of class `tag` (a fresh one, as dragged from the tray), at
 /// `h`, `v`.
 #[must_use]
@@ -323,6 +327,15 @@ pub fn new_gadget(assets: &Assets, tag: Tag, id: u32, h: i32, v: i32) -> Gadget 
     g.core.h = h;
     g.core.v = v;
     g.behavior.init(&mut g.core);
+    // The Billboard's first words: OpenWDATA's own (string 20000), else
+    // the original's (`TextBox::init`).
+    if tag == Tag(*b"TxBx")
+        && let Some(t) = assets.string(BILLBOARD_TEXT)
+    {
+        g.core
+            .settings
+            .set_long_text(&crate::text::encode(&t.replace('\n', "\r\n")));
+    }
     g.behavior.reset(&mut g.core);
     g.behavior.settings_changed(&mut g.core);
     g.behavior.layout(&mut g.core, assets);

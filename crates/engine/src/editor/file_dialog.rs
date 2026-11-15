@@ -210,6 +210,8 @@ struct Rects {
 #[derive(Debug, Clone)]
 pub struct FileDialog {
     pub spec: Spec,
+    /// The samples' drive's name ([`root_label`]).
+    cd_label: String,
     /// The folder shown.
     pub dir: PathBuf,
     /// "File name".
@@ -259,11 +261,22 @@ pub fn matches(patterns: &str, name: &str) -> bool {
     })
 }
 
-/// A drive's label: "(C:)" for a Windows drive, "Widget Workshop CD" for
+/// The samples' drive's name: OpenWDATA's (string 20001), else the
+/// original's.
+fn cd_label(assets: &Assets) -> String {
+    assets
+        .string(SAMPLES_LABEL)
+        .unwrap_or_else(|| "Widget Workshop CD".to_owned())
+}
+
+/// The string naming the samples' drive in OpenWDATA.
+const SAMPLES_LABEL: u32 = 20001;
+
+/// A drive's label: "(C:)" for a Windows drive, `cd` (the CD's name) for
 /// the samples' (`files::CD`), else the path.
-fn root_label(p: &Path) -> String {
+fn root_label(p: &Path, cd: &str) -> String {
     if files::on_cd(p).is_some() {
-        return "Widget Workshop CD".to_owned();
+        return cd.to_owned();
     }
     let s = p.display().to_string();
     match s.trim_end_matches(['\\', '/']) {
@@ -312,6 +325,7 @@ impl FileDialog {
             cancel: px(CANCEL),
         };
         let mut d = FileDialog {
+            cd_label: cd_label(assets),
             spec,
             dir: files::normalize(dir),
             name: name.to_owned(),
@@ -387,7 +401,7 @@ impl FileDialog {
             v.push(Place {
                 path: root.clone(),
                 depth: 0,
-                label: root_label(&root),
+                label: root_label(&root, &self.cd_label),
                 icon: if cd { Icon::Cd } else { Icon::Drive },
             });
             if let Ok(rest) = self.dir.strip_prefix(&root) {
@@ -417,7 +431,10 @@ impl FileDialog {
     fn here(&self, fs: Fs) -> (String, Icon) {
         if fs.roots().contains(&self.dir) {
             let cd = files::on_cd(&self.dir).is_some();
-            return (root_label(&self.dir), if cd { Icon::Cd } else { Icon::Drive });
+            return (
+                root_label(&self.dir, &self.cd_label),
+                if cd { Icon::Cd } else { Icon::Drive },
+            );
         }
         let name = self
             .dir
@@ -1485,7 +1502,10 @@ mod tests {
         assert!(matches("*.txt;*.wgt", "a.WGT"));
         assert!(matches("?.wgt", "a.wgt") && !matches("?.wgt", "ab.wgt"));
         assert!(matches("*.*", "anything") && matches("*.", "noext") && !matches("*.", "a.b"));
-        assert_eq!(root_label(Path::new("C:\\")), "(C:)");
-        assert_eq!(root_label(Path::new(files::CD)), "Widget Workshop CD");
+        assert_eq!(root_label(Path::new("C:\\"), "CD"), "(C:)");
+        assert_eq!(
+            root_label(Path::new(files::CD), "Widget Workshop CD"),
+            "Widget Workshop CD"
+        );
     }
 }

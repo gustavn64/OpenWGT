@@ -39,13 +39,16 @@ use super::ui;
 pub const MISSING: &str =
     "Can't find help file\nIt should be in the same folder as Widget Workshop and be named WIDGET.HLP";
 
-/// Reads a help file: `WIDGET.HLP` (`WinHelp`), or an OS/2 book
-/// (`WIDGET.INF`, by its `HSP` signature) as the same topics. `None` if
-/// it doesn't parse.
+/// Reads a help file: `WIDGET.HLP` (`WinHelp`), an OS/2 book
+/// (`WIDGET.INF`, by its `HSP` signature) or OpenWGT's own help text
+/// (`formats::helptext`, by its `title:` line) as the same topics. `None`
+/// if it doesn't parse.
 #[must_use]
 pub fn load(data: &[u8]) -> Option<HelpFile> {
     if formats::inf::is_inf(data) {
         formats::inf::InfFile::parse(data).ok()?.to_help().ok()
+    } else if formats::helptext::is_helptext(data) {
+        formats::helptext::parse(&String::from_utf8_lossy(data)).ok()
     } else {
         HelpFile::parse(data).ok()
     }

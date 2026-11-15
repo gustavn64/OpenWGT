@@ -13,10 +13,14 @@
 //! `MODULE` is `WIDGET`, `WWGADGET`, `WWSOUND` or `WWINTRO`; `type` and
 //! `id` are the resource's numbers (1004 picture sheets, 1006 sounds, 1014
 //! knots, 1020 texts, ...); the extension doesn't matter (`.hr`, `.wav`,
-//! `.txt`, `.bin`). `widget --export DIR` writes every resource in this
+//! `.txt`, `.bin`). `openwgt --export DIR` writes every resource in this
 //! layout, a starting point for new art. Fonts are `fonts/*.FON`, and a
 //! `WIDGET.PZL` or `WIDGET.HLP` (or `WIDGET.INF`) at the top replaces the
 //! CD's puzzles or help.
+//!
+//! Between the two there can be the port's own graphics and sounds
+//! ([`crate::opengfx`], `--opengfx`; [`crate::opensfx`], `--opensfx`):
+//! new pictures and sounds for the CD's ([`Packs`]).
 
 use std::collections::BTreeMap;
 use std::fmt;
@@ -179,11 +183,29 @@ fn parse_module(m: Module, bytes: &[u8]) -> Result<pe::Resources, Error> {
     }
 }
 
+/// The port's own packs to use instead of the CD's pictures and sounds
+/// ([`Assets::load_with`]).
+#[derive(Default, Clone, Copy)]
+pub struct Packs<'a> {
+    /// A graphics pack ([`crate::opengfx`]).
+    pub graphics: Option<&'a dyn Source>,
+    /// A sound pack ([`crate::opensfx`]).
+    pub sounds: Option<&'a dyn Source>,
+    /// A data pack ([`crate::opendata`]): everything else the game reads,
+    /// so that it runs with no CD at all.
+    pub data: Option<&'a dyn Source>,
+}
+
 /// The game's resources: the overrides' on top of the original modules'.
 #[derive(Default)]
 pub struct Assets {
     modules: BTreeMap<Module, pe::Resources>,
     overrides: BTreeMap<(Module, u32, u32), Vec<u8>>,
+    /// The port's own graphics' and sounds' ([`Packs`]), between the
+    /// overrides and the CD's.
+    own: BTreeMap<(Module, u32, u32), Vec<u8>>,
+    /// What the packs had that couldn't be used, for the host to tell.
+    pub pack_problems: Vec<String>,
     /// The bitmap fonts: the overrides', the CD's, then
     /// [`bundled_fonts`].
     pub fonts: Vec<fnt::Font>,
@@ -203,6 +225,26 @@ pub struct Assets {
     sounds: std::cell::RefCell<BTreeMap<u32, crate::gadget::SoundData>>,
 }
 
+/// The resources of `src` in the overrides' layout
+/// (`<MODULE>/<type>/<id>.<ext>`).
+pub(crate) fn read_resources(src: &dyn Source) -> BTreeMap<(Module, u32, u32), Vec<u8>> {
+    let mut out = BTreeMap::new();
+    for m in Module::ALL {
+        for typ in src.list(m.dir()) {
+            let Ok(t) = typ.parse::<u32>() else { continue };
+            let tdir = join(m.dir(), &typ);
+            for file in src.list(&tdir) {
+                let stem = file.split('.').next().unwrap_or_default();
+                let Ok(id) = stem.parse::<u32>() else { continue };
+                if let Some(b) = src.read(&join(&tdir, &file)) {
+                    out.insert((m, t, id), b);
+                }
+            }
+        }
+    }
+    out
+}
+
 fn join(dir: &str, name: &str) -> String {
     if dir.is_empty() {
         name.to_owned()
@@ -219,22 +261,55 @@ impl Assets {
     /// # Errors
     /// If the game's folder isn't on `cd`, or a module there doesn't parse.
     pub fn load(cd: Option<&dyn Source>, overrides: Option<&dyn Source>) -> Result<Assets, Error> {
+        Assets::load_with(cd, Packs::default(), overrides)
+    }
+
+    /// [`Assets::load`] with the port's own packs where they have
+    /// something: the graphics pack's sheets and pointers and the sound
+    /// pack's sounds stand in for the CD's, the overrides still win. With
+    /// the graphics the port's own fonts are used instead of the CD's.
+    ///
+    /// # Errors
+    /// As [`Assets::load`].
+    pub fn load_with(
+        cd: Option<&dyn Source>,
+        packs: Packs<'_>,
+        overrides: Option<&dyn Source>,
+    ) -> Result<Assets, Error> {
         let mut a = Assets::default();
         if let Some(cd) = cd {
-            a.load_cd(cd)?;
+            a.load_cd(cd, packs.graphics.is_none())?;
+        }
+        if let Some(d) = packs.data {
+            let mut loaded = crate::opendata::load(d);
+            a.own.append(&mut loaded.resources);
+            a.pack_problems.append(&mut loaded.problems);
+            a.samples = loaded.samples;
+            a.puzzles = loaded.puzzles.or(a.puzzles);
+            a.help = loaded.help.or(a.help);
         }
         if let Some(o) = overrides {
             a.load_overrides(o);
         }
-        if a.modules.is_empty() && a.overrides.is_empty() {
+        if a.modules.is_empty() && a.overrides.is_empty() && a.own.is_empty() {
             return Err(Error::NoGame);
+        }
+        if let Some(g) = packs.graphics {
+            let mut loaded = crate::opengfx::load(g, &a.palette());
+            a.own.append(&mut loaded.resources);
+            a.pack_problems.append(&mut loaded.problems);
+        }
+        if let Some(s) = packs.sounds {
+            let mut loaded = crate::opensfx::load(s);
+            a.own.append(&mut loaded.resources);
+            a.pack_problems.append(&mut loaded.problems);
         }
         // After the CD's and the overrides', which win a tie in `font`.
         a.fonts.extend(bundled_fonts());
         Ok(a)
     }
 
-    fn load_cd(&mut self, cd: &dyn Source) -> Result<(), Error> {
+    fn load_cd(&mut self, cd: &dyn Source, cd_fonts: bool) -> Result<(), Error> {
         let dir = game_dir(cd).ok_or(Error::NoGame)?;
         let mut os2 = false;
         for m in Module::ALL {
@@ -243,7 +318,7 @@ impl Assets {
                 self.modules.insert(m, parse_module(m, &bytes)?);
             }
         }
-        for fon in ["SSERIFE.FON", "SMALLE.FON"] {
+        for fon in ["SSERIFE.FON", "SMALLE.FON"].into_iter().filter(|_| cd_fonts) {
             for d in [FONT_DIR, dir, ""] {
                 if let Some(b) = cd.read(&join(d, fon)) {
                     self.fonts.extend(fnt::Font::parse_fon(&b).unwrap_or_default());
@@ -288,19 +363,7 @@ impl Assets {
         if let Some(b) = o.read(HELP_FILE).or_else(|| o.read(INF_FILE)) {
             self.help = Some(b);
         }
-        for m in Module::ALL {
-            for typ in o.list(m.dir()) {
-                let Ok(t) = typ.parse::<u32>() else { continue };
-                let tdir = join(m.dir(), &typ);
-                for file in o.list(&tdir) {
-                    let stem = file.split('.').next().unwrap_or_default();
-                    let Ok(id) = stem.parse::<u32>() else { continue };
-                    if let Some(b) = o.read(&join(&tdir, &file)) {
-                        self.overrides.insert((m, t, id), b);
-                    }
-                }
-            }
-        }
+        self.overrides.append(&mut read_resources(o));
         for file in o.list("fonts") {
             if let Some(b) = o.read(&join("fonts", &file)) {
                 // Overriding fonts come first.
@@ -317,6 +380,7 @@ impl Assets {
     pub fn get(&self, m: Module, typ: u32, id: u32) -> Option<&[u8]> {
         self.overrides
             .get(&(m, typ, id))
+            .or_else(|| self.own.get(&(m, typ, id)))
             .map(Vec::as_slice)
             .or_else(|| self.modules.get(&m)?.get(typ, id))
     }
@@ -326,11 +390,9 @@ impl Assets {
     #[must_use]
     pub fn ids(&self, m: Module, typ: u32) -> Vec<u32> {
         let mut ids: Vec<u32> = self.modules.get(&m).map(|r| r.ids(typ).collect()).unwrap_or_default();
-        ids.extend(
-            self.overrides
-                .range((m, typ, 0)..=(m, typ, u32::MAX))
-                .map(|((_, _, id), _)| *id),
-        );
+        for extra in [&self.overrides, &self.own] {
+            ids.extend(extra.range((m, typ, 0)..=(m, typ, u32::MAX)).map(|((_, _, id), _)| *id));
+        }
         ids.sort_unstable();
         ids.dedup();
         ids
@@ -343,6 +405,7 @@ impl Assets {
             .iter()
             .flat_map(|(m, r)| r.entries.keys().map(move |(t, i)| (*m, *t, *i)))
             .chain(self.overrides.keys().copied())
+            .chain(self.own.keys().copied())
             .collect();
         keys.sort_unstable();
         keys.dedup();
@@ -350,10 +413,11 @@ impl Assets {
             .filter_map(|(m, t, i)| self.get(m, t, i).map(|b| (m, t, i, b)))
     }
 
-    /// String `id` of `WIDGET.EXE`'s string table.
+    /// String `id` of `WIDGET.EXE`'s string table (its overrides' and
+    /// packs' blocks too).
     #[must_use]
     pub fn string(&self, id: u32) -> Option<String> {
-        self.modules.get(&Module::Exe)?.string(id)
+        pe::string_in_block(self.get(Module::Exe, pe::RT_STRING, id / 16 + 1)?, id % 16)
     }
 
     /// A text resource (type 1020) as a string (Windows-1252).
@@ -376,10 +440,15 @@ impl Assets {
         let b = self.get(Module::Sound, rt::SOUND, id)?;
         // A new sound (an override) may be any PCM wave.
         let s = match formats::tables::Wave::parse(b) {
-            Some(w) if self.overrides.contains_key(&(Module::Sound, rt::SOUND, id)) => crate::gadget::SoundData {
-                rate: u16::try_from(w.rate).unwrap_or(u16::MAX),
-                samples: w.samples.into(),
-            },
+            Some(w)
+                if self.overrides.contains_key(&(Module::Sound, rt::SOUND, id))
+                    || self.own.contains_key(&(Module::Sound, rt::SOUND, id)) =>
+            {
+                crate::gadget::SoundData {
+                    rate: u16::try_from(w.rate).unwrap_or(u16::MAX),
+                    samples: w.samples.into(),
+                }
+            }
             _ => crate::gadget::SoundData {
                 rate: 11025,
                 samples: b.get(0x2c..).unwrap_or_default().into(),
