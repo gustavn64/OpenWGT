@@ -20,6 +20,7 @@
 
 # Build output
 /target/
+/result
 /dist/
 /web/
 
