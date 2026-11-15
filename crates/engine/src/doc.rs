@@ -236,9 +236,18 @@ impl Document {
         env: &mut Env,
         f: impl FnOnce(&mut Gadget, &mut Io<'_>) -> R,
     ) -> R {
+        // A part wired to itself reads its own outputs through the
+        // placeholder, as the original reads its own fields: they're
+        // taken before it runs (`Outputs`).
+        let own_wire = self.wires.iter().any(|w| w.from == i && w.to == i);
+        let behavior: Box<dyn crate::gadget::Behavior> = if own_wire {
+            Box::new(Outputs::of(&self.gadgets[i]))
+        } else {
+            Box::new(Unknown::default())
+        };
         let placeholder = Gadget {
             core: self.gadgets[i].core.clone(),
-            behavior: Box::new(Unknown::default()),
+            behavior,
         };
         let mut g = std::mem::replace(&mut self.gadgets[i], placeholder);
         let r = {
@@ -310,6 +319,77 @@ impl Document {
             .iter()
             .map(|g| g.core.rect())
             .fold(crate::gfx::IRect::default(), crate::gfx::IRect::union)
+    }
+}
+
+/// What a running part's outputs gave as it began its step, standing in
+/// for it while it runs ([`Document::with_gadget`]) so that a wire from
+/// one of its outputs to one of its own inputs reads them.
+#[derive(Debug, Default)]
+struct Outputs {
+    /// Per knot: (has, value) for the boolean, number and object.
+    knots: Vec<OutputKnot>,
+}
+
+#[derive(Debug, Default, Clone)]
+struct OutputKnot {
+    bool: Option<bool>,
+    number: Option<f64>,
+    /// Whether it gives an object, and which (`None` a silent part's).
+    gives_object: bool,
+    object: Option<crate::gadget::Object>,
+}
+
+impl Outputs {
+    fn of(g: &Gadget) -> Outputs {
+        let (b, c) = (&g.behavior, &g.core);
+        let knots = (0..c.knots.len())
+            .map(|k| OutputKnot {
+                bool: b.has_bool(c, k).then(|| b.bool_out(c, k)),
+                number: b.has_number(c, k).then(|| b.number_out(c, k)),
+                gives_object: b.has_object(c, k),
+                object: if b.has_object(c, k) { b.object_out(c, k) } else { None },
+            })
+            .collect();
+        Outputs { knots }
+    }
+
+    fn knot(&self, k: usize) -> OutputKnot {
+        self.knots.get(k).cloned().unwrap_or_default()
+    }
+}
+
+impl crate::gadget::Behavior for Outputs {
+    fn has_bool(&self, _core: &Core, k: usize) -> bool {
+        self.knot(k).bool.is_some()
+    }
+
+    fn bool_out(&self, _core: &Core, k: usize) -> bool {
+        self.knot(k).bool.unwrap_or(false)
+    }
+
+    fn has_number(&self, _core: &Core, k: usize) -> bool {
+        self.knot(k).number.is_some()
+    }
+
+    fn number_out(&self, _core: &Core, k: usize) -> f64 {
+        self.knot(k).number.unwrap_or(0.0)
+    }
+
+    fn has_object(&self, _core: &Core, k: usize) -> bool {
+        self.knot(k).gives_object
+    }
+
+    fn object_out(&self, _core: &Core, k: usize) -> Option<crate::gadget::Object> {
+        self.knot(k).object
+    }
+
+    fn as_any(&self) -> &dyn std::any::Any {
+        self
+    }
+
+    fn as_any_mut(&mut self) -> &mut dyn std::any::Any {
+        self
     }
 }
 
@@ -412,4 +492,41 @@ fn write_tray_limits(limits: &[(Tag, i16)]) -> Vec<u8> {
         out.extend_from_slice(&n.to_be_bytes());
     }
     out
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::gadget::Value;
+
+    /// A Switcher whose output is wired to its own selector reads its own
+    /// output (a false boolean), not nothing: it stays on input 1, as the
+    /// original does, instead of jumping to input 2.
+    #[test]
+    fn a_part_reads_its_own_output() {
+        // The Switcher's knots (type 1014/1036): selector, inputs 1 and 2,
+        // output, as (v, h, kind).
+        let mut knots = vec![4, 0];
+        for (v, h, k) in [(4u16, 52u16, 0u16), (29, 4, 0), (59, 4, 0), (45, 82, 1)] {
+            for n in [v, h, k] {
+                knots.extend_from_slice(&n.to_le_bytes());
+            }
+        }
+        let files: Vec<(&'static str, &'static [u8])> =
+            vec![("WWGADGET/1014/1036.bin", Box::leak(knots.into_boxed_slice()))];
+        let tables = crate::opengfx::Embedded(Box::leak(files.into_boxed_slice()));
+        let assets = Assets::load(None, Some(&tables)).unwrap();
+        let mut doc = Document::new();
+        doc.gadgets.push(new_gadget(&assets, Tag(*b"Mplx"), 1, 0, 0));
+        doc.connect(0, 3, 0, 0, vec![], 0).unwrap();
+        let mut env = Env::default();
+        doc.start(&assets, &mut env);
+        let seen = doc.with_gadget(0, &assets, &mut env, |g, io| io.input(&g.core, 0));
+        assert_eq!(seen, Value::Bool(false));
+        for t in 0..20 {
+            env.ticks = t * 5;
+            doc.tick(&assets, &mut env);
+        }
+        assert!(env.sounds.is_empty(), "it switched: {:?}", env.sounds);
+    }
 }
