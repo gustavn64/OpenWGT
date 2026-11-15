@@ -11,8 +11,7 @@
 //
 // Nothing is fetched or sent anywhere: the files come from the player.
 
-// (Named before the port was renamed; kept so stored CD images survive.)
-const DB = "widget-workshop";
+const DB = "openwgt";
 let opened = null;
 
 function db() {

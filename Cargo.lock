@@ -1700,6 +1700,24 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "9f7c3e4beb33f85d45ae3e3a1792185706c8e16d043238c593331cc7cd313b50"
 
 [[package]]
+name = "openwgt"
+version = "0.1.0"
+dependencies = [
+ "chrono",
+ "engine",
+ "formats",
+ "js-sys",
+ "platform",
+ "rfd",
+ "wasm-bindgen",
+ "wasm-bindgen-futures",
+ "web-sys",
+ "web-time",
+ "winresource",
+ "zbus 6.3.0",
+]
+
+[[package]]
 name = "orbclient"
 version = "0.3.55"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -2943,24 +2961,6 @@ dependencies = [
  "raw-window-handle",
  "static_assertions",
  "web-sys",
-]
-
-[[package]]
-name = "widget"
-version = "0.1.0"
-dependencies = [
- "chrono",
- "engine",
- "formats",
- "js-sys",
- "platform",
- "rfd",
- "wasm-bindgen",
- "wasm-bindgen-futures",
- "web-sys",
- "web-time",
- "winresource",
- "zbus 6.3.0",
 ]
 
 [[package]]

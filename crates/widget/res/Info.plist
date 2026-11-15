@@ -3,15 +3,15 @@
 <plist version="1.0">
 <dict>
     <key>CFBundleName</key>
-    <string>Gadget Generator</string>
+    <string>OpenWGT</string>
     <key>CFBundleDisplayName</key>
-    <string>Gadget Generator</string>
+    <string>OpenWGT</string>
     <key>CFBundleIdentifier</key>
-    <string>io.github.doridian.gadgetgenerator</string>
+    <string>se.gustavn.openwgt</string>
     <key>CFBundleExecutable</key>
-    <string>widget</string>
+    <string>openwgt</string>
     <key>CFBundleIconFile</key>
-    <string>gadget-generator</string>
+    <string>openwgt</string>
     <key>CFBundlePackageType</key>
     <string>APPL</string>
     <key>CFBundleShortVersionString</key>

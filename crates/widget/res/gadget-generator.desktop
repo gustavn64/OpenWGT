@@ -1,8 +1,0 @@
-[Desktop Entry]
-Type=Application
-Name=Gadget Generator
-Comment=A gadget-building mad scientist's lab (needs the original game's CD image)
-Exec=widget %f
-Icon=gadget-generator
-Categories=Game;Education;Science;
-Terminal=false

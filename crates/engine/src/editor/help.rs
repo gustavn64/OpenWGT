@@ -37,7 +37,7 @@ use super::ui;
 /// The message the original shows while `WIDGET.HLP` isn't there
 /// (`0x4333f5`, through `0x45f99f` with `MB_RETRYCANCEL`).
 pub const MISSING: &str =
-    "Can't find help file\nIt should be in the same folder as Gadget Generator and be named WIDGET.HLP";
+    "Can't find help file\nIt should be in the same folder as Widget Workshop and be named WIDGET.HLP";
 
 /// Reads a help file: `WIDGET.HLP` (`WinHelp`), or an OS/2 book
 /// (`WIDGET.INF`, by its `HSP` signature) as the same topics. `None` if

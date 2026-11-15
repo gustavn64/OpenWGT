@@ -20,7 +20,7 @@ tools/build-web.sh            # release build into web/
 tools/build-web.sh --debug    # quicker to build, slow to run
 ```
 
-The script runs `cargo build -p widget --target wasm32-unknown-unknown`
+The script runs `cargo build -p openwgt --target wasm32-unknown-unknown`
 and `wasm-bindgen --target web`, and copies the page
 (`crates/widget/web/index.html`) and the icon next to the output: `web/`
 holds `index.html`, `icon.png`, `widget.js`, `widget_bg.wasm` and
@@ -33,7 +33,7 @@ installing the matching CLI.
 ## GitHub Pages
 
 `.github/workflows/build.yml` publishes the build on every push to
-`main` at <https://doridian.github.io/GadgetGenerator/>, without game data
+`main` on the repository's GitHub Pages site (upstream: <https://doridian.github.io/WidgetWorkshop/>), without game data
 (the workflow fails if anything but the pages, the icon, the glue and
 the module is in the build). `crates/widget/web/front.html` is the
 site's front page: where to get the CD image, the downloads, and a link

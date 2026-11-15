@@ -165,7 +165,7 @@ pub fn error_box(message: &str) {
     }
     rfd::MessageDialog::new()
         .set_level(rfd::MessageLevel::Error)
-        .set_title("Gadget Generator")
+        .set_title("OpenWGT")
         .set_description(message)
         .set_buttons(rfd::MessageButtons::Ok)
         .show();
@@ -189,7 +189,7 @@ fn dropped(window: &WindowOptions) -> Option<PathBuf> {
         picked: Rc::clone(&picked),
         closed: false,
     };
-    if let Err(e) = platform::run("Gadget Generator", window.clone(), app) {
+    if let Err(e) = platform::run("OpenWGT", window.clone(), app) {
         eprintln!("{e}");
     }
     picked.take()
@@ -319,7 +319,7 @@ impl DropScreen {
             overlay: None,
             cursor: Cursor::Default,
             cursor_image: None,
-            title: Some("Gadget Generator"),
+            title: Some("OpenWGT"),
         }
     }
 
@@ -345,7 +345,7 @@ impl DropScreen {
                 lines.push((font, colour, l));
             }
         };
-        add(&big, TEXT, "Gadget Generator");
+        add(&big, TEXT, "OpenWGT");
         add(&small, TEXT, "");
         add(
             &small,

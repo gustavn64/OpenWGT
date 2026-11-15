@@ -1,0 +1,2 @@
+# The project's and its packs' names are words, not code.
+doc-valid-idents = ["OpenWGT", "OpenWGFX", "OpenWSFX", "OpenWDATA", "OpenGFX", "OpenSFX", "OpenTTD", "OpenMSX", ".."]

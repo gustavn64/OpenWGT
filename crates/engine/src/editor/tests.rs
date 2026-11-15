@@ -854,7 +854,7 @@ fn dropped_widgets_open_and_widgets_download() {
     assert_eq!(e.doc.gadgets.len(), 1);
     assert!(e.path.is_none() && !e.dirty);
     e.update(16, (0, 0, 0));
-    assert_eq!(e.title(), "Gadget Generator - COIN.WGT");
+    assert_eq!(e.title(), "OpenWGT - COIN.WGT");
     // Downloaded again under its dropped name.
     e.command(cmd::SAVE_DOWNLOAD);
     assert_eq!(got.borrow()[1].0, "COIN.WGT");
@@ -930,7 +930,7 @@ fn widget_links_copy_and_open() {
     assert_eq!(e.doc.gadgets.len(), 1);
     assert!(e.path.is_none() && !e.dirty);
     e.update(16, (0, 0, 0));
-    assert_eq!(e.title(), "Gadget Generator - COIN.WGT");
+    assert_eq!(e.title(), "OpenWGT - COIN.WGT");
     // Copied again under that name.
     e.command(cmd::COPY_LINK);
     assert!(copied.borrow()[1].contains("#n=COIN.WGT&w="));

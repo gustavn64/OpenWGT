@@ -148,7 +148,7 @@ const NEEDS: [([u8; 4], u32, u32); 115] = [
 ];
 
 /// The message when the runtime isn't there (`0x491326`).
-pub const NO_RUNTIME: &str = "Can't find file: WIDGET.SLF\nIt must be in the same directory as Gadget Generator\n";
+pub const NO_RUNTIME: &str = "Can't find file: WIDGET.SLF\nIt must be in the same directory as Widget Workshop\n";
 
 /// The resources a stand-alone of `doc` carries besides the widget
 /// (`0x42659d` marks the classes present; each type and id once, in the

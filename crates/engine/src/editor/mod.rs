@@ -59,7 +59,7 @@ pub const TICKS_PER_SECOND: u64 = 60;
 const DOUBLE_CLICK_MS: u64 = 500;
 const DOUBLE_CLICK_D: i32 = 2;
 /// The title of message boxes (`AfxMessageBox`).
-const APP: &str = "Gadget Generator";
+const APP: &str = "OpenWGT";
 /// The document's default name (string 2).
 const UNTITLED: &str = "untitled.wgt";
 
@@ -467,8 +467,8 @@ impl Editor {
         }
     }
 
-    /// The window's title (`0x417092`): "Gadget Generator - name" (the
-    /// original's "Widget Workshop - name").
+    /// The window's title (`0x417092`): "OpenWGT - name" (the original's
+    /// "Widget Workshop - name").
     #[must_use]
     pub fn title(&self) -> &str {
         &self.title

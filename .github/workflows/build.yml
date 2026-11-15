@@ -53,7 +53,7 @@ jobs:
           sudo apt-get install -y libasound2-dev pkg-config file
 
       - name: Build
-        run: cargo build --release --locked -p widget
+        run: cargo build --release --locked -p openwgt
 
       - name: Test
         run: cargo test --release --locked --workspace
@@ -61,24 +61,24 @@ jobs:
       - name: Package (AppImage)
         timeout-minutes: 10
         run: |
-          out=gadget-generator-${{ matrix.arch }}.AppImage
+          out=openwgt-${{ matrix.arch }}.AppImage
           curl -sSLfo linuxdeploy https://github.com/linuxdeploy/linuxdeploy/releases/download/continuous/linuxdeploy-${{ matrix.arch }}.AppImage
           chmod +x linuxdeploy
-          doc=AppDir/usr/share/doc/gadget-generator
+          doc=AppDir/usr/share/doc/openwgt
           mkdir -p $doc
           cp LICENSE README.md $doc/
-          cp crates/widget/res/icon.png gadget-generator.png
+          cp crates/widget/res/icon.png openwgt.png
           # the window, the GPU and the sound are the host's (dlopen'd, or
           # linuxdeploy's excludelist: libasound, libGL, libvulkan)
-          LDAI_OUTPUT=$out ./linuxdeploy --appdir AppDir -e target/release/widget \
-              -d crates/widget/res/gadget-generator.desktop -i gadget-generator.png --output appimage
+          LDAI_OUTPUT=$out ./linuxdeploy --appdir AppDir -e target/release/openwgt \
+              -d crates/widget/res/openwgt.desktop -i openwgt.png --output appimage
           # (it starts: the libraries are all there)
           { ./$out --help 2>&1 || true; } | grep "usage:"
 
       - uses: actions/upload-artifact@v7
         with:
-          name: gadget-generator-${{ matrix.arch }}.AppImage
-          path: gadget-generator-${{ matrix.arch }}.AppImage
+          name: openwgt-${{ matrix.arch }}.AppImage
+          path: openwgt-${{ matrix.arch }}.AppImage
 
   windows:
     runs-on: windows-latest
@@ -96,18 +96,18 @@ jobs:
       - uses: Swatinem/rust-cache@v2
 
       - name: Build
-        run: cargo build --release --locked -p widget
+        run: cargo build --release --locked -p openwgt
 
       - name: Package
         run: |
-          cp target/release/widget.exe gadget-generator-windows-x86_64.exe
+          cp target/release/openwgt.exe openwgt-windows-x86_64.exe
           # (it starts)
-          { ./gadget-generator-windows-x86_64.exe --help 2>&1 || true; } | grep "usage:"
+          { ./openwgt-windows-x86_64.exe --help 2>&1 || true; } | grep "usage:"
 
       - uses: actions/upload-artifact@v7
         with:
-          name: gadget-generator-windows-x86_64
-          path: gadget-generator-windows-x86_64.exe
+          name: openwgt-windows-x86_64
+          path: openwgt-windows-x86_64.exe
 
   macos:
     runs-on: macos-26
@@ -124,42 +124,42 @@ jobs:
 
       - name: Build (arm64 and x86-64)
         run: |
-          cargo build --release --locked -p widget --target aarch64-apple-darwin
-          cargo build --release --locked -p widget --target x86_64-apple-darwin
+          cargo build --release --locked -p openwgt --target aarch64-apple-darwin
+          cargo build --release --locked -p openwgt --target x86_64-apple-darwin
 
       - name: Package (app in a dmg)
         timeout-minutes: 10
         run: |
-          app="dmg/Gadget Generator.app"
+          app="dmg/OpenWGT.app"
           c="$app/Contents"
           mkdir -p "$c/MacOS" "$c/Resources"
-          lipo -create -output "$c/MacOS/widget" \
-              target/aarch64-apple-darwin/release/widget target/x86_64-apple-darwin/release/widget
+          lipo -create -output "$c/MacOS/openwgt" \
+              target/aarch64-apple-darwin/release/openwgt target/x86_64-apple-darwin/release/openwgt
           v=0.0.0
           case "$GITHUB_REF" in refs/tags/v*) v=${GITHUB_REF_NAME#v} ;; esac
           sed "s/@VERSION@/$v/" crates/widget/res/Info.plist > "$c/Info.plist"
           # the icon, from crates/widget/res/icon.png
-          mkdir gadget-generator.iconset
+          mkdir openwgt.iconset
           for n in 16 32 128 256 512; do
-              sips -z $n $n crates/widget/res/icon.png --out gadget-generator.iconset/icon_${n}x${n}.png > /dev/null
+              sips -z $n $n crates/widget/res/icon.png --out openwgt.iconset/icon_${n}x${n}.png > /dev/null
               if [ $n -le 256 ]; then
-                  sips -z $((n * 2)) $((n * 2)) crates/widget/res/icon.png --out gadget-generator.iconset/icon_${n}x${n}@2x.png > /dev/null
+                  sips -z $((n * 2)) $((n * 2)) crates/widget/res/icon.png --out openwgt.iconset/icon_${n}x${n}@2x.png > /dev/null
               fi
           done
-          iconutil -c icns gadget-generator.iconset -o "$c/Resources/gadget-generator.icns"
+          iconutil -c icns openwgt.iconset -o "$c/Resources/openwgt.icns"
           cp LICENSE README.md "$c/Resources/"
-          otool -L "$c/MacOS/widget"
-          lipo -info "$c/MacOS/widget"
+          otool -L "$c/MacOS/openwgt"
+          lipo -info "$c/MacOS/openwgt"
           codesign --force --deep -s - "$app"
           # (it starts)
-          { "$c/MacOS/widget" --help 2>&1 || true; } | grep "usage:"
+          { "$c/MacOS/openwgt" --help 2>&1 || true; } | grep "usage:"
           ln -s /Applications dmg/Applications
-          hdiutil create -volname "Gadget Generator" -srcfolder dmg -ov -format UDZO gadget-generator-macos.dmg
+          hdiutil create -volname "OpenWGT" -srcfolder dmg -ov -format UDZO openwgt-macos.dmg
 
       - uses: actions/upload-artifact@v7
         with:
-          name: gadget-generator-macos
-          path: gadget-generator-macos.dmg
+          name: openwgt-macos
+          path: openwgt-macos.dmg
 
   # The browser build (docs/web.md), without game data: the page asks the
   # player for their CD image. crates/widget/web/front.html is the front
@@ -196,15 +196,15 @@ jobs:
           cp -r web/widget.js web/widget_bg.wasm web/snippets web/icon.png _site/
           cp web/index.html _site/widget.html
           cp crates/widget/web/front.html _site/index.html
-          d=gadget-generator-web
+          d=openwgt-web
           cp -r _site $d
           cp LICENSE README.md $d/
           zip -r $d.zip $d
 
       - uses: actions/upload-artifact@v7
         with:
-          name: gadget-generator-web
-          path: gadget-generator-web.zip
+          name: openwgt-web
+          path: openwgt-web.zip
 
       - if: github.event_name == 'push' && github.ref == 'refs/heads/main'
         uses: actions/configure-pages@v6

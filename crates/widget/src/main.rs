@@ -1,11 +1,11 @@
 // A window, not a console, on Windows (the release build).
 #![cfg_attr(all(windows, not(debug_assertions)), windows_subsystem = "windows")]
 
-//! Gadget Generator, a port of Widget Workshop. Opens straight into the
+//! OpenWGT, an open engine for Widget Workshop. Opens straight into the
 //! editor (the original's main menu is left out), with a new widget or
 //! the one given.
 //!
-//! `widget [--overrides=DIR] [--export=DIR] [--no-audio]
+//! `openwgt [--overrides=DIR] [--export=DIR] [--no-audio]
 //! [--window-size=WxH] [--fullscreen|--windowed] [--ui-scale=N|auto] [--help]
 //! [CD] [WIDGET.WGT|LINK]` ([`USAGE`]), where `CD` is the game's CD: an
 //! ISO image or a folder with its files (default: the one `.iso` in the
@@ -60,7 +60,7 @@ use crate::sound::Sound;
 #[cfg(not(target_arch = "wasm32"))]
 const LINK_PAGE: &str = "https://doridian.github.io/GadgetGenerator/widget.html";
 
-const USAGE: &str = "usage: widget [--overrides=DIR] [--export=DIR] [--no-audio] [--window-size=WxH] \
+const USAGE: &str = "usage: openwgt [--overrides=DIR] [--export=DIR] [--no-audio] [--window-size=WxH] \
 [--fullscreen|--windowed] [--ui-scale=N|auto] [--help] [CD] [WIDGET.WGT|LINK]
 
   CD               the game's CD: an ISO image or a folder with its files
@@ -95,9 +95,9 @@ fn exit(code: i32) -> ! {
     #[cfg(target_arch = "wasm32")]
     {
         if code != 0 {
-            platform::web::show_error("Gadget Generator stopped; the console (F12) says why.");
+            platform::web::show_error("OpenWGT stopped; the console (F12) says why.");
         }
-        panic!("Gadget Generator stopped ({code})");
+        panic!("OpenWGT stopped ({code})");
     }
     #[cfg(not(target_arch = "wasm32"))]
     std::process::exit(code)
@@ -248,7 +248,7 @@ impl Workshop {
                 self.done = true;
                 Ok(())
             }
-            Err(e) => Err(format!("Gadget Generator didn't start again: {e}")),
+            Err(e) => Err(format!("OpenWGT didn't start again: {e}")),
         }
     }
 }
@@ -437,7 +437,7 @@ fn main() {
     std::panic::set_hook(Box::new(move |info| {
         report(info);
         if !std::io::IsTerminal::is_terminal(&std::io::stderr()) {
-            pick::error_box(&format!("Gadget Generator stopped: {info}"));
+            pick::error_box(&format!("OpenWGT stopped: {info}"));
         }
     }));
     let args = args(std::env::args_os().skip(1));
@@ -578,5 +578,5 @@ fn start(args: &Args, assets: Assets) -> Result<(), platform::Error> {
         #[cfg(not(target_arch = "wasm32"))]
         asking: None,
     };
-    platform::run("Gadget Generator", args.window.clone(), app)
+    platform::run("OpenWGT", args.window.clone(), app)
 }
