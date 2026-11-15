@@ -1,0 +1,1 @@
+Construction Tip:Line up a row of bulbs to make a meter: send a Slider through Splitters to several Comparers, each checking Greater Than a different number, and give each Comparer its own bulb. The further you slide, the more bulbs light up.

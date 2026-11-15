@@ -1,0 +1,1 @@
+The Color Mixer works like a single, very large dot on your screen. Feed numbers from 0 to 100 into its red, green and blue inputs: the bigger the number, the more of that color. Mix the three and you can make nearly any color.

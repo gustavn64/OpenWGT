@@ -1,0 +1,167 @@
+{
+ "2": {
+  "header": [
+   0,
+   0
+  ],
+  "items": [
+   {
+    "id": 32784,
+    "text": " ",
+    "flags": 1
+   }
+  ]
+ },
+ "3": {
+  "header": [
+   0,
+   0
+  ],
+  "items": [
+   {
+    "popup": "&File",
+    "flags": 0,
+    "items": [
+     {
+      "id": 57600,
+      "text": "&New",
+      "flags": 0
+     },
+     {
+      "id": 57601,
+      "text": "&Open...",
+      "flags": 0
+     },
+     {
+      "id": 32771,
+      "text": "Load Puzzle...",
+      "flags": 0
+     },
+     "-",
+     {
+      "id": 57603,
+      "text": "&Save",
+      "flags": 1
+     },
+     {
+      "id": 57604,
+      "text": "Save &As...",
+      "flags": 0
+     },
+     {
+      "id": 32772,
+      "text": "Revert",
+      "flags": 1
+     },
+     "-",
+     {
+      "id": 32773,
+      "text": "Import a Stand-Alone Widget...",
+      "flags": 0
+     },
+     {
+      "id": 32774,
+      "text": "Save Into a Stand-Alone Widget",
+      "flags": 0
+     },
+     "-",
+     {
+      "id": 57608,
+      "text": "Print Preview",
+      "flags": 0
+     },
+     {
+      "id": 57606,
+      "text": "Print Setup...",
+      "flags": 0
+     },
+     {
+      "id": 57607,
+      "text": "Print",
+      "flags": 0
+     },
+     "-",
+     {
+      "id": 57665,
+      "text": "E&xit",
+      "flags": 0
+     }
+    ]
+   },
+   {
+    "popup": "&Edit",
+    "flags": 0,
+    "items": [
+     {
+      "id": 57643,
+      "text": "&Undo",
+      "flags": 1
+     },
+     "-",
+     {
+      "id": 32777,
+      "text": "Clear Work Area",
+      "flags": 0
+     },
+     {
+      "id": 32778,
+      "text": "Remove All Connections",
+      "flags": 0
+     },
+     {
+      "id": 32779,
+      "text": "Remove All Joints",
+      "flags": 0
+     },
+     {
+      "id": 32785,
+      "text": "Fit Work Area ...",
+      "flags": 0
+     }
+    ]
+   },
+   {
+    "popup": "Options",
+    "flags": 0,
+    "items": [
+     {
+      "id": 32780,
+      "text": "Plain Background",
+      "flags": 8
+     },
+     {
+      "id": 32781,
+      "text": "Metal Waves",
+      "flags": 0
+     },
+     {
+      "id": 32782,
+      "text": "Noise",
+      "flags": 0
+     },
+     {
+      "id": 32783,
+      "text": "Steel",
+      "flags": 0
+     }
+    ]
+   },
+   {
+    "popup": "&Help",
+    "flags": 0,
+    "items": [
+     {
+      "id": 57664,
+      "text": "&About OpenWGT...",
+      "flags": 0
+     },
+     {
+      "id": 32784,
+      "text": "Contents\tF1",
+      "flags": 0
+     }
+    ]
+   }
+  ]
+ }
+}

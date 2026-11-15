@@ -1,0 +1,2 @@
+Construction Tip:
+Wire three Light Switches to the red, green and blue inputs: each one adds its color at full strength, so you can mix eight colors. For a light show, feed the inputs from Random Number Generators set to 1-100.

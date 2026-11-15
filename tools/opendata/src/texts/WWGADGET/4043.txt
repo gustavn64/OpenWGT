@@ -1,0 +1,2 @@
+Construction Tip:
+Give a puzzle a time limit: wire a Stopwatch set to Seconds to a Win / Lose Checker that ends the widget with the Lose sound when the number reaches 60. A second checker with the Win sound can watch for the right answer.

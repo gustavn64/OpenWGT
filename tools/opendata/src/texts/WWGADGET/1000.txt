@@ -1,0 +1,1 @@
+With the Pendulum you can find out what decides how long one swing takes. Change the length and the gravity, and the period can change a lot. Try changing the weight too: it makes no difference at all.

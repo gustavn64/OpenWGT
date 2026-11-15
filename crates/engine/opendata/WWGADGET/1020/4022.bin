@@ -1,0 +1,1 @@
+Construction Tip:Each knot holds only one wire, so when an output has to go to two places, put a Two-way Splitter in between. Both outputs carry the whole value - nothing gets halved.

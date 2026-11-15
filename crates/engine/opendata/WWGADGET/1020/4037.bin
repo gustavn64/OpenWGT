@@ -1,0 +1,2 @@
+Construction Tip:
+Make a clap switch: wire the Sound Switch to a Billboard or a sound part, then clap. Once it hears something it stays on until you stop the widget. If a noisy room sets it off by itself, choose a lower setting.

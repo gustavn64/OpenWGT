@@ -1,0 +1,79 @@
+{
+ "style": "0x80c800c4",
+ "ex_style": "0x00000000",
+ "rect": [
+  9,
+  26,
+  183,
+  70
+ ],
+ "menu": null,
+ "class": null,
+ "title": "New",
+ "font": [
+  8,
+  "MS Sans Serif"
+ ],
+ "items": [
+  {
+   "id": 65535,
+   "class": "static",
+   "text": "&New ",
+   "rect": [
+    6,
+    5,
+    123,
+    8
+   ],
+   "style": "0x50000000"
+  },
+  {
+   "id": 100,
+   "class": "listbox",
+   "text": null,
+   "rect": [
+    6,
+    15,
+    125,
+    49
+   ],
+   "style": "0x50a10001"
+  },
+  {
+   "id": 1,
+   "class": "button",
+   "text": "OK",
+   "rect": [
+    137,
+    6,
+    40,
+    14
+   ],
+   "style": "0x50010001"
+  },
+  {
+   "id": 2,
+   "class": "button",
+   "text": "Cancel",
+   "rect": [
+    137,
+    23,
+    40,
+    14
+   ],
+   "style": "0x50010000"
+  },
+  {
+   "id": 57669,
+   "class": "button",
+   "text": "&Help",
+   "rect": [
+    137,
+    43,
+    40,
+    14
+   ],
+   "style": "0x50010000"
+  }
+ ]
+}

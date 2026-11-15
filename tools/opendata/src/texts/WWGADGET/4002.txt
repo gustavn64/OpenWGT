@@ -1,0 +1,2 @@
+Construction Tip:
+While you build, wire one of these to any output to see what a part is sending. It shows whole numbers from -99 to 999; for decimals or bigger numbers, use the Ten-Digit Display.

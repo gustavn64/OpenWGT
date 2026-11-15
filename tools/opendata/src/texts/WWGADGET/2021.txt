@@ -1,0 +1,1 @@
+The Comparer checks the number on the left (the first) against the number on top (the second). You choose the test: equal, not equal, greater than, less than, greater than or equal, or less than or equal. When the test is true it sends out TRUE (1), otherwise FALSE (0).

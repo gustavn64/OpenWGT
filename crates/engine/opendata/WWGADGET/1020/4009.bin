@@ -1,0 +1,1 @@
+Construction Tip:Use an OR Logic Gate when any of several things should start the same action, like a Keypress or the Mouse Button. Chain more OR gates for more triggers.

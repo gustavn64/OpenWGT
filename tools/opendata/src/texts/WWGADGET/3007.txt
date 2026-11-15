@@ -1,0 +1,2 @@
+Construction Tip:
+Put a Light Switch on its input and it picks a new number about once a second for as long as the switch is on. Choose Custom from 200 to 800 and wire it to a Speaker for a robot tune.

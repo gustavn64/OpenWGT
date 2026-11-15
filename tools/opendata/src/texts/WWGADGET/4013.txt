@@ -1,0 +1,2 @@
+Construction Tip:
+Use it as a warning light that stays on as long as two numbers disagree, for example while a guess doesn't match the answer yet.

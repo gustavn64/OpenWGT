@@ -1,0 +1,2 @@
+Construction Hint:
+The Mini Three-Digit Number takes up little room, so use it for the fixed numbers a widget needs - limits for Comparers, factors for Multipliers - and save the big one for numbers players should change.

@@ -1,0 +1,1 @@
+This part holds four messages of your choice (words, phrases or short sentences), numbered 1 to 4. Send in a message's number to show that message; send in 0 (zero) to show nothing.

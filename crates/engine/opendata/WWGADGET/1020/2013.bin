@@ -1,0 +1,1 @@
+This Comparitor checks two numbers with a single question:Are Number 1 and Number 2 different?If so, it sends out YES (1); if not, it sends out NO (0).

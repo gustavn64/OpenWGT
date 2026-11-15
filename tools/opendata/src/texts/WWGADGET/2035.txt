@@ -1,0 +1,1 @@
+The Graphic Projector shows pictures from one of six picture sets to brighten up your widgets. Every picture in a set has a number: send that number in to show the picture.

@@ -1,0 +1,114 @@
+# Puzzle 4: chain two number crunchers so the three numbers make 42:
+# 6 x 5 + 12, or (12 - 5) x 6. No two of the numbers make 42 alone.
+title "Make 42"
+background 0
+
+part title TxLb 20 98
+label title 0 "Make 42"
+radio title 0 1
+part t1 TxLb 16 135
+label t1 0 "Make the display show 42!"
+part t2 TxLb 16 160
+label t2 0 "Use the three numbers and two"
+part t3 TxLb 16 177
+label t3 0 "math parts from the tray."
+part t4 TxLb 300 135
+label t4 0 "A math part's answer can go"
+part t5 TxLb 300 152
+label t5 0 "into another math part."
+
+part n6 MiCo 30 230
+label n6 0 "6"
+part n5 MiCo 30 290
+label n5 0 "5"
+part n12 MiCo 30 350
+label n12 0 "12"
+
+part sp Spl2 430 250
+part show disp 490 237
+part win Stop 490 290
+radio win 0 1
+label win 0 "42"
+wire sp 1 show 0
+wire sp 2 win 0
+
+lock title
+lock t1
+lock t2
+lock t3
+lock t4
+lock t5
+lock n6
+lock n5
+lock n12
+lock sp
+lock show
+lock win
+lock wire 0
+lock wire 1
+
+# The tray: Addr 1, Subr 1, Mulr 1, Divr 1; every other part 0.
+limit Addr 1
+limit Subr 1
+limit Mulr 1
+limit Divr 1
+limit Pend 0
+limit Drop 0
+limit Cano 0
+limit Wtch 0
+limit rand 0
+limit Fork 0
+limit DClk 0
+limit Key_ 0
+limit Metr 0
+limit swit 0
+limit di10 0
+limit Sldr 0
+limit bulb 0
+limit hart 0
+limit rgbd 0
+limit Plnt 0
+limit Ttlr 0
+limit disp 0
+limit ArVo 0
+limit cnst 0
+limit 1ncr 0
+limit Coin 0
+limit NmKP 0
+limit AndG 0
+limit OrGa 0
+limit NotG 0
+limit XorG 0
+limit Conv 0
+limit Comp 0
+limit Tape 0
+limit TxBx 0
+limit TxLn 0
+limit MsMv 0
+limit DnPl 0
+limit MsCl 0
+limit Cntr 0
+limit GrPr 0
+limit SdSw 0
+limit SdTr 0
+limit AnSd 0
+limit MsSd 0
+limit Spkr 0
+limit Stop 0
+limit StCh 0
+limit TxLb 0
+limit MiCo 0
+limit Spl2 0
+limit Spl3 0
+limit Spl4 0
+limit Mplx 0
+limit Stk1 0
+limit Stk2 0
+limit Stk3 0
+limit Stk4 0
+limit Stk5 0
+limit Stk6 0
+limit Stk7 0
+limit Stk8 0
+limit Stk9 0
+limit St10 0

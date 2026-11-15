@@ -1,0 +1,1 @@
+Use the Tape Player to play back recorded sounds. If your computer has a microphone, you may be able to record sounds of your own as well.

@@ -1,0 +1,2 @@
+Construction Tip:
+A Speaker can also play a number: wire it straight to a Slider or a Three-Digit Number and it plays a tone of that many hertz (440 is the A musicians tune to). A YES signal gives a low hum while it's on.

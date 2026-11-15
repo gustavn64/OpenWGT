@@ -1,0 +1,1 @@
+Construction Tip:Tick Hide Number for a secret code lock: compare the keypad with a Mini Three-Digit Number holding the code, using a Comparer set to Equal to, and send the result to a Win / Lose Checker. Nothing leaves the keypad until ENTER is pressed.

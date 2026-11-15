@@ -1,0 +1,2 @@
+Construction Tip:
+Set From and To to the range your numbers really use, and make the chart a little longer than your experiment: once it's full, it stops drawing. A Keypress on the RESET input clears it for a fresh start without stopping the widget.

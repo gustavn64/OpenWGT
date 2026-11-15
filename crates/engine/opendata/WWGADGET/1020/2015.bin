@@ -1,0 +1,1 @@
+This Comparitor checks two numbers with a single question:Is Number 1 smaller than Number 2?If so, it sends out YES (1); if not, it sends out NO (0).

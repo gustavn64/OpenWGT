@@ -1,0 +1,1 @@
+The Win / Lose Checker lets a widget end by itself. As soon as its input gets what you told it to wait for, it plays a winning or losing sound and stops the widget.

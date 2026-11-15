@@ -1,0 +1,271 @@
+{
+ "style": "0x90c800c0",
+ "ex_style": "0x00000000",
+ "rect": [
+  103,
+  81,
+  236,
+  172
+ ],
+ "menu": null,
+ "class": null,
+ "title": "Pendulum",
+ "font": [
+  8,
+  "MS Sans Serif"
+ ],
+ "items": [
+  {
+   "id": 150,
+   "class": "button",
+   "text": null,
+   "rect": [
+    201,
+    65,
+    31,
+    19
+   ],
+   "style": "0x5002000b"
+  },
+  {
+   "id": 1,
+   "class": "button",
+   "text": "OK",
+   "rect": [
+    178,
+    153,
+    49,
+    14
+   ],
+   "style": "0x50010001"
+  },
+  {
+   "id": 2,
+   "class": "button",
+   "text": "Cancel",
+   "rect": [
+    124,
+    153,
+    45,
+    14
+   ],
+   "style": "0x50010000"
+  },
+  {
+   "id": 103,
+   "class": "button",
+   "text": "Doc",
+   "rect": [
+    107,
+    14,
+    124,
+    70
+   ],
+   "style": "0x5800000b"
+  },
+  {
+   "id": 104,
+   "class": "static",
+   "text": "Varies with your choice",
+   "rect": [
+    105,
+    3,
+    125,
+    11
+   ],
+   "style": "0x50020000"
+  },
+  {
+   "id": 105,
+   "class": "static",
+   "text": "Pendulum",
+   "rect": [
+    2,
+    -58,
+    89,
+    58
+   ],
+   "style": "0x50020000"
+  },
+  {
+   "id": 107,
+   "class": "combobox",
+   "text": null,
+   "rect": [
+    57,
+    136,
+    127,
+    64
+   ],
+   "style": "0x50030003"
+  },
+  {
+   "id": 108,
+   "class": "static",
+   "text": "Gravity:",
+   "rect": [
+    2,
+    94,
+    31,
+    9
+   ],
+   "style": "0x50020000"
+  },
+  {
+   "id": 109,
+   "class": "combobox",
+   "text": null,
+   "rect": [
+    38,
+    92,
+    109,
+    44
+   ],
+   "style": "0x50030003"
+  },
+  {
+   "id": 110,
+   "class": "static",
+   "text": "Weight:",
+   "rect": [
+    2,
+    109,
+    29,
+    9
+   ],
+   "style": "0x50020000"
+  },
+  {
+   "id": 111,
+   "class": "combobox",
+   "text": null,
+   "rect": [
+    38,
+    107,
+    109,
+    45
+   ],
+   "style": "0x50030003"
+  },
+  {
+   "id": 112,
+   "class": "static",
+   "text": "Output:",
+   "rect": [
+    158,
+    94,
+    40,
+    9
+   ],
+   "style": "0x50020000"
+  },
+  {
+   "id": 115,
+   "class": "edit",
+   "text": "5#",
+   "rect": [
+    59,
+    152,
+    35,
+    12
+   ],
+   "style": "0x50830000"
+  },
+  {
+   "id": 116,
+   "class": "static",
+   "text": "Length of pendulum:",
+   "rect": [
+    2,
+    124,
+    95,
+    9
+   ],
+   "style": "0x50020000"
+  },
+  {
+   "id": 118,
+   "class": "static",
+   "text": "Ft.",
+   "rect": [
+    99,
+    154,
+    16,
+    10
+   ],
+   "style": "0x50020000"
+  },
+  {
+   "id": 113,
+   "class": "button",
+   "text": "Period Length1",
+   "rect": [
+    158,
+    118,
+    70,
+    10
+   ],
+   "style": "0x50030009"
+  },
+  {
+   "id": 117,
+   "class": "button",
+   "text": "On at Center1",
+   "rect": [
+    158,
+    106,
+    70,
+    10
+   ],
+   "style": "0x50000009"
+  },
+  {
+   "id": 106,
+   "class": "button",
+   "text": "Preset:2",
+   "rect": [
+    10,
+    137,
+    40,
+    10
+   ],
+   "style": "0x50030009"
+  },
+  {
+   "id": 114,
+   "class": "button",
+   "text": "Custom:2",
+   "rect": [
+    10,
+    153,
+    44,
+    10
+   ],
+   "style": "0x50000009"
+  },
+  {
+   "id": 149,
+   "class": "static",
+   "text": null,
+   "rect": [
+    3,
+    85,
+    231,
+    1
+   ],
+   "style": "0x50020007"
+  },
+  {
+   "id": 102,
+   "class": "button",
+   "text": "Pic4000",
+   "rect": [
+    2,
+    3,
+    101,
+    75
+   ],
+   "style": "0x5800000b"
+  }
+ ]
+}

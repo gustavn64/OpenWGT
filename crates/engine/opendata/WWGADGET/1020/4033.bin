@@ -1,0 +1,1 @@
+Construction Tip:How fast can you tap? Wire a Keypress to a Counter, and the Counter to a Win / Lose Checker set to win when the number is greater than or equal to 50. The Counter shows up to 999.

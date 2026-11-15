@@ -1,0 +1,2 @@
+Construction Tip:
+Set the output to Hours since midnight and wire the clock to a Comparer's side input, with a Mini Three-Digit Number set to 21 on top. Choose Greater than or Equal to, and a Billboard can remind everyone that it's bedtime.

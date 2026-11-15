@@ -1,0 +1,127 @@
+{
+ "style": "0x90c800c0",
+ "ex_style": "0x00000000",
+ "rect": [
+  44,
+  46,
+  198,
+  119
+ ],
+ "menu": null,
+ "class": null,
+ "title": "OpenWGT",
+ "font": [
+  8,
+  "MS Sans Serif"
+ ],
+ "items": [
+  {
+   "id": 6,
+   "class": "button",
+   "text": "&Yes",
+   "rect": [
+    17,
+    98,
+    41,
+    14
+   ],
+   "style": "0x50030001"
+  },
+  {
+   "id": 7,
+   "class": "button",
+   "text": "&No",
+   "rect": [
+    77,
+    98,
+    41,
+    14
+   ],
+   "style": "0x50010000"
+  },
+  {
+   "id": 2,
+   "class": "button",
+   "text": "&Cancel",
+   "rect": [
+    140,
+    98,
+    41,
+    14
+   ],
+   "style": "0x50010000"
+  },
+  {
+   "id": 13,
+   "class": "button",
+   "text": "&Keep this answer",
+   "rect": [
+    8,
+    61,
+    106,
+    12
+   ],
+   "style": "0x50030003"
+  },
+  {
+   "id": 65535,
+   "class": "static",
+   "text": "This widget is larger than the Macintosh",
+   "rect": [
+    8,
+    10,
+    164,
+    11
+   ],
+   "style": "0x50020000"
+  },
+  {
+   "id": 65535,
+   "class": "static",
+   "text": "version of Widget Workshop can open.",
+   "rect": [
+    8,
+    21,
+    185,
+    11
+   ],
+   "style": "0x50020000"
+  },
+  {
+   "id": 65535,
+   "class": "static",
+   "text": "Move its parts closer together so that",
+   "rect": [
+    8,
+    32,
+    185,
+    11
+   ],
+   "style": "0x50020000"
+  },
+  {
+   "id": 65535,
+   "class": "static",
+   "text": "Mac users can open it too?",
+   "rect": [
+    8,
+    43,
+    137,
+    11
+   ],
+   "style": "0x50020000"
+  },
+  {
+   "id": 65535,
+   "class": "static",
+   "text": " and don't ask again",
+   "rect": [
+    17,
+    75,
+    118,
+    8
+   ],
+   "style": "0x50020000"
+  }
+ ]
+}

@@ -1,0 +1,2 @@
+Construction Tip:
+Once pushed, the plunger stays down until you stop the widget, so it's a good button for things that should happen only once per run, like dropping a Gravity Chamber or firing the Cannon.

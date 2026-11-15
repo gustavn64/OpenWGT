@@ -1,0 +1,2 @@
+Construction Tip:
+Leave the Heart on On During Heart Beat and wire it to a Light Bulb: a gerbil's heart makes it flicker, a tortoise's barely blinks. Switch the output to Pulse Rate or Heart Weight to use the numbers in your math.

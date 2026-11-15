@@ -1,0 +1,2 @@
+Construction Tip:
+An AND Logic Gate makes a two-key safety lock: wire two Keypresses to it, and it only says YES while both keys are held. For more than two conditions, feed one gate's output into another AND gate.

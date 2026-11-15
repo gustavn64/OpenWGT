@@ -1,0 +1,67 @@
+# Binary Adder: two switches are two one-bit numbers; an XOR and an AND
+# gate add them, and two lamps show the answer in binary.
+background 0
+
+part title TxLb 20 100
+label title 0 "Binary Adder"
+radio title 0 1
+
+# The inputs: switch A and switch B, each split three ways.
+part a swit 40 140
+part la TxLb 22 150
+label la 0 "A"
+radio la 0 1
+part sa Spl3 110 132
+wire a 0 sa 0
+
+part b swit 40 270
+part lb TxLb 22 280
+label lb 0 "B"
+radio lb 0 1
+part sb Spl3 110 262
+wire b 0 sb 0
+
+# The gates: XOR gives the ones, AND gives the twos (the carry).
+part xor XorG 200 125
+part and AndG 200 205
+wire sa 1 xor 0
+wire sb 1 xor 1
+wire sa 2 and 0
+wire sb 2 and 1
+
+# The lamps, twos on the left as in a written number.
+part l2 bulb 330 170
+part l1 bulb 400 110
+wire and 2 l2 0
+wire xor 2 l1 0
+part n2 TxLb 340 235
+label n2 0 "2"
+part n1 TxLb 410 175
+label n1 0 "1"
+
+# The check in ordinary numbers.
+part add Addr 200 290
+wire sb 3 add 0
+wire sa 3 add 1
+part sum disp 340 305
+wire add 2 sum 0
+part eq TxLb 446 316
+label eq 0 "= A + B"
+
+# What to do.
+part t1 TxLb 470 110
+label t1 0 "Press GO, then click"
+part t2 TxLb 470 128
+label t2 0 "the switches."
+part t3 TxLb 470 160
+label t3 0 "Each switch is a bit:"
+part t4 TxLb 470 178
+label t4 0 "OFF is 0 and ON is 1."
+part t5 TxLb 470 210
+label t5 0 "The lamps show A + B"
+part t6 TxLb 470 228
+label t6 0 "in binary. Lamp 2 is"
+part t7 TxLb 470 246
+label t7 0 "worth two, lamp 1 one."
+part t8 TxLb 470 278
+label t8 0 "So 1 + 1 = 10: two!"

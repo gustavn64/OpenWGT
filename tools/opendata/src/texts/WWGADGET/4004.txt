@@ -1,0 +1,2 @@
+Construction Tip:
+Because you can click its arrows while the widget runs, the Three-Digit Number makes a handy dial: wire it to a Speaker and click your way up and down the scale. Tick Lock Number when the value should stay put.

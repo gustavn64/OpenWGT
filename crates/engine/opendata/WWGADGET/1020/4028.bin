@@ -1,0 +1,2 @@
+Construction Tip:
+Tell a story one line at a time: wire a Keypress to a Counter and the Counter to a Message List, and each tap shows the next of the four messages.

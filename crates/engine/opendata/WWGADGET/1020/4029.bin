@@ -1,0 +1,2 @@
+Construction Tip:
+It only measures while a mouse button is held down, so hold a button and trace a path on the screen to measure it in inches. Add a Comparer and a Win / Lose Checker to end the game once you've scribbled 100 inches.

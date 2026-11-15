@@ -1,0 +1,67 @@
+{
+ "style": "0x90c800c0",
+ "ex_style": "0x00000000",
+ "rect": [
+  57,
+  16,
+  162,
+  203
+ ],
+ "menu": null,
+ "class": null,
+ "title": "Pick a Puzzle",
+ "font": [
+  8,
+  "MS Sans Serif"
+ ],
+ "items": [
+  {
+   "id": 1,
+   "class": "button",
+   "text": "Ok",
+   "rect": [
+    111,
+    182,
+    40,
+    14
+   ],
+   "style": "0x50030001"
+  },
+  {
+   "id": 2,
+   "class": "button",
+   "text": "Cancel",
+   "rect": [
+    111,
+    161,
+    40,
+    14
+   ],
+   "style": "0x50010000"
+  },
+  {
+   "id": 105,
+   "class": "button",
+   "text": "Clear Solved Puzzles",
+   "rect": [
+    9,
+    182,
+    93,
+    14
+   ],
+   "style": "0x50010000"
+  },
+  {
+   "id": 107,
+   "class": "listbox",
+   "text": null,
+   "rect": [
+    7,
+    7,
+    149,
+    148
+   ],
+   "style": "0x50a30001"
+  }
+ ]
+}

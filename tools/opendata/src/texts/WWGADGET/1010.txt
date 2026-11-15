@@ -1,0 +1,1 @@
+Bring the keyboard into your widget with the Keypress. Each Keypress listens for one key that you choose, a letter or a digit. Clicking it with the mouse works too.

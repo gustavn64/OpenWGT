@@ -1,0 +1,1 @@
+Sound parts need a Speaker to be heard: connect them to a Speaker's input. Send a Speaker a number and it plays a tone of that pitch.

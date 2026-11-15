@@ -1,0 +1,590 @@
+{
+ "1000": [
+  [
+   107,
+   "29,029 ft.(Mount Everest)"
+  ],
+  [
+   107,
+   "4,190 ft.(Vesuvius volcano)"
+  ],
+  [
+   107,
+   "1,472 ft.(Empire State Building)"
+  ],
+  [
+   107,
+   "984 ft.(Eiffel Tower)"
+  ],
+  [
+   107,
+   "20 ft.(T. rex)"
+  ],
+  [
+   107,
+   "6 ft.(Tall person)"
+  ],
+  [
+   109,
+   "Sun (27.9 g)"
+  ],
+  [
+   109,
+   "Jupiter (2.87 g)"
+  ],
+  [
+   109,
+   "Earth (1g)"
+  ],
+  [
+   109,
+   "Moon (.17g)"
+  ],
+  [
+   111,
+   "Planet Earth (1.32E+25 lbs.)"
+  ],
+  [
+   111,
+   "Big elephant (13,000 lbs.)"
+  ],
+  [
+   111,
+   "Grown-up (175 lbs.)"
+  ],
+  [
+   111,
+   "Housefly (.00031 lbs.)"
+  ]
+ ],
+ "1001": [
+  [
+   107,
+   "Sun (27.9 g)"
+  ],
+  [
+   107,
+   "Jupiter (2.87 g)"
+  ],
+  [
+   107,
+   "Earth (1 g)"
+  ],
+  [
+   107,
+   "Moon (.17g)"
+  ],
+  [
+   109,
+   "29,029 ft. (Mount Everest)"
+  ],
+  [
+   109,
+   "4,190 ft. (Vesuvius volcano)"
+  ],
+  [
+   109,
+   "1,472 ft. (Empire State Building)"
+  ],
+  [
+   109,
+   "984 ft.(Eiffel Tower)"
+  ],
+  [
+   109,
+   "20 ft.(T. rex)"
+  ],
+  [
+   109,
+   "6 ft.(Tall person)"
+  ],
+  [
+   111,
+   "Feather"
+  ],
+  [
+   111,
+   "Elephant"
+  ],
+  [
+   111,
+   "Baseball"
+  ]
+ ],
+ "1002": [
+  [
+   107,
+   "Apollo 10 capsule (24,791 mph)"
+  ],
+  [
+   107,
+   "Rifle bullet (1000 mph)"
+  ],
+  [
+   107,
+   "Jet airliner (561 mph)"
+  ],
+  [
+   107,
+   "Fastball (90 mph)"
+  ],
+  [
+   107,
+   "None"
+  ],
+  [
+   109,
+   "Sun (27.9 g)"
+  ],
+  [
+   109,
+   "Jupiter (2.87 g)"
+  ],
+  [
+   109,
+   "Earth (1 g)"
+  ],
+  [
+   109,
+   "Moon (.17g)"
+  ],
+  [
+   111,
+   "29,029 ft. (Mount Everest)"
+  ],
+  [
+   111,
+   "4,190 ft. (Vesuvius volcano)"
+  ],
+  [
+   111,
+   "1,472 ft. (Empire State Building)"
+  ],
+  [
+   111,
+   "984 ft.(Eiffel Tower)"
+  ],
+  [
+   111,
+   "20 ft.(T. rex)"
+  ],
+  [
+   111,
+   "6 ft.(Tall person)"
+  ]
+ ],
+ "1003": [
+  [
+   107,
+   "Dog"
+  ],
+  [
+   107,
+   "Cat"
+  ],
+  [
+   107,
+   "Rooster"
+  ],
+  [
+   107,
+   "Cow"
+  ]
+ ],
+ "1007": [
+  [
+   108,
+   "1-10"
+  ],
+  [
+   108,
+   "1-100"
+  ]
+ ],
+ "1008": [
+  [
+   109,
+   "A (440 Hz)"
+  ],
+  [
+   109,
+   "G#(415.30 Hz)"
+  ],
+  [
+   109,
+   "G (392 Hz)"
+  ],
+  [
+   109,
+   "F#(369.99 Hz)"
+  ],
+  [
+   109,
+   "F (349.24 Hz)"
+  ],
+  [
+   109,
+   "E (329.63 Hz)"
+  ],
+  [
+   109,
+   "D#(311.13 Hz)"
+  ],
+  [
+   109,
+   "D (293.66 Hz)"
+  ],
+  [
+   109,
+   "C#(277.18 Hz)"
+  ],
+  [
+   109,
+   "C (261.63 Hz)"
+  ],
+  [
+   109,
+   "B (246.94 Hz)"
+  ],
+  [
+   109,
+   "A#(233.08 Hz)"
+  ],
+  [
+   109,
+   "A (220 Hz)"
+  ]
+ ],
+ "1009": [],
+ "1010": [],
+ "1011": [
+  [
+   107,
+   "1   /  60 sec."
+  ],
+  [
+   107,
+   "2   /  30 sec."
+  ],
+  [
+   107,
+   "5   /  12 sec."
+  ],
+  [
+   107,
+   "10  /   6 sec."
+  ],
+  [
+   107,
+   "30  /   2 sec."
+  ],
+  [
+   107,
+   "60  /   1 sec."
+  ],
+  [
+   107,
+   "120 / 0.5 sec."
+  ]
+ ],
+ "1015": [
+  [
+   108,
+   "0-10"
+  ],
+  [
+   108,
+   "0-100"
+  ]
+ ],
+ "1017": [
+  [
+   107,
+   "Human Adult"
+  ],
+  [
+   107,
+   "Human Infant"
+  ],
+  [
+   107,
+   "Rabbit"
+  ],
+  [
+   107,
+   "Tortoise"
+  ],
+  [
+   107,
+   "Elephant"
+  ],
+  [
+   107,
+   "Cat"
+  ],
+  [
+   107,
+   "Dog"
+  ],
+  [
+   107,
+   "Gerbil"
+  ]
+ ],
+ "2000": [
+  [
+   107,
+   "Mercury"
+  ],
+  [
+   107,
+   "Venus"
+  ],
+  [
+   107,
+   "Earth"
+  ],
+  [
+   107,
+   "Mars"
+  ],
+  [
+   107,
+   "Jupiter"
+  ],
+  [
+   107,
+   "Saturn"
+  ],
+  [
+   107,
+   "Uranus"
+  ],
+  [
+   107,
+   "Neptune"
+  ],
+  [
+   107,
+   "Pluto"
+  ],
+  [
+   109,
+   "Diameter (miles)"
+  ],
+  [
+   109,
+   "Day length (earth hours)"
+  ],
+  [
+   109,
+   "Year length (earth days)"
+  ],
+  [
+   109,
+   "Distance to the sun (million mi.)"
+  ],
+  [
+   109,
+   "Mass (x 10,000,000,000,000 Gigatons)"
+  ],
+  [
+   109,
+   "Density (water = 1)"
+  ],
+  [
+   109,
+   "Gravity (Earth = 1)"
+  ],
+  [
+   109,
+   "Orbit speed (x1000 mph)"
+  ]
+ ],
+ "2005": [
+  [
+   107,
+   "Square Root"
+  ],
+  [
+   107,
+   "Square"
+  ],
+  [
+   107,
+   "Factorial"
+  ],
+  [
+   107,
+   "Sin"
+  ],
+  [
+   107,
+   "Cos"
+  ],
+  [
+   107,
+   "Tan"
+  ],
+  [
+   107,
+   "Integer"
+  ]
+ ],
+ "2020": [
+  [
+   107,
+   "°Celsius to °Fahrenheit"
+  ],
+  [
+   107,
+   "°Fahrenheit to °Celsius"
+  ],
+  [
+   107,
+   "Meters to Feet"
+  ],
+  [
+   107,
+   "Feet to Meters"
+  ],
+  [
+   107,
+   "Kilograms to Pounds"
+  ],
+  [
+   107,
+   "Pounds to Kilograms"
+  ]
+ ],
+ "2035": [
+  [
+   107,
+   "Phases of the Moon"
+  ],
+  [
+   107,
+   "ESP Cards"
+  ],
+  [
+   107,
+   "Astrological Signs"
+  ],
+  [
+   107,
+   "Fortune Teller"
+  ],
+  [
+   107,
+   "Numbers"
+  ],
+  [
+   107,
+   "Rock Star"
+  ]
+ ],
+ "2038": [
+  [
+   109,
+   "Up a Third"
+  ],
+  [
+   109,
+   "Up a Fifth"
+  ],
+  [
+   109,
+   "Up an Octave"
+  ],
+  [
+   109,
+   "Down a Third"
+  ],
+  [
+   109,
+   "Down a Fifth"
+  ],
+  [
+   109,
+   "Down an Octave"
+  ]
+ ],
+ "2040": [
+  [
+   107,
+   "Dog"
+  ],
+  [
+   107,
+   "Cat"
+  ],
+  [
+   107,
+   "Rooster"
+  ],
+  [
+   107,
+   "Cow"
+  ]
+ ],
+ "2041": [
+  [
+   107,
+   "Buzzer"
+  ],
+  [
+   107,
+   "Alarm"
+  ],
+  [
+   107,
+   "Chime"
+  ],
+  [
+   107,
+   "Clap"
+  ],
+  [
+   107,
+   "Breath"
+  ],
+  [
+   107,
+   "Laugh"
+  ],
+  [
+   107,
+   "Cuckoo"
+  ],
+  [
+   107,
+   "Weird"
+  ],
+  [
+   107,
+   "Spooky"
+  ],
+  [
+   107,
+   "Chord\u0000"
+  ]
+ ],
+ "2044": [
+  [
+   113,
+   "10 seconds"
+  ],
+  [
+   113,
+   "1 minute"
+  ],
+  [
+   113,
+   "10 minutes"
+  ],
+  [
+   113,
+   "1 hour"
+  ]
+ ]
+}

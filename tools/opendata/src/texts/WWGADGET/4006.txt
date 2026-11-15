@@ -1,0 +1,2 @@
+Construction Tip:
+Keep the coin flipping with a Light Switch and feed it into a Totaler set to Average: the more flips, the closer the average gets to 0.5 - half heads, half tails.

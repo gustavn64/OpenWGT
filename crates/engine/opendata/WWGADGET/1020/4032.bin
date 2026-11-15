@@ -1,0 +1,1 @@
+The Mouse Button is on while any mouse button is held down, wherever you click - even on other parts. The click on GO doesn't count: the part waits until you've let go of the button before it starts listening.

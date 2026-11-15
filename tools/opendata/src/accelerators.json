@@ -1,0 +1,79 @@
+{
+ "2": [
+  {
+   "flags": 9,
+   "key": 78,
+   "command": 57600
+  },
+  {
+   "flags": 9,
+   "key": 79,
+   "command": 57601
+  },
+  {
+   "flags": 9,
+   "key": 83,
+   "command": 57603
+  },
+  {
+   "flags": 9,
+   "key": 90,
+   "command": 57643
+  },
+  {
+   "flags": 9,
+   "key": 88,
+   "command": 57635
+  },
+  {
+   "flags": 9,
+   "key": 67,
+   "command": 57634
+  },
+  {
+   "flags": 9,
+   "key": 86,
+   "command": 57637
+  },
+  {
+   "flags": 9,
+   "key": 80,
+   "command": 57607
+  },
+  {
+   "flags": 1,
+   "key": 112,
+   "command": 32784
+  },
+  {
+   "flags": 17,
+   "key": 8,
+   "command": 57643
+  },
+  {
+   "flags": 5,
+   "key": 46,
+   "command": 57635
+  },
+  {
+   "flags": 9,
+   "key": 45,
+   "command": 57634
+  },
+  {
+   "flags": 5,
+   "key": 45,
+   "command": 57637
+  },
+  {
+   "flags": 1,
+   "key": 117,
+   "command": 57680
+  },
+  {
+   "flags": 5,
+   "key": 117,
+   "command": 57681
+  }
+ ]
+}

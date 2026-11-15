@@ -1,0 +1,1 @@
+Construction Tip:Sin, Cos and Tan work in degrees, so Sin of 90 is 1. Integer rounds down to a whole number, which is handy for turning a Divider's answer into whole groups.

@@ -1,0 +1,1 @@
+The Assorted Sounds part can play any one of ten recorded sounds, from a buzzer to a cuckoo.

@@ -1,0 +1,1 @@
+Send the Light Bulb an ON, a YES or any number other than 0, and it lights up. It is simply on or off; it can't be dimmed.

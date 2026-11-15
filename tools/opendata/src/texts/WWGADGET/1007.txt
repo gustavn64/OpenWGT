@@ -1,0 +1,1 @@
+Need a number nobody can guess? The Random Number Generator picks one for you. It can make a single number or keep making new ones, and you decide the range they come from.

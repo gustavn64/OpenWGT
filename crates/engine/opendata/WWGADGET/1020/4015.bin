@@ -1,0 +1,2 @@
+Construction Tip:
+Use it to warn when something drops too low, like a countdown running out. If reaching the limit itself should count, pick Less than or Equal to.

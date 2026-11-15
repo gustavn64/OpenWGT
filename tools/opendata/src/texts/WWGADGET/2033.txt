@@ -1,0 +1,1 @@
+The Counter adds one each time its input changes and sends out the count.

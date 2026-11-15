@@ -1,0 +1,103 @@
+{
+ "style": "0x80c000c4",
+ "ex_style": "0x00000000",
+ "rect": [
+  6,
+  18,
+  133,
+  95
+ ],
+ "menu": null,
+ "class": null,
+ "title": "",
+ "font": [
+  8,
+  "MS Sans Serif"
+ ],
+ "items": [
+  {
+   "id": 65535,
+   "class": "static",
+   "text": "Printing",
+   "rect": [
+    0,
+    9,
+    133,
+    8
+   ],
+   "style": "0x50020001"
+  },
+  {
+   "id": 201,
+   "class": "static",
+   "text": null,
+   "rect": [
+    0,
+    19,
+    133,
+    8
+   ],
+   "style": "0x50020001"
+  },
+  {
+   "id": 65535,
+   "class": "static",
+   "text": "on the",
+   "rect": [
+    0,
+    29,
+    133,
+    8
+   ],
+   "style": "0x50020001"
+  },
+  {
+   "id": 202,
+   "class": "static",
+   "text": null,
+   "rect": [
+    0,
+    39,
+    133,
+    8
+   ],
+   "style": "0x50020001"
+  },
+  {
+   "id": 203,
+   "class": "static",
+   "text": null,
+   "rect": [
+    0,
+    49,
+    133,
+    8
+   ],
+   "style": "0x50020001"
+  },
+  {
+   "id": 204,
+   "class": "static",
+   "text": null,
+   "rect": [
+    0,
+    59,
+    133,
+    8
+   ],
+   "style": "0x50020001"
+  },
+  {
+   "id": 2,
+   "class": "button",
+   "text": "Cancel",
+   "rect": [
+    46,
+    74,
+    40,
+    14
+   ],
+   "style": "0x50010000"
+  }
+ ]
+}

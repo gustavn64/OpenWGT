@@ -1,0 +1,2 @@
+Construction Tip:
+Record your own voice saying "Well done!" (or import a short 8-bit .WAV file) in the settings before you press GO, then wire the Recorder after the part that checks the answer, and on to a Speaker.

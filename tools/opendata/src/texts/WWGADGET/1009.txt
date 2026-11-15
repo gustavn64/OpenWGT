@@ -1,0 +1,1 @@
+The Digital Clock reads the time from your computer's own clock and can show it as 12-hour or 24-hour time.

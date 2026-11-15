@@ -1,0 +1,110 @@
+# Puzzle 1: take a switch from the tray, wire it to the lamp's splitter,
+# press GO and switch it on. The splitter also tells the checker.
+title "First Light"
+background 0
+
+part title TxLb 20 98
+label title 0 "First Light"
+radio title 0 1
+part t1 TxLb 16 135
+label t1 0 "This lamp has no switch."
+part t2 TxLb 16 160
+label t2 0 "Drag a Light Switch out of"
+part t3 TxLb 16 177
+label t3 0 "the tray onto the worksheet."
+part t4 TxLb 16 202
+label t4 0 "Wire it to the splitter: drag"
+part t5 TxLb 16 219
+label t5 0 "from the switch's knot to the"
+part t6 TxLb 16 236
+label t6 0 "splitter's left knot."
+part t7 TxLb 16 261
+label t7 0 "Then press GO and click the"
+part t8 TxLb 16 278
+label t8 0 "switch to light the lamp!"
+
+part s Spl2 330 250
+part lamp bulb 400 148
+part win Stop 400 256
+wire s 1 lamp 0
+wire s 2 win 0
+lock title
+lock t1
+lock t2
+lock t3
+lock t4
+lock t5
+lock t6
+lock t7
+lock t8
+lock s
+lock lamp
+lock win
+lock wire 0
+lock wire 1
+
+# The tray: swit 1; every other part 0.
+limit swit 1
+limit Pend 0
+limit Drop 0
+limit Cano 0
+limit Wtch 0
+limit rand 0
+limit Fork 0
+limit DClk 0
+limit Key_ 0
+limit Metr 0
+limit di10 0
+limit Sldr 0
+limit bulb 0
+limit hart 0
+limit rgbd 0
+limit Plnt 0
+limit Ttlr 0
+limit disp 0
+limit ArVo 0
+limit cnst 0
+limit 1ncr 0
+limit Coin 0
+limit NmKP 0
+limit AndG 0
+limit OrGa 0
+limit NotG 0
+limit XorG 0
+limit Addr 0
+limit Subr 0
+limit Mulr 0
+limit Divr 0
+limit Conv 0
+limit Comp 0
+limit Tape 0
+limit TxBx 0
+limit TxLn 0
+limit MsMv 0
+limit DnPl 0
+limit MsCl 0
+limit Cntr 0
+limit GrPr 0
+limit SdSw 0
+limit SdTr 0
+limit AnSd 0
+limit MsSd 0
+limit Spkr 0
+limit Stop 0
+limit StCh 0
+limit TxLb 0
+limit MiCo 0
+limit Spl2 0
+limit Spl3 0
+limit Spl4 0
+limit Mplx 0
+limit Stk1 0
+limit Stk2 0
+limit Stk3 0
+limit Stk4 0
+limit Stk5 0
+limit Stk6 0
+limit Stk7 0
+limit Stk8 0
+limit Stk9 0
+limit St10 0

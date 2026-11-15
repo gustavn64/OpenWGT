@@ -1,0 +1,1 @@
+The XOR (Exclusive OR) Logic Gate has two inputs and one output. The output says YES (1) when exactly one input is YES. When both are YES, or both are NO, it says NO (0). Any number other than 0 counts as YES.

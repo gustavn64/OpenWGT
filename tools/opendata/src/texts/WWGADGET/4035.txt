@@ -1,0 +1,2 @@
+Construction Tip:
+Wire a Metronome into a Counter and the Counter into a Graphic Projector set to Phases of the Moon with Wrap Around Set: the moon waxes and wanes over and over.

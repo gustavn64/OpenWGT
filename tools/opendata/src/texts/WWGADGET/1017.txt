@@ -1,0 +1,1 @@
+This Heart beats like the heart of the animal you choose, from a gerbil to an elephant. Every animal's heart has its own size and speed. The Heart can send out its pulse rate, its weight, or an ON signal with each beat.

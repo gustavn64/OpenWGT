@@ -1,0 +1,2 @@
+Construction Tip:
+The Cannon works in feet: put a Converter set to Feet to Meters after its Distance or Height output to get the answer in meters. Pounds to Kilograms does the same for weights.

@@ -1,0 +1,2 @@
+Construction Tip:
+Choose Custom, set the range from 200 to 1000 and wire the Slider straight into a Speaker: drag the knob and the tone slides up and down like a siren.

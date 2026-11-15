@@ -1,0 +1,1 @@
+Use the Stopwatch to time how long things take.

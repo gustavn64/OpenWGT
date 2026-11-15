@@ -1,0 +1,2 @@
+Construction Tip:
+Reach for this display when answers have decimals or grow big, like a factorial from Math Functions or the Cannon's distance in feet. The Three-Digit Display only shows whole numbers.

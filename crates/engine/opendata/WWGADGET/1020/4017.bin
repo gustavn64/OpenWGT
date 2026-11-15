@@ -1,0 +1,1 @@
+Construction Tip:Order matters: the Subtractor takes the top number away from the side number. Put 10 on the side and 3 on top to get 7; swap the wires and you get -3.

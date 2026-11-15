@@ -1,0 +1,2 @@
+Construction Tip:
+Give each player a key: wire a Keypress set to A and one set to L to two Counters and see who can tap faster. Clicking the key with the mouse works too.

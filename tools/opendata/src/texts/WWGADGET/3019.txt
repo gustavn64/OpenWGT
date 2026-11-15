@@ -1,0 +1,2 @@
+Construction Tip:
+Whatever goes in comes out of every output, unchanged - send in 7 and each output gives 7. Use it whenever one signal has to reach more than one part.

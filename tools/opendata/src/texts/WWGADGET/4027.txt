@@ -1,0 +1,2 @@
+Construction Tip:
+Put the instructions for your puzzle on a Billboard and wire a Light Switch to it, so players can show and hide the help whenever they like.

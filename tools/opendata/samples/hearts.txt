@@ -1,0 +1,84 @@
+# Heartbeat Band: four animal hearts beat at their own speeds, and
+# each beat plays a sound. Switches turn the players on and off; an AND
+# gate lets a beat through only while its switch is on.
+background 0
+
+part title TxLb 20 98
+label title 0 "Heartbeat Band"
+radio title 0 1
+part i1 TxLb 236 100
+label i1 0 "Press GO, then flip switches"
+part i2 TxLb 236 117
+label i2 0 "to start and stop the players!"
+
+# Human heart: clap 70 beats a minute
+part humh hart 20 136
+number humh 0 0
+part hums swit 95 156
+radio hums 0 1
+part humg AndG 150 140
+wire humh 0 humg 0
+wire hums 0 humg 1
+part humn MsSd 245 135
+number humn 0 3
+wire humg 2 humn 0
+part hump Spkr 330 148
+wire humn 1 hump 0
+part hum1 TxLb 425 146
+label hum1 0 "Human heart: clap"
+part hum2 TxLb 425 163
+label hum2 0 "70 beats a minute"
+
+# Dog heart: woof 100 beats a minute
+part dogh hart 20 203
+number dogh 0 6
+part dogs swit 95 223
+radio dogs 0 0
+part dogg AndG 150 207
+wire dogh 0 dogg 0
+wire dogs 0 dogg 1
+part dogn AnSd 245 202
+number dogn 0 0
+wire dogg 2 dogn 0
+part dogp Spkr 330 215
+wire dogn 1 dogp 0
+part dog1 TxLb 425 213
+label dog1 0 "Dog heart: woof"
+part dog2 TxLb 425 230
+label dog2 0 "100 beats a minute"
+
+# Elephant heart: moo 49 beats a minute
+part eleh hart 20 270
+number eleh 0 4
+part eles swit 95 290
+radio eles 0 0
+part eleg AndG 150 274
+wire eleh 0 eleg 0
+wire eles 0 eleg 1
+part elen AnSd 245 269
+number elen 0 3
+wire eleg 2 elen 0
+part elep Spkr 330 282
+wire elen 1 elep 0
+part ele1 TxLb 425 280
+label ele1 0 "Elephant heart: moo"
+part ele2 TxLb 425 297
+label ele2 0 "49 beats a minute"
+
+# Tortoise heart: cock-a-doodle-doo!
+part torh hart 20 337
+number torh 0 3
+part tors swit 95 357
+radio tors 0 0
+part torg AndG 150 341
+wire torh 0 torg 0
+wire tors 0 torg 1
+part torn AnSd 245 336
+number torn 0 2
+wire torg 2 torn 0
+part torp Spkr 330 349
+wire torn 1 torp 0
+part tor1 TxLb 425 347
+label tor1 0 "Tortoise heart:"
+part tor2 TxLb 425 364
+label tor2 0 "cock-a-doodle-doo!"

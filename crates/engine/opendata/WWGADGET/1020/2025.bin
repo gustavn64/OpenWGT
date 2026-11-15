@@ -1,0 +1,1 @@
+Think of the Switcher as a railroad switch for data: two tracks come in, one goes out. Normally the upper track gets through. Send a 1 or YES into the input on top, and the lower track gets through instead.

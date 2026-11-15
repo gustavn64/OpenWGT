@@ -1,0 +1,670 @@
+title: OpenWGT Help
+
+= Contents
+keywords: contents, help, topics
+
+Welcome to the OpenWGT workshop! Pick a topic below, or press **Index** to look up a word.
+
+## Getting started
+- [Welcome to OpenWGT](#welcome)
+- [Your first widget: a switch and a lamp](#first-widget)
+- [Using this help](#using-help)
+
+## Building widgets
+- [The editor at a glance](#editor)
+- [The Control Box: GO, STOP, Light and Sound](#control-box)
+- [The parts tray](#tray)
+- [The three tools: Pointer, Cut and Move](#tools)
+- [The worksheet](#worksheet)
+- [Knots and wires](#wires)
+- [Bends in wires](#joints)
+- [What travels along a wire](#values)
+- [Running a widget](#running)
+- [Changing a part's settings](#settings)
+
+## The parts
+- [All the parts](#parts)
+- [Display parts](#display-parts)
+- [Timer parts](#timer-parts)
+- [Sound parts](#sound-parts)
+- [Number parts](#number-parts)
+- [Switch parts](#switch-parts)
+- [Text parts](#text-parts)
+- [Super parts](#super-parts)
+
+## Puzzles
+- [Playing puzzles](#puzzles)
+- [The Win / Lose Checker](#win-lose)
+- [Making your own puzzles](#make-puzzles)
+
+## Files and sharing
+- [Saving and opening widgets](#files)
+- [The sample widgets](#samples)
+- [Widget links](#links)
+- [Stand-alone widgets](#standalone)
+- [Recording your own sounds](#recording)
+
+## Menus, keys and settings
+- [The menus](#menus)
+- [Keyboard shortcuts](#keys)
+- [The Settings window](#openwgt-settings)
+- [Playing with or without the CD](#cd)
+- [Tips and troubleshooting](#tips)
+- [About OpenWGT](#about)
+
+= Welcome to OpenWGT {#welcome}
+keywords: welcome, introduction, widget, what is
+
+OpenWGT is a workshop for inventions. You take parts from a tray - switches, lamps, clocks, number boxes, speakers, a cannon and much more - put them on a big empty worksheet and connect them with wires. Then you press **GO** and your invention, called a *widget*, comes to life.
+
+A widget can be as simple as a switch that lights a lamp, or as clever as a quiz, a game of reflexes or a science experiment that drops an elephant on the Moon. There's no wrong way to build one: try things, press GO, and see what happens.
+
+When you want a challenge, load one of the [puzzles](#puzzles): each one is a half-finished widget that you have to complete.
+
+New here? Start with [your first widget](#first-widget).
+
+= Your First Widget {#first-widget}
+keywords: first widget, tutorial, getting started, lamp, switch, beginner
+
+Let's build a lamp you can switch on and off. It takes about a minute.
+
+## 1. Get a switch
+In the [parts tray](#tray) at the top, click the folder tab with the little switch on it (the **Switch** parts). Press the mouse button on the **Light Switch**, keep holding it, and drag the switch down onto the white worksheet. Let go wherever you like.
+
+## 2. Get a lamp
+Click the tab with the monitor on it (the **Display** parts). Drag the **Light Bulb** onto the worksheet, a little to the right of the switch.
+
+## 3. Wire them together
+Look closely at the switch: it has a small dot on its edge. That dot is a *knot*, where wires plug in. Point at it (the pointer turns into a hand holding a plug), press the mouse button and drag. A wire follows the pointer. Move it over the Light Bulb: when it turns green it has found the bulb's knot. Let go, and the wire stays. See [Knots and wires](#wires) for more.
+
+## 4. Press GO
+Click the green **GO** button on the left (or press Enter). The tray disappears and your widget is running. Click the switch: the bulb lights up! Click it again and the bulb goes out.
+
+## 5. Press STOP
+Click **STOP** (or press Esc) to go back to building. Everything is put back the way it was at the start.
+
+Now try changing things: put a [NOT gate](#number-parts) between the switch and the bulb, or wire the switch to a [sound part](#sound-parts) and a Speaker. When you've made something you like, [save it](#files).
+
+= The Editor at a Glance {#editor}
+keywords: editor, screen, window, layout, toolbar
+
+The OpenWGT window has four parts:
+
+- **The menu bar** at the very top, with File, Edit, Options and Help. See [The menus](#menus).
+- **The Control Box**, the small panel at the top left, with GO, STOP and the Light and Sound buttons. See [The Control Box](#control-box).
+- **The parts tray**, the wide panel next to it, with the tools, the folder tabs and the parts themselves. See [The parts tray](#tray) and [The three tools](#tools).
+- **The worksheet**, the big area that fills the rest of the window, where you build. See [The worksheet](#worksheet).
+
+The Control Box and the parts tray float over the worksheet. To move one out of the way, drag it by the dark bar along its top edge.
+
+When you point at a button or a part in the tray, its name appears in the strip at the top of the tray.
+
+= The Control Box {#control-box}
+keywords: control box, GO, STOP, light, sound, mute, dark
+
+The Control Box is the small panel in the top left corner.
+
+- **GO** starts your widget. The parts tray disappears while it runs. Pressing Enter does the same. See [Running a widget](#running).
+- **STOP** stops it and puts every part back as it was before you pressed GO. Pressing Esc does the same.
+- **Light** (the bulb button) turns the lights in your workshop off and on. With the lights off the worksheet goes dark and the parts show their night-time look - just right for a light show.
+- **Sound** (the speaker button) turns all sound off and on: the widget's own sounds as well as the clicks and whooshes of the editor.
+
+You can drag the Control Box anywhere by the dark bar along its top.
+
+= The Parts Tray {#tray}
+keywords: tray, parts tray, folder, tab, page, arrows, picking up parts
+
+The parts tray holds every part you can build with, sorted into seven folders. Click a tab along the top of the tray to open a folder:
+
+- the monitor: [Display parts](#display-parts)
+- the stopwatch: [Timer parts](#timer-parts)
+- the ear: [Sound parts](#sound-parts)
+- the 1-2-3: [Number parts](#number-parts)
+- the switch: [Switch parts](#switch-parts)
+- the letter A: [Text parts](#text-parts)
+- the planet: [Super parts](#super-parts)
+
+Most folders have more than one page. The arrows at the right end of the tray flip to the previous or next page, and the number between them tells you which page you're on.
+
+## Taking a part
+Press the mouse button on a part in the tray and, still holding it, drag the part onto the worksheet. Let go where you want it. If you change your mind, drop it back on the tray.
+
+## Numbers and grey parts
+In an ordinary widget you can take as many of each part as you like. In a [puzzle](#puzzles) the tray may hand out only a few: a small number on a part tells you how many are left, and a part that's greyed out has run out. Deleting a part from the worksheet puts it back in the tray.
+
+## The whole folder at once
+With **Enhancements** switched on in [Options > Settings](#openwgt-settings), the tray shows every page of a folder at once, one under the other, so there are no page arrows.
+
+= The Three Tools {#tools}
+keywords: tools, pointer, glove, cut, scissors, move, hand, pan
+
+The three buttons at the left end of the [parts tray](#tray) choose what the mouse does on the worksheet.
+
+## Pointer (the glove)
+The big button. This is the tool you'll use most. With it you can:
+
+- drag parts around the worksheet,
+- drag from a knot to make a wire (see [Knots and wires](#wires)),
+- click a wire to put a bend in it (see [Bends in wires](#joints)),
+- double-click a part to open its [settings](#settings).
+
+## Cut (the scissors)
+Click a part, a wire or a bend with the scissors to remove it. A part goes back to the tray, and any wires plugged into it go too. Hold down **Shift** to use the scissors for a moment; let go and you're back to your tool.
+
+## Move (the open hand)
+Drag anywhere with the hand to slide the *whole* widget across the worksheet - every part, wire and bend moves together. It can't push your widget right off the screen. Hold down **Ctrl** to use the hand for a moment; this works while the widget runs, too.
+
+Picking up a part from the tray, pressing GO and opening a file all switch back to the Pointer.
+
+= The Worksheet {#worksheet}
+keywords: worksheet, work area, background, select, highlight, delete, undo
+
+The worksheet is the big area where you build. There's no grid: parts go exactly where you drop them, and they may overlap. A part you click comes to the front.
+
+## What's under the pointer
+You don't need to click to select something. Whatever is under the pointer - a part, a wire or a bend - is highlighted, and that's what the **Delete** key and the scissors act on. A part shows a green frame, a wire gets thicker.
+
+## Undo
+**Edit > Undo** (Ctrl+Z) takes back the last thing you did: moving, wiring, deleting, changing a setting and so on. There's one step of undo; choosing Undo a second time brings the change back.
+
+## Tidying up
+- **Edit > Clear Work Area** removes every part and wire.
+- **Edit > Remove All Connections** removes every wire but keeps the parts.
+- **Edit > Remove All Joints** straightens every wire.
+- **Edit > Fit Work Area...** moves the parts closer together so your widget fits a smaller screen. You pick the screen size.
+
+In a [puzzle](#puzzles), the locked parts and wires stay put through all of these.
+
+## Backgrounds
+The **Options** menu has four backgrounds for your worksheet: Plain, Metal Waves, Noise and Steel. The patterned ones come with a frame of pipes around the edge. The background is saved with your widget.
+
+= Knots and Wires {#wires}
+keywords: knot, wire, connect, input, output, plug, connection, splitter
+
+Parts talk to each other through wires. Every wire runs between two *knots*, the small dots on the edges of the parts.
+
+## Inputs and outputs
+Each knot is either an **output**, where a part sends something out, or an **input**, where a part takes something in. A wire always runs from an output to an input. A switch, for example, has one output; a light bulb has one input. In a part's [settings window](#settings) you can see its picture with its knots marked.
+
+## Making a wire
+With the Pointer tool, point at a free knot: the pointer becomes a hand holding a plug. Press the mouse button and drag. The new wire is red while its loose end hangs in the air. Move the pointer over another part: the wire jumps to that part's nearest free knot of the right kind and turns green. Let go to connect it. Letting go over empty space cancels the wire.
+
+## One wire per knot
+Each knot holds just one wire. To send one output to two or more places, use a [Splitter](#switch-parts): it copies what comes in to each of its outputs.
+
+## Moving a wire
+Press on a knot that already has a wire, and you pick up that end of the wire. Drop it on another free knot to plug it in there. If you drop it anywhere else, it springs back.
+
+## Removing a wire
+Click it with the scissors, or point at it and press **Delete**. **Edit > Remove All Connections** removes them all. Deleting a part removes the wires plugged into it.
+
+You can also put [bends](#joints) in a wire to keep your widget tidy. What a wire carries is explained in [What travels along a wire](#values).
+
+= Bends in Wires {#joints}
+keywords: bend, joint, corner, straighten
+
+A wire doesn't have to be a straight line. Click anywhere on a wire with the Pointer tool and a *bend* (a little dark square) appears there; keep the button held down and drag it where you want the corner. Every click on a wire adds another bend.
+
+- To move a bend, drag it.
+- To remove one, click it with the scissors, or point at it and press **Delete**.
+- To straighten every wire at once, choose **Edit > Remove All Joints**.
+
+Bends stay where you put them when you move a part, so after moving parts around you may want to tidy the bends too. The Move tool and Fit Work Area move them along with everything else.
+
+= What Travels Along a Wire {#values}
+keywords: values, signal, on, off, yes, no, true, false, number, sound
+
+Three kinds of things travel along wires.
+
+## On and off
+Switches, keys, gates and many other parts send out a simple **ON or OFF**. You'll also see it called YES and NO, or TRUE and FALSE: it's the same thing. When a number is needed, ON counts as 1 and OFF as 0.
+
+## Numbers
+Number parts, sliders, clocks and science parts send out **numbers**, including negative numbers and decimals. When a part wants ON or OFF, any number other than 0 counts as ON, and 0 counts as OFF. So you can wire a number straight into a Light Bulb: it lights for anything but 0.
+
+## Sounds
+Sound parts such as the Animal Sounds or the Recorder send out a **sound**. A sound is only heard when it reaches a [Speaker](#sound-parts). On the way it can pass through a Splitter, a Switcher or a Sound Transformer.
+
+## When things happen
+Parts keep checking their inputs all the time while the widget runs, so a change ripples through the widget almost at once. A few parts, like the Adder, take a moment to work out their answer.
+
+= Running a Widget {#running}
+keywords: running, GO, STOP, run, start, stop, play
+
+Press **GO** (or Enter) to start your widget, and **STOP** (or Esc) to stop it.
+
+## While it runs
+- The parts tray is hidden, and you can't move, wire or delete parts.
+- You can *use* the parts: click switches, keys and buttons, drag the Slider's knob, type on the Numeric Keypad, click the Three-Digit Number's arrows, and so on.
+- Clocks tick, metronomes beat, sounds play, and the science parts run their experiments.
+- Hold **Ctrl** and drag to slide the whole widget around.
+- Most menu items are greyed out until you stop.
+
+## When it stops
+Pressing STOP puts every part back the way it was before GO: counters go back to 0, switches to their starting position, charts are wiped. Your widget is ready to run again.
+
+A [Win / Lose Checker](#win-lose) can stop a widget by itself.
+
+= Changing a Part's Settings {#settings}
+keywords: settings, dialog, double-click, options, Doc, construction tip, properties
+
+Most parts can be set up to behave in different ways: a Metronome's speed, the animal of the Animal Sounds, the words on a Billboard.
+
+## Opening the settings
+While the widget isn't running, **double-click** the part with the Pointer tool. Its settings window opens. (Double-click on the part itself, not on a wire passing over it.)
+
+The window shows:
+
+- the part's picture, with its knots, and what it sends out,
+- a speech balloon telling you what the part does,
+- the part's own choices: buttons, lists and boxes to type in.
+
+Click **OK** to keep your changes, or **Cancel** to leave the part as it was.
+
+## The Doc button
+In the corner of the balloon sits the workshop's scientist, Doc. Click him to see a *construction tip*: an idea for something to build with the part. Click him again to read the description once more.
+
+= All the Parts {#parts}
+keywords: parts, gadgets, list of parts
+
+Here are the seven folders of the [parts tray](#tray) and what's in them:
+
+- [Display parts](#display-parts): Light Bulb, Color Mixer, Strip Chart, Graphic Projector, Three-Digit Display, Ten-Digit Display.
+- [Timer parts](#timer-parts): Digital Clock, Stopwatch, Metronome.
+- [Sound parts](#sound-parts): Sound Switch, Animal Sounds, Assorted Sounds, Speaker, Tuning Fork, Recorder, Sound Transformer.
+- [Number parts](#number-parts): Numeric Key Pad, Three-Digit Number, Counter, Mini Three-Digit Number, Slider, Adder, Subtractor, Multiplier, Divider, Coin Toss, Random Number Generator, Totaler, Comparer, Math Functions, Area/Volume, Conversion, and the And, Or, Xor and Not Gates.
+- [Switch parts](#switch-parts): Light Switch, Key Press, Mouse Button, Mouse Distance Measurer, Dynamite Plunger, Switcher, and the Two, Three and Four Way Splitters.
+- [Text parts](#text-parts): Label, Message List, Billboard and ten Stickers.
+- [Super parts](#super-parts): Win / Lose Checker, Pendulum, Gravity Chamber, Cannon, Heart, Solar System.
+
+Every part explains itself, too: double-click it on the worksheet and read its [settings window](#settings).
+
+= Display Parts {#display-parts}
+keywords: display, light bulb, lamp, color mixer, colour, strip chart, graph, graphic projector, picture, three-digit display, ten-digit display
+
+The folder with the monitor on its tab. These parts show what your widget is doing.
+
+## Page 1
+- **Light Bulb** - lights up when its input is ON or any number but 0.
+- **Color Mixer** - one big coloured spot. Feed numbers from 0 to 100 into its red, green and blue inputs to mix almost any colour.
+- **Strip Chart** - draws a graph of a number over time. You choose the range of numbers and how long the chart lasts; an ON at its second input wipes it clean.
+- **Graphic Projector** - shows pictures from one of six picture sets. Send in a picture's number to show it.
+
+## Page 2
+- **Three-Digit Display** - shows whole numbers from -99 to 999. A red X means the number doesn't fit.
+- **Ten-Digit Display** - shows big numbers and decimals, up to ten characters.
+
+Tip: while you build, wire a display to any output to see what that part is sending. See also [Number parts](#number-parts) and [Text parts](#text-parts).
+
+= Timer Parts {#timer-parts}
+keywords: timer, time, clock, digital clock, stopwatch, metronome, beat
+
+The folder with the stopwatch on its tab.
+
+- **Digital Clock** - shows the time from your computer's clock, as 12-hour or 24-hour time. It can send out the seconds, the minutes or the hours.
+- **Stopwatch** - times things. It has a START input and a STOP input on its side, and a RESET input on top. It can send out seconds, minutes, or simply ON while it's running.
+- **Metronome** - sends out a short ON pulse on every beat, from 1 to 120 beats a minute. Wire it to a Counter to count seconds, or to a sound part for a drum beat.
+
+See also [Number parts](#number-parts) for the Counter, and [Sound parts](#sound-parts).
+
+= Sound Parts {#sound-parts}
+keywords: sound, speaker, noise, animal sounds, assorted sounds, tuning fork, recorder, sound transformer, sound switch, microphone, clap
+
+The folder with the ear on its tab. Remember: sounds are only heard when they reach a **Speaker**.
+
+## Page 1
+- **Sound Switch** - turns ON when it hears a loud sound through your microphone, like a clap, and stays on until the widget stops. You can set how sensitive it is.
+- **Animal Sounds** - when its input turns on, it sends out a dog, a cat, a rooster or a cow.
+- **Assorted Sounds** - the same, with ten sounds to choose from, such as a buzzer, a chime, a clap or a cuckoo.
+- **Speaker** - plays any sound that reaches it. Send it a number instead, and it plays a tone of that many hertz (440 is the A that musicians tune to).
+
+## Page 2
+- **Tuning Fork** - sends out a short, pure note each time its input turns on. You choose the note.
+- **Recorder** - plays back a sound you recorded yourself or loaded from a .WAV file. See [Recording your own sounds](#recording).
+- **Sound Transformer** - changes a sound passing through it: higher, lower, or backwards.
+
+The Speaker's sound and the editor's own noises can be muted with the Sound button on the [Control Box](#control-box). See also [What travels along a wire](#values).
+
+= Number Parts {#number-parts}
+keywords: number, math, maths, keypad, three-digit number, counter, slider, adder, subtractor, multiplier, divider, coin toss, random, totaler, comparer, math functions, area, volume, conversion, converter, logic gates, and gate, or gate, xor gate, not gate
+
+The folder with 1-2-3 on its tab. It's the biggest folder, with five pages.
+
+## Page 1: numbers in
+- **Numeric Key Pad** - type in a number while the widget runs, like on a calculator. It can hide the number, for secret codes.
+- **Three-Digit Number** - sends out a number from 0 to 999. Click the arrows above and below the digits to change it, even while the widget runs.
+- **Counter** - counts one each time its input changes, and sends out the count.
+- **Mini Three-Digit Number** - a small part that always sends the same number, from 0 to 999. You set it in its settings.
+- **Slider** - drag its knob, or click its arrows, to send out a number from a range you choose.
+
+## Page 2: arithmetic
+- **Adder** - adds its two inputs.
+- **Subtractor** - takes the top number away from the side number.
+- **Multiplier** - multiplies its two inputs.
+- **Divider** - divides the side number by the top number. Dividing by 0 breaks it.
+
+## Page 3: chance and comparing
+- **Coin Toss** - flips a coin when its input is ON: 1 for heads, 0 for tails.
+- **Random Number Generator** - picks numbers nobody can guess, from a range you choose.
+- **Totaler** - watches every number it's sent and gives their total, their average, the biggest or the smallest.
+- **Comparer** - compares the side number with the top number (equal, not equal, greater, less...) and sends out YES or NO.
+
+## Page 4: math and science
+- **Math Functions** - square root, square, factorial, sine, cosine, tangent, or rounding down to a whole number.
+- **Area/Volume** - the area of a square or circle, or the volume of a cube or sphere, from a side or a radius.
+- **Conversion** - changes Fahrenheit to Celsius, feet to meters, pounds to kilograms, and back.
+
+## Page 5: logic gates
+Gates work with YES and NO (ON and OFF). Any number but 0 counts as YES.
+
+- **And Gate** - YES only when both inputs are YES.
+- **Or Gate** - YES when at least one input is YES.
+- **Xor Gate** - YES when exactly one input is YES.
+- **Not Gate** - turns YES into NO and NO into YES.
+
+See also [Display parts](#display-parts) to show your answers, and [Switch parts](#switch-parts).
+
+= Switch Parts {#switch-parts}
+keywords: switch, light switch, key press, keypress, keyboard, mouse button, mouse distance, dynamite plunger, switcher, splitter
+
+The folder with the switch on its tab. These are the parts you control your widget with, plus the parts that steer wires.
+
+## Page 1: controls
+- **Light Switch** - click it to switch between ON and OFF. You choose whether it starts on or off.
+- **Key Press** - ON while its key on the keyboard is held down. You pick the letter or digit; clicking it with the mouse works too.
+- **Mouse Button** - ON while a mouse button is held down, anywhere in the window.
+- **Mouse Distance Measurer** - measures in inches how far the mouse travels while you hold a button down.
+- **Dynamite Plunger** - push it once and it turns ON, and stays on until the widget stops.
+
+## Page 2: steering
+- **Switcher** - two data inputs, one output. Normally the upper input gets through; send ON to the input on top and the lower one gets through instead.
+- **Two Way Splitter**, **Three Way Splitter**, **Four Way Splitter** - copy whatever comes in (ON/OFF, a number or a sound) to every output. Since each [knot holds only one wire](#wires), these are how one part feeds several others.
+
+= Text Parts {#text-parts}
+keywords: text, label, message list, billboard, sticker, words, title, decoration
+
+The folder with the letter A on its tab.
+
+## Page 1
+- **Label** - a name or note on your widget, in small or big letters. It has no knots.
+- **Message List** - holds four messages. Send in 1, 2, 3 or 4 to show that message, 0 to show none.
+- **Billboard** - shows a longer message of your own while its input is ON.
+
+## Pages 2 to 4
+- **Stickers** - ten pictures that just make your widget look good. They don't connect to anything.
+
+Puzzles use Labels and Billboards to give you their instructions. See [Playing puzzles](#puzzles).
+
+= Super Parts {#super-parts}
+keywords: super parts, science, win, lose, checker, pendulum, gravity chamber, cannon, heart, solar system, planet, experiment
+
+The folder with the planet on its tab: the science lab, and the part that ends games.
+
+## Page 1
+- **Win / Lose Checker** - waits for its input to reach a goal, then plays a winning or losing sound and stops the widget. See [The Win / Lose Checker](#win-lose).
+- **Pendulum** - starts swinging when its input turns on. Change its length and the gravity to see how the swing changes; it can send out how long one swing takes, or ON each time it passes the centre.
+- **Gravity Chamber** - when its input turns on, it drops a feather, an elephant or a baseball from a height you choose, on the planet you choose, and turns ON when it lands.
+- **Cannon** - fires a ball when its input turns on. It can send out the distance, the height, the speed, or ON when the ball lands. It works in feet and miles per hour.
+
+## Page 2
+- **Heart** - beats like the heart of an animal you choose, from a gerbil to an elephant. It sends ON with each beat, or the pulse rate or the heart's weight.
+- **Solar System** - pick a planet and it sends out a fact about it as a number: its size, the length of its day or year, its distance from the Sun and more.
+
+Tip: a [Conversion](#number-parts) part turns the Cannon's feet into meters.
+
+= Playing Puzzles {#puzzles}
+keywords: puzzle, puzzles, load puzzle, challenge, solved, locked
+
+A puzzle is a widget that's not quite finished. Your job is to finish it.
+
+## Loading a puzzle
+Choose **File > Load Puzzle...**. Pick a puzzle from the list and click **Ok** (or double-click it). Puzzles you've already solved have a **+** in front of their name. **Clear Solved Puzzles** takes all the marks away so you can start fresh.
+
+## How a puzzle works
+- **The instructions are on the worksheet**, written on Labels and Billboards. Read them first!
+- **Some parts and wires are locked.** They don't light up under the pointer, and you can't move, cut or rewire them. They're part of the puzzle.
+- **The tray may be limited.** A small number on a part in the tray says how many you may still take; greyed-out parts can't be used at all. Deleting a part gives it back.
+- **A Win / Lose Checker decides.** When your widget does what the puzzle asks, the [Win / Lose Checker](#win-lose) plays its winning sound, stops the widget and marks the puzzle as solved.
+
+## Starting over
+**File > Revert** puts the puzzle back the way it was when you loaded it.
+
+## Keeping your work
+**File > Save As...** saves your solution as an ordinary widget: the locks and tray limits are lifted, and it's no longer a puzzle. Want to make puzzles of your own? See [Making your own puzzles](#make-puzzles).
+
+= The Win / Lose Checker {#win-lose}
+keywords: win, lose, checker, stopper, game over, end, goal
+
+The Win / Lose Checker, in the [Super parts](#super-parts) folder, lets a widget end by itself. It has one input.
+
+In its settings you choose what it waits for:
+
+- **Win when it is: True or False** - it waits for its input to be ON (or OFF).
+- **Win or lose when it is:** equal to, not equal to, greater than, less than, greater than or equal to, or less than or equal to **the number** you type.
+
+and what it plays:
+
+- **Win sound** - a happy ending. In a puzzle, this marks the puzzle as solved.
+- **Lose sound** - a sad ending, for running out of time or tries.
+
+As soon as its input matches, the checker plays its animation and sound and stops the widget.
+
+You can put more than one in a widget: one with the Win sound watching for the right answer, and one with the Lose sound watching a Stopwatch, for a game against the clock.
+
+= Making Your Own Puzzles {#make-puzzles}
+keywords: make puzzle, author, lock, limit, tray count, numpad
+
+Any widget can become a puzzle for a friend. Build the parts of the widget that should be given, write the instructions on Labels or a Billboard, and add a [Win / Lose Checker](#win-lose) that tells when it's solved. Then:
+
+- **Lock parts and wires.** Point at a part or a wire and press **L**. It's locked: it can't be moved, cut or rewired any more. (Edit > Undo takes a lock back.)
+- **Limit the tray.** Point at a part in the tray, or at one of that kind on the worksheet, and press **+** or **-** on the number pad. The first + on an unlimited part sets it to 0 (none to take); each further + gives one more. Pressing - below 0 makes it unlimited again.
+- **Save it** with File > Save As... The locks and limits are saved with it, and come back when your friend opens the file.
+
+A widget opened from a file isn't counted as one of the built-in puzzles, so its Win sound doesn't add a + to the puzzle list - but the Checker still ends the game.
+
+= Saving and Opening Widgets {#files}
+keywords: save, open, new, revert, file, wgt, load, drop
+
+Widgets are saved as **.wgt** files, the same kind the original Widget Workshop makes, so widgets travel both ways.
+
+- **File > New** gives you an empty worksheet.
+- **File > Open...** opens a saved widget.
+- **File > Save** saves your widget again under its name. The first time, it asks for one.
+- **File > Save As...** saves it under a new name.
+- **File > Revert** goes back to the copy you saved last.
+
+If your widget is too spread out for a small screen, saving may offer to move its parts closer together, so that friends with the Macintosh version of Widget Workshop can open it too. You can tick the box to keep your answer.
+
+## Dropping a file
+You can also drag a .wgt file from your computer onto the OpenWGT window to open it.
+
+## In a web browser
+In the browser, Open and Save work with the browser's own storage. **File > Save to Download** gives you your widget as a file to keep, and **File > Download a Widget...** lets you pick a widget saved in the browser and hands it to you as a download. To bring a file in, drop it on the page.
+
+Before OpenWGT replaces a widget you've changed, it asks whether to save it first. See also [The sample widgets](#samples) and [Widget links](#links).
+
+= The Sample Widgets {#samples}
+keywords: samples, examples, funwidge, sample widgets, ideas
+
+OpenWGT comes with ready-made widgets to play with, take apart and learn from.
+
+Choose **File > Open...** and open the **Look in** list at the top of the window. Under **Widget Workshop CD** you'll find the folder **FUNWIDGE** with the samples. Open one, press GO and see what it does; then press STOP and look at how it's wired. Double-clicking a part shows how it's set up.
+
+You can change a sample as much as you like. To keep your changes, save it with **Save As...** in a folder of your own.
+
+Without the CD, the samples are OpenWGT's own; with the CD, they're the original's.
+
+= Widget Links {#links}
+keywords: link, share, clipboard, copy link, open widget link, URL, web
+
+A widget fits in a web link, so you can share it in a message or an e-mail.
+
+- **File > Copy Link to Widget** puts a link to your widget on the clipboard. Paste it anywhere. Anyone who opens it gets your widget in OpenWGT in their web browser.
+- **File > Open Widget Link** (Ctrl+V) opens the widget whose link is on the clipboard.
+
+Links to widgets with many parts are longer, and every Recorder adds a lot to a link, because it carries its whole recording. Some chat programs cut long messages short.
+
+A link isn't a saved file: use [File > Save](#files) as well to keep your widget. Copy Link isn't offered while a puzzle is loaded.
+
+= Stand-Alone Widgets {#standalone}
+keywords: stand-alone, standalone, exe, self-running, import
+
+The original Widget Workshop could save a widget into a program of its own, a *stand-alone widget*, that runs without the workshop.
+
+- **File > Import a Stand-Alone Widget...** opens such a program and takes the widget out of it, so you can look at it and change it.
+- **File > Save Into a Stand-Alone Widget** isn't available in OpenWGT; the item stays greyed. Share your widgets as [.wgt files](#files) or [links](#links) instead.
+
+= Recording Your Own Sounds {#recording}
+keywords: record, recorder, microphone, wav, sound file, voice
+
+The **Recorder**, in the [Sound parts](#sound-parts) folder, holds a sound of your own of up to about three and a half seconds.
+
+## Recording
+- Put a Recorder on the worksheet and double-click it.
+- Click **Record Sound** and speak (or sing, or clap) into your microphone. The bar shows how much time is left.
+- Click OK.
+
+## Loading a .WAV file
+Click **Load a .WAV File** instead and choose a sound file from your computer. Short, simple sounds work best.
+
+## Playing it
+Wire something to the Recorder's input, such as a Key Press or a Light Switch, and wire its output to a **Speaker**. While its input is ON, the Recorder plays. You can also send its sound through a Sound Transformer first to make it higher, lower or backwards.
+
+The recording is saved inside your widget. A new recording goes into the part straight away, so clicking Cancel afterwards doesn't bring the old sound back.
+
+The **Sound Switch** also listens to your microphone, to turn on at a clap or a shout. Both need a microphone, and your computer or browser may ask whether OpenWGT may use it.
+
+= The Menus {#menus}
+keywords: menu, menus, file menu, edit menu, options menu, help menu, print
+
+## File
+- **New**, **Open...**, **Save**, **Save As...**, **Revert** - see [Saving and opening widgets](#files).
+- **Load Puzzle...** - see [Playing puzzles](#puzzles).
+- **Import a Stand-Alone Widget...**, **Save Into a Stand-Alone Widget** - see [Stand-alone widgets](#standalone).
+- **Save to Download**, **Download a Widget...** - in the web browser only.
+- **Open Widget Link**, **Copy Link to Widget** - see [Widget links](#links).
+- **Print Preview**, **Print Setup...**, **Print** - kept from the original, but OpenWGT doesn't print.
+- **Exit** - closes OpenWGT, asking first whether to save your widget.
+
+## Edit
+- **Undo** - takes back the last change; choose it again to bring the change back.
+- **Clear Work Area**, **Remove All Connections**, **Remove All Joints**, **Fit Work Area...** - see [The worksheet](#worksheet).
+
+## Options
+- **Plain Background**, **Metal Waves**, **Noise**, **Steel** - the worksheet's background.
+- **Settings...** - the UI scale, the enhancements and the CD. See [The Settings window](#openwgt-settings).
+
+## Help
+- **About OpenWGT...** - the title, the version and the credits. Click or press Space to close it.
+- **Contents** - this help (F1).
+
+While a widget runs, most menu items are greyed out. Press STOP first.
+
+= Keyboard Shortcuts {#keys}
+keywords: keyboard, keys, shortcuts, hotkeys, accelerators
+
+## Building
+- **Enter** - GO: start the widget.
+- **Delete** - remove the part, wire or bend under the pointer.
+- **Shift** (held) - the Cut tool, until you let go.
+- **Ctrl** (held) - the Move tool, until you let go.
+- **L** - lock the part or wire under the pointer (see [Making your own puzzles](#make-puzzles)).
+- **+** and **-** on the number pad - change how many of a part the tray hands out.
+
+## Running
+- **Esc** - STOP.
+- **Ctrl** (held) - drag to slide the whole widget.
+- Any key a [Key Press](#switch-parts) part listens for.
+
+## Menus
+- **Ctrl+N** - New
+- **Ctrl+O** - Open
+- **Ctrl+S** - Save
+- **Ctrl+Z** or **Alt+Backspace** - Undo
+- **Ctrl+V** or **Shift+Insert** - Open Widget Link
+- **F1** - Help Contents
+- **Alt** or **F10** - go to the menu bar; then the arrow keys, Enter and Esc. Alt with an underlined letter opens that menu.
+
+= The Settings Window {#openwgt-settings}
+keywords: settings, options, UI scale, scale, zoom, size, enhancements, change CD, preferences
+
+**Options > Settings...** opens OpenWGT's own Settings window. Changes take effect at once and are remembered for next time.
+
+## UI scale
+How big everything is drawn. **Automatic** follows your screen's own setting. Untick it and use **-** and **+** to pick a size from 1x to 4x, in quarter steps.
+
+## Enhancements
+A few changes that make OpenWGT a little easier to use than the original:
+
+- the parts tray shows a whole folder at once, its pages one under the other, without page arrows;
+- the toolbars, settings windows and message boxes move whole when you drag them, not as an outline.
+
+Untick **Enhancements** to have everything exactly like the original.
+
+## Change CD...
+Picks a Widget Workshop CD image (an .iso file) for OpenWGT to use, then starts the workshop again with it. It asks to save your widget first. Where your computer has no file chooser for it, OpenWGT asks you to drop the CD image on its window instead. See [Playing with or without the CD](#cd).
+
+= Playing With or Without the CD {#cd}
+keywords: CD, iso, no CD, without CD, OpenWGFX, OpenWSFX, OpenWDATA, data, original
+
+You don't need the Widget Workshop CD to play. OpenWGT comes with everything it needs of its own:
+
+- **OpenWGFX** - its own pictures of every part, button and pointer;
+- **OpenWSFX** - its own sounds;
+- **OpenWDATA** - its own texts, settings windows, menus, puzzles, sample widgets and this help.
+
+Every part keeps the original's size, knots and job, so widgets made with the original Widget Workshop open and work the same in OpenWGT, and the other way round.
+
+## Using your CD
+If you have the original CD (the PC/Mac CD, or the OS/2 Warp CD), OpenWGT can use its pictures, sounds, puzzles, samples and help instead. Choose it with **Change CD...** in [Options > Settings](#openwgt-settings). OpenWGT remembers your choice. An .iso file in the folder OpenWGT starts in is also picked up by itself.
+
+= Using This Help {#using-help}
+keywords: help, index, back, contents, F1, search
+
+Open this help at any time with **Help > Contents** or **F1**. The help window floats over the workshop; you can keep building while it's open.
+
+- Click any underlined word to jump to that topic.
+- **Contents** brings you back to the list of topics.
+- **Index** lists the words you can look up. Type the first letters of a word, pick it from the list and click **Display**.
+- **Back** returns to the topic you were reading before.
+- **<<** and **>>** step through the topics in order.
+
+= Tips and Troubleshooting {#tips}
+keywords: tips, troubleshooting, problems, help, nothing happens, no sound, red X
+
+## My wire won't connect
+Each knot holds only one wire, and wires only go from an output to an input. If the knot you want is taken, move or remove the old wire first, or use a [Splitter](#switch-parts).
+
+## I can't hear anything
+Is a **Speaker** wired to the end of your sound parts? Is the Sound button on the [Control Box](#control-box) on? Some parts, like Animal Sounds, only play when their input turns on.
+
+## Nothing happens when I click a part
+Parts only react while the widget runs: press GO first. If a part won't move or light up while you build, it may be locked by a [puzzle](#puzzles).
+
+## A display shows a red X
+The number doesn't fit, or a part couldn't work out an answer (dividing by 0, for example). Try the Ten-Digit Display for big numbers.
+
+## I can't see my widget any more
+Use the Move tool (or hold Ctrl) to slide it back into view, or choose **Edit > Fit Work Area...**.
+
+## Oops!
+**Edit > Undo** (Ctrl+Z) takes back the last change.
+
+## Build step by step
+Add one or two parts at a time, press GO, check that they work, then add more. Wire a Three-Digit Display to an output to see what a part is sending.
+
+= About OpenWGT {#about}
+keywords: about, credits, license, licence, AGPL, Maxis, Doridian, copyright, version
+
+**OpenWGT** is an open-source engine for **Widget Workshop: A Mad Scientist's Laboratory**, the invention toy Maxis published in 1995. It recreates the workshop from scratch for today's computers - Linux, Windows, macOS and the web browser - so that the widgets and puzzles of the original keep working.
+
+## Credits
+OpenWGT is a fork of Doridian's port of Widget Workshop (github.com/Doridian/WidgetWorkshop), which recreated the game's workings. This fork adds its own pictures (OpenWGFX), sounds (OpenWSFX) and data (OpenWDATA: the texts, settings windows, puzzles, sample widgets and this help), so that it runs without the original CD, along with fixes and new features such as widget links and the Settings window.
+
+## Licence
+OpenWGT is free software under the GNU Affero General Public License, version 3 or later (AGPL-3.0-or-later). Its own pictures, sounds and data are under the same licence. You may use, study, share and change it under the terms of that licence.
+
+## Widget Workshop
+Widget Workshop is (c) Maxis, and its name is a trademark of its owners. OpenWGT is an unofficial project, not made, endorsed or supported by Maxis or Electronic Arts, and it contains none of the original game's data. To use the original's pictures and sounds, you need your own copy of the CD.
+
+Thanks to everyone who made the original toy, and to everyone who keeps it alive.

@@ -1,0 +1,2 @@
+Construction Tip:
+How old would you be on Mars? Multiply your age by 365, wire the result to a Divider's side input and the Solar System's Year (earth days) to its top. Then try the other planets!

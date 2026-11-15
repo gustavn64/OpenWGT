@@ -1,0 +1,1 @@
+This display shows whole numbers from -99 up to 999. Numbers with decimals are rounded to the nearest whole number, and a red X appears when a number doesn't fit.

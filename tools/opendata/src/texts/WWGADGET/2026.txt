@@ -1,0 +1,1 @@
+With the Recorder you can record a sound, or load one from a .WAV file, up to about three and a half seconds long, then play it through a Speaker. Recording needs a sound card and a microphone or other sound input.

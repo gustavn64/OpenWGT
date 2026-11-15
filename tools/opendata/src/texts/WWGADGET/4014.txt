@@ -1,0 +1,2 @@
+Construction Tip:
+Use it to tell when something passes a target, like a score going over 100. If reaching the target itself should count, pick Greater than or Equal to.

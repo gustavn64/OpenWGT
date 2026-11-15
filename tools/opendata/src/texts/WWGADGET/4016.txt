@@ -1,0 +1,2 @@
+Construction Tip:
+To add up three or more numbers, feed one Adder's answer into the next Adder. Each one takes about a second to work out its sum, so long chains need a moment.
