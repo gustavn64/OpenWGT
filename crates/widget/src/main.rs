@@ -665,12 +665,13 @@ fn start(args: &Args, assets: Assets) -> Result<(), platform::Error> {
     };
     let theme = platform::theme::SystemTheme::new();
     editor.set_system_dark(theme.dark());
-    // The port's enhancements, unless the settings file says `original`.
+    // The port's enhancements only if the player turned them on
+    // (`original=false` in the settings file): as the original otherwise.
     let settings_file = args.window.settings_file.clone();
-    let original = settings_file
+    let enhanced = settings_file
         .as_deref()
-        .is_some_and(|p| platform::settings::EnhanceSettings::load(p).original);
-    editor.set_enhanced(!original);
+        .is_some_and(|p| platform::settings::EnhanceSettings::load(p).original == Some(false));
+    editor.set_enhanced(enhanced);
     let app = Workshop {
         editor,
         sound: Sound::new(audio),

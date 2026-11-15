@@ -24,7 +24,8 @@
 //! The enhancements' switches ([`EnhanceSettings`]) are the player's,
 //! written by hand or by the game's Settings window
 //! ([`EnhanceSettings::save`]), which has the one for all of them,
-//! `original`:
+//! `original` (off unless the file says `original=false`: the game plays
+//! as the original until the player turns them on):
 //!
 //! ```text
 //! original=false
@@ -180,7 +181,8 @@ const WINDOW_KEYS: [&str; 6] = [
 /// resolves them (`game::enhance::Config::resolve`).
 #[derive(Debug, Clone, PartialEq, Eq, Default)]
 pub struct EnhanceSettings {
-    pub original: bool,
+    /// `None` if the file doesn't say: the enhancements are off.
+    pub original: Option<bool>,
     pub overrides: Vec<(String, bool)>,
     /// Lines with an `enhance.` key whose value isn't a switch.
     pub bad: Vec<String>,
@@ -197,7 +199,7 @@ impl EnhanceSettings {
             };
             let key = key.trim();
             if key == "original" {
-                s.original = switch(value).unwrap_or(false);
+                s.original = switch(value);
             } else if let Some(k) = key.strip_prefix("enhance.") {
                 match switch(value) {
                     Some(on) => s.overrides.push((k.to_owned(), on)),
@@ -389,7 +391,9 @@ mod tests {
     #[test]
     fn enhancements() {
         let e = EnhanceSettings::parse("window_width=3\noriginal=1\nenhance.window_stacking=on\nenhance.x=maybe\n");
-        assert!(e.original);
+        assert_eq!(e.original, Some(true));
+        assert_eq!(EnhanceSettings::parse("original=false").original, Some(false));
+        assert_eq!(EnhanceSettings::parse("window_width=3").original, None);
         assert_eq!(e.overrides, [("window_stacking".to_owned(), true)]);
         assert_eq!(e.bad, ["enhance.x=maybe"]);
         assert_eq!(EnhanceSettings::parse(""), EnhanceSettings::default());
@@ -404,7 +408,7 @@ mod tests {
             "# mine\nwindow_width=3\nenhance.big_map=on\nenhance.x=on\noriginal=1\nenhance.music=off\n"
         );
         let e = EnhanceSettings::parse(&edited);
-        assert!(e.original);
+        assert_eq!(e.original, Some(true));
         assert_eq!(e.overrides.last(), Some(&("music".to_owned(), false)));
         // Everything on: the master switch off, the keys' lines gone, the
         // others kept.

@@ -94,8 +94,9 @@ ALSA's headers to build (`libasound2-dev`).
 
 Options ▸ Settings, the port's own, changes the UI scale on the spot
 (Automatic, or 1× to 4× in quarters) and switches the port's
-enhancements of the original on or off, all of them at once
-(`original=true` in the settings file turns them off). The
+enhancements of the original on or off, all of them at once. They're
+off until the player turns them on (`original=false` in the settings
+file). The
 enhancements: the parts tray shows a whole folder at once, its pages one
 under the other, without the page arrows; and the toolbars, dialogs and
 message boxes are dragged whole, not as an outline.
