@@ -321,6 +321,18 @@ pub fn desktop(client: (u32, u32), scale: f64) -> (u32, u32) {
     (at(client.0), at(client.1))
 }
 
+/// How many times the game's pointer picture is enlarged, for a game
+/// pixel `scale` window pixels big on a display with `scale_factor`: the
+/// browser and macOS take a pointer picture in logical units (CSS pixels,
+/// points) and enlarge it by the scale factor themselves, the others take
+/// it in the display's own pixels.
+#[allow(clippy::cast_possible_truncation, clippy::cast_sign_loss)]
+fn cursor_scale(scale: f64, scale_factor: f64) -> u32 {
+    let logical = cfg!(any(target_arch = "wasm32", target_os = "macos"));
+    let s = if logical { scale / scale_factor.max(0.25) } else { scale };
+    (s.round() as u32).max(1)
+}
+
 /// Whether `code` with `modifiers` toggles fullscreen: F11, Alt+Enter, and
 /// Ctrl+Cmd+F on macOS.
 fn fullscreen_key(code: KeyCode, modifiers: ModifiersState) -> bool {
@@ -347,8 +359,7 @@ impl Shown {
     fn update(&mut self, w: &Window, event_loop: &ActiveEventLoop, frame: &Frame<'_>, ui_scale: f64) {
         if let Some(img) = frame.cursor_image {
             let v = display::View::new(w.inner_size(), frame.width, frame.height, ui_scale);
-            #[allow(clippy::cast_possible_truncation, clippy::cast_sign_loss)]
-            let scale = (v.scale.round() as u32).max(1);
+            let scale = cursor_scale(f64::from(v.scale), w.scale_factor());
             let key = (img.key, scale);
             if self.custom != Some(key) {
                 if let std::collections::hash_map::Entry::Vacant(e) = self.custom_cursors.entry(key) {
@@ -859,6 +870,18 @@ mod tests {
         assert_eq!(wheel_notches(&mut rest, px(30.0)), (0, 0));
         assert_eq!(wheel_notches(&mut rest, px(30.0)), (0, 1));
         assert_eq!(wheel_notches(&mut rest, px(-100.0)), (0, -2));
+    }
+
+    #[test]
+    fn cursor_scales() {
+        // At UI scale 2 on a display of scale factor 2, the pointer's pixels
+        // are 2 window pixels: twice as big where the window system wants
+        // its own pixels, as it is where it enlarges it itself.
+        let logical = cfg!(any(target_arch = "wasm32", target_os = "macos"));
+        assert_eq!(cursor_scale(2.0, 2.0), if logical { 1 } else { 2 });
+        assert_eq!(cursor_scale(1.5, 1.5), if logical { 1 } else { 2 });
+        assert_eq!(cursor_scale(1.0, 1.0), 1);
+        assert_eq!(cursor_scale(3.0, 1.5), if logical { 2 } else { 3 });
     }
 
     #[test]
