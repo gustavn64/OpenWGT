@@ -102,6 +102,8 @@ pub fn wheel_notches(rest: &mut (f64, f64), delta: MouseScrollDelta) -> (i32, i3
 
 /// How often the game is updated and redrawn.
 const FRAME: Duration = Duration::from_nanos(1_000_000_000 / 60);
+/// How early a frame may come and still step ([`Runner::step`]).
+const FRAME_SLACK: Duration = Duration::from_millis(2);
 
 /// What the game shows: palette indices, top row first, and 256 RGB colours.
 pub struct Frame<'a> {
@@ -403,6 +405,9 @@ struct Runner<A> {
     options: WindowOptions,
     window: Option<(Arc<Window>, display::Display)>,
     last: Instant,
+    /// In the browser: when a frame was asked for that hasn't come yet.
+    #[cfg_attr(not(target_arch = "wasm32"), allow(dead_code))]
+    frame_asked: Option<Instant>,
     mouse: (i32, i32),
     error: Option<Error>,
     /// The desktop last handed to [`App::resize`].
@@ -430,6 +435,19 @@ struct Runner<A> {
 }
 
 impl<A: App> Runner<A> {
+    /// The game's step, if a frame's time has passed since the last:
+    /// whether it took one. A frame early by up to [`FRAME_SLACK`] counts,
+    /// so a display's frames a hair short of [`FRAME`] each still step.
+    fn step(&mut self) -> bool {
+        let now = Instant::now();
+        if now + FRAME_SLACK < self.last + FRAME {
+            return false;
+        }
+        self.app.update(now - self.last);
+        self.last = now;
+        true
+    }
+
     fn to_frame(&self, pos: PhysicalPosition<f64>) -> (i32, i32) {
         let Some((window, _)) = &self.window else {
             return (0, 0);
@@ -579,18 +597,40 @@ impl<A: App> ApplicationHandler for Runner<A> {
         if let Some(ui) = self.app.take_ui_scale() {
             self.set_ui(ui);
         }
-        let now = Instant::now();
-        if now >= self.last + FRAME {
-            self.app.update(now - self.last);
-            self.last = now;
-            if let Some((w, _)) = &self.window {
+        // In the browser the game's steps come with the display's frames
+        // (`requestAnimationFrame`, [`Runner::step`]), so that every step is
+        // shown and none twice: the timer only asks for the next frame.
+        // Elsewhere the timer steps.
+        #[cfg(target_arch = "wasm32")]
+        {
+            let due = self.last + FRAME - FRAME_SLACK;
+            let now = Instant::now();
+            if now < due {
+                event_loop.set_control_flow(ControlFlow::WaitUntil(due));
+            } else {
+                // Asked again if it hasn't come in a frame's time.
+                if self.frame_asked.is_none_or(|t| now >= t + FRAME)
+                    && let Some((w, _)) = &self.window
+                {
+                    w.request_redraw();
+                    self.frame_asked = Some(now);
+                }
+                // Should the frame not come, the timer asks again.
+                event_loop.set_control_flow(ControlFlow::WaitUntil(now + FRAME));
+            }
+        }
+        #[cfg(not(target_arch = "wasm32"))]
+        {
+            if self.step()
+                && let Some((w, _)) = &self.window
+            {
                 w.request_redraw();
             }
+            event_loop.set_control_flow(ControlFlow::WaitUntil(self.last + FRAME));
         }
         if self.app.finished() {
             Self::exit(event_loop);
         }
-        event_loop.set_control_flow(ControlFlow::WaitUntil(self.last + FRAME));
     }
 }
 
@@ -762,10 +802,18 @@ impl<A: App> Runner<A> {
                 Err(e) => eprintln!("{}: {e}", path.display()),
             },
             WindowEvent::RedrawRequested => {
+                #[cfg(target_arch = "wasm32")]
+                {
+                    self.frame_asked = None;
+                    self.step();
+                }
                 if let Some((w, d)) = &mut self.window {
                     let frame = self.app.frame();
                     self.shown.update(w, event_loop, &frame, self.scale);
-                    if let Err(e) = d.draw(&frame, self.scale) {
+                    // Natively the window gets every frame (a window
+                    // system may have lost what it showed); the browser's
+                    // canvas keeps it.
+                    if let Err(e) = d.draw(&frame, self.scale, cfg!(not(target_arch = "wasm32"))) {
                         self.fail(event_loop, e);
                     }
                 }
@@ -798,6 +846,7 @@ pub fn run<A: App + 'static>(title: &str, options: WindowOptions, app: A) -> Res
         options,
         window: None,
         last: Instant::now(),
+        frame_asked: None,
         mouse: (0, 0),
         error: None,
         desktop: (0, 0),

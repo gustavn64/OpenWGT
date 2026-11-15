@@ -85,6 +85,37 @@ pub(crate) struct Display {
     palette: wgpu::Texture,
     view: wgpu::Buffer,
     textures: Option<Textures>,
+    /// What the window shows, to send the GPU only what changed.
+    shown: Option<Shown>,
+}
+
+/// The frame last drawn ([`Display::draw`]).
+struct Shown {
+    width: u32,
+    height: u32,
+    pixels: Vec<u8>,
+    palette: [[u8; 3]; 256],
+    view: [u8; 32],
+    overlay: bool,
+}
+
+/// Whether `a` and `b` are the same, eight bytes at a time (WebAssembly's
+/// `memcmp` goes a byte at a time).
+fn same(a: &[u8], b: &[u8]) -> bool {
+    let (wa, ra) = a.as_chunks::<8>();
+    let (wb, rb) = b.as_chunks::<8>();
+    wa.len() == wb.len() && ra == rb && wa.iter().zip(wb).all(|(x, y)| u64::from_ne_bytes(*x) == u64::from_ne_bytes(*y))
+}
+
+/// The rows `from` and `to` (as long, `width` bytes a row) differ in, as
+/// `first..end`; `None` if they're the same.
+fn changed_rows(from: &[u8], to: &[u8], width: usize) -> Option<std::ops::Range<usize>> {
+    let width = width.max(1);
+    let rows = from.len().min(to.len()) / width;
+    let differs = |y: usize| !same(&from[y * width..(y + 1) * width], &to[y * width..(y + 1) * width]);
+    let first = (0..rows).find(|&y| differs(y))?;
+    let last = (first..rows).rev().find(|&y| differs(y)).unwrap_or(first);
+    Some(first..last + 1)
 }
 
 fn gpu(e: impl fmt::Display) -> Error {
@@ -219,6 +250,7 @@ impl Display {
             palette,
             view,
             textures: None,
+            shown: None,
         })
     }
 
@@ -227,11 +259,13 @@ impl Display {
             self.config.width = size.width;
             self.config.height = size.height;
             self.surface.configure(&self.device, &self.config);
+            self.shown = None;
         }
     }
 
     /// Makes the framebuffer texture `width` × `height` and the overlay's
-    /// `overlay` (at least 1 × 1).
+    /// `overlay` (at least 1 × 1); what was shown is forgotten if they're
+    /// new.
     fn ensure_textures(&mut self, width: u32, height: u32, overlay: (u32, u32)) {
         let overlay_size = (overlay.0.max(1), overlay.1.max(1));
         if self
@@ -274,6 +308,7 @@ impl Display {
                     },
                 ],
             });
+            self.shown = None;
             self.textures = Some(Textures {
                 width,
                 height,
@@ -285,17 +320,11 @@ impl Display {
         }
     }
 
-    /// Draws `frame` at UI scale `ui_scale`.
-    pub fn draw(&mut self, frame: &Frame<'_>, ui_scale: f64) -> Result<(), Error> {
-        let output = match self.surface.get_current_texture() {
-            wgpu::CurrentSurfaceTexture::Success(t) | wgpu::CurrentSurfaceTexture::Suboptimal(t) => t,
-            wgpu::CurrentSurfaceTexture::Outdated | wgpu::CurrentSurfaceTexture::Lost => {
-                self.surface.configure(&self.device, &self.config);
-                return Ok(());
-            }
-            wgpu::CurrentSurfaceTexture::Timeout | wgpu::CurrentSurfaceTexture::Occluded => return Ok(()),
-            other @ wgpu::CurrentSurfaceTexture::Validation => return Err(gpu(format!("{other:?}"))),
-        };
+    /// Draws `frame` at UI scale `ui_scale`: the GPU gets only the rows,
+    /// palette and placement that changed since the last frame. With
+    /// nothing changed nothing new is shown (the window keeps the last
+    /// picture), unless `again` (the window system asked for it).
+    pub fn draw(&mut self, frame: &Frame<'_>, ui_scale: f64, again: bool) -> Result<(), Error> {
         let size = PhysicalSize::new(self.config.width, self.config.height);
         let view = View::new(size, frame.width, frame.height, ui_scale);
         // An overlay whose pixels don't fill it isn't shown.
@@ -303,27 +332,50 @@ impl Display {
             .overlay
             .as_ref()
             .filter(|o| o.width > 0 && o.height > 0 && o.rgb.len() >= o.width as usize * o.height as usize * 3);
-        self.queue.write_buffer(&self.view, 0, &view.bytes(overlay));
-        let rgba: Vec<u8> = frame.palette.iter().flat_map(|&[r, g, b]| [r, g, b, 255]).collect();
-        write(&self.queue, &self.palette, &rgba, 256, 1, 4);
+        let view_bytes = view.bytes(overlay);
         // The overlay texture keeps its size while none is shown, so a film
         // that stops and starts doesn't make new textures.
-        let size = overlay.map_or_else(
+        let overlay_size = overlay.map_or_else(
             || self.textures.as_ref().map_or((1, 1), |t| t.overlay_size),
             |o| (o.width, o.height),
         );
-        self.ensure_textures(frame.width, frame.height, size);
+        self.ensure_textures(frame.width, frame.height, overlay_size);
+        let width = frame.width as usize;
+        let pixels = frame.pixels.get(..width * frame.height as usize).unwrap_or(frame.pixels);
+        let (rows, palette, placed) = match &self.shown {
+            Some(s) if (s.width, s.height) == (frame.width, frame.height) => (
+                changed_rows(&s.pixels, pixels, width),
+                s.palette != *frame.palette,
+                s.view != view_bytes || s.overlay != overlay.is_some(),
+            ),
+            _ => (Some(0..frame.height as usize), true, true),
+        };
+        if rows.is_none() && !palette && !placed && overlay.is_none() && !again {
+            return Ok(());
+        }
+        let output = match self.surface.get_current_texture() {
+            wgpu::CurrentSurfaceTexture::Success(t) | wgpu::CurrentSurfaceTexture::Suboptimal(t) => t,
+            wgpu::CurrentSurfaceTexture::Outdated | wgpu::CurrentSurfaceTexture::Lost => {
+                self.surface.configure(&self.device, &self.config);
+                self.shown = None;
+                return Ok(());
+            }
+            wgpu::CurrentSurfaceTexture::Timeout | wgpu::CurrentSurfaceTexture::Occluded => return Ok(()),
+            other @ wgpu::CurrentSurfaceTexture::Validation => return Err(gpu(format!("{other:?}"))),
+        };
+        if placed {
+            self.queue.write_buffer(&self.view, 0, &view_bytes);
+        }
+        if palette {
+            let rgba: Vec<u8> = frame.palette.iter().flat_map(|&[r, g, b]| [r, g, b, 255]).collect();
+            write(&self.queue, &self.palette, &rgba, 256, 1, 4);
+        }
         let Some(textures) = &self.textures else {
             return Ok(());
         };
-        write(
-            &self.queue,
-            &textures.framebuffer,
-            frame.pixels,
-            frame.width,
-            frame.height,
-            1,
-        );
+        if let Some(r) = &rows {
+            write_rows(&self.queue, &textures.framebuffer, pixels, frame.width, r.clone());
+        }
         if let Some(o) = overlay {
             let rgba: Vec<u8> = o.rgb[..o.width as usize * o.height as usize * 3]
                 .as_chunks::<3>()
@@ -359,7 +411,41 @@ impl Display {
         self.queue.submit([encoder.finish()]);
         self.window.pre_present_notify();
         self.queue.present(output);
+        self.remember(frame, pixels, rows, view_bytes, overlay.is_some());
         Ok(())
+    }
+
+    /// `frame` as shown, its rows `rows` changed since the last.
+    fn remember(
+        &mut self,
+        frame: &Frame<'_>,
+        pixels: &[u8],
+        rows: Option<std::ops::Range<usize>>,
+        view: [u8; 32],
+        overlay: bool,
+    ) {
+        let width = frame.width as usize;
+        match &mut self.shown {
+            Some(s) if (s.width, s.height) == (frame.width, frame.height) => {
+                if let Some(r) = rows {
+                    let span = r.start * width..r.end * width;
+                    s.pixels[span.clone()].copy_from_slice(&pixels[span]);
+                }
+                s.palette = *frame.palette;
+                s.view = view;
+                s.overlay = overlay;
+            }
+            _ => {
+                self.shown = Some(Shown {
+                    width: frame.width,
+                    height: frame.height,
+                    pixels: pixels.to_vec(),
+                    palette: *frame.palette,
+                    view,
+                    overlay,
+                });
+            }
+        }
     }
 }
 
@@ -391,6 +477,34 @@ fn texture(device: &wgpu::Device, width: u32, height: u32, format: wgpu::Texture
         usage: wgpu::TextureUsages::TEXTURE_BINDING | wgpu::TextureUsages::COPY_DST,
         view_formats: &[],
     })
+}
+
+/// Rows `rows` of `pixels` (one byte a pixel, `width` a row) into the
+/// same rows of `texture`.
+fn write_rows(queue: &wgpu::Queue, texture: &wgpu::Texture, pixels: &[u8], width: u32, rows: std::ops::Range<usize>) {
+    let w = width as usize;
+    let (Ok(y), Ok(height)) = (u32::try_from(rows.start), u32::try_from(rows.len())) else {
+        return;
+    };
+    queue.write_texture(
+        wgpu::TexelCopyTextureInfo {
+            texture,
+            mip_level: 0,
+            origin: wgpu::Origin3d { x: 0, y, z: 0 },
+            aspect: wgpu::TextureAspect::All,
+        },
+        &pixels[rows.start * w..rows.end * w],
+        wgpu::TexelCopyBufferLayout {
+            offset: 0,
+            bytes_per_row: Some(width),
+            rows_per_image: Some(height),
+        },
+        wgpu::Extent3d {
+            width,
+            height,
+            depth_or_array_layers: 1,
+        },
+    );
 }
 
 fn write(queue: &wgpu::Queue, texture: &wgpu::Texture, data: &[u8], width: u32, height: u32, bytes_per_pixel: u32) {
@@ -430,6 +544,17 @@ mod tests {
         // 640×480 in a smaller desktop: as big as fits.
         let v = View::new(PhysicalSize::new(1200, 900), 640, 480, 2.0);
         assert_eq!((v.scale, v.offset), (1.875, [0.0, 0.0]));
+    }
+
+    #[test]
+    fn changed_rows_span_the_differences() {
+        let a = [0u8; 12];
+        let mut b = a;
+        assert_eq!(changed_rows(&a, &b, 3), None);
+        b[4] = 1;
+        assert_eq!(changed_rows(&a, &b, 3), Some(1..2));
+        b[11] = 1;
+        assert_eq!(changed_rows(&a, &b, 3), Some(1..4));
     }
 
     /// The shader parses and validates, as `create_shader_module` would
