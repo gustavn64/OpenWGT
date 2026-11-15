@@ -197,6 +197,70 @@ impl Puzzles {
     }
 }
 
+/// A puzzle file with `puzzles` (number, title in Mac Roman, the saved
+/// widget) and none of them solved, laid out as the game's reader
+/// (`0x413e78`) expects: data from 0x100, the type list at map + 0x1c,
+/// the name list right after the last type's reference list.
+#[must_use]
+pub fn write(puzzles: &[(i16, &[u8], &[u8])]) -> Vec<u8> {
+    let mut data = Vec::new();
+    let mut puzl_refs = Vec::new();
+    let mut names = Vec::new();
+    for (id, name, widget) in puzzles {
+        let name_at = u16::try_from(names.len()).unwrap_or(0xffff);
+        names.push(u8::try_from(name.len().min(255)).unwrap_or(255));
+        names.extend_from_slice(&name[..name.len().min(255)]);
+        puzl_refs.push((*id, name_at, u32::try_from(data.len()).unwrap_or(0)));
+        data.extend_from_slice(&u32::try_from(widget.len()).unwrap_or(0).to_be_bytes());
+        data.extend_from_slice(widget);
+    }
+    // `Done` 1: the count word, then a flag per puzzle, all unsolved.
+    let done_at = u32::try_from(data.len()).unwrap_or(0);
+    let done_len = 2 + 2 * puzzles.len();
+    data.extend_from_slice(&u32::try_from(done_len).unwrap_or(0).to_be_bytes());
+    data.extend_from_slice(&1u16.to_be_bytes());
+    data.extend(std::iter::repeat_n(0u8, 2 * puzzles.len()));
+    // The map: header copy, reserved, attributes, the two offsets, the
+    // type list (`Puzl`, `Done`), their reference lists, the names.
+    let types = 2usize;
+    let type_list = 2 + types * 8;
+    let puzl_ref_at = type_list;
+    let done_ref_at = puzl_ref_at + puzl_refs.len() * 12;
+    let names_at = 0x1c + done_ref_at + 12;
+    let mut map = vec![0u8; 0x1c];
+    map[0x18..0x1a].copy_from_slice(&0x1cu16.to_be_bytes());
+    map[0x1a..0x1c].copy_from_slice(&u16::try_from(names_at).unwrap_or(0).to_be_bytes());
+    map.extend_from_slice(&u16::try_from(types - 1).unwrap_or(0).to_be_bytes());
+    for (code, n, at) in [(PUZL, puzl_refs.len(), puzl_ref_at), (DONE, 1, done_ref_at)] {
+        map.extend_from_slice(&code);
+        map.extend_from_slice(&u16::try_from(n.saturating_sub(1)).unwrap_or(0).to_be_bytes());
+        map.extend_from_slice(&u16::try_from(at).unwrap_or(0).to_be_bytes());
+    }
+    let entry = |map: &mut Vec<u8>, id: i16, name: u16, at: u32| {
+        map.extend_from_slice(&id.to_be_bytes());
+        map.extend_from_slice(&name.to_be_bytes());
+        map.push(0);
+        map.extend_from_slice(&at.to_be_bytes()[1..]);
+        map.extend_from_slice(&[0; 4]);
+    };
+    for (id, name, at) in &puzl_refs {
+        entry(&mut map, *id, *name, *at);
+    }
+    entry(&mut map, 1, 0xffff, done_at);
+    map.extend_from_slice(&names);
+    let map_at = 0x100 + data.len();
+    let mut header = Vec::new();
+    for v in [0x100, map_at, data.len(), map.len()] {
+        header.extend_from_slice(&u32::try_from(v).unwrap_or(0).to_be_bytes());
+    }
+    map[..16].copy_from_slice(&header);
+    let mut out = header;
+    out.resize(0x100, 0);
+    out.extend_from_slice(&data);
+    out.extend_from_slice(&map);
+    out
+}
+
 /// The flags of a `Done` resource's data: `size / 2 - 1` words after the
 /// count word, any non-zero word solved (`0x42d82d`, `0x42cef8`).
 #[must_use]
@@ -471,5 +535,23 @@ mod tests {
         let r = ResFork::parse(&file).unwrap().find(DONE, 1).unwrap().clone();
         assert_eq!(r.data_len, 52);
         assert_eq!(&file[r.data_at..r.data_at + 2], &[0, 1]);
+    }
+
+    #[test]
+    fn writes_what_it_reads() {
+        let a = b"FORM-a".to_vec();
+        let b = b"FORM-bb".to_vec();
+        let file = write(&[(1, b"First One", &a), (2, b"Second", &b)]);
+        let p = Puzzles::parse(&file).unwrap();
+        assert_eq!(p.puzzles.len(), 2);
+        assert_eq!(
+            (p.puzzles[0].title(), &p.puzzles[0].widget),
+            ("First One".to_owned(), &a)
+        );
+        assert_eq!((p.puzzles[1].id, &p.puzzles[1].widget), (2, &b));
+        assert_eq!(p.done, [false, false]);
+        let mut file = file;
+        write_done(&mut file, &[false, true]).unwrap();
+        assert_eq!(Puzzles::parse(&file).unwrap().done, [false, true]);
     }
 }

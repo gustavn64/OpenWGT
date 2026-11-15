@@ -163,25 +163,31 @@ impl Resources {
     /// String `id` of the `RT_STRING` tables (16 to a block, UTF-16).
     #[must_use]
     pub fn string(&self, id: u32) -> Option<String> {
-        let block = self.get(RT_STRING, id / 16 + 1)?;
-        let mut at = 0;
-        for i in 0..16 {
-            let len = usize::from(u16::from_le_bytes([*block.get(at)?, *block.get(at + 1)?]));
-            at += 2;
-            if i == id % 16 {
-                let units: Vec<u16> = block
-                    .get(at..at + 2 * len)?
-                    .as_chunks::<2>()
-                    .0
-                    .iter()
-                    .map(|c| u16::from_le_bytes([c[0], c[1]]))
-                    .collect();
-                return Some(String::from_utf16_lossy(&units));
-            }
-            at += 2 * len;
-        }
-        None
+        string_in_block(self.get(RT_STRING, id / 16 + 1)?, id % 16)
     }
+}
+
+/// String `n` (0 to 15) of an `RT_STRING` block: 16 counted UTF-16
+/// strings.
+#[must_use]
+pub fn string_in_block(block: &[u8], n: u32) -> Option<String> {
+    let mut at = 0;
+    for i in 0..16 {
+        let len = usize::from(u16::from_le_bytes([*block.get(at)?, *block.get(at + 1)?]));
+        at += 2;
+        if i == n {
+            let units: Vec<u16> = block
+                .get(at..at + 2 * len)?
+                .as_chunks::<2>()
+                .0
+                .iter()
+                .map(|c| u16::from_le_bytes([c[0], c[1]]))
+                .collect();
+            return Some(String::from_utf16_lossy(&units));
+        }
+        at += 2 * len;
+    }
+    None
 }
 
 /// A directory entry's name: a string (UTF-16) or a number. Named entries

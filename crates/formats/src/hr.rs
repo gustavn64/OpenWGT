@@ -242,6 +242,79 @@ fn decode_into(data: &[u8], mut at: usize, img: &mut Image) -> Result<(), Error>
     }
 }
 
+/// Encodes frames (each its rectangle and picture, the picture as big as
+/// the rectangle) as a sheet that [`Sheet::parse`] and the game's blitter
+/// read: transparent pixels as skips, runs of three or more as repeats,
+/// wholly transparent rows as row skips.
+#[must_use]
+pub fn encode(frames: &[(Rect, Image)]) -> Vec<u8> {
+    let mut out = b"HR".to_vec();
+    out.extend_from_slice(&u16::try_from(frames.len()).unwrap_or(u16::MAX).to_le_bytes());
+    let table = out.len();
+    out.resize(table + frames.len() * 12, 0);
+    for (i, (rect, img)) in frames.iter().enumerate() {
+        let at = table + i * 12;
+        for (k, v) in [rect.top, rect.left, rect.bottom, rect.right].into_iter().enumerate() {
+            out[at + k * 2..at + k * 2 + 2].copy_from_slice(&v.to_le_bytes());
+        }
+        let offset = u32::try_from(out.len()).unwrap_or(u32::MAX);
+        out[at + 8..at + 12].copy_from_slice(&offset.to_le_bytes());
+        encode_frame(img, &mut out);
+    }
+    out
+}
+
+fn encode_frame(img: &Image, out: &mut Vec<u8>) {
+    let w = usize::from(img.width);
+    let mut skipped = 0usize;
+    for y in 0..usize::from(img.height) {
+        let opaque = &img.opaque[y * w..(y + 1) * w];
+        let Some(last) = opaque.iter().rposition(|&o| o) else {
+            skipped += 1;
+            continue;
+        };
+        while skipped > 0 {
+            let n = skipped.min(0xfff);
+            out.extend_from_slice(&(0xe000 | u16::try_from(n).unwrap_or(0)).to_be_bytes());
+            skipped -= n;
+        }
+        let px = &img.pixels[y * w..(y + 1) * w];
+        let mut row = Vec::new();
+        let mut x = 0;
+        while x <= last {
+            if !opaque[x] {
+                let n = opaque[x..=last].iter().take_while(|&&o| !o).count().min(64);
+                row.push(0x40 | u8::try_from(n - 1).unwrap_or(0));
+                x += n;
+                continue;
+            }
+            let same = (x..=last).take_while(|&k| opaque[k] && px[k] == px[x]).count().min(64);
+            if same >= 3 {
+                row.extend_from_slice(&[0x80 | u8::try_from(same - 1).unwrap_or(0), px[x]]);
+                x += same;
+                continue;
+            }
+            // Literals up to the next skip or run of three.
+            let mut n = 0;
+            while x + n <= last && n < 64 && opaque[x + n] {
+                let k = x + n;
+                if k + 2 <= last && opaque[k + 1] && opaque[k + 2] && px[k] == px[k + 1] && px[k] == px[k + 2] {
+                    break;
+                }
+                n += 1;
+            }
+            row.push(u8::try_from(n - 1).unwrap_or(0));
+            row.extend_from_slice(&px[x..x + n]);
+            x += n;
+        }
+        let len = u16::try_from(row.len() + 2).unwrap_or(0xfff).min(0xfff);
+        out.extend_from_slice(&(0xf000 | len).to_be_bytes());
+        out.extend_from_slice(&row);
+    }
+    // Ends the last row and the picture.
+    out.push(0xc0);
+}
+
 fn put(img: &mut Image, w: usize, h: usize, x: usize, y: usize, v: u8) {
     if x < w && y < h {
         img.pixels[y * w + x] = v;
@@ -273,5 +346,30 @@ mod tests {
         assert_eq!(row(1), [None; 4]);
         assert_eq!(row(2), [None, None, Some(5), None]);
         assert_eq!(s.decode(2), Err(Error::NoFrame(2)));
+    }
+
+    #[test]
+    fn encodes_what_it_decodes() {
+        let mut a = Image::new(70, 4);
+        for (i, p) in a.pixels.iter_mut().enumerate() {
+            *p = u8::try_from(i % 7 / 3).unwrap();
+        }
+        for (i, o) in a.opaque.iter_mut().enumerate() {
+            // Row 1 wholly transparent, a gap in row 2, the rest drawn.
+            *o = !(70..140).contains(&i) && !(150..160).contains(&i);
+        }
+        let b = Image::new(1, 1);
+        let rects = [Rect::new(0, 0, 4, 70), Rect::new(-3, 2, -2, 3)];
+        let d = encode(&[(rects[0], a.clone()), (rects[1], b.clone())]);
+        let s = Sheet::parse(&d).unwrap();
+        assert_eq!(s.rect(2), Some(rects[1]));
+        let back = s.decode(1).unwrap();
+        assert_eq!(back.opaque, a.opaque);
+        for (i, &o) in a.opaque.iter().enumerate() {
+            if o {
+                assert_eq!(back.pixels[i], a.pixels[i]);
+            }
+        }
+        assert_eq!(s.decode(2).unwrap(), b);
     }
 }
