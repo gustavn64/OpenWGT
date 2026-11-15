@@ -310,6 +310,10 @@ pub struct Dialog {
     yes: bool,
     /// The settings as they were when it opened.
     original: Settings,
+    /// The settings the last preview read from the dialog: the picture is
+    /// drawn with them (`0x41eb78` refreshes the picture before putting
+    /// the gadget's settings back).
+    previewed: Option<Settings>,
     /// The progress bar's percentage (`dlg+0x9c`).
     progress: u16,
 }
@@ -432,6 +436,7 @@ impl Dialog {
             changed: false,
             yes: false,
             original: Settings::default(),
+            previewed: None,
             progress: 0,
         }
     }
@@ -680,7 +685,7 @@ impl Dialog {
         let saved = g.core.settings.clone();
         self.read(&mut g.core.settings, ui::font(assets));
         g.behavior.settings_changed(&mut g.core);
-        g.core.settings = saved;
+        self.previewed = Some(std::mem::replace(&mut g.core.settings, saved));
     }
 
     /// OK (`0x41ea2e`): the dialog read back into the settings.
@@ -1162,6 +1167,9 @@ impl Dialog {
                     let mut core = g.core.clone();
                     core.h = x;
                     core.v = y;
+                    if let Some(p) = &self.previewed {
+                        core.settings = p.clone();
+                    }
                     let mut cx = DrawCx {
                         surface: s,
                         assets,
@@ -1473,6 +1481,44 @@ mod tests {
         assert_eq!(back.label(0), b"427");
         assert!(d.changed);
         assert_eq!(d.key(0x0d, false), Result::Ok);
+    }
+
+    /// A change in the dialog shows in its picture at once (`0x41eb78`
+    /// draws the picture before putting the settings back): the Animal
+    /// Sound's picture follows the animal chosen, not only after OK.
+    #[test]
+    fn the_picture_previews_the_change() {
+        let t = Template {
+            style: 0,
+            ex_style: 0,
+            x: 0,
+            y: 0,
+            cx: 200,
+            cy: 200,
+            menu: Field::None,
+            class: Field::None,
+            title: "T".into(),
+            font: None,
+            items: vec![item(1, 0x80, 1, "OK"), item(107, 0x85, 3, "")],
+        };
+        let assets = Assets::default();
+        let mut d = Dialog::build(&assets, &t, Kind::Settings);
+        let mut g = Gadget {
+            core: crate::gadget::Core::new(Tag(*b"AnSd"), 2040, 1042),
+            behavior: crate::gadgets::sound_time::animal_sound(),
+        };
+        g.behavior.init(&mut g.core);
+        assert_eq!(g.core.settings.numbers[0], 1);
+        if let Ctl::Combo { items, sel, .. } = &mut d.controls[1].ctl {
+            items.extend(["Dog", "Cat", "Rooster", "Cow"].map(str::to_owned));
+            // The Dog.
+            *sel = Some(0);
+        }
+        d.changed = true;
+        d.preview(&mut g, &assets);
+        // The gadget keeps its settings until OK; the picture shows the dog.
+        assert_eq!(g.core.settings.numbers[0], 1);
+        assert_eq!(d.previewed.as_ref().map(|s| s.numbers[0]), Some(0));
     }
 
     #[test]
