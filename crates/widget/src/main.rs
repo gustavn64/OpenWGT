@@ -109,6 +109,7 @@ struct Args {
     open: bool,
     /// No CD given or found: the packs were switched on for it, not by
     /// the player (so Change CD... starts again without them).
+    #[cfg_attr(target_arch = "wasm32", allow(dead_code))]
     auto_open: bool,
     no_audio: bool,
     window: WindowOptions,
