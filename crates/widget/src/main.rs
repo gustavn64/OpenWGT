@@ -261,6 +261,9 @@ struct Workshop {
     options: Vec<std::ffi::OsString>,
     /// Started over on another CD: this one ends.
     done: bool,
+    /// The time not yet handed to the editor, which counts whole
+    /// milliseconds.
+    carry: Duration,
     /// Change CD... where there's no file dialog: the window asks for the
     /// CD image to be dropped on it instead of showing the game.
     #[cfg(not(target_arch = "wasm32"))]
@@ -314,7 +317,9 @@ impl App for Workshop {
         if self.asking.is_some() {
             return;
         }
-        let ms = u64::try_from(elapsed.as_millis()).unwrap_or(u64::MAX);
+        self.carry += elapsed;
+        let ms = u64::try_from(self.carry.as_millis()).unwrap_or(u64::MAX);
+        self.carry -= Duration::from_millis(ms);
         if let Some(dark) = self.theme.changed() {
             self.editor.set_system_dark(dark);
         }
@@ -682,6 +687,7 @@ fn start(args: &Args, assets: Assets) -> Result<(), platform::Error> {
         #[cfg(not(target_arch = "wasm32"))]
         options: restart_options(args),
         done: false,
+        carry: Duration::ZERO,
         #[cfg(not(target_arch = "wasm32"))]
         asking: None,
     };

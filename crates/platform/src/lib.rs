@@ -102,8 +102,15 @@ pub fn wheel_notches(rest: &mut (f64, f64), delta: MouseScrollDelta) -> (i32, i3
 
 /// How often the game is updated and redrawn.
 const FRAME: Duration = Duration::from_nanos(1_000_000_000 / 60);
-/// How early a frame may come and still step ([`Runner::step`]).
-const FRAME_SLACK: Duration = Duration::from_millis(2);
+/// The least time between two steps natively ([`Runner::step`]): a frame,
+/// less 2 ms for a timer that wakes a little early.
+#[cfg(not(target_arch = "wasm32"))]
+const NATIVE_STEP: Duration = Duration::from_nanos(1_000_000_000 / 60 - 2_000_000);
+/// In the browser every display frame steps, unless it comes sooner than
+/// this after the last (a display much faster than 60 Hz): frames come
+/// unevenly, and one a little early skipped is a visible jerk.
+#[cfg(target_arch = "wasm32")]
+const BROWSER_STEP: Duration = Duration::from_millis(6);
 
 /// What the game shows: palette indices, top row first, and 256 RGB colours.
 pub struct Frame<'a> {
@@ -435,12 +442,11 @@ struct Runner<A> {
 }
 
 impl<A: App> Runner<A> {
-    /// The game's step, if a frame's time has passed since the last:
-    /// whether it took one. A frame early by up to [`FRAME_SLACK`] counts,
-    /// so a display's frames a hair short of [`FRAME`] each still step.
-    fn step(&mut self) -> bool {
+    /// The game's step, if `min` has passed since the last: whether it
+    /// took one.
+    fn step(&mut self, min: Duration) -> bool {
         let now = Instant::now();
-        if now + FRAME_SLACK < self.last + FRAME {
+        if now < self.last + min {
             return false;
         }
         self.app.update(now - self.last);
@@ -597,31 +603,24 @@ impl<A: App> ApplicationHandler for Runner<A> {
         if let Some(ui) = self.app.take_ui_scale() {
             self.set_ui(ui);
         }
-        // In the browser the game's steps come with the display's frames
-        // (`requestAnimationFrame`, [`Runner::step`]), so that every step is
-        // shown and none twice: the timer only asks for the next frame.
-        // Elsewhere the timer steps.
+        // In the browser the game steps with the display's frames
+        // (`requestAnimationFrame`), each frame asking for the next, so
+        // that every step is shown once; this only starts the loop, or
+        // starts it again should a frame not come. Elsewhere a timer steps.
         #[cfg(target_arch = "wasm32")]
         {
-            let due = self.last + FRAME - FRAME_SLACK;
             let now = Instant::now();
-            if now < due {
-                event_loop.set_control_flow(ControlFlow::WaitUntil(due));
-            } else {
-                // Asked again if it hasn't come in a frame's time.
-                if self.frame_asked.is_none_or(|t| now >= t + FRAME)
-                    && let Some((w, _)) = &self.window
-                {
-                    w.request_redraw();
-                    self.frame_asked = Some(now);
-                }
-                // Should the frame not come, the timer asks again.
-                event_loop.set_control_flow(ControlFlow::WaitUntil(now + FRAME));
+            if self.frame_asked.is_none_or(|t| now >= t + 4 * FRAME)
+                && let Some((w, _)) = &self.window
+            {
+                w.request_redraw();
+                self.frame_asked = Some(now);
             }
+            event_loop.set_control_flow(ControlFlow::WaitUntil(now + 4 * FRAME));
         }
         #[cfg(not(target_arch = "wasm32"))]
         {
-            if self.step()
+            if self.step(NATIVE_STEP)
                 && let Some((w, _)) = &self.window
             {
                 w.request_redraw();
@@ -803,11 +802,16 @@ impl<A: App> Runner<A> {
             },
             WindowEvent::RedrawRequested => {
                 #[cfg(target_arch = "wasm32")]
-                {
-                    self.frame_asked = None;
-                    self.step();
-                }
+                self.step(BROWSER_STEP);
                 if let Some((w, d)) = &mut self.window {
+                    // The next frame, asked for once this one is over
+                    // (winit drops a request made during it).
+                    #[cfg(target_arch = "wasm32")]
+                    {
+                        let next = Arc::clone(w);
+                        wasm_bindgen_futures::spawn_local(async move { next.request_redraw() });
+                        self.frame_asked = Some(Instant::now());
+                    }
                     let frame = self.app.frame();
                     self.shown.update(w, event_loop, &frame, self.scale);
                     // Natively the window gets every frame (a window
