@@ -17,9 +17,8 @@ from ._parts_kit import (CREAM, leds, vents, arrow_down, bezel, channel, crop, g
 
 def pixel_word(c, cx, top, word, col):
     """`word` in the bold pixel font, centred on `cx`, its letters' tops at
-    `top` (an Å's ring a row above): for the small ON/OFF words in a
-    language whose word has a ring or dots too small for a smooth font
-    (PÅ)."""
+    `top` (an Å's ring a row above): the small ON/OFF words, in every
+    language (a smooth font loses PÅ's ring at that size)."""
     pixel_text(c, round(cx - pixel_text_w(word) / 2), top, word, col)
 
 ORANGE = (240, 150, 36)
@@ -339,12 +338,10 @@ def switch(ctx):
         c.knots(k)
         c.panel(0, 0, 28, 42, PANEL_BLUE, radius=3, bevel=1.5, gloss=False)
         lit, dim = (255, 240, 120), lighter(PANEL_BLUE, 0.35)
-        if tr("ON") == "ON":
-            c.text(14, 5.8, tr("ON"), 8.5, lit if on else dim, "sans", stroke=0.7 if on else 0, stroke_fill=INK)
-            c.text(14, 36.2, tr("OFF"), 8.5, dim if on else lit, "sans", stroke=0 if on else 0.7, stroke_fill=INK)
-        else:
-            pixel_word(c, 14, 3, tr("ON"), lit if on else dim)
-            pixel_word(c, 14, 33, tr("OFF"), dim if on else lit)
+        # The bold pixel font in every language, so that they look alike
+        # (a smooth font loses PÅ's ring at this size).
+        pixel_word(c, 14, 3, tr("ON"), lit if on else dim)
+        pixel_word(c, 14, 33, tr("OFF"), dim if on else lit)
         # the toggle's plate and slot
         c.rect(7, 12, 21, 30, fill=INK, radius=3)
         c.gradient(8, 13, 20, 29, [STEEL_L, STEEL, STEEL_D], radius=2)
@@ -404,10 +401,7 @@ def light_bulb(ctx):
         c.rect(7, 36, 35, 45.5, fill=INK, radius=2)
         c.rect(8, 37, 34, 44.5, fill=(30, 34, 46), radius=1.5)
         word, col = (tr("ON"), (255, 90, 60)) if on else (tr("OFF"), (170, 180, 200))
-        if tr("ON") == "ON":
-            c.text(21, 40.8, word, 8, col, "sans")
-        else:
-            pixel_word(c, 21, 38, word, col)
+        pixel_word(c, 21, 38, word, col)
         out.append(c)
     out.append(ctx.blank(3))
     return out
