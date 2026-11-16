@@ -380,6 +380,10 @@ impl App for Workshop {
         }
     }
 
+    fn long_press_doubles(&self) -> bool {
+        !self.editor.running
+    }
+
     fn frame(&self) -> Frame<'_> {
         #[cfg(not(target_arch = "wasm32"))]
         if let Some(screen) = &self.asking {

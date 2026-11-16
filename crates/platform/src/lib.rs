@@ -72,6 +72,13 @@ pub const MAX_UI_SCALE: f64 = 4.0;
 /// recommended 800×600.
 pub const DEFAULT_DESKTOP: (u32, u32) = (800, 600);
 
+/// How long a finger held still on a touch screen takes to be a double
+/// click ([`Runner::long_press`]): within the game's double-click time
+/// (500 ms) of its first press.
+const LONG_PRESS: Duration = Duration::from_millis(400);
+/// How far (game pixels) a finger may move and still be held still.
+const LONG_PRESS_SLOP: i32 = 4;
+
 /// How many pixels of a touchpad's scrolling make one wheel notch.
 pub const WHEEL_PIXELS: f64 = 40.0;
 
@@ -262,6 +269,12 @@ pub trait App {
     fn resize(&mut self, width: u32, height: u32);
     /// A file was dropped onto the window (a port extension).
     fn dropped(&mut self, _file: DroppedFile) {}
+    /// Whether a finger held still on a touch screen is a double click
+    /// ([`LONG_PRESS`]); while the game runs a held finger is a held
+    /// button.
+    fn long_press_doubles(&self) -> bool {
+        false
+    }
     /// A file or folder dropped onto the window natively, before it's
     /// read for [`App::dropped`]: whether the app took it as it is (a CD
     /// image, too big to read whole).
@@ -418,6 +431,12 @@ struct Runner<A> {
     mouse: (i32, i32),
     /// The finger that is the mouse on a touch screen, while it's down.
     finger: Option<u64>,
+    /// When and where the finger came down, while it may still be a long
+    /// press: held still, not yet one.
+    pressing: Option<(Instant, (i32, i32))>,
+    /// The finger's long press was a double click: the rest of its touch is
+    /// ignored.
+    pressed_long: bool,
     error: Option<Error>,
     /// The desktop last handed to [`App::resize`].
     desktop: (u32, u32),
@@ -465,6 +484,8 @@ impl<A: App> Runner<A> {
         match t.phase {
             TouchPhase::Started if self.finger.is_none() => {
                 self.finger = Some(t.id);
+                self.pressing = Some((Instant::now(), (x, y)));
+                self.pressed_long = false;
                 audio::resume();
                 self.mouse = (x, y);
                 self.app.input(Input::MouseMove { x, y });
@@ -474,12 +495,23 @@ impl<A: App> Runner<A> {
                     button: Button::Left,
                 });
             }
+            TouchPhase::Moved if self.finger == Some(t.id) && self.pressed_long => {}
             TouchPhase::Moved if self.finger == Some(t.id) && (x, y) != self.mouse => {
+                if self
+                    .pressing
+                    .is_some_and(|(_, p)| (p.0 - x).abs() > LONG_PRESS_SLOP || (p.1 - y).abs() > LONG_PRESS_SLOP)
+                {
+                    self.pressing = None;
+                }
                 self.mouse = (x, y);
                 self.app.input(Input::MouseMove { x, y });
             }
+            TouchPhase::Ended | TouchPhase::Cancelled if self.finger == Some(t.id) && self.pressed_long => {
+                self.finger = None;
+            }
             TouchPhase::Ended | TouchPhase::Cancelled if self.finger == Some(t.id) => {
                 self.finger = None;
+                self.pressing = None;
                 if (x, y) != self.mouse {
                     self.mouse = (x, y);
                     self.app.input(Input::MouseMove { x, y });
@@ -492,6 +524,34 @@ impl<A: App> Runner<A> {
             }
             _ => {}
         }
+    }
+
+    /// A finger held still for [`LONG_PRESS`] is a double click where it
+    /// came down (the game's double click opens a part's settings), if the
+    /// game takes it so: it lets go, and clicks there again.
+    fn long_press(&mut self) {
+        let Some((since, (x, y))) = self.pressing else { return };
+        if Instant::now() < since + LONG_PRESS {
+            return;
+        }
+        self.pressing = None;
+        if !self.app.long_press_doubles() {
+            return;
+        }
+        self.pressed_long = true;
+        let (mx, my) = self.mouse;
+        let left = Button::Left;
+        self.app.input(Input::MouseUp {
+            x: mx,
+            y: my,
+            button: left,
+        });
+        if (x, y) != self.mouse {
+            self.mouse = (x, y);
+            self.app.input(Input::MouseMove { x, y });
+        }
+        self.app.input(Input::MouseDown { x, y, button: left });
+        self.app.input(Input::MouseUp { x, y, button: left });
     }
 
     fn to_frame(&self, pos: PhysicalPosition<f64>) -> (i32, i32) {
@@ -637,6 +697,7 @@ impl<A: App> ApplicationHandler for Runner<A> {
                 self.app.dropped(f);
             }
         }
+        self.long_press();
         for t in clipboard::take_pasted() {
             self.app.pasted(t);
         }
@@ -843,7 +904,10 @@ impl<A: App> Runner<A> {
             },
             WindowEvent::RedrawRequested => {
                 #[cfg(target_arch = "wasm32")]
-                self.step(BROWSER_STEP);
+                {
+                    self.long_press();
+                    self.step(BROWSER_STEP);
+                }
                 if let Some((w, d)) = &mut self.window {
                     // The next frame, asked for once this one is over
                     // (winit drops a request made during it).
@@ -894,6 +958,8 @@ pub fn run<A: App + 'static>(title: &str, options: WindowOptions, app: A) -> Res
         frame_asked: None,
         mouse: (0, 0),
         finger: None,
+        pressing: None,
+        pressed_long: false,
         error: None,
         desktop: (0, 0),
         ui,
