@@ -48,6 +48,13 @@
     border: 2px solid; border-color: #fff #000 #000 #fff; box-shadow: inset -1px -1px #808080, inset 1px 1px #dfdfdf; }
   #start:active:not(:disabled) { border-color: #000 #fff #fff #000; box-shadow: inset 1px 1px #808080; }
   #start:disabled { color: #808080; text-shadow: 1px 1px #fff; }
+  /* On a phone held upright the game (made for 640 × 480 and up) comes
+     out tiny: a hint to turn it, gone when tapped or turned. */
+  #turn { display: none; position: fixed; left: 8px; right: 8px; bottom: 8px; padding: .6em 1em;
+    background: #ffffe1; color: #000; border: 1px solid #000; text-align: center; }
+  @media (orientation: portrait) and (pointer: coarse) and (max-width: 640px) {
+    #turn:not([hidden]) { display: block; }
+  }
   #status { position: fixed; left: 0; right: 0; bottom: 0; padding: .4em 1em; background: #000c; color: #eee;
     white-space: pre-wrap; }
   #status.error { background: #800c; }
@@ -77,6 +84,7 @@
     </div>
   </form>
 </div>
+<div id="turn" onclick="this.hidden = true">Turn the phone sideways for a bigger workshop.</div>
 <div id="status" style="display:none"></div>
 <script type="module">
   import init from "./widget.js";
