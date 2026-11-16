@@ -9,6 +9,7 @@ pub mod files;
 pub mod gadget;
 pub mod gadgets;
 pub mod gfx;
+pub mod lang;
 pub mod link;
 pub mod opendata;
 pub mod opengfx;

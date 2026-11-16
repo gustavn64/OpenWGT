@@ -11,7 +11,7 @@ use crate::gfx::IRect;
 use super::dialog::{self, Dialog};
 use super::file_dialog::{FileDialog, OPEN_WAV, Outcome, SAVE_WIDGET, Spec};
 use super::prompt::Answer;
-use super::{Editor, Next, Then, UNTITLED, worksheet};
+use super::{Editor, Next, Then, worksheet};
 
 /// The Mac version's largest screen (`0x42932b` squeezes into it less 14
 /// pixels a side, `(14, 14)-(706, 526)`).
@@ -270,7 +270,7 @@ impl Editor {
                     self.path
                         .clone()
                         .or_else(|| self.drop_name.clone())
-                        .unwrap_or_else(|| UNTITLED.to_owned())
+                        .unwrap_or_else(|| self.untitled())
                 };
                 self.ask_file(SAVE_WIDGET, &name, Then::SaveAsPath(next));
             }

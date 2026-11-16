@@ -30,6 +30,7 @@ pub mod worksheet;
 pub use download::{Download, Dropped};
 pub use links::Links;
 
+use crate::lang::{tr, trf};
 use formats::cursor::Cursor as CursorPic;
 use formats::pe::{RT_CURSOR, RT_GROUP_CURSOR};
 
@@ -60,7 +61,7 @@ const DOUBLE_CLICK_MS: u64 = 500;
 const DOUBLE_CLICK_D: i32 = 2;
 /// The title of message boxes (`AfxMessageBox`).
 const APP: &str = "OpenWGT";
-/// The document's default name (string 2).
+/// The document's default name when string 2 hasn't one.
 const UNTITLED: &str = "untitled.wgt";
 
 /// The Label's tag (`TxLb`).
@@ -366,6 +367,8 @@ pub struct Editor {
 impl Editor {
     #[must_use]
     pub fn new(assets: Assets, doc: Document, width: u32, height: u32) -> Editor {
+        // The port's own words in the game's language.
+        crate::lang::set(assets.lang);
         let pictures = Pictures::default();
         let tray = Tray::new(&assets, &pictures);
         let menu = Menu::load(&assets);
@@ -897,7 +900,21 @@ impl Editor {
             .and_then(|p| std::path::Path::new(p).file_name())
             .map(|n| n.to_string_lossy().into_owned())
             .or_else(|| self.drop_name.clone())
-            .unwrap_or_else(|| UNTITLED.to_owned())
+            .unwrap_or_else(|| self.untitled())
+    }
+
+    /// A new document's name: the document template's (string 2, MFC's
+    /// `docName`, "untitled.wgt", the Swedish CD's "namnlos.wgt").
+    fn untitled(&self) -> String {
+        self.assets
+            .string(2)
+            .and_then(|t| {
+                t.split('\n')
+                    .map(str::trim)
+                    .find(|f| f.to_ascii_lowercase().ends_with(".wgt"))
+                    .map(str::to_owned)
+            })
+            .unwrap_or_else(|| tr(UNTITLED).to_owned())
     }
 
     /// Alert `n` (string `8000 + n`, `0x410b5b`).
@@ -915,7 +932,12 @@ impl Editor {
     /// asks (`0x417027`).
     fn confirm_save(&mut self, next: Next) {
         if self.dirty && (matches!(next, Next::Exit | Next::ChangeCd) || !self.puzzle.active) {
-            let text = format!("Save changes to {}?", self.display_name());
+            // MFC's own words (`AFX_IDP_ASK_TO_SAVE`, string 0xf103).
+            let name = self.display_name();
+            let text = self
+                .assets
+                .string(0xf103)
+                .map_or_else(|| trf("Save changes to {}?", &[&name]), |t| t.replace("%1", &name));
             self.message(
                 &text,
                 &[Answer::Yes, Answer::No, Answer::Cancel],
@@ -1172,7 +1194,7 @@ impl Editor {
             Some(file) => {
                 self.help = Some(help::Help::new(&self.assets, file, self.worksheet(), self.help_at));
             }
-            _ => self.message(help::MISSING, &[Answer::Retry, Answer::Cancel], Then::HelpMissing),
+            _ => self.message(tr(help::MISSING), &[Answer::Retry, Answer::Cancel], Then::HelpMissing),
         }
     }
 
@@ -1211,10 +1233,10 @@ impl Editor {
     fn fit_work_area(&mut self) {
         let e = worksheet::extents(&self.doc);
         if e.is_empty() {
-            self.message("Nothing to fit", &[Answer::Ok], Then::Nothing);
+            self.message(tr("Nothing to fit"), &[Answer::Ok], Then::Nothing);
         } else if e.x0 >= 15 && e.y0 >= 15 && e.x1 <= 625 && e.y1 <= 465 {
             self.message(
-                "Your widget is already fit to any Windows screen",
+                tr("Your widget is already fit to any Windows screen"),
                 &[Answer::Ok],
                 Then::Nothing,
             );

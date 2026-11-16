@@ -5,9 +5,10 @@
 //! link given at the start (the page's address in the browser, an
 //! argument natively) opens the same way.
 
+use crate::lang::{tr, trf};
 use crate::link;
 
-use super::{Answer, Editor, Then, UNTITLED, download::Dropped};
+use super::{Answer, Editor, Then, download::Dropped};
 
 /// How the editor reaches the clipboard, and where its links point.
 pub struct Links {
@@ -36,17 +37,17 @@ impl Editor {
     pub(super) fn copy_link(&mut self) {
         self.doc.tray_limits = self.tray.limits();
         let bytes = self.doc.save();
-        let name = Some(self.display_name()).filter(|n| n != UNTITLED);
+        let untitled = self.untitled();
+        let name = Some(self.display_name()).filter(|n| *n != untitled);
         let Some(l) = &mut self.links else { return };
         let url = link::encode(&l.base, name.as_deref(), &bytes);
         let text = if (l.copy)(&url) {
-            format!(
+            trf(
                 "A link to {} is on the clipboard ({} characters).",
-                name.as_deref().unwrap_or("the widget"),
-                url.len()
+                &[name.as_deref().unwrap_or(tr("the widget")), &url.len().to_string()],
             )
         } else {
-            "The link could not be copied.".to_owned()
+            tr("The link could not be copied.").to_owned()
         };
         self.message(&text, &[Answer::Ok], Then::Nothing);
     }
@@ -61,12 +62,12 @@ impl Editor {
     /// The clipboard's text came: the widget in it opens as a dropped
     /// one ([`Editor::drop_file`]), else the player hears there's none.
     pub fn paste_link(&mut self, text: &str) {
-        self.open_text(text, "The clipboard holds no link to a widget.");
+        self.open_text(text, tr("The clipboard holds no link to a widget."));
     }
 
     /// A link given at the start opens as [`Editor::paste_link`]'s.
     pub fn open_link(&mut self, text: &str) {
-        self.open_text(text, "That link holds no widget.");
+        self.open_text(text, tr("That link holds no widget."));
     }
 
     fn open_text(&mut self, text: &str, no_link: &str) {

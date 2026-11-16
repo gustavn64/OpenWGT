@@ -45,17 +45,20 @@
     <div class="title"><img src="icon.png" alt="">OpenWGT</div>
     <div class="body">
       <p id="setup-error" hidden></p>
-      <label for="cd-file">The game's CD image (.iso)</label>
-      <p id="cd-stored" class="stored" hidden>Kept from last time: <span id="cd-name"></span>.
-        Pick another to replace it.</p>
+      <label for="cd-file" id="t-cd">The game's CD image (.iso)</label>
+      <p id="cd-stored" class="stored" hidden><span id="t-kept">Kept from last time:</span>
+        <span id="cd-name"></span><span id="t-kept2">. Pick another to replace it.</span></p>
       <input type="file" id="cd-file" accept=".iso">
-      <p class="note">The Mac/PC CD of Widget Workshop: A Mad Scientist's Laboratory. The image stays in this
+      <p class="note" id="t-note">Widget Workshop: A Mad Scientist's Laboratory, the Mac/PC CD. The image stays in this
         browser's storage and isn't sent anywhere; so do the widgets you save. Widget files dragged
         onto the game open, and File ▸ Save to Download and Download a Widget give them back. File ▸
         Copy Link to Widget makes a link that opens the widget for anyone with the CD.</p>
-      <div class="buttons"><a class="button" href="?open">Play without the CD</a>
+      <div class="buttons"><a class="button" id="open" href="?open">Play without the CD</a>
         <button id="start" type="submit" disabled>Start</button></div>
-      <p class="note">Without the CD the game runs on OpenWGT's own pictures, sounds, texts and puzzles.</p>
+      <p class="note"><span id="t-open-note">Without the CD the game runs on OpenWGT's own pictures, sounds,
+        texts and puzzles, in</span> <select id="lang" aria-label="Language">
+        <option value="en">English</option><option value="sv">svenska</option></select>.
+        <span id="t-cd-lang">With the CD it speaks the CD's language.</span></p>
     </div>
   </form>
 </div>

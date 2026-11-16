@@ -183,6 +183,16 @@ fn parse_module(m: Module, bytes: &[u8]) -> Result<pe::Resources, Error> {
     }
 }
 
+/// The language of the game on `cd` (its `WIDGET.EXE`'s resources), to
+/// choose the port's own packs in it before loading; `None` if there's no
+/// game there or it doesn't say (the OS/2 CD: English).
+#[must_use]
+pub fn cd_language(cd: &dyn Source) -> Option<crate::lang::Lang> {
+    let dir = game_dir(cd)?;
+    let exe = cd.read(&join(dir, Module::Exe.file()))?;
+    crate::lang::Lang::of_resources(&parse_module(Module::Exe, &exe).ok()?)
+}
+
 /// The port's own packs to use instead of the CD's pictures and sounds
 /// ([`Assets::load_with`]).
 #[derive(Default, Clone, Copy)]
@@ -204,6 +214,10 @@ pub struct Assets {
     /// The port's own graphics' and sounds' ([`Packs`]), between the
     /// overrides and the CD's.
     own: BTreeMap<(Module, u32, u32), Vec<u8>>,
+    /// The language of the game's words: the CD's (its resources'), else
+    /// the data pack's as the host chose it. The port's own words follow
+    /// it (`crate::lang`).
+    pub lang: crate::lang::Lang,
     /// What the packs had that couldn't be used, for the host to tell.
     pub pack_problems: Vec<String>,
     /// The bitmap fonts: the overrides', the CD's, then
@@ -317,6 +331,9 @@ impl Assets {
                 os2 |= lx::is_lx(&bytes);
                 self.modules.insert(m, parse_module(m, &bytes)?);
             }
+        }
+        if let Some(lang) = self.modules.get(&Module::Exe).and_then(crate::lang::Lang::of_resources) {
+            self.lang = lang;
         }
         for fon in ["SSERIFE.FON", "SMALLE.FON"].into_iter().filter(|_| cd_fonts) {
             for d in [FONT_DIR, dir, ""] {

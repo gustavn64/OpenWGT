@@ -13,6 +13,9 @@ platform = { path = "../platform" }
 web-time = "1.1"
 # `wasmbind`: the browser's clock on wasm, where `std::time` panics.
 chrono = { version = "0.4", default-features = false, features = ["clock", "wasmbind"] }
+# The system's (or the browser's) language, for the port's own packs
+# without a CD.
+sys-locale = { version = "0.3", features = ["js"] }
 
 # The file dialog that asks for the CD when it isn't given (`pick`):
 # natively only, the browser's page asks for it itself.

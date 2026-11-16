@@ -59,7 +59,7 @@ impl Editor {
                 }
             }
             Outcome::Reset => self.message(
-                puzzle_dialog::RESET_QUESTION,
+                crate::lang::tr(puzzle_dialog::RESET_QUESTION),
                 &[Answer::Ok, Answer::Cancel],
                 Then::ResetPuzzles,
             ),

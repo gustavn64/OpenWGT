@@ -221,14 +221,20 @@ async fn run() -> Result<(), String> {
     }
     // `?opengfx`, `?opensfx`: the built-in packs (a folder means nothing
     // here).
-    let graphics = (open || args.opengfx.is_some()).then(engine::opengfx::builtin);
+    // `?lang=sv`: the packs' language (the page's choice), else the
+    // browser's; a CD's own wins.
+    let lang = crate::language(&args, cd.as_deref());
+    let graphics = (open || args.opengfx.is_some()).then(|| engine::opengfx::builtin_for(lang));
     let sounds = (open || args.opensfx.is_some()).then(engine::opensfx::builtin);
-    let data = (open || args.opendata.is_some()).then(engine::opendata::builtin);
+    let data = (open || args.opendata.is_some()).then(|| engine::opendata::builtin_for(lang));
     let packs = engine::assets::Packs {
-        graphics: graphics.as_ref().map(|g| g as &dyn engine::assets::Source),
+        graphics: graphics.as_deref(),
         sounds: sounds.as_ref().map(|g| g as &dyn engine::assets::Source),
         data: data.as_ref().map(|g| g as &dyn engine::assets::Source),
     };
-    let assets = crate::load(Path::new("CD"), cd.as_deref(), packs, None);
+    let mut assets = crate::load(Path::new("CD"), cd.as_deref(), packs, None);
+    if cd.is_none() {
+        assets.lang = lang;
+    }
     crate::start(&args, assets).map_err(|e| e.to_string())
 }

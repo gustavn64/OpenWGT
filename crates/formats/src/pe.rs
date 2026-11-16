@@ -72,6 +72,10 @@ struct Section {
 #[derive(Debug, Clone, Default)]
 pub struct Resources {
     pub entries: BTreeMap<(u32, u32), Vec<u8>>,
+    /// The language most of them are in (a Windows `LANGID`: `0x0409`
+    /// U.S. English, `0x041d` Swedish), language-neutral ones aside;
+    /// `None` if all are neutral.
+    pub language: Option<u16>,
 }
 
 impl Resources {
@@ -115,14 +119,20 @@ impl Resources {
         };
         let root = file_offset(rsrc_rva)?;
         let mut out = Resources::default();
+        let mut languages: BTreeMap<u16, usize> = BTreeMap::new();
         for (typ, type_dir) in Self::dir(exe, root, root)? {
             let Some(type_dir) = type_dir else { continue };
             for (id, id_dir) in Self::dir(exe, root, type_dir)? {
                 let Some(id_dir) = id_dir else { continue };
                 // The first language.
-                let Some((_, None)) = Self::dir(exe, root, id_dir)?.into_iter().next() else {
+                let Some((lang, None)) = Self::dir(exe, root, id_dir)?.into_iter().next() else {
                     continue;
                 };
+                if let Ok(lang) = u16::try_from(lang)
+                    && lang & 0x3ff != 0
+                {
+                    *languages.entry(lang).or_default() += 1;
+                }
                 let leaf_at = root + (u32_at(exe, id_dir + 16 + 4)? & 0x7fff_ffff) as usize;
                 let data_rva = u32_at(exe, leaf_at)?;
                 let size = u32_at(exe, leaf_at + 4)? as usize;
@@ -131,6 +141,7 @@ impl Resources {
                 out.entries.insert((typ, id), data.to_vec());
             }
         }
+        out.language = languages.into_iter().max_by_key(|&(_, n)| n).map(|(lang, _)| lang);
         Ok(out)
     }
 

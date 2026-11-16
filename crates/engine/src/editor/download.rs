@@ -4,11 +4,12 @@
 //! File menu's Save to Download and Download a Widget hand a widget to
 //! the player as a download (docs/web.md).
 
+use crate::lang::tr;
 use std::path::Path;
 
 use crate::doc::Document;
 
-use super::{Editor, Next, UNTITLED};
+use super::{Editor, Next};
 
 /// Gives the player the file `name` with these bytes; false if it failed.
 pub type Download = Box<dyn FnMut(&str, &[u8]) -> bool>;
@@ -76,7 +77,7 @@ impl Editor {
     fn give(&mut self, name: &str, data: &[u8]) {
         if !self.download.as_mut().is_some_and(|d| d(name, data)) {
             self.message(
-                "The widget could not be downloaded.",
+                tr("The widget could not be downloaded."),
                 &[super::Answer::Ok],
                 super::Then::Nothing,
             );
@@ -88,8 +89,9 @@ impl Editor {
     pub(super) fn save_download(&mut self) {
         self.doc.tray_limits = self.tray.limits();
         let bytes = self.doc.save();
+        let untitled = self.untitled();
         let name = Some(self.display_name())
-            .filter(|n| n != UNTITLED)
+            .filter(|n| *n != untitled)
             .unwrap_or_else(|| "WIDGET.WGT".to_owned());
         self.give(&name, &bytes);
     }

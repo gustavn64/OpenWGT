@@ -25,20 +25,24 @@ fn files(dir: &Path, base: &Path, out: &mut Vec<(String, PathBuf)>) {
 
 fn main() {
     for pack in ["opengfx", "opensfx", "opendata"] {
-        embed(pack);
+        embed(pack, "BUILTIN");
+    }
+    // The Swedish ones: OpenWGFX's pictures with words, OpenWDATA whole.
+    for pack in ["opengfx-sv", "opendata-sv"] {
+        embed(pack, "BUILTIN_SV");
     }
 }
 
-/// Writes `$OUT_DIR/<pack>_files.rs`: `BUILTIN`, the files of folder
-/// `pack`.
-fn embed(pack: &str) {
+/// Writes `$OUT_DIR/<pack>_files.rs`: the constant `name`, the files of
+/// folder `pack` (none if there's no such folder).
+fn embed(pack: &str, name: &str) {
     let dir = Path::new(&std::env::var("CARGO_MANIFEST_DIR").unwrap()).join(pack);
     // A folder: Cargo looks at everything in it.
     println!("cargo:rerun-if-changed={}", dir.display());
     let mut found = Vec::new();
     files(&dir, &dir, &mut found);
     found.sort();
-    let mut src = String::from("/// The pack's files (`build.rs`).\nconst BUILTIN: &[(&str, &[u8])] = &[\n");
+    let mut src = format!("/// The pack's files (`build.rs`).\nconst {name}: &[(&str, &[u8])] = &[\n");
     for (rel, path) in &found {
         let _ = writeln!(src, "    ({rel:?}, include_bytes!({:?})),", path.display().to_string());
     }

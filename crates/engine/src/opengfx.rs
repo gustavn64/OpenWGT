@@ -49,6 +49,48 @@ pub fn builtin() -> Embedded {
 }
 
 include!(concat!(env!("OUT_DIR"), "/opengfx_files.rs"));
+include!(concat!(env!("OUT_DIR"), "/opengfx-sv_files.rs"));
+
+/// The built-in pack for `lang`: the English pictures, under the
+/// language's own where it has them (its pictures with words,
+/// `crates/engine/opengfx-sv`).
+#[must_use]
+pub fn builtin_for(lang: crate::lang::Lang) -> Box<dyn Source> {
+    match lang {
+        crate::lang::Lang::Sv if !BUILTIN_SV.is_empty() => Box::new(Overlay {
+            top: Box::new(Embedded(BUILTIN_SV)),
+            base: Box::new(builtin()),
+        }),
+        _ => Box::new(builtin()),
+    }
+}
+
+/// A pack's pictures over another's: a frame `top` has stands in for
+/// `base`'s. The sheets' and pointers' tables are `base`'s (`top` draws
+/// the same frames at the same places).
+pub struct Overlay {
+    pub top: Box<dyn Source>,
+    pub base: Box<dyn Source>,
+}
+
+impl Source for Overlay {
+    fn read(&self, path: &str) -> Option<Vec<u8>> {
+        if path.eq_ignore_ascii_case(SHEETS_FILE) || path.eq_ignore_ascii_case(CURSORS_FILE) {
+            return self.base.read(path);
+        }
+        self.top.read(path).or_else(|| self.base.read(path))
+    }
+
+    fn list(&self, path: &str) -> Vec<String> {
+        let mut names = self.base.list(path);
+        for n in self.top.list(path) {
+            if !names.iter().any(|m| m.eq_ignore_ascii_case(&n)) {
+                names.push(n);
+            }
+        }
+        names
+    }
+}
 
 /// Files built into the program, as a [`Source`].
 pub struct Embedded(pub &'static [(&'static str, &'static [u8])]);

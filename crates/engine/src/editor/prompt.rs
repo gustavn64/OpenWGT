@@ -4,6 +4,7 @@
 
 use crate::assets::Assets;
 use crate::gfx::{IRect, Surface};
+use crate::lang::tr;
 
 use super::ui;
 
@@ -22,10 +23,10 @@ impl Answer {
     fn label(self) -> &'static str {
         match self {
             Answer::Ok => "OK",
-            Answer::Cancel => "Cancel",
-            Answer::Yes => "&Yes",
-            Answer::No => "&No",
-            Answer::Retry => "&Retry",
+            Answer::Cancel => tr("Cancel"),
+            Answer::Yes => tr("&Yes"),
+            Answer::No => tr("&No"),
+            Answer::Retry => tr("&Retry"),
         }
     }
 }

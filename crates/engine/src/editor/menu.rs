@@ -2,6 +2,7 @@
 //! drawn in the toolbars' style ([`super::ui`]) at the top of the frame,
 //! since the platform has no native menus (docs/editor-layout.md 5).
 
+use crate::lang::tr;
 use formats::dialog::{MF_CHECKED, MF_GRAYED, MenuItem, parse_menu};
 use formats::pe::{RT_ACCELERATOR, RT_MENU};
 
@@ -180,8 +181,8 @@ impl Menu {
         self.add_file_items(
             &[cmd::SAVE_INTO],
             &[
-                (cmd::SAVE_DOWNLOAD, "Save to Do&wnload"),
-                (cmd::DOWNLOAD, "&Download a Widget..."),
+                (cmd::SAVE_DOWNLOAD, tr("Save to Do&wnload")),
+                (cmd::DOWNLOAD, tr("&Download a Widget...")),
             ],
         );
     }
@@ -192,8 +193,8 @@ impl Menu {
         self.add_file_items(
             &[cmd::DOWNLOAD, cmd::SAVE_INTO],
             &[
-                (cmd::PASTE, "Open Widget &Link\tCtrl+V"),
-                (cmd::COPY_LINK, "Copy Lin&k to Widget"),
+                (cmd::PASTE, tr("Open Widget &Link\tCtrl+V")),
+                (cmd::COPY_LINK, tr("Copy Lin&k to Widget")),
             ],
         );
     }
@@ -215,7 +216,7 @@ impl Menu {
             items.push(MenuItem::Separator);
             items.push(MenuItem::Command {
                 id: cmd::SETTINGS,
-                text: "&Settings...".to_owned(),
+                text: tr("&Settings...").to_owned(),
                 flags: 0,
             });
         }

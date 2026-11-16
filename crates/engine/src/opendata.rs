@@ -36,6 +36,17 @@ pub fn builtin() -> Embedded {
 }
 
 include!(concat!(env!("OUT_DIR"), "/opendata_files.rs"));
+include!(concat!(env!("OUT_DIR"), "/opendata-sv_files.rs"));
+
+/// The built-in pack in `lang` (`crates/engine/opendata-sv` for Swedish),
+/// English where there's none.
+#[must_use]
+pub fn builtin_for(lang: crate::lang::Lang) -> Embedded {
+    match lang {
+        crate::lang::Lang::Sv if !BUILTIN_SV.is_empty() => Embedded(BUILTIN_SV),
+        _ => builtin(),
+    }
+}
 
 /// What a pack gives.
 #[derive(Default)]

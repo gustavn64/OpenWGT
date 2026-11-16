@@ -8,6 +8,7 @@
 //! state that [`Editor::update`] advances while the samples come in.
 
 use crate::gadgets::sound_time::{TAPE_LEN, TapePlayer, WavError};
+use crate::lang::tr;
 use crate::sim::SoundCmd;
 
 use super::prompt::Answer;
@@ -101,7 +102,7 @@ impl Editor {
             d.changed = true;
         }
         self.doc.gadgets[g].core.broken = true;
-        self.message(RECORD_ERROR, &[Answer::Ok], Then::Nothing);
+        self.message(tr(RECORD_ERROR), &[Answer::Ok], Then::Nothing);
     }
 
     /// The Sound Switches' listening fed from the microphone, opened while
@@ -134,14 +135,14 @@ impl Editor {
     pub(super) fn import_wav_path(&mut self, g: usize, path: &str) {
         let error = match self.fs().read(std::path::Path::new(path)) {
             // The backtick is the binary's (`0x496a37`).
-            Err(_) => Some("Can`t open file"),
+            Err(_) => Some(tr("Can`t open file")),
             Ok(bytes) => {
                 let gadget = &mut self.doc.gadgets[g];
                 match gadget.behavior.as_any_mut().downcast_mut::<TapePlayer>() {
                     Some(t) => match t.import(&mut gadget.core, &bytes) {
                         Ok(()) => None,
-                        Err(WavError::BadFormat) => Some("Bad file format"),
-                        Err(WavError::Not8Bit) => Some("Can't import non-8 bit sound"),
+                        Err(WavError::BadFormat) => Some(tr("Bad file format")),
+                        Err(WavError::Not8Bit) => Some(tr("Can't import non-8 bit sound")),
                     },
                     None => None,
                 }

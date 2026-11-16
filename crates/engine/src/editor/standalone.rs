@@ -11,6 +11,7 @@
 //! original did: it runs on Windows (or Wine) like one made in 1995, and
 //! Import reads either.
 
+use crate::lang::tr;
 use std::path::Path;
 
 use formats::pe;
@@ -20,7 +21,7 @@ use crate::doc::Document;
 
 use super::file_dialog::{IMPORT_EXE, SAVE_EXE};
 use super::prompt::Answer;
-use super::{Editor, Then, UNTITLED};
+use super::{Editor, Then};
 
 /// Whether File ▸ Save Into a Stand-Alone Widget is offered. Off for now:
 /// the port doesn't write `.EXE`s. Import still works.
@@ -211,7 +212,7 @@ impl Editor {
     /// must be there; the Fit dialog (10014, Cancel stops); then the file.
     pub(super) fn save_into(&mut self) {
         if self.assets.runtime.is_none() {
-            self.message(NO_RUNTIME, &[Answer::Ok], Then::Nothing);
+            self.message(tr(NO_RUNTIME), &[Answer::Ok], Then::Nothing);
             return;
         }
         self.fit_dialog(Some(super::file::Step::Into));
@@ -222,7 +223,7 @@ impl Editor {
         let name = if self.puzzle.active {
             crate::puzzle::DOC_NAME.to_owned()
         } else {
-            self.path.clone().unwrap_or_else(|| UNTITLED.to_owned())
+            self.path.clone().unwrap_or_else(|| self.untitled())
         };
         self.ask_file(SAVE_EXE, &swap_ext(&name, ".EXE"), Then::SaveInto);
     }

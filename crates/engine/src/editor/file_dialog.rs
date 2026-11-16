@@ -13,6 +13,7 @@
 //! `lpstrFile`). The layout is the Explorer-style template's (`comdlg32`
 //! 1547) without the hidden "Open as read-only" (`OFN_HIDEREADONLY`).
 
+use crate::lang::{tr, trf};
 use std::path::{Path, PathBuf};
 
 use crate::assets::Assets;
@@ -266,7 +267,7 @@ pub fn matches(patterns: &str, name: &str) -> bool {
 fn cd_label(assets: &Assets) -> String {
     assets
         .string(SAMPLES_LABEL)
-        .unwrap_or_else(|| "Widget Workshop CD".to_owned())
+        .unwrap_or_else(|| tr("Widget Workshop CD").to_owned())
 }
 
 /// The string naming the samples' drive in OpenWDATA.
@@ -652,8 +653,9 @@ impl FileDialog {
                 .unwrap_or_default();
             let dir = p.parent().map(Path::to_path_buf).unwrap_or_default();
             if !fs.is_dir(&dir) {
-                return self.tell(&format!(
-                    "{text}\nPath not found.\nPlease verify the correct path was given."
+                return self.tell(&trf(
+                    "{}\nPath not found.\nPlease verify the correct path was given.",
+                    &[&text],
                 ));
             }
             self.pattern = pattern;
@@ -669,8 +671,9 @@ impl FileDialog {
         }
         let dir = p.parent().map(Path::to_path_buf).unwrap_or_default();
         if !fs.is_dir(&dir) {
-            return self.tell(&format!(
-                "{text}\nPath not found.\nPlease verify the correct path was given."
+            return self.tell(&trf(
+                "{}\nPath not found.\nPlease verify the correct path was given.",
+                &[&text],
             ));
         }
         // The default extension for a name without one; Open takes the
@@ -684,16 +687,20 @@ impl FileDialog {
         }
         if self.spec.save {
             if fs.is_file(&p) {
-                let text = format!("{} already exists.\nDo you want to replace it?", p.display());
+                let text = trf(
+                    "{} already exists.\nDo you want to replace it?",
+                    &[&p.display().to_string()],
+                );
                 self.asked = Some((
-                    Prompt::new(self.spec.title, &text, &[Answer::Yes, Answer::No]),
+                    Prompt::new(tr(self.spec.title), &text, &[Answer::Yes, Answer::No]),
                     Asked::Replace(p),
                 ));
                 return Outcome::Open;
             }
         } else if !fs.is_file(&p) {
-            return self.tell(&format!(
-                "{text}\nFile not found.\nPlease verify the correct file name was given."
+            return self.tell(&trf(
+                "{}\nFile not found.\nPlease verify the correct file name was given.",
+                &[&text],
             ));
         }
         Outcome::Done(p)
@@ -707,7 +714,7 @@ impl FileDialog {
 
     /// A message box over the dialog, then back to it.
     fn tell(&mut self, text: &str) -> Outcome {
-        self.asked = Some((Prompt::new(self.spec.title, text, &[Answer::Ok]), Asked::Back));
+        self.asked = Some((Prompt::new(tr(self.spec.title), text, &[Answer::Ok]), Asked::Back));
         Outcome::Open
     }
 
@@ -977,7 +984,7 @@ impl FileDialog {
             s,
             font,
             self.window,
-            self.spec.title,
+            tr(self.spec.title),
             self.pressed == Some(Press::Close),
         );
         let old = s.clip();
@@ -990,7 +997,7 @@ impl FileDialog {
             let rect = r(rect);
             ui::label(s, font, rect.x0, rect.y0, text, ui::BLACK);
         };
-        label(s, self.r.look_label, if save { "Save &in:" } else { "Look &in:" });
+        label(s, self.r.look_label, tr(if save { "Save &in:" } else { "Look &in:" }));
         // "Look in": the folder's icon and name.
         let (here, icon) = self.here(fs);
         Self::combo(
@@ -1049,7 +1056,7 @@ impl FileDialog {
         if self.has_bar() {
             self.draw_bar(s, font);
         }
-        label(s, self.r.name_label, "File &name:");
+        label(s, self.r.name_label, tr("File &name:"));
         let n = r(self.r.name);
         s.fill(n, ui::WHITE);
         ui::sunken(s, n);
@@ -1071,9 +1078,9 @@ impl FileDialog {
         label(
             s,
             self.r.type_label,
-            if save { "Save as &type:" } else { "Files of &type:" },
+            tr(if save { "Save as &type:" } else { "Files of &type:" }),
         );
-        let desc = self.spec.filter.get(self.filter).map_or("", |f| f.0);
+        let desc = self.spec.filter.get(self.filter).map_or("", |f| tr(f.0));
         Self::combo(
             s,
             font,
@@ -1082,13 +1089,13 @@ impl FileDialog {
             Some(desc),
             self.dropped == Some(Dropped::Types),
         );
-        let ok = if save { "&Save" } else { "&Open" };
+        let ok = tr(if save { "&Save" } else { "&Open" });
         ui::button(s, font, r(self.r.ok), ok, self.pressed == Some(Press::Ok), true, true);
         ui::button(
             s,
             font,
             r(self.r.cancel),
-            "Cancel",
+            tr("Cancel"),
             self.pressed == Some(Press::Cancel),
             false,
             true,
@@ -1113,7 +1120,7 @@ impl FileDialog {
                     .filter
                     .iter()
                     .enumerate()
-                    .map(|(k, f)| (f.0.to_owned(), None, 0, k == self.filter))
+                    .map(|(k, f)| (tr(f.0).to_owned(), None, 0, k == self.filter))
                     .collect(),
             };
             for (k, (text, icon, depth, hot)) in rows.into_iter().enumerate() {
