@@ -7,6 +7,12 @@
 //! - `Done` 1: a (stale, ignored) count word, then one Mac `Boolean` word per
 //!   puzzle (`0x0100` solved), as many as the resource's size allows.
 //!
+//! The Swedish edition (Uppfinnarverkstan) ships the same resources in a
+//! flat file of its own instead ([`ResFork::parse_flat`]): one after
+//! another, each its type, its ID (`u32`, little-endian), its name in 64
+//! bytes (NUL-terminated, Windows-1252) and its length (`u32`), then its
+//! data.
+//!
 //! The game also keeps the solved flags in `WIDGET.INI` (`[Widget Workshop]
 //! Done=`) as a hex string ([`parse_done_ini`], [`format_done_ini`]), and ORs
 //! the two together when it reads them.
@@ -73,9 +79,14 @@ impl ResFork {
     /// last type's reference list, and data at fork + `0x100` + offset (the
     /// header's other fields are ignored).
     ///
+    /// A flat file ([`ResFork::parse_flat`]) is read as one.
+    ///
     /// # Errors
     /// If the map points past the end.
     pub fn parse(file: &[u8]) -> Result<ResFork, Error> {
+        if let Some(fork) = Self::parse_flat(file) {
+            return Ok(fork);
+        }
         let base = if be32(file, 0)? == 0x100 { 0 } else { 0x80 };
         let map = base + be32(file, base + 4)? as usize;
         let type_list = map + 0x1c;
@@ -124,6 +135,44 @@ impl ResFork {
         Ok(ResFork { types })
     }
 
+    /// The Swedish edition's flat file: records of a type code, an ID
+    /// (`u32` LE), a 64-byte NUL-terminated name and a length (`u32` LE),
+    /// each followed by its data, to the file's end. `None` if `file` isn't
+    /// one (a record that doesn't fit, a type that isn't four letters).
+    #[must_use]
+    pub fn parse_flat(file: &[u8]) -> Option<ResFork> {
+        const HEAD: usize = 4 + 4 + 64 + 4;
+        let le32 = |at: usize| -> Option<u32> { Some(u32::from_le_bytes(file.get(at..at + 4)?.try_into().ok()?)) };
+        let mut types: Vec<([u8; 4], Vec<Resource>)> = Vec::new();
+        let mut at = 0;
+        while at < file.len() {
+            let code: [u8; 4] = file.get(at..at + 4)?.try_into().ok()?;
+            if !code.iter().all(u8::is_ascii_alphanumeric) {
+                return None;
+            }
+            let id = i16::try_from(le32(at + 4)?).ok()?;
+            let name_field = file.get(at + 8..at + 72)?;
+            let name = name_field.split(|&b| b == 0).next()?.to_vec();
+            let data_len = le32(at + 72)? as usize;
+            let data_at = at + HEAD;
+            if file.len() < data_at + data_len {
+                return None;
+            }
+            let r = Resource {
+                id,
+                name,
+                data_at,
+                data_len,
+            };
+            match types.iter_mut().find(|(c, _)| *c == code) {
+                Some((_, list)) => list.push(r),
+                None => types.push((code, vec![r])),
+            }
+            at = data_at + data_len;
+        }
+        (!types.is_empty()).then_some(ResFork { types })
+    }
+
     /// The resource `id` of type `code` (`0x414102` looks up by ID).
     #[must_use]
     pub fn find(&self, code: [u8; 4], id: i16) -> Option<&Resource> {
@@ -150,7 +199,8 @@ pub struct Puzzle {
 impl Puzzle {
     /// The title as the Load Puzzle list shows it: `0x42ced8` turns the Mac
     /// apostrophe (`0xD5`) into `'`; other bytes are shown as Windows text
-    /// (only ASCII occurs in the shipped file; other bytes map as Latin-1).
+    /// (only ASCII occurs in the English file; the Swedish edition's names
+    /// are Windows text, its å, ä and ö Latin-1's).
     #[must_use]
     pub fn title(&self) -> String {
         self.name
@@ -337,6 +387,36 @@ pub fn format_done_ini(done: &[bool]) -> Option<String> {
 
 #[cfg(test)]
 mod tests {
+
+    /// The Swedish edition's flat file: records one after another.
+    #[test]
+    fn reads_the_flat_file() {
+        let record = |code: &[u8; 4], id: u32, name: &[u8], data: &[u8]| {
+            let mut r = code.to_vec();
+            r.extend_from_slice(&id.to_le_bytes());
+            let mut n = name.to_vec();
+            n.push(0);
+            n.resize(64, 0xfc);
+            r.extend_from_slice(&n);
+            r.extend_from_slice(&u32::try_from(data.len()).unwrap().to_le_bytes());
+            r.extend_from_slice(data);
+            r
+        };
+        let mut file = record(b"Done", 1, b"Done", &[0, 1, 0, 0, 1, 0]);
+        file.extend(record(b"Puzl", 2, b"T\xe4nd lampan!", b"FORM2"));
+        file.extend(record(b"Puzl", 1, b"R\xe4kna", b"FORM1"));
+        let p = Puzzles::parse(&file).unwrap();
+        assert_eq!(p.puzzles.len(), 2);
+        assert_eq!(p.puzzles[0].id, 1);
+        assert_eq!(p.puzzles[0].widget, b"FORM1");
+        assert_eq!(p.puzzles[1].title(), "Tänd lampan!");
+        assert_eq!(p.done, vec![false, true]);
+        write_done(&mut file, &[true, false]).unwrap();
+        assert_eq!(Puzzles::parse(&file).unwrap().done, vec![true, false]);
+        // A Mac resource fork isn't taken for one.
+        assert!(ResFork::parse_flat(&write(&[(1, b"x", b"FORM")])).is_none());
+    }
+
     use super::*;
 
     /// A resource fork with the given resources (`type, id, name, data`), in
