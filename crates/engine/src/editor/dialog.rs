@@ -338,6 +338,19 @@ pub(super) fn mul_div(a: i32, b: i32, c: i32) -> i32 {
 }
 
 impl Dialog {
+    /// Whether `p` (on the screen) is over a text field: the text pointer.
+    #[must_use]
+    pub fn over_text(&self, p: (i32, i32)) -> bool {
+        if self.dropped.is_some() {
+            return false;
+        }
+        let q = self.to_client(p);
+        self.controls
+            .iter()
+            .rposition(|c| c.rect.contains(q.0, q.1))
+            .is_some_and(|i| matches!(self.controls[i].ctl, Ctl::Edit { .. }))
+    }
+
     /// Whether a text field has the focus (a touch screen's keyboard is
     /// wanted).
     #[must_use]
@@ -1528,6 +1541,37 @@ mod tests {
         // The gadget keeps its settings until OK; the picture shows the dog.
         assert_eq!(g.core.settings.numbers[0], 1);
         assert_eq!(d.previewed.as_ref().map(|s| s.numbers[0]), Some(0));
+    }
+
+    /// The text pointer over a text field, and the keyboard wanted while
+    /// one has the focus.
+    #[test]
+    fn text_fields_want_typing() {
+        let t = Template {
+            style: 0,
+            ex_style: 0,
+            x: 0,
+            y: 0,
+            cx: 200,
+            cy: 200,
+            menu: Field::None,
+            class: Field::None,
+            title: "T".into(),
+            font: None,
+            items: vec![item(1, 0x80, 1, "OK"), item(40, 0x81, 0, "")],
+        };
+        let d = Dialog::build(&Assets::default(), &t, Kind::Settings);
+        assert!(d.wants_text());
+        let edit = d.controls[1].rect;
+        let at = |q: (i32, i32)| (q.0 + d.client.x0, q.1 + d.client.y0);
+        assert!(d.over_text(at((edit.x0 + 1, edit.y0 + 1))));
+        let ok = d.controls[0].rect;
+        assert!(!d.over_text(at((ok.x0 + 1, ok.y0 + 1))));
+        let t = Template {
+            items: vec![item(1, 0x80, 1, "OK")],
+            ..t
+        };
+        assert!(!Dialog::build(&Assets::default(), &t, Kind::Settings).wants_text());
     }
 
     #[test]

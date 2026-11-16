@@ -119,6 +119,8 @@ pub enum Button {
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum Pointer {
     Arrow,
+    /// The system's text pointer (`IDC_IBEAM`), over a text field.
+    Text,
     /// 0 glove, 1 scissors, 2 plug (knot), 3 grabbing hand, 4 open hand
     /// (Move), 5 plug (wire), 6 pointing hand.
     Game(u8),
@@ -2252,6 +2254,13 @@ impl Editor {
             && self.prompt.is_none()
         {
             return h.pointer(&self.assets, self.mouse);
+        }
+        if self.prompt.is_none()
+            && !self.menu.covers(&self.assets, self.mouse)
+            && (self.dialog.as_ref().is_some_and(|d| d.over_text(self.mouse))
+                || self.file_dialog.as_ref().is_some_and(|(f, _)| f.over_text(self.mouse)))
+        {
+            return Pointer::Text;
         }
         if !self.over_view(self.mouse) {
             return Pointer::Arrow;

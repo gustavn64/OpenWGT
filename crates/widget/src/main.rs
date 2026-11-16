@@ -400,7 +400,11 @@ impl App for Workshop {
             pixels: &s.pixels,
             palette: &self.palette,
             overlay: None,
-            cursor: Cursor::Default,
+            cursor: if self.editor.pointer() == editor::Pointer::Text {
+                Cursor::Text
+            } else {
+                Cursor::Default
+            },
             cursor_image: match self.editor.pointer() {
                 editor::Pointer::Game(i) => self.editor.cursor_picture(i).map(|c| CursorImage {
                     key: u32::from(i),
@@ -409,7 +413,7 @@ impl App for Workshop {
                     hot: c.hot,
                     rgba: &c.rgba,
                 }),
-                editor::Pointer::Arrow => None,
+                editor::Pointer::Arrow | editor::Pointer::Text => None,
             },
             title: Some(self.editor.title()),
         }

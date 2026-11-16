@@ -178,6 +178,8 @@ pub enum Cursor {
     /// `crNoDrop` (-13): the VCL's no-drop pointer, the circle with a
     /// bar (its own resource in the EXE; the system's here).
     NoDrop,
+    /// `IDC_IBEAM`: the text pointer, over a text field.
+    Text,
 }
 
 impl Cursor {
@@ -186,6 +188,7 @@ impl Cursor {
             Cursor::Default => CursorIcon::Default,
             Cursor::HourGlass => CursorIcon::Wait,
             Cursor::NoDrop => CursorIcon::NoDrop,
+            Cursor::Text => CursorIcon::Text,
         }
     }
 }

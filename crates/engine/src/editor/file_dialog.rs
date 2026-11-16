@@ -286,6 +286,17 @@ fn root_label(p: &Path, cd: &str) -> String {
 }
 
 impl FileDialog {
+    /// Whether `p` (on the screen) is over the file name's field: the text
+    /// pointer.
+    #[must_use]
+    pub fn over_text(&self, p: (i32, i32)) -> bool {
+        if self.dropped.is_some() {
+            return false;
+        }
+        let q = self.to_client(p);
+        self.r.name.contains(q.0, q.1)
+    }
+
     /// Whether the file name has the focus (a touch screen's keyboard is
     /// wanted).
     #[must_use]
