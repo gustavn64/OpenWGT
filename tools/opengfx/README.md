@@ -79,7 +79,7 @@ come out different from the English pack's:
 ```sh
 tools/opengfx/make.py EXPORT --lang sv
 # the tray's icons and the puzzles' pictures, from the Swedish parts:
-cargo run --release -p engine --example render_parts -- EXPORT PARTS-SV --overlay crates/engine/opengfx-sv
+cargo run --release -p engine --example render_parts -- EXPORT PARTS-SV --overlay crates/engine/opengfx-sv --data crates/engine/opendata-sv --lang sv
 tools/opengfx/make.py EXPORT --lang sv --parts PARTS-SV
 ```
 

@@ -2,7 +2,7 @@
 //! each (`OUT/<tray index>.png`, transparent around it) with the port's
 //! own graphics (`engine::opengfx`), and its knots' places in it
 //! (`OUT/<tray index>.txt`: x, y, 1 for an output), from an export of the CD:
-//! `cargo run -p engine --example render_parts -- EXPORT OUT [--overlay DIR]`.
+//! `cargo run -p engine --example render_parts -- EXPORT OUT [--overlay DIR] [--data DIR] [--lang sv]`.
 //! The tray's `OpenWGFX` icons and the puzzles' pictures are made from them
 //! (`tools/opengfx/sheets/tray.py`, `puzzles.py`). `--overlay` lays a
 //! language's sheets over the pack (`crates/engine/opengfx-sv`, the
@@ -105,12 +105,29 @@ fn main() {
         Some(l) => l,
         None => &builtin,
     };
+    // `--data DIR`: a data pack's parts (its texts: a fresh Label's,
+    // Billboard's) in place of the export's.
+    let data = args
+        .iter()
+        .position(|a| a == "--data")
+        .and_then(|i| args.get(i + 1))
+        .map(|d| Dir(d.into()));
     let packs = engine::assets::Packs {
         graphics: Some(graphics),
         sounds: None,
-        data: None,
+        data: data.as_ref().map(|d| d as &dyn Source),
     };
-    let assets = Assets::load_with(None, packs, Some(&export)).unwrap();
+    let overrides: Option<&dyn Source> = if data.is_some() { None } else { Some(&export) };
+    // `--lang sv`: the parts' first words from the code in that language.
+    if let Some(l) = args
+        .iter()
+        .position(|a| a == "--lang")
+        .and_then(|i| args.get(i + 1))
+        .and_then(|c| engine::lang::Lang::from_code(c))
+    {
+        engine::lang::set(l);
+    }
+    let assets = Assets::load_with(None, packs, overrides).unwrap();
     let pal = assets.palette();
     for i in 1..=64u8 {
         let Some(tag) = engine::editor::tray::tag_of(i) else {

@@ -218,10 +218,14 @@ impl Behavior for TextLine {
 
     fn init(&mut self, core: &mut Core) {
         let s = &mut core.settings;
-        s.set_label(0, b"Message One");
-        s.set_label(1, b"Message Two");
-        s.set_label(2, b"Message Three");
-        s.set_label(3, b"Message Four");
+        // The original's words (its code's, not its resources'), in the
+        // game's language.
+        for (i, text) in ["Message One", "Message Two", "Message Three", "Message Four"]
+            .into_iter()
+            .enumerate()
+        {
+            s.set_label(i, &crate::text::encode(crate::lang::tr(text)));
+        }
     }
 
     any!();
@@ -390,7 +394,8 @@ impl Behavior for TextLabel {
     }
 
     fn init(&mut self, core: &mut Core) {
-        core.settings.set_label(0, b"Label");
+        core.settings
+            .set_label(0, &crate::text::encode(crate::lang::tr("Label")));
     }
 
     any!();

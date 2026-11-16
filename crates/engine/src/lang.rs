@@ -131,7 +131,7 @@ fn sv(en: &str) -> Option<&'static str> {
         // The common file dialogs.
         "Load widget" => "Öppna uppfinning",
         "Save Widget as" => "Spara uppfinningen som",
-        "Download widget" => "Ladda ned uppfinning",
+        "Download widget" => "Ladda ner uppfinning",
         "Import from self-running widget" => "Importera från fristående uppfinning",
         "Save Into Stand Alone Widget" => "Spara i fristående uppfinning",
         "Import from Wave format file" => "Importera från ljudfil (Wave)",
@@ -152,8 +152,8 @@ fn sv(en: &str) -> Option<&'static str> {
             "Hittar inte hjälpfilen\nDen ska ligga i samma mapp som Widget Workshop och heta WIDGET.HLP"
         }
         "&Contents" => "&Innehåll",
-        "&Index" => "In&dex",
-        "&Back" => "&Bakåt",
+        "&Index" => "&Register",
+        "&Back" => "&Tillbaka",
         "&Print" => "Skriv &ut",
         "Windows Help" => "Windows Hjälp",
         "Help Topics: {}" => "Hjälpavsnitt: {}",
@@ -167,18 +167,18 @@ fn sv(en: &str) -> Option<&'static str> {
         // The port's Settings window.
         "Settings" => "Inställningar",
         "UI scale" => "Skala",
-        "&Automatic (the display's)" => "&Automatisk (skärmens)",
+        "&Automatic (the display's)" => "&Automatiskt (skärmens)",
         "&Enhancements" => "&Förbättringar",
         "The parts tray shows a whole folder at once; windows drag whole." => {
             "Verktygslådan visar en hel mapp åt gången; fönster dras hela."
         }
         "&Full screen" => "&Helskärm",
-        "&Change CD..." => "&Byt skiva...",
+        "&Change CD..." => "&Byt cd...",
         "Close" => "Stäng",
         // The port's File menu, Options menu.
-        "Save to Do&wnload" => "Spara som ne&dladdning",
-        "&Download a Widget..." => "&Ladda ned en uppfinning...",
-        "Open Widget &Link\tCtrl+V" => "Öppna län&k till uppfinning\tCtrl+V",
+        "Save to Do&wnload" => "Spara för ne&dladdning",
+        "&Download a Widget..." => "&Ladda ner en uppfinning...",
+        "Open Widget &Link\tCtrl+V" => "Öppna uppfinnings&länk\tCtrl+V",
         "Copy Lin&k to Widget" => "Ko&piera länk till uppfinningen",
         "&Settings..." => "&Inställningar...",
         // Links and downloads.
@@ -187,7 +187,13 @@ fn sv(en: &str) -> Option<&'static str> {
         "The link could not be copied." => "Länken kunde inte kopieras.",
         "The clipboard holds no link to a widget." => "Urklipp har ingen länk till en uppfinning.",
         "That link holds no widget." => "Länken har ingen uppfinning i sig.",
-        "The widget could not be downloaded." => "Uppfinningen kunde inte laddas ned.",
+        "The widget could not be downloaded." => "Uppfinningen kunde inte laddas ner.",
+        // The parts' first words, the original's code's.
+        "Label" => "Etikett",
+        "Message One" => "Meddelande ett",
+        "Message Two" => "Meddelande två",
+        "Message Three" => "Meddelande tre",
+        "Message Four" => "Meddelande fyra",
         // The game's own messages the code has (not its resources).
         "Save changes to {}?" => "Spara ändringarna i {}?",
         "{} already exists.\nDo you want to replace it?" => "{} finns redan.\nVill du ersätta den?",

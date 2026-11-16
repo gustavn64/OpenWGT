@@ -105,7 +105,7 @@ const SV = {
   "t-note":
     "Widget Workshop: A Mad Scientist's Laboratory, Mac/PC-skivan. Avbilden sparas i den här " +
     "webbläsaren och skickas ingenstans, precis som uppfinningarna du sparar. Uppfinningar som dras " +
-    "till spelet öppnas, och Arkiv ▸ Spara som nedladdning och Ladda ned en uppfinning ger dig dem " +
+    "till spelet öppnas, och Arkiv ▸ Spara för nedladdning och Ladda ner en uppfinning ger dig dem " +
     "igen. Arkiv ▸ Kopiera länk till uppfinningen gör en länk som öppnar uppfinningen för alla som " +
     "har skivan.",
   open: "Spela utan skivan",
