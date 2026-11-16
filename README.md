@@ -100,6 +100,8 @@ file). The
 enhancements: the parts tray shows a whole folder at once, its pages one
 under the other, without the page arrows; and the toolbars, dialogs and
 message boxes are dragged whole, not as an outline.
+**Full screen** switches the window to full screen and back, as F11 and
+Alt+Enter do (on a phone, where there are no such keys).
 Its **Change CD...** button, after "Save changes?", picks another CD
 image and starts the game again on it (in the browser, the page's start
 form comes back).

@@ -36,9 +36,10 @@ const CHECK_H: i32 = 16;
 const NOTE: &str = "The parts tray shows a whole folder at once; windows drag whole.";
 
 /// The parts a letter presses: their labels' underlined letters.
-const MNEMONIC_PARTS: [(Part, &str); 4] = [
+const MNEMONIC_PARTS: [(Part, &str); 5] = [
     (Part::Auto, "&Automatic (the display's)"),
     (Part::Enhanced, "&Enhancements"),
+    (Part::FullScreen, "&Full screen"),
     (Part::Language, "&Language:"),
     (Part::ChangeCd, "&Change CD..."),
 ];
@@ -51,6 +52,8 @@ pub enum Outcome {
     Enhanced(bool),
     /// Another language: the game starts again in it (without a CD).
     Language(Lang),
+    /// Full screen on or off.
+    FullScreen(bool),
     /// Change CD...: the window closes and the host picks another.
     ChangeCd,
     Close,
@@ -66,10 +69,11 @@ enum Part {
     Bigger,
     Enhanced,
     Language,
+    FullScreen,
     ChangeCd,
 }
 
-const PARTS: [Part; 8] = [
+const PARTS: [Part; 9] = [
     Part::Close,
     Part::CloseBox,
     Part::Auto,
@@ -77,6 +81,7 @@ const PARTS: [Part; 8] = [
     Part::Bigger,
     Part::Enhanced,
     Part::Language,
+    Part::FullScreen,
     Part::ChangeCd,
 ];
 
@@ -91,6 +96,8 @@ pub struct SettingsBox {
     /// changed here then).
     pub lang: Lang,
     pub lang_fixed: bool,
+    /// Whether the window is full screen.
+    pub full_screen: bool,
     window: IRect,
     /// The part the mouse holds down.
     pressed: Option<Part>,
@@ -113,7 +120,14 @@ pub fn label(s: f64) -> String {
 impl SettingsBox {
     /// The window centred in `area`.
     #[must_use]
-    pub fn new(assets: &Assets, area: IRect, scale: Scale, current: f64, enhanced: bool) -> SettingsBox {
+    pub fn new(
+        assets: &Assets,
+        area: IRect,
+        scale: Scale,
+        current: f64,
+        enhanced: bool,
+        full_screen: bool,
+    ) -> SettingsBox {
         let lang = assets.lang;
         let lang_fixed = assets.from_cd();
         let h = Self::height(assets);
@@ -129,6 +143,7 @@ impl SettingsBox {
             enhanced,
             lang,
             lang_fixed,
+            full_screen,
             window,
             pressed: None,
         }
@@ -153,6 +168,8 @@ impl SettingsBox {
             + CHECK_H
             + note
             + MARGIN
+            + CHECK_H
+            + MARGIN
             + BUTTON_H
             + MARGIN
             + BUTTON_H
@@ -168,8 +185,8 @@ impl SettingsBox {
     }
 
     /// The rectangles: the UI scale's group, its check box, −, the value,
-    /// +, the enhancements' check box, the language's button, Change
-    /// CD..., Close.
+    /// +, the enhancements' check box, full screen's, the language's
+    /// button, Change CD..., Close.
     fn layout(&self, assets: &Assets) -> Layout {
         let lh = ui::font(assets).map_or(13, |f| i32::from(f.height));
         let (x, y) = self.client();
@@ -181,6 +198,8 @@ impl SettingsBox {
         let value = IRect::sized(smaller.x1 + 4, row, 56, SMALL);
         let bigger = IRect::sized(value.x1 + 4, row, SMALL, SMALL);
         let enhanced = IRect::sized(x, group.y1 + MARGIN, inner, CHECK_H);
+        let note = i32::try_from(Self::note(assets).len()).unwrap_or(0) * lh;
+        let full_screen = IRect::sized(x, enhanced.y1 + note + MARGIN, inner, CHECK_H);
         let close = IRect::sized(
             self.window.x1 - FRAME - MARGIN - BUTTON_W,
             self.window.y1 - FRAME - MARGIN - BUTTON_H,
@@ -197,6 +216,7 @@ impl SettingsBox {
             bigger,
             enhanced,
             language,
+            full_screen,
             change_cd,
             close,
         }
@@ -211,6 +231,7 @@ impl SettingsBox {
             Part::Bigger => l.bigger,
             Part::Enhanced => l.enhanced,
             Part::Language => l.language,
+            Part::FullScreen => l.full_screen,
             Part::ChangeCd => l.change_cd,
         }
     }
@@ -262,6 +283,10 @@ impl SettingsBox {
                 self.lang = all[(i + 1) % all.len()];
                 Outcome::Language(self.lang)
             }
+            Part::FullScreen => {
+                self.full_screen = !self.full_screen;
+                Outcome::FullScreen(self.full_screen)
+            }
             Part::ChangeCd => Outcome::ChangeCd,
         }
     }
@@ -297,7 +322,7 @@ impl SettingsBox {
         }
     }
 
-    /// A key: Enter and Esc close, A and E are the check boxes, − and +
+    /// A key: Enter and Esc close, A, E and F are the check boxes, − and +
     /// the scale, C Change CD....
     pub fn key(&mut self, vk: u16) -> Outcome {
         let part = match vk {
@@ -388,6 +413,14 @@ impl SettingsBox {
             false,
             !self.lang_fixed,
         );
+        check(
+            s,
+            font,
+            l.full_screen,
+            tr("&Full screen"),
+            self.full_screen,
+            pressed(Part::FullScreen),
+        );
         ui::button(
             s,
             font,
@@ -409,6 +442,7 @@ struct Layout {
     bigger: IRect,
     enhanced: IRect,
     language: IRect,
+    full_screen: IRect,
     change_cd: IRect,
     close: IRect,
 }
@@ -449,6 +483,7 @@ mod tests {
             enhanced: true,
             lang: Lang::En,
             lang_fixed: false,
+            full_screen: false,
             window: IRect::default(),
             pressed: None,
         };
@@ -457,6 +492,8 @@ mod tests {
         assert_eq!(b.key(0x41), Outcome::Scale(Scale::Auto));
         assert_eq!(b.key(0x41), Outcome::Scale(Scale::Fixed(2.0)));
         assert_eq!(b.key(0x45), Outcome::Enhanced(false));
+        assert_eq!(b.key(0x46), Outcome::FullScreen(true));
+        assert_eq!(b.key(0x46), Outcome::FullScreen(false));
         b.scale = Scale::Fixed(1.0);
         assert_eq!(b.key(0x6d), Outcome::None, "− is greyed at 1×");
         assert_eq!(b.key(0x4c), Outcome::Language(Lang::Sv));

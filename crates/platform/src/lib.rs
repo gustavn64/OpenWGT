@@ -348,6 +348,14 @@ pub trait App {
     /// while an automatic one doesn't fit; called before the first frame
     /// and after every change.
     fn ui_scale_changed(&mut self, _asked: UiScale, _scale: f64) {}
+    /// Full screen on or off as the game asks now (its settings), asked
+    /// once each frame.
+    fn take_fullscreen(&mut self) -> Option<bool> {
+        None
+    }
+    /// The window went full screen or back (also by F11 or the browser);
+    /// called before the first frame and after every change.
+    fn fullscreen_changed(&mut self, _on: bool) {}
 }
 
 /// How the window opens; what isn't given comes from the settings file.
@@ -489,6 +497,8 @@ struct Runner<A> {
     mouse: (i32, i32),
     /// The finger that is the mouse on a touch screen, while it's down.
     finger: Option<u64>,
+    /// Full screen as last told to the game.
+    told_fullscreen: Option<bool>,
     /// When and where the finger came down, while it may still be a long
     /// press: held still, not yet one.
     pressing: Option<(Instant, (i32, i32))>,
@@ -741,8 +751,23 @@ impl<A: App> Runner<A> {
     fn toggle_fullscreen(&mut self) {
         let Some((window, _)) = &self.window else { return };
         let full = window.fullscreen().is_none();
-        window.set_fullscreen(full.then_some(Fullscreen::Borderless(None)));
-        self.remembered.fullscreen = full;
+        self.set_fullscreen(full);
+    }
+
+    fn set_fullscreen(&mut self, on: bool) {
+        let Some((window, _)) = &self.window else { return };
+        window.set_fullscreen(on.then_some(Fullscreen::Borderless(None)));
+        self.remembered.fullscreen = on;
+    }
+
+    /// Tells the game if the window went full screen or back.
+    fn tell_fullscreen(&mut self) {
+        let Some((window, _)) = &self.window else { return };
+        let on = window.fullscreen().is_some();
+        if self.told_fullscreen != Some(on) {
+            self.told_fullscreen = Some(on);
+            self.app.fullscreen_changed(on);
+        }
     }
 
     /// A key, unless it toggles fullscreen.
@@ -805,6 +830,10 @@ impl<A: App> ApplicationHandler for Runner<A> {
         if let Some(ui) = self.app.take_ui_scale() {
             self.set_ui(ui);
         }
+        if let Some(on) = self.app.take_fullscreen() {
+            self.set_fullscreen(on);
+        }
+        self.tell_fullscreen();
         // In the browser the game steps with the display's frames
         // (`requestAnimationFrame`), each frame asking for the next, so
         // that every step is shown once; this only starts the loop, or
@@ -1046,6 +1075,7 @@ pub fn run<A: App + 'static>(title: &str, options: WindowOptions, app: A) -> Res
         frame_asked: None,
         mouse: (0, 0),
         finger: None,
+        told_fullscreen: None,
         pressing: None,
         pressed_long: false,
         error: None,

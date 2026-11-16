@@ -361,6 +361,11 @@ pub struct Editor {
     /// A text field was pressed since the host last asked
     /// ([`Editor::take_text_tapped`]).
     text_tapped: bool,
+    /// Whether the window is full screen, as the host says.
+    full_screen: bool,
+    /// Full screen as the player set it in the Settings window, for the
+    /// host.
+    new_full_screen: Option<bool>,
     /// The player's choices in the Settings window the host hasn't taken
     /// yet.
     new_scale: Option<Scale>,
@@ -447,6 +452,8 @@ impl Editor {
             settings: None,
             ui_scale: (Scale::Auto, 1.0),
             text_tapped: false,
+            full_screen: false,
+            new_full_screen: None,
             new_scale: None,
             new_enhanced: None,
             change_cd: false,
@@ -1185,7 +1192,14 @@ impl Editor {
             cmd::SETTINGS => {
                 let (scale, current) = self.ui_scale;
                 let area = self.worksheet();
-                self.settings = Some(SettingsBox::new(&self.assets, area, scale, current, self.tray.enhanced));
+                self.settings = Some(SettingsBox::new(
+                    &self.assets,
+                    area,
+                    scale,
+                    current,
+                    self.tray.enhanced,
+                    self.full_screen,
+                ));
             }
             // Printing: nothing to print to.
             _ => {}
@@ -2015,6 +2029,19 @@ impl Editor {
         self.change_lang.take()
     }
 
+    /// The window is full screen or not (the Settings window shows it).
+    pub fn set_full_screen(&mut self, on: bool) {
+        self.full_screen = on;
+        if let Some(s) = &mut self.settings {
+            s.full_screen = on;
+        }
+    }
+
+    /// Full screen as the player set it in the Settings window, once.
+    pub fn take_full_screen(&mut self) -> Option<bool> {
+        self.new_full_screen.take()
+    }
+
     /// Whether key presses are wanted though no text field is being
     /// edited: a running widget has a Keypress (a touch screen's keyboard
     /// comes up after a touch).
@@ -2067,6 +2094,7 @@ impl Editor {
                 self.ui_scale.0 = s;
                 self.new_scale = Some(s);
             }
+            settings::Outcome::FullScreen(on) => self.new_full_screen = Some(on),
             settings::Outcome::Enhanced(on) => {
                 self.set_enhanced(on);
                 self.new_enhanced = Some(on);

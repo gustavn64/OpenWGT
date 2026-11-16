@@ -529,6 +529,14 @@ impl App for Workshop {
         self.editor.paste_link(&text);
     }
 
+    fn take_fullscreen(&mut self) -> Option<bool> {
+        self.editor.take_full_screen()
+    }
+
+    fn fullscreen_changed(&mut self, on: bool) {
+        self.editor.set_full_screen(on);
+    }
+
     fn take_ui_scale(&mut self) -> Option<UiScale> {
         self.editor.take_ui_scale().map(|s| match s {
             editor::settings::Scale::Auto => UiScale::Auto,
