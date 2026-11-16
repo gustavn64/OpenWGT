@@ -1,0 +1,590 @@
+{
+ "1000": [
+  [
+   107,
+   "29,029 fot (Mount Everest)"
+  ],
+  [
+   107,
+   "4,190 fot (vulkanen Vesuvius)"
+  ],
+  [
+   107,
+   "1,472 fot (Empire State Building)"
+  ],
+  [
+   107,
+   "984 fot (Eiffeltornet)"
+  ],
+  [
+   107,
+   "20 fot (T. rex)"
+  ],
+  [
+   107,
+   "6 fot (lång person)"
+  ],
+  [
+   109,
+   "Solen (27.9 g)"
+  ],
+  [
+   109,
+   "Jupiter (2.87 g)"
+  ],
+  [
+   109,
+   "Jorden (1g)"
+  ],
+  [
+   109,
+   "Månen (.17g)"
+  ],
+  [
+   111,
+   "Planeten jorden (1.32E+25 pund)"
+  ],
+  [
+   111,
+   "Stor elefant (13,000 pund)"
+  ],
+  [
+   111,
+   "Vuxen (175 pund)"
+  ],
+  [
+   111,
+   "Husfluga (.00031 pund)"
+  ]
+ ],
+ "1001": [
+  [
+   107,
+   "Solen (27.9 g)"
+  ],
+  [
+   107,
+   "Jupiter (2.87 g)"
+  ],
+  [
+   107,
+   "Jorden (1 g)"
+  ],
+  [
+   107,
+   "Månen (.17g)"
+  ],
+  [
+   109,
+   "29,029 fot (Mount Everest)"
+  ],
+  [
+   109,
+   "4,190 fot (vulkanen Vesuvius)"
+  ],
+  [
+   109,
+   "1,472 fot (Empire State Building)"
+  ],
+  [
+   109,
+   "984 fot (Eiffeltornet)"
+  ],
+  [
+   109,
+   "20 fot (T. rex)"
+  ],
+  [
+   109,
+   "6 fot (lång person)"
+  ],
+  [
+   111,
+   "Fjäder"
+  ],
+  [
+   111,
+   "Elefant"
+  ],
+  [
+   111,
+   "Baseboll"
+  ]
+ ],
+ "1002": [
+  [
+   107,
+   "Apollo 10-kapseln (24,791 mph)"
+  ],
+  [
+   107,
+   "Gevärskula (1000 mph)"
+  ],
+  [
+   107,
+   "Jetplan (561 mph)"
+  ],
+  [
+   107,
+   "Snabbt kast (90 mph)"
+  ],
+  [
+   107,
+   "Ingen"
+  ],
+  [
+   109,
+   "Solen (27.9 g)"
+  ],
+  [
+   109,
+   "Jupiter (2.87 g)"
+  ],
+  [
+   109,
+   "Jorden (1 g)"
+  ],
+  [
+   109,
+   "Månen (.17g)"
+  ],
+  [
+   111,
+   "29,029 fot (Mount Everest)"
+  ],
+  [
+   111,
+   "4,190 fot (vulkanen Vesuvius)"
+  ],
+  [
+   111,
+   "1,472 fot (Empire State Building)"
+  ],
+  [
+   111,
+   "984 fot (Eiffeltornet)"
+  ],
+  [
+   111,
+   "20 fot (T. rex)"
+  ],
+  [
+   111,
+   "6 fot (lång person)"
+  ]
+ ],
+ "1003": [
+  [
+   107,
+   "Hund"
+  ],
+  [
+   107,
+   "Katt"
+  ],
+  [
+   107,
+   "Tupp"
+  ],
+  [
+   107,
+   "Ko"
+  ]
+ ],
+ "1007": [
+  [
+   108,
+   "1-10"
+  ],
+  [
+   108,
+   "1-100"
+  ]
+ ],
+ "1008": [
+  [
+   109,
+   "A (440 Hz)"
+  ],
+  [
+   109,
+   "G#(415.30 Hz)"
+  ],
+  [
+   109,
+   "G (392 Hz)"
+  ],
+  [
+   109,
+   "F#(369.99 Hz)"
+  ],
+  [
+   109,
+   "F (349.24 Hz)"
+  ],
+  [
+   109,
+   "E (329.63 Hz)"
+  ],
+  [
+   109,
+   "D#(311.13 Hz)"
+  ],
+  [
+   109,
+   "D (293.66 Hz)"
+  ],
+  [
+   109,
+   "C#(277.18 Hz)"
+  ],
+  [
+   109,
+   "C (261.63 Hz)"
+  ],
+  [
+   109,
+   "B (246.94 Hz)"
+  ],
+  [
+   109,
+   "A#(233.08 Hz)"
+  ],
+  [
+   109,
+   "A (220 Hz)"
+  ]
+ ],
+ "1009": [],
+ "1010": [],
+ "1011": [
+  [
+   107,
+   "1   /  60 sek."
+  ],
+  [
+   107,
+   "2   /  30 sek."
+  ],
+  [
+   107,
+   "5   /  12 sek."
+  ],
+  [
+   107,
+   "10  /   6 sek."
+  ],
+  [
+   107,
+   "30  /   2 sek."
+  ],
+  [
+   107,
+   "60  /   1 sek."
+  ],
+  [
+   107,
+   "120 / 0.5 sek."
+  ]
+ ],
+ "1015": [
+  [
+   108,
+   "0-10"
+  ],
+  [
+   108,
+   "0-100"
+  ]
+ ],
+ "1017": [
+  [
+   107,
+   "Vuxen människa"
+  ],
+  [
+   107,
+   "Bebis"
+  ],
+  [
+   107,
+   "Kanin"
+  ],
+  [
+   107,
+   "Sköldpadda"
+  ],
+  [
+   107,
+   "Elefant"
+  ],
+  [
+   107,
+   "Katt"
+  ],
+  [
+   107,
+   "Hund"
+  ],
+  [
+   107,
+   "Ökenråtta"
+  ]
+ ],
+ "2000": [
+  [
+   107,
+   "Merkurius"
+  ],
+  [
+   107,
+   "Venus"
+  ],
+  [
+   107,
+   "Jorden"
+  ],
+  [
+   107,
+   "Mars"
+  ],
+  [
+   107,
+   "Jupiter"
+  ],
+  [
+   107,
+   "Saturnus"
+  ],
+  [
+   107,
+   "Uranus"
+  ],
+  [
+   107,
+   "Neptunus"
+  ],
+  [
+   107,
+   "Pluto"
+  ],
+  [
+   109,
+   "Diameter (eng. mil)"
+  ],
+  [
+   109,
+   "Dygnets längd (jordtimmar)"
+  ],
+  [
+   109,
+   "Årets längd (jorddygn)"
+  ],
+  [
+   109,
+   "Avstånd till solen (miljoner eng. mil)"
+  ],
+  [
+   109,
+   "Massa (x 10,000,000,000,000 gigaton)"
+  ],
+  [
+   109,
+   "Densitet (vatten = 1)"
+  ],
+  [
+   109,
+   "Gravitation (jorden = 1)"
+  ],
+  [
+   109,
+   "Banfart (x1000 mph)"
+  ]
+ ],
+ "2005": [
+  [
+   107,
+   "Kvadratrot"
+  ],
+  [
+   107,
+   "Kvadrat"
+  ],
+  [
+   107,
+   "Fakultet"
+  ],
+  [
+   107,
+   "Sin"
+  ],
+  [
+   107,
+   "Cos"
+  ],
+  [
+   107,
+   "Tan"
+  ],
+  [
+   107,
+   "Heltal"
+  ]
+ ],
+ "2020": [
+  [
+   107,
+   "°Celsius till °Fahrenheit"
+  ],
+  [
+   107,
+   "°Fahrenheit till °Celsius"
+  ],
+  [
+   107,
+   "Meter till fot"
+  ],
+  [
+   107,
+   "Fot till meter"
+  ],
+  [
+   107,
+   "Kilogram till pund"
+  ],
+  [
+   107,
+   "Pund till kilogram"
+  ]
+ ],
+ "2035": [
+  [
+   107,
+   "Månens faser"
+  ],
+  [
+   107,
+   "Tankeläsarkort"
+  ],
+  [
+   107,
+   "Stjärntecken"
+  ],
+  [
+   107,
+   "Spåkula"
+  ],
+  [
+   107,
+   "Siffror"
+  ],
+  [
+   107,
+   "Rockstjärna"
+  ]
+ ],
+ "2038": [
+  [
+   109,
+   "Upp en ters"
+  ],
+  [
+   109,
+   "Upp en kvint"
+  ],
+  [
+   109,
+   "Upp en oktav"
+  ],
+  [
+   109,
+   "Ner en ters"
+  ],
+  [
+   109,
+   "Ner en kvint"
+  ],
+  [
+   109,
+   "Ner en oktav"
+  ]
+ ],
+ "2040": [
+  [
+   107,
+   "Hund"
+  ],
+  [
+   107,
+   "Katt"
+  ],
+  [
+   107,
+   "Tupp"
+  ],
+  [
+   107,
+   "Ko"
+  ]
+ ],
+ "2041": [
+  [
+   107,
+   "Summer"
+  ],
+  [
+   107,
+   "Larm"
+  ],
+  [
+   107,
+   "Klockspel"
+  ],
+  [
+   107,
+   "Klapp"
+  ],
+  [
+   107,
+   "Andetag"
+  ],
+  [
+   107,
+   "Skratt"
+  ],
+  [
+   107,
+   "Gök"
+  ],
+  [
+   107,
+   "Konstigt"
+  ],
+  [
+   107,
+   "Spöklikt"
+  ],
+  [
+   107,
+   "Ackord\u0000"
+  ]
+ ],
+ "2044": [
+  [
+   113,
+   "10 sekunder"
+  ],
+  [
+   113,
+   "1 minut"
+  ],
+  [
+   113,
+   "10 minuter"
+  ],
+  [
+   113,
+   "1 timme"
+  ]
+ ]
+}

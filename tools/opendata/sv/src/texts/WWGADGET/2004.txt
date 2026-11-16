@@ -1,0 +1,1 @@
+Det tresiffriga talet skickar ut vilket heltal som helst från 0 till 999. Medan uppfinningen går kan du klicka på pilarna ovanför och under varje siffra för att ändra den.

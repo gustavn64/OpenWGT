@@ -1,0 +1,2 @@
+Byggtips:
+En jämförare gör om vilket tal som helst till JA eller NEJ. Sätt en gräns på den övre ingången med ett tresiffrigt tal och koppla svaret till en lampa eller ljuddel, som varning, larm eller mållinje.

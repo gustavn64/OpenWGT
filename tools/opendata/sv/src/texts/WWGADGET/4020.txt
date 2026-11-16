@@ -1,0 +1,2 @@
+Byggtips:
+Kanonen räknar i fot: sätt en omvandlare inställd på Fot till meter efter utgången Sträcka eller Höjd så får du svaret i meter. Pund till kilogram gör samma sak för vikter.

@@ -1,0 +1,2 @@
+Byggtips:
+Det lilla tresiffriga talet tar liten plats, så använd det till de fasta tal en uppfinning behöver - gränser för jämförare, faktorer för multiplicerare - och spara det stora till tal som spelarna ska ändra.

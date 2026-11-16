@@ -1,0 +1,2 @@
+Byggtips:
+XELLER fungerar som lampan i en trappa med en strömbrytare i varje ände: koppla två strömbrytare till den och en glödlampa till utgången, så ändrar vilken brytare som helst ljuset.

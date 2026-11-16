@@ -1,0 +1,153 @@
+# Puzzle 5: change the Pendulum's settings (it is not locked) until one
+# swing there and back takes 2.0 to 2.09 seconds. Period x 10, rounded
+# down, must be 20. On Earth no whole number of feet works (3.26-3.59 ft
+# would); 8 ft on Jupiter (2.04 s) or 92-100 ft on the Sun do.
+title "Tvåsekunderspendeln"
+background 0
+
+part title TxLb 20 98
+label title 0 "Tvåsekunderspendeln"
+radio title 0 1
+part t1 TxLb 16 135
+label t1 0 "Professorns klocka behöver"
+part t2 TxLb 16 152
+label t2 0 "en pendel som svänger fram"
+part t3 TxLb 16 169
+label t3 0 "och åter på 2 s: 2.0 till 2.09."
+part t4 TxLb 16 194
+label t4 0 "Tryck STOPP och dubbelklicka"
+part t5 TxLb 16 211
+label t5 0 "på pendeln för att ändra den."
+part t6 TxLb 330 135
+label t6 0 "Ett kortare snöre svänger"
+part t7 TxLb 330 152
+label t7 0 "fortare, och det gör även"
+part t8 TxLb 330 169
+label t8 0 "en starkare tyngdkraft."
+part t9 TxLb 330 194
+label t9 0 "Inget helt antal fot"
+part t10 TxLb 330 211
+label t10 0 "duger på jorden. Någon annanstans?"
+
+# The switch lets the pendulum go as soon as you press GO.
+part sw swit 10 301
+radio sw 0 1
+part pend Pend 55 240
+radio pend 1 0
+number pend 0 5
+number pend 1 2
+wire sw 0 pend 0
+
+# Its period, shown, and checked: period x 10, rounded down, is 20.
+part sp Spl2 235 303
+wire pend 1 sp 0
+part ten MiCo 270 252
+label ten 0 "10"
+part mul Mulr 290 275
+wire sp 1 mul 0
+wire ten 0 mul 1
+part int 1ncr 400 284
+number int 0 6
+wire mul 2 int 0
+part win Stop 524 289
+radio win 0 1
+label win 0 "20"
+wire int 1 win 0
+part show di10 270 364
+wire sp 2 show 0
+part sl TxLb 16 380
+label sl 0 "Sekunder per svängning:"
+
+lock title
+lock t1
+lock t2
+lock t3
+lock t4
+lock t5
+lock t6
+lock t7
+lock t8
+lock t9
+lock t10
+lock sw
+lock sp
+lock ten
+lock mul
+lock int
+lock win
+lock show
+lock sl
+lock wire 0
+lock wire 1
+lock wire 2
+lock wire 3
+lock wire 4
+lock wire 5
+lock wire 6
+
+# The tray: nothing; every other part 0.
+
+limit Pend 0
+limit Drop 0
+limit Cano 0
+limit Wtch 0
+limit rand 0
+limit Fork 0
+limit DClk 0
+limit Key_ 0
+limit Metr 0
+limit swit 0
+limit di10 0
+limit Sldr 0
+limit bulb 0
+limit hart 0
+limit rgbd 0
+limit Plnt 0
+limit Ttlr 0
+limit disp 0
+limit ArVo 0
+limit cnst 0
+limit 1ncr 0
+limit Coin 0
+limit NmKP 0
+limit AndG 0
+limit OrGa 0
+limit NotG 0
+limit XorG 0
+limit Addr 0
+limit Subr 0
+limit Mulr 0
+limit Divr 0
+limit Conv 0
+limit Comp 0
+limit Tape 0
+limit TxBx 0
+limit TxLn 0
+limit MsMv 0
+limit DnPl 0
+limit MsCl 0
+limit Cntr 0
+limit GrPr 0
+limit SdSw 0
+limit SdTr 0
+limit AnSd 0
+limit MsSd 0
+limit Spkr 0
+limit Stop 0
+limit StCh 0
+limit TxLb 0
+limit MiCo 0
+limit Spl2 0
+limit Spl3 0
+limit Spl4 0
+limit Mplx 0
+limit Stk1 0
+limit Stk2 0
+limit Stk3 0
+limit Stk4 0
+limit Stk5 0
+limit Stk6 0
+limit Stk7 0
+limit Stk8 0
+limit Stk9 0
+limit St10 0

@@ -1,0 +1,2 @@
+Byggtips:
+Ställ utgången på Timmar efter midnatt och koppla klockan till sidoingången på en jämförare, med ett litet tresiffrigt tal inställt på 21 överst. Välj större än eller lika med, så kan en anslagstavla påminna alla om att det är dags att sova.

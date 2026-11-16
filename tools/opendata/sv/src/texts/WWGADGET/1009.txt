@@ -1,0 +1,1 @@
+Digitalklockan läser av tiden från datorns egen klocka och kan visa den som 12- eller 24-timmarstid.

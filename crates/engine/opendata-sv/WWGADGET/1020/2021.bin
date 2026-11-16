@@ -1,0 +1,1 @@
+Jämföraren prövar talet till vänster mot talet ovanifrån. Du väljer prövning: lika med, inte lika med, större än, mindre än, eller större/mindre än eller lika med. Stämmer det skickar den ut SANT (1), annars FALSKT (0).

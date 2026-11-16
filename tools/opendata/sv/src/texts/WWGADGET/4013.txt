@@ -1,0 +1,2 @@
+Byggtips:
+Använd den som en varningslampa som lyser så länge två tal inte stämmer överens, till exempel medan en gissning ännu inte är rätt svar.

@@ -1,0 +1,1 @@
+Musknappen är PÅ medan någon musknapp hålls nere, var du än klickar - även på andra delar. Klicket på START räknas inte: delen väntar tills du har släppt knappen innan den börjar lyssna.

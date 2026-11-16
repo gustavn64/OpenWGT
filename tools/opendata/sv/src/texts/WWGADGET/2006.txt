@@ -1,0 +1,1 @@
+Skicka ett JA eller något annat tal än 0 till slantsinglingen, så singlar den slant. Krona kommer ut som 1 och klave som 0.

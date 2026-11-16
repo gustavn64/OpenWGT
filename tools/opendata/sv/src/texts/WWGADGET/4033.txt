@@ -1,0 +1,2 @@
+Byggtips:
+Hur snabbt kan du trycka? Koppla ett tangenttryck till en räknare och räknaren till en vinstkollare inställd på att vinna när talet är större än eller lika med 50. Räknaren visar upp till 999.

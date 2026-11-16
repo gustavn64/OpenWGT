@@ -1,0 +1,2 @@
+Byggtips:
+Koppla tre strömbrytare till den röda, gröna och blå ingången: var och en ger sin färg fullt ut, så kan du blanda åtta färger. Till en ljusshow tar du slumptalsgeneratorer på 1-100.

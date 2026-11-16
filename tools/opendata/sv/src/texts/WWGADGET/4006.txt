@@ -1,0 +1,2 @@
+Byggtips:
+Låt slanten singlas hela tiden med en strömbrytare och mata den till en summerare inställd på Medelvärde: ju fler kast, desto närmare kommer medelvärdet 0,5 - hälften krona, hälften klave.

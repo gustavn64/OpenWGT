@@ -1,0 +1,1 @@
+Med bandspelaren spelar du upp inspelade ljud. Om datorn har en mikrofon kan du kanske spela in egna ljud också.

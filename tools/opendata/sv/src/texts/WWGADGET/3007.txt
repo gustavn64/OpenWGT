@@ -1,0 +1,2 @@
+Byggtips:
+Sätt en strömbrytare på ingången så väljer den ett nytt tal ungefär en gång i sekunden så länge brytaren är på. Välj Eget från 200 till 800 och koppla den till en högtalare för en robotmelodi.

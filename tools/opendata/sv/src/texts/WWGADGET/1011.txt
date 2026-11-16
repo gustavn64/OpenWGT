@@ -1,0 +1,1 @@
+Metronomen håller en jämn takt och skickar ut en kort PÅ-puls vid varje slag. Du väljer hur många slag den gör i minuten.

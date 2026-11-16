@@ -1,0 +1,127 @@
+{
+ "style": "0x90c800c0",
+ "ex_style": "0x00000000",
+ "rect": [
+  44,
+  46,
+  198,
+  119
+ ],
+ "menu": null,
+ "class": null,
+ "title": "OpenWGT",
+ "font": [
+  8,
+  "MS Sans Serif"
+ ],
+ "items": [
+  {
+   "id": 6,
+   "class": "button",
+   "text": "&Ja",
+   "rect": [
+    17,
+    98,
+    41,
+    14
+   ],
+   "style": "0x50030001"
+  },
+  {
+   "id": 7,
+   "class": "button",
+   "text": "&Nej",
+   "rect": [
+    77,
+    98,
+    41,
+    14
+   ],
+   "style": "0x50010000"
+  },
+  {
+   "id": 2,
+   "class": "button",
+   "text": "&Avbryt",
+   "rect": [
+    140,
+    98,
+    41,
+    14
+   ],
+   "style": "0x50010000"
+  },
+  {
+   "id": 13,
+   "class": "button",
+   "text": "&Behåll svaret",
+   "rect": [
+    8,
+    61,
+    106,
+    12
+   ],
+   "style": "0x50030003"
+  },
+  {
+   "id": 65535,
+   "class": "static",
+   "text": "Uppfinningen är större än vad",
+   "rect": [
+    8,
+    10,
+    164,
+    11
+   ],
+   "style": "0x50020000"
+  },
+  {
+   "id": 65535,
+   "class": "static",
+   "text": "Mac-versionen av Widget Workshop kan öppna.",
+   "rect": [
+    8,
+    21,
+    185,
+    11
+   ],
+   "style": "0x50020000"
+  },
+  {
+   "id": 65535,
+   "class": "static",
+   "text": "Flytta delarna närmare varandra så att",
+   "rect": [
+    8,
+    32,
+    185,
+    11
+   ],
+   "style": "0x50020000"
+  },
+  {
+   "id": 65535,
+   "class": "static",
+   "text": "Mac-användare också kan öppna den?",
+   "rect": [
+    8,
+    43,
+    137,
+    11
+   ],
+   "style": "0x50020000"
+  },
+  {
+   "id": 65535,
+   "class": "static",
+   "text": " och fråga inte igen",
+   "rect": [
+    17,
+    75,
+    118,
+    8
+   ],
+   "style": "0x50020000"
+  }
+ ]
+}

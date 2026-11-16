@@ -1,0 +1,2 @@
+Byggtips:
+Koppla två tangenttryck till START och STOPP för att ta tid på vad som helst för hand. Ställ utgången på Timer på/av så säger den JA så länge klockan går - koppla den till en glödlampa så ser du när klockan tickar.

@@ -1,0 +1,2 @@
+Byggtips:
+Kontrollera ett svar: jämför talet någon skriver på sifferknapparna med det rätta, och koppla resultatet till en glödlampa eller en vinstkollare.

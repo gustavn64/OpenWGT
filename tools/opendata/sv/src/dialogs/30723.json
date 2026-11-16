@@ -1,0 +1,67 @@
+{
+ "style": "0x40000044",
+ "ex_style": "0x00000000",
+ "rect": [
+  0,
+  0,
+  330,
+  16
+ ],
+ "menu": null,
+ "class": null,
+ "title": "",
+ "font": [
+  8,
+  "MS Sans Serif"
+ ],
+ "items": [
+  {
+   "id": 58116,
+   "class": "button",
+   "text": "&Skriv ut...",
+   "rect": [
+    2,
+    2,
+    44,
+    12
+   ],
+   "style": "0x50010000"
+  },
+  {
+   "id": 58117,
+   "class": "button",
+   "text": "Zooma &in",
+   "rect": [
+    48,
+    2,
+    44,
+    12
+   ],
+   "style": "0x50010000"
+  },
+  {
+   "id": 58118,
+   "class": "button",
+   "text": "Zooma &ut",
+   "rect": [
+    94,
+    2,
+    44,
+    12
+   ],
+   "style": "0x50010000"
+  },
+  {
+   "id": 58112,
+   "class": "button",
+   "text": "S&täng",
+   "rect": [
+    140,
+    2,
+    44,
+    12
+   ],
+   "style": "0x50010000"
+  }
+ ]
+}

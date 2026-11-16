@@ -1,0 +1,1 @@
+INTE-grinden har en ingång och en utgång, och utgången säger alltid motsatsen till ingången: JA in ger NEJ ut, NEJ in ger JA ut. Alla tal utom 0 räknas som JA.

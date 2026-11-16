@@ -1,0 +1,2 @@
+Byggtips:
+Ordningen spelar roll: subtraheraren drar bort talet ovanifrån från talet på sidan. Sätt 10 på sidan och 3 ovanifrån så får du 7; byt sladdarna så får du -3.

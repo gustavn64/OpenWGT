@@ -1,0 +1,167 @@
+{
+ "2": {
+  "header": [
+   0,
+   0
+  ],
+  "items": [
+   {
+    "id": 32784,
+    "text": " ",
+    "flags": 1
+   }
+  ]
+ },
+ "3": {
+  "header": [
+   0,
+   0
+  ],
+  "items": [
+   {
+    "popup": "&Arkiv",
+    "flags": 0,
+    "items": [
+     {
+      "id": 57600,
+      "text": "&Nytt",
+      "flags": 0
+     },
+     {
+      "id": 57601,
+      "text": "&Öppna...",
+      "flags": 0
+     },
+     {
+      "id": 32771,
+      "text": "Hämta pussel...",
+      "flags": 0
+     },
+     "-",
+     {
+      "id": 57603,
+      "text": "&Spara",
+      "flags": 1
+     },
+     {
+      "id": 57604,
+      "text": "Spara s&om...",
+      "flags": 0
+     },
+     {
+      "id": 32772,
+      "text": "Återgå",
+      "flags": 1
+     },
+     "-",
+     {
+      "id": 32773,
+      "text": "Importera fristående uppfinning...",
+      "flags": 0
+     },
+     {
+      "id": 32774,
+      "text": "Spara som fristående uppfinning",
+      "flags": 0
+     },
+     "-",
+     {
+      "id": 57608,
+      "text": "Förhandsgranska",
+      "flags": 0
+     },
+     {
+      "id": 57606,
+      "text": "Utskriftsformat...",
+      "flags": 0
+     },
+     {
+      "id": 57607,
+      "text": "Skriv ut",
+      "flags": 0
+     },
+     "-",
+     {
+      "id": 57665,
+      "text": "&Avsluta",
+      "flags": 0
+     }
+    ]
+   },
+   {
+    "popup": "&Redigera",
+    "flags": 0,
+    "items": [
+     {
+      "id": 57643,
+      "text": "&Ångra",
+      "flags": 1
+     },
+     "-",
+     {
+      "id": 32777,
+      "text": "Töm arbetsytan",
+      "flags": 0
+     },
+     {
+      "id": 32778,
+      "text": "Ta bort alla sladdar",
+      "flags": 0
+     },
+     {
+      "id": 32779,
+      "text": "Ta bort alla knutpunkter",
+      "flags": 0
+     },
+     {
+      "id": 32785,
+      "text": "Anpassa arbetsytan ...",
+      "flags": 0
+     }
+    ]
+   },
+   {
+    "popup": "Alternativ",
+    "flags": 0,
+    "items": [
+     {
+      "id": 32780,
+      "text": "Enkel bakgrund",
+      "flags": 8
+     },
+     {
+      "id": 32781,
+      "text": "Metallvågor",
+      "flags": 0
+     },
+     {
+      "id": 32782,
+      "text": "Brus",
+      "flags": 0
+     },
+     {
+      "id": 32783,
+      "text": "Stål",
+      "flags": 0
+     }
+    ]
+   },
+   {
+    "popup": "&Hjälp",
+    "flags": 0,
+    "items": [
+     {
+      "id": 57664,
+      "text": "&Om OpenWGT...",
+      "flags": 0
+     },
+     {
+      "id": 32784,
+      "text": "Innehåll\tF1",
+      "flags": 0
+     }
+    ]
+   }
+  ]
+ }
+}

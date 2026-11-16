@@ -1,0 +1,1 @@
+Ett tal går in i den här delen, och den kan räkna på sju sätt med det: kvadratrot, kvadrat, fakultet, sinus, cosinus, tangens eller avrundning nedåt till ett heltal.

@@ -1,0 +1,2 @@
+Byggtips:
+Multiplicera med ett fast tal från ett tresiffrigt tal för att byta enhet, till exempel med 60 för att göra om minuter till sekunder, eller med 12 för att göra om fot till tum.

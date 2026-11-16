@@ -1,0 +1,1 @@
+Med pendeln kan du ta reda på vad som bestämmer hur lång tid en svängning tar. Ändra längden och tyngdkraften, så kan tiden ändras mycket. Prova att ändra vikten också: den gör ingen skillnad alls.

@@ -1,0 +1,1 @@
+Ljudbrytaren slås PÅ när den hör ett tillräckligt starkt ljud, som en klapp eller ett rop, och förblir på tills uppfinningen stannar. Den behöver ett ljudkort och en mikrofon eller något annat ljud in.

@@ -1,0 +1,1 @@
+Välj en av de nio planeterna i solsystemet, så skickar den ut fakta om planeten som tal, till exempel dess storlek, hur långt dygnet och året är eller avståndet till solen.

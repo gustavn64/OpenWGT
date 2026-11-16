@@ -1,0 +1,2 @@
+Byggtips:
+Kryssa i Göm talet för ett hemligt kodlås: jämför sifferknapparna med ett litet tresiffrigt tal som håller koden, med en jämförare inställd på lika med, och skicka resultatet till en vinstkollare. Inget lämnar sifferknapparna förrän ENTER trycks.

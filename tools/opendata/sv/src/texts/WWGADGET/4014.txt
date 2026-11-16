@@ -1,0 +1,2 @@
+Byggtips:
+Använd den för att märka när något går förbi ett mål, som poäng som går över 100. Om det ska räknas redan när målet nås väljer du större än eller lika med.

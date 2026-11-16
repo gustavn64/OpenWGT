@@ -1,0 +1,2 @@
+Byggtips:
+En OCH-grind blir ett säkerhetslås med två tangenter: koppla två tangenttryck till den, så säger den bara JA medan båda tangenterna hålls nere. För fler än två villkor matar du en grinds utgång till ännu en OCH-grind.

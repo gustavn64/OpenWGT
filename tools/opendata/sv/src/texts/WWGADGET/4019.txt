@@ -1,0 +1,2 @@
+Byggtips:
+Ordningen spelar roll: talet på sidan delas med talet ovanifrån, så 12 på sidan och 4 ovanifrån ger 3. Division med 0 får divideraren att ge upp och ge 0.

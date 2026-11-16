@@ -1,0 +1,283 @@
+{
+ "style": "0x90c800c0",
+ "ex_style": "0x00000000",
+ "rect": [
+  104,
+  81,
+  236,
+  187
+ ],
+ "menu": null,
+ "class": null,
+ "title": "Vinstkollare",
+ "font": [
+  8,
+  "MS Sans Serif"
+ ],
+ "items": [
+  {
+   "id": 150,
+   "class": "button",
+   "text": null,
+   "rect": [
+    201,
+    65,
+    31,
+    19
+   ],
+   "style": "0x5002000b"
+  },
+  {
+   "id": 1,
+   "class": "button",
+   "text": "OK",
+   "rect": [
+    178,
+    168,
+    49,
+    14
+   ],
+   "style": "0x50010001"
+  },
+  {
+   "id": 2,
+   "class": "button",
+   "text": "Avbryt",
+   "rect": [
+    124,
+    168,
+    45,
+    14
+   ],
+   "style": "0x50010000"
+  },
+  {
+   "id": 103,
+   "class": "button",
+   "text": "Doc",
+   "rect": [
+    107,
+    3,
+    124,
+    79
+   ],
+   "style": "0x5800000b"
+  },
+  {
+   "id": 104,
+   "class": "static",
+   "text": "Vinstkollare",
+   "rect": [
+    2,
+    -58,
+    128,
+    59
+   ],
+   "style": "0x50020000"
+  },
+  {
+   "id": 115,
+   "class": "edit",
+   "text": "#.-6",
+   "rect": [
+    62,
+    170,
+    51,
+    12
+   ],
+   "style": "0x50830000"
+  },
+  {
+   "id": 116,
+   "class": "static",
+   "text": "talet:",
+   "rect": [
+    5,
+    171,
+    51,
+    12
+   ],
+   "style": "0x50020000"
+  },
+  {
+   "id": 119,
+   "class": "static",
+   "text": "Spela:",
+   "rect": [
+    136,
+    136,
+    22,
+    11
+   ],
+   "style": "0x50020000"
+  },
+  {
+   "id": 105,
+   "class": "button",
+   "text": "Vinn när den är:1",
+   "rect": [
+    140,
+    90,
+    74,
+    10
+   ],
+   "style": "0x50030009"
+  },
+  {
+   "id": 106,
+   "class": "button",
+   "text": "Vinn/förlora när den är:1",
+   "rect": [
+    4,
+    90,
+    103,
+    10
+   ],
+   "style": "0x50000009"
+  },
+  {
+   "id": 107,
+   "class": "button",
+   "text": "Sann2",
+   "rect": [
+    147,
+    102,
+    32,
+    10
+   ],
+   "style": "0x50030009"
+  },
+  {
+   "id": 108,
+   "class": "button",
+   "text": "Falsk2",
+   "rect": [
+    147,
+    113,
+    37,
+    10
+   ],
+   "style": "0x50000009"
+  },
+  {
+   "id": 109,
+   "class": "button",
+   "text": "lika med3",
+   "rect": [
+    11,
+    102,
+    49,
+    10
+   ],
+   "style": "0x50030009"
+  },
+  {
+   "id": 110,
+   "class": "button",
+   "text": "inte lika med3",
+   "rect": [
+    11,
+    113,
+    64,
+    10
+   ],
+   "style": "0x50000009"
+  },
+  {
+   "id": 111,
+   "class": "button",
+   "text": "större än3",
+   "rect": [
+    11,
+    124,
+    62,
+    10
+   ],
+   "style": "0x50000009"
+  },
+  {
+   "id": 112,
+   "class": "button",
+   "text": "mindre än3",
+   "rect": [
+    11,
+    135,
+    57,
+    10
+   ],
+   "style": "0x50000009"
+  },
+  {
+   "id": 113,
+   "class": "button",
+   "text": "större än eller lika med3",
+   "rect": [
+    11,
+    146,
+    113,
+    10
+   ],
+   "style": "0x50000009"
+  },
+  {
+   "id": 114,
+   "class": "button",
+   "text": "mindre än eller lika med3",
+   "rect": [
+    11,
+    157,
+    110,
+    10
+   ],
+   "style": "0x50000009"
+  },
+  {
+   "id": 117,
+   "class": "button",
+   "text": "Vinstljud4",
+   "rect": [
+    160,
+    135,
+    57,
+    10
+   ],
+   "style": "0x50030009"
+  },
+  {
+   "id": 118,
+   "class": "button",
+   "text": "Förlustljud4",
+   "rect": [
+    160,
+    146,
+    61,
+    10
+   ],
+   "style": "0x50000009"
+  },
+  {
+   "id": 149,
+   "class": "static",
+   "text": null,
+   "rect": [
+    3,
+    85,
+    231,
+    1
+   ],
+   "style": "0x50020007"
+  },
+  {
+   "id": 102,
+   "class": "button",
+   "text": "Pic2043",
+   "rect": [
+    2,
+    3,
+    101,
+    75
+   ],
+   "style": "0x5800000b"
+  }
+ ]
+}

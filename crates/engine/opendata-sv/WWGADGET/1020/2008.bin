@@ -1,0 +1,1 @@
+OCH-grinden har två ingångar och en utgång. Bara när den första ingången OCH den andra båda är JA säger utgången JA (1); i alla andra fall säger den NEJ (0). Alla tal utom 0 räknas som JA.

@@ -1,0 +1,2 @@
+Byggtips:
+Spela in din egen röst som säger "Bra gjort!" (eller hämta en kort .WAV-fil) innan du trycker på START. Koppla sedan inspelaren efter delen som kontrollerar svaret och vidare till en högtalare.

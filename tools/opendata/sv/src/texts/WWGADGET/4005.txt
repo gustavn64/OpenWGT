@@ -1,0 +1,2 @@
+Byggtips:
+Sin, Cos och Tan räknar i grader, så Sin av 90 är 1. Heltal avrundar nedåt till ett heltal, vilket är bra för att göra om en dividerares svar till hela grupper.

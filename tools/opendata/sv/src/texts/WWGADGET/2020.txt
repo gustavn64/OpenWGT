@@ -1,0 +1,1 @@
+Omvandlaren räknar om mått från amerikanska enheter till metriska och tillbaka: grader Fahrenheit och Celsius, fot och meter, pund och kilogram.

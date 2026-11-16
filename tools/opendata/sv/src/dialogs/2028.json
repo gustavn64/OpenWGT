@@ -1,0 +1,211 @@
+{
+ "style": "0x90c800c0",
+ "ex_style": "0x00000000",
+ "rect": [
+  104,
+  81,
+  236,
+  177
+ ],
+ "menu": null,
+ "class": null,
+ "title": "Meddelandelista",
+ "font": [
+  8,
+  "MS Sans Serif"
+ ],
+ "items": [
+  {
+   "id": 150,
+   "class": "button",
+   "text": null,
+   "rect": [
+    201,
+    65,
+    31,
+    19
+   ],
+   "style": "0x5002000b"
+  },
+  {
+   "id": 1,
+   "class": "button",
+   "text": "OK",
+   "rect": [
+    182,
+    157,
+    49,
+    14
+   ],
+   "style": "0x50010001"
+  },
+  {
+   "id": 2,
+   "class": "button",
+   "text": "Avbryt",
+   "rect": [
+    124,
+    157,
+    45,
+    14
+   ],
+   "style": "0x50010000"
+  },
+  {
+   "id": 103,
+   "class": "button",
+   "text": "Doc",
+   "rect": [
+    107,
+    3,
+    124,
+    79
+   ],
+   "style": "0x5800000b"
+  },
+  {
+   "id": 104,
+   "class": "static",
+   "text": "Meddelandelista",
+   "rect": [
+    2,
+    -58,
+    70,
+    58
+   ],
+   "style": "0x50020000"
+  },
+  {
+   "id": 105,
+   "class": "static",
+   "text": "1:",
+   "rect": [
+    29,
+    92,
+    8,
+    10
+   ],
+   "style": "0x50020000"
+  },
+  {
+   "id": 106,
+   "class": "edit",
+   "text": "33",
+   "rect": [
+    43,
+    90,
+    152,
+    12
+   ],
+   "style": "0x50830000"
+  },
+  {
+   "id": 107,
+   "class": "static",
+   "text": "2:",
+   "rect": [
+    29,
+    107,
+    8,
+    10
+   ],
+   "style": "0x50020000"
+  },
+  {
+   "id": 108,
+   "class": "edit",
+   "text": "33",
+   "rect": [
+    43,
+    105,
+    152,
+    12
+   ],
+   "style": "0x50830000"
+  },
+  {
+   "id": 109,
+   "class": "static",
+   "text": "3:",
+   "rect": [
+    29,
+    122,
+    8,
+    9
+   ],
+   "style": "0x50020000"
+  },
+  {
+   "id": 110,
+   "class": "edit",
+   "text": "33",
+   "rect": [
+    43,
+    120,
+    152,
+    12
+   ],
+   "style": "0x50830000"
+  },
+  {
+   "id": 111,
+   "class": "static",
+   "text": "4:",
+   "rect": [
+    29,
+    137,
+    8,
+    9
+   ],
+   "style": "0x50020000"
+  },
+  {
+   "id": 112,
+   "class": "edit",
+   "text": "33",
+   "rect": [
+    43,
+    135,
+    152,
+    12
+   ],
+   "style": "0x50830000"
+  },
+  {
+   "id": 113,
+   "class": "button",
+   "text": "Töm alla",
+   "rect": [
+    14,
+    157,
+    73,
+    14
+   ],
+   "style": "0x50010000"
+  },
+  {
+   "id": 149,
+   "class": "static",
+   "text": null,
+   "rect": [
+    3,
+    85,
+    231,
+    1
+   ],
+   "style": "0x50020007"
+  },
+  {
+   "id": 102,
+   "class": "button",
+   "text": "Pic2028",
+   "rect": [
+    2,
+    3,
+    101,
+    75
+   ],
+   "style": "0x5800000b"
+  }
+ ]
+}

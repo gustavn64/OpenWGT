@@ -1,0 +1,103 @@
+{
+ "style": "0x90c800c0",
+ "ex_style": "0x00000000",
+ "rect": [
+  104,
+  81,
+  236,
+  107
+ ],
+ "menu": null,
+ "class": null,
+ "title": "INTE-grind",
+ "font": [
+  8,
+  "MS Sans Serif"
+ ],
+ "items": [
+  {
+   "id": 150,
+   "class": "button",
+   "text": null,
+   "rect": [
+    201,
+    65,
+    31,
+    19
+   ],
+   "style": "0x5003000b"
+  },
+  {
+   "id": 1,
+   "class": "button",
+   "text": "OK",
+   "rect": [
+    178,
+    89,
+    49,
+    14
+   ],
+   "style": "0x50010001"
+  },
+  {
+   "id": 101,
+   "class": "static",
+   "text": "INTE-grind",
+   "rect": [
+    4,
+    -58,
+    69,
+    58
+   ],
+   "style": "0x50020000"
+  },
+  {
+   "id": 103,
+   "class": "button",
+   "text": "Doc",
+   "rect": [
+    107,
+    14,
+    124,
+    70
+   ],
+   "style": "0x5800000b"
+  },
+  {
+   "id": 104,
+   "class": "static",
+   "text": "Sant eller falskt",
+   "rect": [
+    106,
+    3,
+    123,
+    10
+   ],
+   "style": "0x50020000"
+  },
+  {
+   "id": 149,
+   "class": "static",
+   "text": null,
+   "rect": [
+    3,
+    85,
+    231,
+    1
+   ],
+   "style": "0x50020007"
+  },
+  {
+   "id": 102,
+   "class": "button",
+   "text": "Pic",
+   "rect": [
+    2,
+    3,
+    101,
+    75
+   ],
+   "style": "0x5800000b"
+  }
+ ]
+}

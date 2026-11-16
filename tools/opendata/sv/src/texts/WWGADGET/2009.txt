@@ -1,0 +1,1 @@
+ELLER-grinden har två ingångar och en utgång. Om minst en ingång är JA säger utgången JA (1); bara när båda ingångarna är NEJ säger den NEJ (0). Alla tal utom 0 räknas som JA.

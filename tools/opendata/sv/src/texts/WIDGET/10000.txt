@@ -1,0 +1,33 @@
+OpenWGT – en öppen motor för Widget Workshop
+
+Ett fritt och öppet sätt att fortsätta bygga uppfinningar på dagens datorer. Här är människorna och delarna som får det att synas på skärmen:
+
+
+Porten:
+
+Doridian
+github.com/Doridian/WidgetWorkshop
+
+Den här grenen, OpenWGT, lägger till egna fria paket, alla gjorda för projektet:
+
+OpenWGFX
+bilderna
+
+OpenWSFX
+ljuden
+
+OpenWDATA
+texterna
+
+Byggt i Rust, med winit, wgpu och cpal
+
+Fri programvara:
+
+OpenWGT ges ut under GNU Affero General Public License, version 3 eller (om du vill) någon senare version. Du får läsa, ändra och dela den.
+
+Ett särskilt tack till:
+
+alla som har sparat sin Widget Workshop-cd
+och alla som fortfarande bygger uppfinningar
+
+Widget Workshop är (c) 1995 Maxis. Widget Workshop och Maxis är varumärken som tillhör sina respektive ägare. OpenWGT är ett inofficiellt projekt och har ingen koppling till dem och stöds inte av dem.

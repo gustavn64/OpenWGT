@@ -1,0 +1,1 @@
+XELLER-grinden (exklusivt ELLER) har två ingångar och en utgång. Utgången säger JA (1) när precis en ingång är JA. När båda är JA, eller båda är NEJ, säger den NEJ (0). Alla tal utom 0 räknas som JA.

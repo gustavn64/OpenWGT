@@ -1,0 +1,1 @@
+Subtraheraren drar bort talet ovanifrån från talet till vänster och skickar ut skillnaden.

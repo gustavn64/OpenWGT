@@ -1,0 +1,1 @@
+Den här displayen visar heltal från -99 upp till 999. Tal med decimaler avrundas till närmaste heltal, och ett rött X visas när ett tal inte får plats.

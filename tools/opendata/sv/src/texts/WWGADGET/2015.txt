@@ -1,0 +1,3 @@
+Den här jämföraren ställer en enda fråga om två tal:
+Är tal 1 mindre än tal 2?
+I så fall skickar den ut JA (1), annars NEJ (0).

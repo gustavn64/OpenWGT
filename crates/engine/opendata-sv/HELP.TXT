@@ -1,0 +1,670 @@
+title: Hjälp för OpenWGT
+
+= Innehåll {#contents}
+keywords: innehåll, hjälp, ämnen
+
+Välkommen till verkstaden i OpenWGT! Välj ett ämne nedan, eller tryck på **Register** för att slå upp ett ord.
+
+## Kom igång
+- [Välkommen till OpenWGT](#welcome)
+- [Din första uppfinning: en strömbrytare och en lampa](#first-widget)
+- [Så använder du hjälpen](#using-help)
+
+## Bygga uppfinningar
+- [Verkstaden i korthet](#editor)
+- [Kontrollpanelen: START, STOPP, ljus och ljud](#control-box)
+- [Verktygslådan](#tray)
+- [De tre verktygen: pekaren, saxen och handen](#tools)
+- [Arbetsytan](#worksheet)
+- [Kontakter och sladdar](#wires)
+- [Knutpunkter på sladdar](#joints)
+- [Vad som går genom en sladd](#values)
+- [Köra en uppfinning](#running)
+- [Ändra en dels inställningar](#settings)
+
+## Delarna
+- [Alla delar](#parts)
+- [Visningsdelar](#display-parts)
+- [Tidsdelar](#timer-parts)
+- [Ljuddelar](#sound-parts)
+- [Sifferdelar](#number-parts)
+- [Brytardelar](#switch-parts)
+- [Textdelar](#text-parts)
+- [Superdelar](#super-parts)
+
+## Pussel
+- [Lösa pussel](#puzzles)
+- [Vinstkollaren](#win-lose)
+- [Göra egna pussel](#make-puzzles)
+
+## Filer och delning
+- [Spara och öppna uppfinningar](#files)
+- [Exempeluppfinningarna](#samples)
+- [Länkar till uppfinningar](#links)
+- [Fristående uppfinningar](#standalone)
+- [Spela in egna ljud](#recording)
+
+## Menyer, tangenter och inställningar
+- [Menyerna](#menus)
+- [Kortkommandon](#keys)
+- [Fönstret Inställningar](#openwgt-settings)
+- [Med eller utan cd-skivan](#cd)
+- [Tips och felsökning](#tips)
+- [Om OpenWGT](#about)
+
+= Välkommen till OpenWGT {#welcome}
+keywords: välkommen, introduktion, uppfinning, vad är
+
+OpenWGT är en verkstad för uppfinningar. Du tar delar ur en verktygslåda - strömbrytare, lampor, klockor, sifferrutor, högtalare, en kanon och mycket mer - lägger dem på en stor tom arbetsyta och kopplar ihop dem med sladdar. Sedan trycker du på **START**, och din *uppfinning* vaknar till liv.
+
+En uppfinning kan vara så enkel som en strömbrytare som tänder en lampa, eller så klurig som ett frågespel, ett reaktionsspel eller ett experiment som släpper en elefant på månen. Det finns inget fel sätt att bygga: prova, tryck på START och se vad som händer.
+
+När du vill ha en utmaning kan du hämta ett av [pusslen](#puzzles): vart och ett är en halvfärdig uppfinning som du ska göra klar.
+
+Ny här? Börja med [din första uppfinning](#first-widget).
+
+= Din första uppfinning {#first-widget}
+keywords: första uppfinningen, genomgång, kom igång, lampa, strömbrytare, nybörjare
+
+Nu bygger vi en lampa som du kan tända och släcka. Det tar ungefär en minut.
+
+## 1. Hämta en strömbrytare
+Klicka i [verktygslådan](#tray) högst upp på fliken med den lilla strömbrytaren (**brytardelarna**). Tryck ner musknappen på **strömbrytaren**, håll kvar och dra ner den på den vita arbetsytan. Släpp var du vill.
+
+## 2. Hämta en lampa
+Klicka på fliken med bildskärmen (**visningsdelarna**). Dra **glödlampan** till arbetsytan, en bit till höger om strömbrytaren.
+
+## 3. Koppla ihop dem
+Titta noga på strömbrytaren: den har en liten prick på kanten. Pricken är en *kontakt*, där sladdar kopplas in. Peka på den (pekaren blir en hand som håller en kontakt), tryck ner musknappen och dra. En sladd följer med pekaren. För den över glödlampan: när den blir grön har den hittat lampans kontakt. Släpp, så sitter sladden kvar. Läs mer i [Kontakter och sladdar](#wires).
+
+## 4. Tryck på START
+Klicka på den gröna knappen **START** till vänster (eller tryck på Enter). Verktygslådan försvinner och uppfinningen går. Klicka på strömbrytaren: lampan tänds! Klicka igen så släcks den.
+
+## 5. Tryck på STOPP
+Klicka på **STOPP** (eller tryck på Esc) för att gå tillbaka till byggandet. Allt ställs tillbaka som det var från början.
+
+Prova nu att ändra saker: sätt en [INTE-grind](#number-parts) mellan strömbrytaren och lampan, eller koppla strömbrytaren till en [ljuddel](#sound-parts) och en högtalare. När du har gjort något du gillar kan du [spara det](#files).
+
+= Verkstaden i korthet {#editor}
+keywords: verkstad, skärm, fönster, uppställning, verktygsfält
+
+Fönstret i OpenWGT har fyra delar:
+
+- **Menyraden** allra överst, med Arkiv, Redigera, Alternativ och Hjälp. Se [Menyerna](#menus).
+- **Kontrollpanelen**, den lilla panelen uppe till vänster, med START, STOPP och knapparna för ljus och ljud. Se [Kontrollpanelen](#control-box).
+- **Verktygslådan**, den breda panelen bredvid, med verktygen, flikarna och själva delarna. Se [Verktygslådan](#tray) och [De tre verktygen](#tools).
+- **Arbetsytan**, den stora ytan som fyller resten av fönstret, där du bygger. Se [Arbetsytan](#worksheet).
+
+Kontrollpanelen och verktygslådan svävar över arbetsytan. Om du vill flytta undan en av dem drar du i den mörka listen längs överkanten.
+
+När du pekar på en knapp eller en del i verktygslådan syns dess namn i listen högst upp i lådan.
+
+= Kontrollpanelen {#control-box}
+keywords: kontrollpanel, START, STOPP, ljus, ljud, tyst, mörker
+
+Kontrollpanelen är den lilla panelen i övre vänstra hörnet.
+
+- **START** sätter igång uppfinningen. Verktygslådan försvinner medan den går. Enter gör samma sak. Se [Köra en uppfinning](#running).
+- **STOPP** stannar den och ställer tillbaka varje del som den var innan du tryckte på START. Esc gör samma sak.
+- **Ljus** (knappen med glödlampan) släcker och tänder ljuset i verkstaden. När ljuset är släckt blir arbetsytan mörk och delarna visar hur de ser ut i mörker - perfekt för en ljusshow.
+- **Ljud** (knappen med högtalaren) stänger av och sätter på allt ljud: både uppfinningens egna ljud och verkstadens klick och sus.
+
+Du kan dra kontrollpanelen vart du vill i den mörka listen överst.
+
+= Verktygslådan {#tray}
+keywords: verktygslåda, låda, flik, sida, pilar, ta delar
+
+I verktygslådan finns alla delar du kan bygga med, sorterade i sju flikar. Klicka på en flik längs lådans överkant för att öppna den:
+
+- bildskärmen: [Visningsdelar](#display-parts)
+- stoppuret: [Tidsdelar](#timer-parts)
+- örat: [Ljuddelar](#sound-parts)
+- 1-2-3: [Sifferdelar](#number-parts)
+- strömbrytaren: [Brytardelar](#switch-parts)
+- bokstaven A: [Textdelar](#text-parts)
+- planeten: [Superdelar](#super-parts)
+
+De flesta flikar har mer än en sida. Pilarna längst till höger i lådan bläddrar till förra eller nästa sida, och siffran mellan dem visar vilken sida du är på.
+
+## Ta en del
+Tryck ner musknappen på en del i lådan och dra den, med knappen nere, till arbetsytan. Släpp där du vill ha den. Om du ångrar dig släpper du den tillbaka i lådan.
+
+## Siffror och gråa delar
+I en vanlig uppfinning kan du ta hur många du vill av varje del. I ett [pussel](#puzzles) kanske lådan bara lämnar ut några få: en liten siffra på en del visar hur många som finns kvar, och en grå del är slut. Om du tar bort en del från arbetsytan går den tillbaka till lådan.
+
+## Hela fliken på en gång
+Med **Förbättringar** påslaget i [Alternativ > Inställningar](#openwgt-settings) visar lådan alla sidor i en flik på en gång, under varandra, så att det inte behövs några pilar.
+
+= De tre verktygen {#tools}
+keywords: verktyg, pekare, handske, sax, klippa, flytta, hand
+
+De tre knapparna längst till vänster i [verktygslådan](#tray) bestämmer vad musen gör på arbetsytan.
+
+## Pekaren (handsken)
+Den stora knappen. Det här är verktyget du använder mest. Med det kan du:
+
+- dra runt delar på arbetsytan,
+- dra från en kontakt för att göra en sladd (se [Kontakter och sladdar](#wires)),
+- klicka på en sladd för att göra en knutpunkt i den (se [Knutpunkter på sladdar](#joints)),
+- dubbelklicka på en del för att öppna dess [inställningar](#settings).
+
+## Saxen
+Klicka på en del, en sladd eller en knutpunkt med saxen för att ta bort den. En del går tillbaka till lådan, och sladdarna som sitter i den försvinner också. Håll ner **Skift** för att använda saxen en stund; släpp så har du ditt vanliga verktyg igen.
+
+## Handen (den öppna handen)
+Dra var som helst med handen för att skjuta *hela* uppfinningen över arbetsytan - alla delar, sladdar och knutpunkter flyttas tillsammans. Den kan inte skjuta ut uppfinningen helt utanför skärmen. Håll ner **Ctrl** för att använda handen en stund; det går även medan uppfinningen går.
+
+När du tar en del ur lådan, trycker på START eller öppnar en fil byter du automatiskt tillbaka till pekaren.
+
+= Arbetsytan {#worksheet}
+keywords: arbetsyta, bakgrund, markera, markering, ta bort, ångra
+
+Arbetsytan är den stora ytan där du bygger. Det finns inget rutnät: delarna hamnar precis där du släpper dem, och de får gärna ligga över varandra. En del som du klickar på hamnar längst fram.
+
+## Det som är under pekaren
+Du behöver inte klicka för att markera något. Det som är under pekaren - en del, en sladd eller en knutpunkt - lyses upp, och det är det som **Delete**-tangenten och saxen tar bort. En del får en grön ram, och en sladd blir tjockare.
+
+## Ångra
+**Redigera > Ångra** (Ctrl+Z) tar tillbaka det senaste du gjorde: att flytta, koppla, ta bort, ändra en inställning och så vidare. Det finns ett steg att ångra; väljer du Ångra en gång till kommer ändringen tillbaka.
+
+## Städa
+- **Redigera > Töm arbetsytan** tar bort alla delar och sladdar.
+- **Redigera > Ta bort alla sladdar** tar bort varje sladd men behåller delarna.
+- **Redigera > Ta bort alla knutpunkter** rätar ut alla sladdar.
+- **Redigera > Anpassa arbetsytan...** flyttar delarna närmare varandra så att uppfinningen får plats på en mindre skärm. Du väljer skärmstorleken.
+
+I ett [pussel](#puzzles) ligger de låsta delarna och sladdarna kvar vad du än väljer.
+
+## Bakgrunder
+Menyn **Alternativ** har fyra bakgrunder till arbetsytan: Enkel bakgrund, Metallvågor, Brus och Stål. De mönstrade har en ram av rör runt kanten. Bakgrunden sparas med uppfinningen.
+
+= Kontakter och sladdar {#wires}
+keywords: kontakt, sladd, koppla, ingång, utgång, delare
+
+Delarna pratar med varandra genom sladdar. Varje sladd går mellan två *kontakter*, de små prickarna på delarnas kanter.
+
+## Ingångar och utgångar
+Varje kontakt är antingen en **utgång**, där en del skickar ut något, eller en **ingång**, där en del tar emot något. En sladd går alltid från en utgång till en ingång. En strömbrytare har till exempel en utgång och en glödlampa en ingång. I en dels [inställningsfönster](#settings) ser du dess bild med kontakterna utmärkta.
+
+## Göra en sladd
+Peka med pekaren på en ledig kontakt: pekaren blir en hand som håller en kontakt. Tryck ner musknappen och dra. Den nya sladden är röd medan den lösa änden hänger i luften. För pekaren över en annan del: sladden hoppar till delens närmaste lediga kontakt av rätt sort och blir grön. Släpp för att koppla in den. Släpper du över tom yta försvinner sladden.
+
+## En sladd per kontakt
+Varje kontakt tar bara en sladd. För att skicka en utgång till två eller fler ställen använder du en [delare](#switch-parts): den kopierar det som kommer in till var och en av sina utgångar.
+
+## Flytta en sladd
+Trycker du på en kontakt som redan har en sladd tar du upp den änden av sladden. Släpp den på en annan ledig kontakt för att koppla in den där. Släpper du den någon annanstans fjädrar den tillbaka.
+
+## Ta bort en sladd
+Klicka på den med saxen, eller peka på den och tryck på **Delete**. **Redigera > Ta bort alla sladdar** tar bort allihop. När du tar bort en del försvinner sladdarna som sitter i den.
+
+Du kan också göra [knutpunkter](#joints) på en sladd så att uppfinningen blir prydlig. Vad en sladd bär förklaras i [Vad som går genom en sladd](#values).
+
+= Knutpunkter på sladdar {#joints}
+keywords: knutpunkt, böj, hörn, räta ut
+
+En sladd behöver inte vara rak. Klicka var som helst på en sladd med pekaren så dyker det upp en *knutpunkt* (en liten mörk fyrkant); håll kvar knappen och dra den dit du vill ha hörnet. Varje klick på en sladd lägger till en knutpunkt till.
+
+- Dra i en knutpunkt för att flytta den.
+- Klicka på den med saxen, eller peka på den och tryck på **Delete**, för att ta bort den.
+- Välj **Redigera > Ta bort alla knutpunkter** för att räta ut alla sladdar på en gång.
+
+Knutpunkterna stannar där du satte dem när du flyttar en del, så när du har flyttat runt delar vill du kanske städa knutpunkterna också. Handen och Anpassa arbetsytan flyttar dem tillsammans med allt annat.
+
+= Vad som går genom en sladd {#values}
+keywords: värden, signal, på, av, ja, nej, sant, falskt, tal, ljud
+
+Tre sorters saker går genom sladdarna.
+
+## På och av
+Strömbrytare, tangenter, grindar och många andra delar skickar ut ett enkelt **PÅ eller AV**. Det kallas också JA och NEJ, eller SANT och FALSKT: det är samma sak. När det behövs ett tal räknas PÅ som 1 och AV som 0.
+
+## Tal
+Sifferdelar, skjutreglage, klockor och vetenskapsdelar skickar ut **tal**, även negativa tal och decimaltal. När en del vill ha PÅ eller AV räknas alla tal utom 0 som PÅ, och 0 som AV. Du kan alltså koppla ett tal direkt till en glödlampa: den lyser för allt utom 0.
+
+## Ljud
+Ljuddelar som djurläten eller inspelaren skickar ut ett **ljud**. Ett ljud hörs bara när det når en [högtalare](#sound-parts). På vägen kan det gå genom en delare, en växlare eller en ljudförvandlare.
+
+## När saker händer
+Delarna kollar sina ingångar hela tiden medan uppfinningen går, så en ändring sprider sig genom uppfinningen nästan direkt. Några delar, som adderaren, behöver en stund för att räkna ut sitt svar.
+
+= Köra en uppfinning {#running}
+keywords: köra, START, STOPP, starta, stanna, spela
+
+Tryck på **START** (eller Enter) för att sätta igång uppfinningen och på **STOPP** (eller Esc) för att stanna den.
+
+## Medan den går
+- Verktygslådan är gömd, och du kan inte flytta, koppla eller ta bort delar.
+- Du kan *använda* delarna: klicka på strömbrytare, tangenter och knappar, dra i skjutreglagets knopp, skriva på sifferknapparna, klicka på det tresiffriga talets pilar och så vidare.
+- Klockor tickar, metronomer slår, ljud spelas och vetenskapsdelarna gör sina experiment.
+- Håll ner **Ctrl** och dra för att skjuta runt hela uppfinningen.
+- De flesta menyval är gråa tills du stannar.
+
+## När den stannar
+STOPP ställer tillbaka varje del som den var före START: räknare går tillbaka till 0, strömbrytare till sitt startläge och diagram suddas ut. Uppfinningen är redo att köras igen.
+
+En [vinstkollare](#win-lose) kan stanna en uppfinning av sig själv.
+
+= Ändra en dels inställningar {#settings}
+keywords: inställningar, dialogruta, dubbelklicka, alternativ, Professorn, byggtips, egenskaper
+
+De flesta delar kan ställas in att bete sig på olika sätt: en metronoms takt, vilket djur djurlätena låter som, orden på en anslagstavla.
+
+## Öppna inställningarna
+När uppfinningen inte går **dubbelklickar** du på delen med pekaren. Då öppnas dess inställningsfönster. (Dubbelklicka på själva delen, inte på en sladd som går över den.) På en pekskärm håller du fingret stilla på delen en stund i stället.
+
+Fönstret visar:
+
+- delens bild, med kontakterna, och vad den skickar ut,
+- en pratbubbla som berättar vad delen gör,
+- delens egna val: knappar, listor och rutor att skriva i.
+
+Klicka på **OK** för att behålla ändringarna, eller på **Avbryt** för att lämna delen som den var.
+
+## Professorns knapp
+I bubblans hörn sitter verkstadens vetenskapsman, Professorn. Klicka på honom för att se ett *byggtips*: en idé om något att bygga med delen. Klicka igen för att läsa beskrivningen en gång till.
+
+= Alla delar {#parts}
+keywords: delar, lista över delar
+
+Här är de sju flikarna i [verktygslådan](#tray) och vad som finns i dem:
+
+- [Visningsdelar](#display-parts): glödlampa, färgblandare, remsdiagram, bildprojektor, tresiffrig display, tiosiffrig display.
+- [Tidsdelar](#timer-parts): digitalklocka, stoppur, metronom.
+- [Ljuddelar](#sound-parts): ljudbrytare, djurläten, blandade ljud, högtalare, stämgaffel, inspelare, ljudförvandlare.
+- [Sifferdelar](#number-parts): sifferknappar, tresiffrigt tal, räknare, litet tresiffrigt tal, skjutreglage, adderare, subtraherare, multiplicerare, dividerare, slantsingling, slumptalsgenerator, summerare, jämförare, mattefunktioner, area/volym, omvandlare och OCH-, ELLER-, XELLER- och INTE-grindarna.
+- [Brytardelar](#switch-parts): strömbrytare, tangenttryck, musknapp, musavståndsmätare, dynamittändare, växlare samt två-, tre- och fyrvägsdelarna.
+- [Textdelar](#text-parts): etikett, meddelandelista, anslagstavla och tio klistermärken.
+- [Superdelar](#super-parts): vinstkollare, pendel, gravitationskammare, kanon, hjärta, solsystemet.
+
+Varje del förklarar sig själv också: dubbelklicka på den på arbetsytan och läs dess [inställningsfönster](#settings).
+
+= Visningsdelar {#display-parts}
+keywords: visning, glödlampa, lampa, färgblandare, färg, remsdiagram, diagram, bildprojektor, bild, tresiffrig display, tiosiffrig display
+
+Fliken med bildskärmen. De här delarna visar vad uppfinningen gör.
+
+## Sida 1
+- **Glödlampa** - tänds när ingången är PÅ eller något annat tal än 0.
+- **Färgblandare** - en stor färgad fläck. Skicka in tal från 0 till 100 i den röda, gröna och blå ingången för att blanda nästan vilken färg som helst.
+- **Remsdiagram** - ritar ett diagram över ett tal medan tiden går. Du väljer talområdet och hur länge diagrammet räcker; ett PÅ på den andra ingången suddar ut det.
+- **Bildprojektor** - visar bilder ur en av sex bildserier. Skicka in en bilds nummer för att visa den.
+
+## Sida 2
+- **Tresiffrig display** - visar heltal från -99 till 999. Ett rött X betyder att talet inte får plats.
+- **Tiosiffrig display** - visar stora tal och decimaltal, upp till tio tecken.
+
+Tips: medan du bygger kan du koppla en display till vilken utgång som helst för att se vad delen skickar. Se också [Sifferdelar](#number-parts) och [Textdelar](#text-parts).
+
+= Tidsdelar {#timer-parts}
+keywords: tid, timer, klocka, digitalklocka, stoppur, metronom, takt
+
+Fliken med stoppuret.
+
+- **Digitalklocka** - visar tiden från datorns klocka, som 12- eller 24-timmarstid. Den kan skicka ut sekunderna, minuterna eller timmarna.
+- **Stoppur** - tar tid. Det har en START-ingång och en STOPP-ingång på sidan och en RESET-ingång ovanpå. Det kan skicka ut sekunder, minuter eller helt enkelt PÅ medan det går.
+- **Metronom** - skickar ut en kort PÅ-puls vid varje slag, från 1 till 120 slag i minuten. Koppla den till en räknare för att räkna sekunder, eller till en ljuddel för ett trumkomp.
+
+Se också [Sifferdelar](#number-parts) för räknaren, och [Ljuddelar](#sound-parts).
+
+= Ljuddelar {#sound-parts}
+keywords: ljud, högtalare, oljud, djurläten, blandade ljud, stämgaffel, inspelare, ljudförvandlare, ljudbrytare, mikrofon, klapp
+
+Fliken med örat. Kom ihåg: ljud hörs bara när de når en **högtalare**.
+
+## Sida 1
+- **Ljudbrytare** - slås PÅ när den hör ett starkt ljud genom mikrofonen, som en klapp, och förblir på tills uppfinningen stannar. Du kan ställa in hur känslig den är.
+- **Djurläten** - när ingången slås på skickar den ut en hund, en katt, en tupp eller en ko.
+- **Blandade ljud** - samma sak, med tio ljud att välja bland, till exempel en summer, ett klockspel, en klapp eller en gök.
+- **Högtalare** - spelar upp alla ljud som når den. Skicka ett tal till den i stället, så spelar den en ton med så många hertz (440 är det A som musiker stämmer efter).
+
+## Sida 2
+- **Stämgaffel** - skickar ut en kort, ren ton varje gång ingången slås på. Du väljer tonen.
+- **Inspelare** - spelar upp ett ljud som du själv har spelat in eller hämtat från en .WAV-fil. Se [Spela in egna ljud](#recording).
+- **Ljudförvandlare** - ändrar ett ljud som går igenom den: högre, lägre eller baklänges.
+
+Högtalarens ljud och verkstadens egna ljud kan stängas av med ljudknappen på [kontrollpanelen](#control-box). Se också [Vad som går genom en sladd](#values).
+
+= Sifferdelar {#number-parts}
+keywords: tal, matte, matematik, sifferknappar, tresiffrigt tal, räknare, skjutreglage, adderare, subtraherare, multiplicerare, dividerare, slantsingling, slump, summerare, jämförare, mattefunktioner, area, volym, omvandlare, logiska grindar, OCH-grind, ELLER-grind, XELLER-grind, INTE-grind
+
+Fliken med 1-2-3. Det är den största fliken, med fem sidor.
+
+## Sida 1: tal in
+- **Sifferknappar** - skriv in ett tal medan uppfinningen går, som på en miniräknare. Den kan gömma talet, för hemliga koder.
+- **Tresiffrigt tal** - skickar ut ett tal från 0 till 999. Klicka på pilarna ovanför och under siffrorna för att ändra det, även medan uppfinningen går.
+- **Räknare** - räknar ett varje gång ingången ändras och skickar ut antalet.
+- **Litet tresiffrigt tal** - en liten del som alltid skickar samma tal, från 0 till 999. Du ställer in det i dess inställningar.
+- **Skjutreglage** - dra i knoppen eller klicka på pilarna för att skicka ut ett tal ur ett område som du väljer.
+
+## Sida 2: räkning
+- **Adderare** - lägger ihop sina två ingångar.
+- **Subtraherare** - drar bort talet ovanifrån från talet på sidan.
+- **Multiplicerare** - multiplicerar sina två ingångar.
+- **Dividerare** - delar talet på sidan med talet ovanifrån. Division med 0 får den att ge upp.
+
+## Sida 3: slump och jämförelser
+- **Slantsingling** - singlar slant när ingången är PÅ: 1 för krona, 0 för klave.
+- **Slumptalsgenerator** - väljer tal som ingen kan gissa, ur ett område som du väljer.
+- **Summerare** - håller koll på varje tal den får och ger summan, medelvärdet, det största eller det minsta.
+- **Jämförare** - jämför talet på sidan med talet ovanifrån (lika med, inte lika med, större än, mindre än...) och skickar ut JA eller NEJ.
+
+## Sida 4: matte och naturvetenskap
+- **Mattefunktioner** - kvadratrot, kvadrat, fakultet, sinus, cosinus, tangens eller avrundning nedåt till ett heltal.
+- **Area/volym** - arean av en kvadrat eller cirkel, eller volymen av en kub eller ett klot, utifrån en sida eller en radie.
+- **Omvandlare** - räknar om Fahrenheit till Celsius, fot till meter, pund till kilogram, och tillbaka.
+
+## Sida 5: logiska grindar
+Grindar arbetar med JA och NEJ (PÅ och AV). Alla tal utom 0 räknas som JA.
+
+- **OCH-grind** - JA bara när båda ingångarna är JA.
+- **ELLER-grind** - JA när minst en ingång är JA.
+- **XELLER-grind** - JA när precis en ingång är JA.
+- **INTE-grind** - gör JA till NEJ och NEJ till JA.
+
+Se också [Visningsdelar](#display-parts) för att visa dina svar, och [Brytardelar](#switch-parts).
+
+= Brytardelar {#switch-parts}
+keywords: brytare, strömbrytare, tangenttryck, tangentbord, musknapp, musavstånd, dynamittändare, växlare, delare
+
+Fliken med strömbrytaren. Det här är delarna som du styr uppfinningen med, plus delarna som leder sladdarna rätt.
+
+## Sida 1: reglage
+- **Strömbrytare** - klicka på den för att växla mellan PÅ och AV. Du väljer om den börjar på eller av.
+- **Tangenttryck** - PÅ medan dess tangent på tangentbordet hålls nere. Du väljer bokstaven eller siffran; det går också att klicka på den med musen.
+- **Musknapp** - PÅ medan en musknapp hålls nere, var som helst i fönstret.
+- **Musavståndsmätare** - mäter i tum hur långt musen rör sig medan du håller ner en knapp.
+- **Dynamittändare** - tryck ner den en gång så slås den PÅ, och den förblir på tills uppfinningen stannar.
+
+## Sida 2: styrning
+- **Växlare** - två dataingångar, en utgång. Vanligtvis släpps den övre ingången igenom; skicka PÅ till ingången ovanpå så släpps den nedre igenom i stället.
+- **Tvåvägsdelare**, **trevägsdelare**, **fyrvägsdelare** - kopierar det som kommer in (PÅ/AV, ett tal eller ett ljud) till varje utgång. Eftersom varje [kontakt bara tar en sladd](#wires) är det med dem som en del kan mata flera andra.
+
+= Textdelar {#text-parts}
+keywords: text, etikett, meddelandelista, anslagstavla, klistermärke, ord, rubrik, dekoration
+
+Fliken med bokstaven A.
+
+## Sida 1
+- **Etikett** - ett namn eller en anteckning på uppfinningen, med liten eller stor text. Den har inga kontakter.
+- **Meddelandelista** - rymmer fyra meddelanden. Skicka in 1, 2, 3 eller 4 för att visa det meddelandet, 0 för att inte visa något.
+- **Anslagstavla** - visar ett längre eget meddelande medan ingången är PÅ.
+
+## Sida 2 till 4
+- **Klistermärken** - tio bilder som bara gör uppfinningen snyggare. De kopplas inte till något.
+
+Pussel använder etiketter och anslagstavlor för att ge dig sina instruktioner. Se [Lösa pussel](#puzzles).
+
+= Superdelar {#super-parts}
+keywords: superdelar, naturvetenskap, vinst, förlust, vinstkollare, pendel, gravitationskammare, kanon, hjärta, solsystemet, planet, experiment
+
+Fliken med planeten: vetenskapslabbet, och delen som avslutar spel.
+
+## Sida 1
+- **Vinstkollare** - väntar tills ingången når ett mål, spelar sedan ett vinst- eller förlustljud och stannar uppfinningen. Se [Vinstkollaren](#win-lose).
+- **Pendel** - börjar svänga när ingången slås på. Ändra längden och tyngdkraften (G-kraften) för att se hur svängningen ändras; den kan skicka ut hur lång tid en svängning tar, eller PÅ varje gång den passerar mitten.
+- **Gravitationskammare** - när ingången slås på släpper den en fjäder, en elefant eller en baseboll från en höjd du väljer, på den planet du väljer, och slås PÅ när den landar.
+- **Kanon** - skjuter en kula när ingången slås på. Den kan skicka ut sträckan, höjden, farten eller PÅ när kulan landar. Den räknar i fot och engelska mil i timmen.
+
+## Sida 2
+- **Hjärta** - slår som hjärtat hos ett djur du väljer, från en ökenråtta till en elefant. Det skickar PÅ vid varje slag, eller pulsen eller hjärtats vikt.
+- **Solsystemet** - välj en planet så skickar den ut ett faktum om den som ett tal: storleken, hur långt dygnet eller året är, avståndet till solen med mera.
+
+Tips: en [omvandlare](#number-parts) gör om kanonens fot till meter.
+
+= Lösa pussel {#puzzles}
+keywords: pussel, hämta pussel, utmaning, löst, låst
+
+Ett pussel är en uppfinning som inte riktigt är färdig. Din uppgift är att göra den klar.
+
+## Hämta ett pussel
+Välj **Arkiv > Hämta pussel...**. Välj ett pussel i listan och klicka på **OK** (eller dubbelklicka på det). Pussel som du redan har löst har ett **+** framför namnet. **Glöm lösta pussel** tar bort alla markeringar så att du kan börja om.
+
+## Så fungerar ett pussel
+- **Instruktionerna står på arbetsytan**, skrivna på etiketter och anslagstavlor. Läs dem först!
+- **Vissa delar och sladdar är låsta.** De lyses inte upp under pekaren, och du kan inte flytta, klippa eller koppla om dem. De hör till pusslet.
+- **Verktygslådan kan vara begränsad.** En liten siffra på en del i lådan visar hur många du får ta till; gråa delar går inte att använda alls. Tar du bort en del får du tillbaka den.
+- **En vinstkollare avgör.** När uppfinningen gör det pusslet ber om spelar [vinstkollaren](#win-lose) sitt vinstljud, stannar uppfinningen och markerar pusslet som löst.
+
+## Börja om
+**Arkiv > Återgå** ställer tillbaka pusslet som det var när du hämtade det.
+
+## Spara ditt arbete
+**Arkiv > Spara som...** sparar din lösning som en vanlig uppfinning: låsen och gränserna i lådan försvinner, och den är inte längre ett pussel. Vill du göra egna pussel? Se [Göra egna pussel](#make-puzzles).
+
+= Vinstkollaren {#win-lose}
+keywords: vinst, förlust, vinstkollare, spelet slut, slut, mål
+
+Vinstkollaren, på fliken [Superdelar](#super-parts), låter en uppfinning sluta av sig själv. Den har en ingång.
+
+I dess inställningar väljer du vad den väntar på:
+
+- **Vinn när den är: Sann eller Falsk** - den väntar på att ingången ska bli PÅ (eller AV).
+- **Vinn/förlora när den är:** lika med, inte lika med, större än, mindre än, större än eller lika med, eller mindre än eller lika med **talet** som du skriver,
+
+och vad den spelar:
+
+- **Vinstljud** - ett glatt slut. I ett pussel markerar det pusslet som löst.
+- **Förlustljud** - ett sorgset slut, när tiden eller försöken tar slut.
+
+Så fort ingången stämmer spelar kollaren sin animation och sitt ljud och stannar uppfinningen.
+
+Du kan ha mer än en i en uppfinning: en med vinstljudet som håller utkik efter rätt svar, och en med förlustljudet som håller koll på ett stoppur, för ett spel mot klockan.
+
+= Göra egna pussel {#make-puzzles}
+keywords: göra pussel, låsa, lås, gräns, antal i lådan, numeriskt tangentbord
+
+Vilken uppfinning som helst kan bli ett pussel till en kompis. Bygg de delar av uppfinningen som ska vara givna, skriv instruktionerna på etiketter eller en anslagstavla, och lägg till en [vinstkollare](#win-lose) som märker när det är löst. Sedan:
+
+- **Lås delar och sladdar.** Peka på en del eller en sladd och tryck på **L**. Då är den låst: den går inte längre att flytta, klippa eller koppla om. (Redigera > Ångra tar tillbaka ett lås.)
+- **Begränsa lådan.** Peka på en del i lådan, eller på en likadan på arbetsytan, och tryck på **+** eller **-** på det numeriska tangentbordet. Det första + på en obegränsad del sätter den till 0 (ingen att ta); varje nytt + ger en till. Trycker du - under 0 blir den obegränsad igen.
+- **Spara den** med Arkiv > Spara som... Låsen och gränserna sparas med den och kommer tillbaka när din kompis öppnar filen.
+
+En uppfinning som öppnas från en fil räknas inte som ett av de inbyggda pusslen, så dess vinstljud sätter inget + i pussellistan - men vinstkollaren avslutar ändå spelet.
+
+= Spara och öppna uppfinningar {#files}
+keywords: spara, öppna, nytt, återgå, fil, wgt, hämta, släppa
+
+Uppfinningar sparas som **.wgt**-filer, samma sort som det ursprungliga Widget Workshop gör, så uppfinningar kan flytta åt båda hållen.
+
+- **Arkiv > Nytt** ger dig en tom arbetsyta.
+- **Arkiv > Öppna...** öppnar en sparad uppfinning.
+- **Arkiv > Spara** sparar uppfinningen igen under sitt namn. Första gången frågar den efter ett.
+- **Arkiv > Spara som...** sparar den under ett nytt namn.
+- **Arkiv > Återgå** går tillbaka till den version du sparade senast.
+
+Om uppfinningen är för utspridd för en liten skärm kan den när du sparar erbjuda sig att flytta delarna närmare varandra, så att kompisar med Macintosh-versionen av Widget Workshop också kan öppna den. Du kan kryssa i rutan för att behålla ditt svar.
+
+## Släppa en fil
+Du kan också dra en .wgt-fil från datorn till fönstret i OpenWGT för att öppna den.
+
+## I en webbläsare
+I webbläsaren arbetar Öppna och Spara med webbläsarens eget lagringsutrymme. **Arkiv > Spara för nedladdning** ger dig uppfinningen som en fil att spara, och med **Arkiv > Ladda ner en uppfinning...** väljer du en uppfinning som är sparad i webbläsaren och får den som en nedladdning. För att ta in en fil släpper du den på sidan.
+
+Innan OpenWGT ersätter en uppfinning som du har ändrat frågar den om du vill spara den först. Se också [Exempeluppfinningarna](#samples) och [Länkar till uppfinningar](#links).
+
+= Exempeluppfinningarna {#samples}
+keywords: exempel, exempeluppfinningar, funwidge, idéer
+
+OpenWGT har färdiga uppfinningar att leka med, plocka isär och lära sig av.
+
+Välj **Arkiv > Öppna...** och öppna listan **Leta i** högst upp i fönstret. Under **OpenWGT-exempel** hittar du exemplen. Öppna ett, tryck på START och se vad det gör; tryck sedan på STOPP och titta på hur det är kopplat. Dubbelklicka på en del för att se hur den är inställd.
+
+Du får ändra ett exempel så mycket du vill. För att behålla ändringarna sparar du det med **Spara som...** i en egen mapp.
+
+Utan cd-skivan är exemplen OpenWGT:s egna; med cd-skivan är de originalets, i mappen **FUNWIDGE**.
+
+= Länkar till uppfinningar {#links}
+keywords: länk, dela, urklipp, kopiera länk, öppna länk, webbadress, webb
+
+En uppfinning får plats i en webblänk, så du kan dela den i ett meddelande eller ett mejl.
+
+- **Arkiv > Kopiera länk till uppfinningen** lägger en länk till uppfinningen i Urklipp. Klistra in den var du vill. Den som öppnar den får din uppfinning i OpenWGT i sin webbläsare.
+- **Arkiv > Öppna uppfinningslänk** (Ctrl+V) öppnar uppfinningen vars länk finns i Urklipp.
+
+Länkar till uppfinningar med många delar blir längre, och varje inspelare gör länken mycket längre, eftersom den bär hela sin inspelning. Vissa chattprogram kortar av långa meddelanden.
+
+En länk är ingen sparad fil: använd [Arkiv > Spara](#files) också för att behålla uppfinningen. Kopiera länk finns inte medan ett pussel är hämtat.
+
+= Fristående uppfinningar {#standalone}
+keywords: fristående, exe, självgående, importera
+
+Det ursprungliga Widget Workshop kunde spara en uppfinning i ett eget program, en *fristående uppfinning*, som går utan verkstaden.
+
+- **Arkiv > Importera fristående uppfinning...** öppnar ett sådant program och tar ut uppfinningen ur det, så att du kan titta på den och ändra den.
+- **Arkiv > Spara som fristående uppfinning** finns inte i OpenWGT; valet förblir grått. Dela dina uppfinningar som [.wgt-filer](#files) eller [länkar](#links) i stället.
+
+= Spela in egna ljud {#recording}
+keywords: spela in, inspelare, mikrofon, wav, ljudfil, röst
+
+**Inspelaren**, på fliken [Ljuddelar](#sound-parts), rymmer ett eget ljud på upp till ungefär tre och en halv sekund.
+
+## Spela in
+- Lägg en inspelare på arbetsytan och dubbelklicka på den.
+- Klicka på **Spela in ljud** och prata (eller sjung, eller klappa) i mikrofonen. Stapeln visar hur mycket tid som är kvar.
+- Klicka på OK.
+
+## Hämta en .WAV-fil
+Klicka i stället på **Hämta en .WAV-fil** och välj en ljudfil från datorn. Korta, enkla ljud fungerar bäst.
+
+## Spela upp
+Koppla något till inspelarens ingång, som ett tangenttryck eller en strömbrytare, och koppla dess utgång till en **högtalare**. Medan ingången är PÅ spelar inspelaren. Du kan också skicka ljudet genom en ljudförvandlare först för att göra det högre, lägre eller baklänges.
+
+Inspelningen sparas inuti uppfinningen. En ny inspelning hamnar i delen direkt, så om du klickar på Avbryt efteråt kommer det gamla ljudet inte tillbaka.
+
+**Ljudbrytaren** lyssnar också på mikrofonen, för att slås på av en klapp eller ett rop. Båda behöver en mikrofon, och datorn eller webbläsaren kanske frågar om OpenWGT får använda den.
+
+= Menyerna {#menus}
+keywords: meny, menyer, arkivmenyn, redigeramenyn, alternativmenyn, hjälpmenyn, skriva ut
+
+## Arkiv
+- **Nytt**, **Öppna...**, **Spara**, **Spara som...**, **Återgå** - se [Spara och öppna uppfinningar](#files).
+- **Hämta pussel...** - se [Lösa pussel](#puzzles).
+- **Importera fristående uppfinning...**, **Spara som fristående uppfinning** - se [Fristående uppfinningar](#standalone).
+- **Spara för nedladdning**, **Ladda ner en uppfinning...** - bara i webbläsaren.
+- **Öppna uppfinningslänk**, **Kopiera länk till uppfinningen** - se [Länkar till uppfinningar](#links).
+- **Förhandsgranska**, **Utskriftsformat...**, **Skriv ut** - finns kvar från originalet, men OpenWGT skriver inte ut.
+- **Avsluta** - stänger OpenWGT och frågar först om du vill spara uppfinningen.
+
+## Redigera
+- **Ångra** - tar tillbaka den senaste ändringen; välj det igen för att få tillbaka ändringen.
+- **Töm arbetsytan**, **Ta bort alla sladdar**, **Ta bort alla knutpunkter**, **Anpassa arbetsytan...** - se [Arbetsytan](#worksheet).
+
+## Alternativ
+- **Enkel bakgrund**, **Metallvågor**, **Brus**, **Stål** - arbetsytans bakgrund.
+- **Inställningar...** - skalningen, förbättringarna och cd-skivan. Se [Fönstret Inställningar](#openwgt-settings).
+
+## Hjälp
+- **Om OpenWGT...** - titeln, versionen och tacklistan. Klicka eller tryck på mellanslag för att stänga.
+- **Innehåll** - den här hjälpen (F1).
+
+Medan en uppfinning går är de flesta menyval gråa. Tryck på STOPP först.
+
+= Kortkommandon {#keys}
+keywords: tangentbord, tangenter, kortkommandon, snabbtangenter
+
+## När du bygger
+- **Enter** - START: sätt igång uppfinningen.
+- **Delete** - ta bort delen, sladden eller knutpunkten under pekaren.
+- **Skift** (nedtryckt) - saxen, tills du släpper.
+- **Ctrl** (nedtryckt) - handen, tills du släpper.
+- **L** - lås delen eller sladden under pekaren (se [Göra egna pussel](#make-puzzles)).
+- **+** och **-** på det numeriska tangentbordet - ändra hur många av en del lådan lämnar ut.
+
+## När uppfinningen går
+- **Esc** - STOPP.
+- **Ctrl** (nedtryckt) - dra för att skjuta runt hela uppfinningen.
+- Vilken tangent som helst som ett [tangenttryck](#switch-parts) lyssnar efter.
+
+## Menyer
+- **Ctrl+N** - Nytt
+- **Ctrl+O** - Öppna
+- **Ctrl+S** - Spara
+- **Ctrl+Z** eller **Alt+Backsteg** - Ångra
+- **Ctrl+V** eller **Skift+Insert** - Öppna uppfinningslänk
+- **F1** - Hjälpens innehåll
+- **Alt** eller **F10** - gå till menyraden; sedan piltangenterna, Enter och Esc. Alt tillsammans med en understruken bokstav öppnar den menyn.
+
+= Fönstret Inställningar {#openwgt-settings}
+keywords: inställningar, alternativ, skalning, skala, zooma, storlek, förbättringar, byt cd, helskärm
+
+**Alternativ > Inställningar...** öppnar OpenWGT:s eget inställningsfönster. Ändringarna gäller direkt och sparas till nästa gång.
+
+## Skalning
+Hur stort allt ritas. **Automatiskt** följer skärmens egen inställning; på en pekskärm blir verktygsfälten lika breda som skärmen. Kryssa ur rutan och använd **-** och **+** för att välja en storlek från 1x till 4x, i steg om en fjärdedel.
+
+## Förbättringar
+Några ändringar som gör OpenWGT lite lättare att använda än originalet:
+
+- verktygslådan visar en hel flik på en gång, med sidorna under varandra och utan pilar;
+- verktygsfälten, inställningsfönstren och meddelanderutorna flyttas hela när du drar dem, inte som en kontur.
+
+Förbättringarna är avstängda från början, så att allt är precis som i originalet. Kryssa i **Förbättringar** för att slå på dem.
+
+## Byt cd...
+Väljer en avbildning av Widget Workshop-skivan (en .iso-fil) som OpenWGT ska använda och startar sedan verkstaden igen med den. Den frågar först om du vill spara uppfinningen. Om datorn inte har något sätt att välja filen ber OpenWGT dig att släppa skivavbildningen på fönstret i stället. Se [Med eller utan cd-skivan](#cd).
+
+= Med eller utan cd-skivan {#cd}
+keywords: cd, iso, ingen cd, utan cd, OpenWGFX, OpenWSFX, OpenWDATA, data, original, språk, svenska
+
+Du behöver inte Widget Workshop-skivan för att spela. OpenWGT har allt den behöver av eget:
+
+- **OpenWGFX** - egna bilder av varje del, knapp och pekare;
+- **OpenWSFX** - egna ljud;
+- **OpenWDATA** - egna texter, inställningsfönster, menyer, pussel, exempeluppfinningar och den här hjälpen, på engelska och svenska.
+
+Varje del har kvar originalets storlek, kontakter och uppgift, så uppfinningar som är gjorda med det ursprungliga Widget Workshop öppnas och fungerar likadant i OpenWGT, och tvärtom.
+
+## Använda din cd-skiva
+Om du har originalskivan (pc/Mac-skivan, eller skivan för OS/2 Warp) kan OpenWGT använda dess bilder, ljud, pussel, exempel och hjälp i stället. Välj den med **Byt cd...** i [Alternativ > Inställningar](#openwgt-settings). OpenWGT kommer ihåg ditt val. En .iso-fil i mappen som OpenWGT startar i hittas också av sig själv. Med en skiva följer språket skivans.
+
+= Så använder du hjälpen {#using-help}
+keywords: hjälp, register, tillbaka, innehåll, F1, sök
+
+Öppna hjälpen när du vill med **Hjälp > Innehåll** eller **F1**. Hjälpfönstret svävar över verkstaden; du kan fortsätta bygga medan det är öppet.
+
+- Klicka på ett understruket ord för att hoppa till det ämnet.
+- **Innehåll** tar dig tillbaka till listan över ämnen.
+- **Register** visar orden du kan slå upp. Skriv de första bokstäverna i ett ord, välj det i listan och klicka på **Visa**.
+- **Tillbaka** går till ämnet du läste innan.
+- **<<** och **>>** stegar genom ämnena i tur och ordning.
+
+= Tips och felsökning {#tips}
+keywords: tips, felsökning, problem, hjälp, inget händer, inget ljud, rött X
+
+## Sladden vill inte kopplas in
+Varje kontakt tar bara en sladd, och sladdar går bara från en utgång till en ingång. Om kontakten du vill använda är upptagen flyttar eller tar du bort den gamla sladden först, eller så använder du en [delare](#switch-parts).
+
+## Jag hör ingenting
+Sitter det en **högtalare** i slutet av dina ljuddelar? Är ljudknappen på [kontrollpanelen](#control-box) på? Vissa delar, som djurläten, spelar bara när ingången slås på.
+
+## Inget händer när jag klickar på en del
+Delarna reagerar bara medan uppfinningen går: tryck på START först. Om en del inte går att flytta eller lysa upp medan du bygger kanske den är låst av ett [pussel](#puzzles).
+
+## En display visar ett rött X
+Talet får inte plats, eller så kunde en del inte räkna ut ett svar (division med 0, till exempel). Prova den tiosiffriga displayen för stora tal.
+
+## Jag ser inte min uppfinning längre
+Använd handen (eller håll ner Ctrl) för att skjuta tillbaka den, eller välj **Redigera > Anpassa arbetsytan...**.
+
+## Hoppsan!
+**Redigera > Ångra** (Ctrl+Z) tar tillbaka den senaste ändringen.
+
+## Bygg steg för steg
+Lägg till en eller två delar i taget, tryck på START, kontrollera att de fungerar och lägg sedan till fler. Koppla en tresiffrig display till en utgång för att se vad en del skickar.
+
+= Om OpenWGT {#about}
+keywords: om, tack, licens, AGPL, Maxis, Doridian, upphovsrätt, version
+
+**OpenWGT** är en motor med öppen källkod för **Widget Workshop: A Mad Scientist's Laboratory**, uppfinnarleksaken som Maxis gav ut 1995. Den bygger upp verkstaden från grunden för dagens datorer - Linux, Windows, macOS och webbläsaren - så att originalets uppfinningar och pussel fortsätter att fungera.
+
+## Tack
+OpenWGT är en gren av Doridians port av Widget Workshop (github.com/Doridian/WidgetWorkshop), som återskapade hur spelet fungerar. Den här grenen lägger till egna bilder (OpenWGFX), ljud (OpenWSFX) och data (OpenWDATA: texterna, inställningsfönstren, pusslen, exempeluppfinningarna och den här hjälpen), så att den går utan originalskivan, tillsammans med rättelser och nya funktioner som länkar till uppfinningar och fönstret Inställningar.
+
+## Licens
+OpenWGT är fri programvara under GNU Affero General Public License, version 3 eller senare (AGPL-3.0-or-later). Dess egna bilder, ljud och data har samma licens. Du får använda, studera, dela och ändra den enligt villkoren i licensen.
+
+## Widget Workshop
+Widget Workshop är (c) Maxis, och namnet är ett varumärke som tillhör sina ägare. OpenWGT är ett inofficiellt projekt som inte är gjort, godkänt eller stött av Maxis eller Electronic Arts, och det innehåller inget av originalspelets data. För att använda originalets bilder och ljud behöver du en egen kopia av skivan.
+
+Tack till alla som gjorde den ursprungliga leksaken, och till alla som håller den vid liv.

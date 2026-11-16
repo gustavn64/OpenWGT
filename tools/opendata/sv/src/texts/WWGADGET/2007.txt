@@ -1,0 +1,1 @@
+Knappa in tal i din uppfinning med sifferknapparna, precis som på en miniräknare. Skärmen har plats för 10 tecken, minustecknet medräknat. Ställ först in ett starttal och skriv sedan nya medan uppfinningen går.

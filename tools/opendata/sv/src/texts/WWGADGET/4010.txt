@@ -1,0 +1,2 @@
+Byggtips:
+En INTE-grind gör PÅ till AV: koppla en dynamittändare genom den till en glödlampa, så lyser lampan tills tändaren trycks ner. Sätt en efter en OCH- eller ELLER-grind så får du en ICKE-OCH eller en ICKE-ELLER.

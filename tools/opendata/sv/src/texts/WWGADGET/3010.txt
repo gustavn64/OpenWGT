@@ -1,0 +1,2 @@
+Byggtips:
+Ge varje spelare en tangent: koppla ett tangenttryck inställt på A och ett på L till två räknare och se vem som trycker snabbast. Det går också bra att klicka på tangenten med musen.

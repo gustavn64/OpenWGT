@@ -1,0 +1,2 @@
+Byggtips:
+Ställd på Största eller Minsta kommer summeraren ihåg det högsta eller lägsta värde en del har nått, som det största tal en slumptalsgenerator har valt hittills. Med en tvåvägsdelare kan två summerare hålla koll på samma del.
