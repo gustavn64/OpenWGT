@@ -465,7 +465,18 @@ impl Editor {
     /// it follows it again.
     pub fn set_system_dark(&mut self, dark: bool) {
         self.system_dark = dark;
-        self.light = self.light_chosen.unwrap_or(!dark);
+        self.follow_system_light();
+    }
+
+    /// Whether the light follows a dark system theme off: one of the
+    /// port's enhancements (the original's light is on until pressed).
+    fn dark_off(&self) -> bool {
+        self.system_dark && self.tray.enhanced
+    }
+
+    /// The Light button as the system's theme has it, unless pressed.
+    fn follow_system_light(&mut self) {
+        self.light = self.light_chosen.unwrap_or(!self.dark_off());
         if let Some(e) = self.main_bar.get_mut(id::LIGHT) {
             e.on = self.light;
         }
@@ -1663,7 +1674,7 @@ impl Editor {
                 self.ui_sound(snd::CLICK);
                 self.light = on;
                 // Pressed back to the system's, it follows it again.
-                self.light_chosen = (on == self.system_dark).then_some(on);
+                self.light_chosen = (on == self.dark_off()).then_some(on);
             }
             id::SOUND => {
                 self.ui_sound(snd::CLICK);
@@ -1915,6 +1926,7 @@ impl Editor {
     /// The port's enhancements on or off.
     pub fn set_enhanced(&mut self, on: bool) {
         self.tray.set_enhanced(on);
+        self.follow_system_light();
     }
 
     #[must_use]

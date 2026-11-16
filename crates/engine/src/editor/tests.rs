@@ -176,6 +176,12 @@ fn running_takes_clicks_and_keys_only() {
 fn light_follows_the_system_until_pressed() {
     let Some(mut e) = editor() else { return };
     let light_on = |e: &Editor| (e.light, e.main_bar.get(id::LIGHT).unwrap().on);
+    // As the original, without the enhancements: a dark system leaves the
+    // light on.
+    e.set_system_dark(true);
+    assert_eq!(light_on(&e), (true, true));
+    e.set_system_dark(false);
+    e.set_enhanced(true);
     let press = |e: &mut Editor| {
         let on = !e.main_bar.get(id::LIGHT).unwrap().on;
         e.main_bar.get_mut(id::LIGHT).unwrap().on = on;
