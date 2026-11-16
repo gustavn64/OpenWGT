@@ -8,7 +8,7 @@
 
 use crate::assets::Assets;
 use crate::gfx::{IRect, Surface};
-use crate::lang::tr;
+use crate::lang::{Lang, tr, trf};
 
 use super::dialog::{CAPTION_H, FRAME, check_mark, close_box, draw_window};
 use super::ui;
@@ -36,9 +36,10 @@ const CHECK_H: i32 = 16;
 const NOTE: &str = "The parts tray shows a whole folder at once; windows drag whole.";
 
 /// The parts a letter presses: their labels' underlined letters.
-const MNEMONIC_PARTS: [(Part, &str); 3] = [
+const MNEMONIC_PARTS: [(Part, &str); 4] = [
     (Part::Auto, "&Automatic (the display's)"),
     (Part::Enhanced, "&Enhancements"),
+    (Part::Language, "&Language:"),
     (Part::ChangeCd, "&Change CD..."),
 ];
 
@@ -48,6 +49,8 @@ pub enum Outcome {
     None,
     Scale(Scale),
     Enhanced(bool),
+    /// Another language: the game starts again in it (without a CD).
+    Language(Lang),
     /// Change CD...: the window closes and the host picks another.
     ChangeCd,
     Close,
@@ -62,16 +65,18 @@ enum Part {
     Smaller,
     Bigger,
     Enhanced,
+    Language,
     ChangeCd,
 }
 
-const PARTS: [Part; 7] = [
+const PARTS: [Part; 8] = [
     Part::Close,
     Part::CloseBox,
     Part::Auto,
     Part::Smaller,
     Part::Bigger,
     Part::Enhanced,
+    Part::Language,
     Part::ChangeCd,
 ];
 
@@ -82,6 +87,10 @@ pub struct SettingsBox {
     pub scale: Scale,
     pub current: f64,
     pub enhanced: bool,
+    /// The language played in, and whether a CD decides it (it can't be
+    /// changed here then).
+    pub lang: Lang,
+    pub lang_fixed: bool,
     window: IRect,
     /// The part the mouse holds down.
     pressed: Option<Part>,
@@ -105,6 +114,8 @@ impl SettingsBox {
     /// The window centred in `area`.
     #[must_use]
     pub fn new(assets: &Assets, area: IRect, scale: Scale, current: f64, enhanced: bool) -> SettingsBox {
+        let lang = assets.lang;
+        let lang_fixed = assets.from_cd();
         let h = Self::height(assets);
         let window = IRect::sized(
             area.x0 + (area.width() - W) / 2,
@@ -116,6 +127,8 @@ impl SettingsBox {
             scale,
             current,
             enhanced,
+            lang,
+            lang_fixed,
             window,
             pressed: None,
         }
@@ -142,6 +155,8 @@ impl SettingsBox {
             + MARGIN
             + BUTTON_H
             + MARGIN
+            + BUTTON_H
+            + MARGIN
     }
 
     /// The client area's top left.
@@ -153,7 +168,8 @@ impl SettingsBox {
     }
 
     /// The rectangles: the UI scale's group, its check box, −, the value,
-    /// +, the enhancements' check box, Change CD..., Close.
+    /// +, the enhancements' check box, the language's button, Change
+    /// CD..., Close.
     fn layout(&self, assets: &Assets) -> Layout {
         let lh = ui::font(assets).map_or(13, |f| i32::from(f.height));
         let (x, y) = self.client();
@@ -172,6 +188,7 @@ impl SettingsBox {
             BUTTON_H,
         );
         let change_cd = IRect::sized(x, close.y0, CHANGE_W, BUTTON_H);
+        let language = IRect::sized(x, close.y0 - MARGIN - BUTTON_H, inner, BUTTON_H);
         Layout {
             group,
             auto,
@@ -179,6 +196,7 @@ impl SettingsBox {
             value,
             bigger,
             enhanced,
+            language,
             change_cd,
             close,
         }
@@ -192,6 +210,7 @@ impl SettingsBox {
             Part::Smaller => l.smaller,
             Part::Bigger => l.bigger,
             Part::Enhanced => l.enhanced,
+            Part::Language => l.language,
             Part::ChangeCd => l.change_cd,
         }
     }
@@ -209,6 +228,7 @@ impl SettingsBox {
         match p {
             Part::Smaller => self.shown() > MIN_SCALE,
             Part::Bigger => self.shown() < MAX_SCALE,
+            Part::Language => !self.lang_fixed,
             _ => true,
         }
     }
@@ -234,6 +254,13 @@ impl SettingsBox {
             Part::Enhanced => {
                 self.enhanced = !self.enhanced;
                 Outcome::Enhanced(self.enhanced)
+            }
+            Part::Language => {
+                // The next language, round.
+                let all = Lang::ALL;
+                let i = all.iter().position(|&l| l == self.lang).unwrap_or(0);
+                self.lang = all[(i + 1) % all.len()];
+                Outcome::Language(self.lang)
             }
             Part::ChangeCd => Outcome::ChangeCd,
         }
@@ -347,6 +374,20 @@ impl SettingsBox {
             ui::label(s, font, l.enhanced.x0 + 17, y, &line, ui::BLACK);
             y += i32::from(font.height);
         }
+        let language = if self.lang_fixed {
+            trf("Language: the CD's ({})", &[self.lang.name()])
+        } else {
+            format!("{} {}", tr("&Language:"), self.lang.name())
+        };
+        ui::button(
+            s,
+            font,
+            l.language,
+            &language,
+            pressed(Part::Language),
+            false,
+            !self.lang_fixed,
+        );
         ui::button(
             s,
             font,
@@ -367,6 +408,7 @@ struct Layout {
     value: IRect,
     bigger: IRect,
     enhanced: IRect,
+    language: IRect,
     change_cd: IRect,
     close: IRect,
 }
@@ -405,6 +447,8 @@ mod tests {
             scale: Scale::Auto,
             current: 2.0,
             enhanced: true,
+            lang: Lang::En,
+            lang_fixed: false,
             window: IRect::default(),
             pressed: None,
         };
@@ -415,6 +459,10 @@ mod tests {
         assert_eq!(b.key(0x45), Outcome::Enhanced(false));
         b.scale = Scale::Fixed(1.0);
         assert_eq!(b.key(0x6d), Outcome::None, "− is greyed at 1×");
+        assert_eq!(b.key(0x4c), Outcome::Language(Lang::Sv));
+        assert_eq!(b.key(0x4c), Outcome::Language(Lang::En));
+        b.lang_fixed = true;
+        assert_eq!(b.key(0x4c), Outcome::None, "a CD's language stays");
         assert_eq!(b.key(0x43), Outcome::ChangeCd);
         assert_eq!(b.key(0x1b), Outcome::Close);
     }

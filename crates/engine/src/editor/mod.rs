@@ -263,6 +263,8 @@ enum Next {
     /// Settings ▸ Change CD...: the host picks another CD and starts
     /// over.
     ChangeCd,
+    /// Settings ▸ Language: the host starts over in it.
+    ChangeLang(crate::lang::Lang),
 }
 
 /// The editor, drawn into an 8-bit surface.
@@ -365,6 +367,8 @@ pub struct Editor {
     new_enhanced: Option<bool>,
     /// Change CD... was pressed, and the widget saved or let go.
     change_cd: bool,
+    /// Another language was chosen, and the widget saved or let go.
+    change_lang: Option<crate::lang::Lang>,
 }
 
 impl Editor {
@@ -446,6 +450,7 @@ impl Editor {
             new_scale: None,
             new_enhanced: None,
             change_cd: false,
+            change_lang: None,
         };
         let limits = e.doc.tray_limits.clone();
         e.tray.apply_limits(&limits);
@@ -942,7 +947,7 @@ impl Editor {
     /// Open and Load Puzzle drop a puzzle's changes without asking; Exit
     /// asks (`0x417027`).
     fn confirm_save(&mut self, next: Next) {
-        if self.dirty && (matches!(next, Next::Exit | Next::ChangeCd) || !self.puzzle.active) {
+        if self.dirty && (matches!(next, Next::Exit | Next::ChangeCd | Next::ChangeLang(_)) || !self.puzzle.active) {
             // MFC's own words (`AFX_IDP_ASK_TO_SAVE`, string 0xf103).
             let name = self.display_name();
             let text = self
@@ -971,6 +976,7 @@ impl Editor {
             Next::Exit => self.finished = true,
             Next::Dropped => self.open_dropped(),
             Next::ChangeCd => self.change_cd = true,
+            Next::ChangeLang(l) => self.change_lang = Some(l),
         }
     }
 
@@ -2003,6 +2009,12 @@ impl Editor {
         std::mem::take(&mut self.change_cd)
     }
 
+    /// The language the player chose in the Settings window, once, after
+    /// "Save changes?": the host starts over in it.
+    pub fn take_change_lang(&mut self) -> Option<crate::lang::Lang> {
+        self.change_lang.take()
+    }
+
     /// Whether key presses are wanted though no text field is being
     /// edited: a running widget has a Keypress (a touch screen's keyboard
     /// comes up after a touch).
@@ -2058,6 +2070,10 @@ impl Editor {
             settings::Outcome::Enhanced(on) => {
                 self.set_enhanced(on);
                 self.new_enhanced = Some(on);
+            }
+            settings::Outcome::Language(l) => {
+                self.settings = None;
+                self.confirm_save(Next::ChangeLang(l));
             }
             settings::Outcome::ChangeCd => {
                 self.settings = None;

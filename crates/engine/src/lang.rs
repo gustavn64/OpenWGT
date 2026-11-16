@@ -36,7 +36,7 @@ impl Lang {
     pub fn name(self) -> &'static str {
         match self {
             Lang::En => "English",
-            Lang::Sv => "Svenska",
+            Lang::Sv => "svenska",
         }
     }
 
@@ -174,6 +174,8 @@ fn sv(en: &str) -> Option<&'static str> {
         }
         "&Full screen" => "&Helskärm",
         "&Change CD..." => "&Byt cd...",
+        "&Language:" => "&Språk:",
+        "Language: the CD's ({})" => "Språk: skivans ({})",
         "Close" => "Stäng",
         // The port's File menu, Options menu.
         "Save to Do&wnload" => "Spara för ne&dladdning",

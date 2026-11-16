@@ -147,6 +147,17 @@ function formLanguage($) {
   follow();
 }
 
+// Reloads the page to play without the CD in the language `code`
+// (Settings ▸ Language), kept for the start form's list too.
+export function changeLang(code) {
+  try {
+    localStorage.setItem("openwgt-lang", code);
+  } catch (e) {
+    console.error("storage:", e);
+  }
+  location.search = `?open&lang=${code}`;
+}
+
 // Reloads the page into the start form, the stored image kept: Start
 // without picking another goes on with it.
 export function changeCd() {

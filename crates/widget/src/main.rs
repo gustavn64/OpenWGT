@@ -289,6 +289,34 @@ impl Workshop {
     /// there's no file dialog, `pick`) and the game starts again on it;
     /// in the browser the page reloads into its start form.
     #[cfg_attr(target_arch = "wasm32", allow(clippy::unused_self))]
+    /// Settings ▸ Language: kept in the settings file, and the game started
+    /// again in it without a CD (the page reloaded in the browser).
+    fn change_lang(&mut self, lang: engine::lang::Lang) {
+        if let Some(path) = &self.settings_file
+            && let Err(e) = platform::settings::save_value(path, LANGUAGE_KEY, lang.code())
+        {
+            eprintln!("{}: {e}", path.display());
+        }
+        #[cfg(target_arch = "wasm32")]
+        web::change_lang(lang.code());
+        #[cfg(not(target_arch = "wasm32"))]
+        {
+            let exe = std::env::current_exe();
+            let started = exe.and_then(|exe| {
+                std::process::Command::new(exe)
+                    .args(&self.options)
+                    .arg(format!("--lang={}", lang.code()))
+                    .spawn()
+            });
+            match started {
+                Ok(_) => self.done = true,
+                Err(e) => pick::error_box(&format!("OpenWGT didn't start again: {e}")),
+            }
+        }
+    }
+
+    // In the browser the page does it all.
+    #[cfg_attr(target_arch = "wasm32", allow(clippy::unused_self))]
     fn change_cd(&mut self) {
         #[cfg(target_arch = "wasm32")]
         web::change_cd();
@@ -343,6 +371,9 @@ impl App for Workshop {
         self.editor.update(ms, sound::local_time());
         if self.editor.take_change_cd() {
             self.change_cd();
+        }
+        if let Some(lang) = self.editor.take_change_lang() {
+            self.change_lang(lang);
         }
         if let Some(on) = self.editor.take_enhanced()
             && let Some(path) = &self.settings_file
@@ -650,12 +681,21 @@ fn main() {
     web::main();
 }
 
-/// The language to play in: the CD's, else `--lang`'s, else the system's
+/// The settings file's key for the language chosen in the Settings
+/// window.
+const LANGUAGE_KEY: &str = "language";
+
+/// The language to play in: the CD's, else `--lang`'s, else the one
+/// chosen in the Settings window (the settings file's), else the system's
 /// (the browser's), else English.
 fn language(args: &Args, cd: Option<&dyn Source>) -> engine::lang::Lang {
     use engine::lang::Lang;
     cd.and_then(engine::assets::cd_language)
         .or(args.lang)
+        .or_else(|| {
+            let path = args.window.settings_file.as_deref()?;
+            Lang::from_code(&platform::settings::load_value(path, LANGUAGE_KEY)?)
+        })
         .or_else(|| sys_locale::get_locale().and_then(|l| Lang::from_code(&l)))
         .unwrap_or_default()
 }

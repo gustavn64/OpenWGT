@@ -183,6 +183,14 @@ fn parse_module(m: Module, bytes: &[u8]) -> Result<pe::Resources, Error> {
     }
 }
 
+impl Assets {
+    /// Whether the game's own files are a CD's (not the port's packs alone).
+    #[must_use]
+    pub fn from_cd(&self) -> bool {
+        !self.modules.is_empty()
+    }
+}
+
 /// The language of the game on `cd` (its `WIDGET.EXE`'s resources), to
 /// choose the port's own packs in it before loading; `None` if there's no
 /// game there or it doesn't say (the OS/2 CD: English).

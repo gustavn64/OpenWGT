@@ -32,8 +32,8 @@
 //! enhance.window_stacking=off
 //! ```
 //!
-//! The player's language (`game::lang`, `docs/language.md`), written by
-//! hand: `auto` (the default) follows the game folder's.
+//! The language to play in without a CD (`engine::lang`), as the Settings
+//! window chose it; none, the system's (with a CD, the CD's).
 //!
 //! ```text
 //! language=en

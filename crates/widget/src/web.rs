@@ -36,6 +36,9 @@ extern "C" {
     /// Reloads the page into the start form, the stored image kept.
     #[wasm_bindgen(js_name = changeCd)]
     pub(crate) fn change_cd();
+    /// Reloads the page to play without a CD in the language `code`.
+    #[wasm_bindgen(js_name = changeLang)]
+    pub(crate) fn change_lang(code: &str);
     /// `blob`'s bytes from `start` to `end`, a `Uint8Array`.
     #[wasm_bindgen(js_name = readBlob)]
     fn read_blob(blob: &web_sys::Blob, start: f64, end: f64) -> js_sys::Promise;
