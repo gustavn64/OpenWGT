@@ -22,10 +22,11 @@ tools/build-web.sh --debug    # quicker to build, slow to run
 
 The script runs `cargo build -p openwgt --target wasm32-unknown-unknown`
 and `wasm-bindgen --target web`, and copies the page
-(`crates/widget/web/index.html`) and the icon next to the output: `web/`
-holds `index.html`, `icon.png`, `widget.js`, `widget_bg.wasm` and
-`snippets/` (the storage code, `crates/widget/src/web.js`). `web/` is
-ignored by git.
+(`crates/widget/web/index.html`), its web manifest and the icon next to
+the output: `web/` holds `index.html`, `manifest.webmanifest`,
+`icon.png`, `widget.js`, `widget_bg.wasm` and `snippets/` (the storage
+code, `crates/widget/src/web.js`, and the touch keyboard's field,
+`platform::web`). `web/` is ignored by git.
 
 Upgrading wasm-bindgen means changing the pin in both crates and
 installing the matching CLI.
@@ -63,6 +64,23 @@ comes from the player.
 A browser won't let a page play sound before a click or key press: the
 `AudioContext` is resumed on every click or key press
 (`platform::audio::resume`), so the sound starts with the first.
+
+## Phones and tablets
+
+The first finger down is the mouse, its left button held; a finger held
+still for 0.4 s is a double click (a part's settings), except while the
+widget runs, where it's a held button. While the game wants typing (a
+text field has the focus, the help's Index is open, or a running widget
+has a Keypress) a hidden text field on the page has the focus after a
+touch, which brings up the device's keyboard; what's typed into it
+becomes the game's key presses.
+
+The page fills what's visible of the screen (`100dvh`), and the keyboard
+shrinks it instead of covering it (`interactive-widget=resizes-content`),
+so the game lays out above it. Pull-to-refresh, the page's bounce and a
+held finger's menu are off. Added to the home screen, the game starts
+full screen and in landscape (`manifest.webmanifest`); Options ▸
+Settings ▸ **Full screen** does the same in the browser.
 
 ## Storage
 
