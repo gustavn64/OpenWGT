@@ -2,9 +2,11 @@
 //! each (`OUT/<tray index>.png`, transparent around it) with the port's
 //! own graphics (`engine::opengfx`), and its knots' places in it
 //! (`OUT/<tray index>.txt`: x, y, 1 for an output), from an export of the CD:
-//! `cargo run -p engine --example render_parts -- EXPORT OUT`. The tray's
-//! `OpenWGFX` icons and the puzzles' pictures are made from them
-//! (`tools/opengfx/sheets/tray.py`, `puzzles.py`).
+//! `cargo run -p engine --example render_parts -- EXPORT OUT [--overlay DIR]`.
+//! The tray's `OpenWGFX` icons and the puzzles' pictures are made from them
+//! (`tools/opengfx/sheets/tray.py`, `puzzles.py`). `--overlay` lays a
+//! language's sheets over the pack (`crates/engine/opengfx-sv`, the
+//! Swedish words), for that language's tray and puzzle pictures.
 
 use std::fmt::Write as _;
 
@@ -25,6 +27,30 @@ impl Source for NoPictures {
         if path.eq_ignore_ascii_case("WWGADGET") {
             names.retain(|n| *n != rt::PICTURES.to_string());
         }
+        names
+    }
+}
+
+/// The pack with a language's overlay over it: the overlay's pictures
+/// where it has them; every sheet's rectangles are the pack's.
+struct Layered<'a> {
+    over: Dir,
+    base: &'a dyn Source,
+}
+
+impl Source for Layered<'_> {
+    fn read(&self, path: &str) -> Option<Vec<u8>> {
+        if path.eq_ignore_ascii_case(engine::opengfx::SHEETS_FILE) {
+            return self.base.read(path);
+        }
+        self.over.read(path).or_else(|| self.base.read(path))
+    }
+
+    fn list(&self, path: &str) -> Vec<String> {
+        let mut names = self.base.list(path);
+        names.extend(self.over.list(path));
+        names.sort();
+        names.dedup();
         names
     }
 }
@@ -66,9 +92,21 @@ fn main() {
     let export = NoPictures(Dir(args[1].clone().into()));
     let out = std::path::PathBuf::from(&args[2]);
     std::fs::create_dir_all(&out).unwrap();
-    let graphics = engine::opengfx::builtin();
+    let builtin = engine::opengfx::builtin();
+    let overlay = args
+        .iter()
+        .position(|a| a == "--overlay")
+        .and_then(|i| args.get(i + 1))
+        .map(|d| Layered {
+            over: Dir(d.into()),
+            base: &builtin,
+        });
+    let graphics: &dyn Source = match &overlay {
+        Some(l) => l,
+        None => &builtin,
+    };
     let packs = engine::assets::Packs {
-        graphics: Some(&graphics),
+        graphics: Some(graphics),
         sounds: None,
         data: None,
     };

@@ -9,7 +9,7 @@ from __future__ import annotations
 import math
 import random
 
-from wgfx import (BRASS, BRASS_D, BRASS_L, GLASS, INK, KNOT_OUT, LED_GREEN, PANEL_BLUE, STEEL, STEEL_D, STEEL_L, WHITE,
+from wgfx import (tr, BRASS, BRASS_D, BRASS_L, GLASS, INK, KNOT_OUT, LED_GREEN, PANEL_BLUE, STEEL, STEEL_D, STEEL_L, WHITE,
                   Canvas, darker, lighter, mix, sheet)
 
 from sheets._chrome_kit import GLOVE, Shapes, Xf, cuff, doc_face, glove_fist, glove_open, glove_point, place, scissors
@@ -135,8 +135,8 @@ def main_face(on: bool) -> Canvas:
     grip(c, 3, 3, 50, 15)
     well(c, 3, 17, 50, 62)
     well(c, 3, 62, 50, 91)
-    lamp_word(c, 5, 19, 47, 38, "GO", GO_GREEN, on, on)
-    lamp_word(c, 5, 40, 47, 59, "STOP", STOP_RED, on, on)
+    lamp_word(c, 5, 19, 47, 38, tr("GO"), GO_GREEN, on, on)
+    lamp_word(c, 5, 40, 47, 59, tr("STOP"), STOP_RED, on, on)
     lit = (255, 214, 90)
     for (x0, x1), draw in (((5, 25), lambda cx, cy: bulb(c, cx, cy - 2, on)), ((27, 47), lambda cx, cy: speaker(c, cx, cy, on))):
         key(c, x0, 64, x1, 88, lit if on else BODY, down=on, radius=1.5)
@@ -452,9 +452,9 @@ def knot_arrows(ctx):
     # frame offsets (-18,-10), (-10,-18), (1,-10): the knot is at
     # (18,10), (10,18) and (-1,10) of the frames
     gold, orange = (255, 214, 40), (255, 130, 30)
-    return [knot_arrow(19, 22, (18, 10), "r", "IN", gold),
-            knot_arrow(21, 19, (10, 18), "d", "IN", gold),
-            knot_arrow(24, 25, (23, 10), "r", "OUT", orange)]
+    return [knot_arrow(19, 22, (18, 10), "r", tr("IN"), gold),
+            knot_arrow(21, 19, (10, 18), "d", tr("IN"), gold),
+            knot_arrow(24, 25, (23, 10), "r", tr("OUT"), orange)]
 
 
 # ---------------------------------------------------------------------------
@@ -1071,7 +1071,7 @@ def about_title(ctx):
     flask(c, W / 2 + 9, 8, 26, (90, 230, 110), o=1.2)
     c.text(W / 2, 50, "OpenWGT", 24, (255, 214, 70), "serif", shadow=(1, 1, (150, 80, 0)))
     # (y 66..84: the version, the code's)
-    c.text(W / 2, 93, "for Widget Workshop", 11, GLOW, "sans-book")
+    c.text(W / 2, 93, tr("for Widget Workshop"), 11, GLOW, "sans-book")
     c.text(W / 2, 106, "OpenWGFX + OpenWSFX", 10, GLOW, "sans-book")
     # a contraption: three gears turning a crank that lights a bulb
     gear(c, 70, 172, 26, 12, BRASS, rot=4)

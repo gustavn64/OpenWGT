@@ -10,7 +10,7 @@ from __future__ import annotations
 import math
 import random
 
-from wgfx import (BRASS, BRASS_D, BRASS_L, COPPER, GLASS, INK, KNOT_OUT, KNOT_OUT_D, KNOT_OUT_L, STEEL,
+from wgfx import (tr, BRASS, BRASS_D, BRASS_L, COPPER, GLASS, INK, KNOT_OUT, KNOT_OUT_D, KNOT_OUT_L, STEEL,
                   STEEL_D, STEEL_L, WHITE, Canvas, darker, lighter, mix, sheet)
 
 from ._science_kit import clip_hi, cut, mask_of, poly_mask, ptext, ptext_width, stamp
@@ -389,7 +389,7 @@ def coin_toss(ctx):
         knots(c, ctx.knots(), ["l", "r"], reach=5)
         out.append(c)
     out.append(ctx.blank(6))
-    for n, word in ((7, "HEADS"), (8, "TAILS")):
+    for n, word in ((7, tr("HEADS")), (8, tr("TAILS"))):
         c = ctx.canvas(n)
         w = ptext_width(word, 1)
         ptext(c, (c.w - w) // 2, 0, word, (255, 230, 60), 1)
@@ -1243,7 +1243,7 @@ def zodiac(ctx):
         c.rect(cx - 14, 0, cx + 14, 28, fill=(220, 250, 60), radius=1)
         c.rect(cx - 12.5, 1.5, cx + 12.5, 26.5, fill=lighter(col, 0.85))
         c.text(cx, 14, glyph, 25, col, "sans-book", stroke=0.7, stroke_fill=col)
-        c.text_fit(0, 31, c.w, 50, name, (220, 250, 60), "sans", 13, stroke=0.9, stroke_fill=(20, 40, 0))
+        c.text_fit(0, 31, c.w, 50, tr(name), (220, 250, 60), "sans", 13, stroke=0.9, stroke_fill=(20, 40, 0))
         out.append(c)
     return out
 
@@ -1258,7 +1258,7 @@ def fortunes(ctx):
     out = []
     for n, s in enumerate(ANSWERS, 1):
         c = ctx.canvas(n)
-        c.text_fit(2, 6, c.w - 2, c.h - 6, s, WHITE, "sans", 17, stroke=0.6, stroke_fill=(60, 60, 90))
+        c.text_fit(2, 6, c.w - 2, c.h - 6, tr(s), WHITE, "sans", 17, stroke=0.6, stroke_fill=(60, 60, 90))
         out.append(c)
     return out
 

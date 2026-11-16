@@ -3,7 +3,7 @@ each part as fresh from the tray, drawn by the engine with OpenWGFX
 (make.py --parts), made small."""
 from PIL import Image, ImageFilter
 
-from wgfx import INK, part_picture, sheet
+from wgfx import INK, part_picture, sheet, tr
 
 
 def icon(ctx, n, index):
@@ -12,7 +12,7 @@ def icon(ctx, n, index):
     bbox = src.getchannel("A").getbbox()
     if bbox is None:
         # The Text Label has no picture: a word.
-        c.text_fit(1, 4, c.w - 1, c.h - 4, "Label", INK, "liberation", 13)
+        c.text_fit(1, 4, c.w - 1, c.h - 4, tr("Label"), INK, "liberation", 13)
         return c
     src = src.crop(bbox)
     scale = min((c.w - 1) / src.width, (c.h - 1) / src.height, 1.0)

@@ -13,7 +13,7 @@ from __future__ import annotations
 
 import math
 
-from wgfx import INK, STEEL, STEEL_D, STEEL_L, WHITE, Canvas, darker, lighter, mix, sheet
+from wgfx import INK, STEEL, STEEL_D, STEEL_L, WHITE, Canvas, darker, lighter, mix, sheet, tr
 
 from ._numbers_kit import key, pixel_text, pixel_text_w, seg_char, seg_char_box, stalk, stamp
 
@@ -231,7 +231,7 @@ def keypad_key(c, x, y, w, h, label, pressed):
             c.rect(bx + 5, by + kh / 2 - 0.9, bx + kw - 5, by + kh / 2 + 0.9, fill=INK)
         key(c, x, y, w, h, KEY_GREY, pressed, glyph=g)
     elif label == "ENTER":
-        key(c, x, y, w, h, (250, 170, 60), pressed, label="ENTER", kind="cond", size=10)
+        key(c, x, y, w, h, (250, 170, 60), pressed, label=tr("ENTER"), kind="cond", size=10)
     elif label == "C":
         key(c, x, y, w, h, KEY_GREY, pressed, label="C", label_col=(200, 30, 30), size=13)
     else:
@@ -385,7 +385,7 @@ def digital_clock(ctx):
         c.rect(gx0, gy, gx1, gy + 2, fill=(83, 7, 0), radius=1)
     c.knots(ctx.knots())
     out = [c, ctx.blank(2)]
-    for s in ("AM", "PM"):
+    for s in (tr("AM"), tr("PM")):
         k = ctx.canvas(3 + len(out) - 2)
         pixel_text(k, (k.w - pixel_text_w(s)) // 2, (k.h - 6) // 2, s, VFD_ON)
         out.append(k)
@@ -428,7 +428,7 @@ def totaler_label(text, col):
     c.rect(1, 17, 95, 18, fill=(180, 168, 140))
     for x in (4, 92):
         c.circle(x, 9.5, 1.2, fill=(160, 140, 100))
-    c.text(48, 10, " ".join(text), 11, col, "sans")
+    c.text(48, 10, " ".join(tr(text)), 11, col, "sans")
     return c
 
 
@@ -495,8 +495,8 @@ def stopwatch(ctx):
         c.prect(mx, wy + dy, mx + 2, wy + dy + 2, LCD_ON)
     red = (200, 30, 30)
     c.text(cx, 28.5, "R", 7, (30, 140, 60), "sans")
-    c.text(cx, 37.5, "START", 8, red, "cond")
-    c.text(cx, 70, "STOP", 8, red, "cond")
+    c.text(cx, 37.5, tr("START"), 8, red, "cond")
+    c.text(cx, 70, tr("STOP"), 8, red, "cond")
     c.knot(*knots[0])
     c.knot(*knots[1])
     c.knot(*knots[2], side="b", reach=6)
@@ -623,11 +623,11 @@ def sound_switch(ctx):
             if math.hypot(gx + 0.5 - mx, gy + 0.5 - my) < mr - 5:
                 c.pixel(gx, gy, (110, 112, 124))
     window(c, wx - 3, wy - 3, wx + 9 + 3, wy + 21 + 3)
-    pixel_text_v(c, wx + 1, wy + 4, "ON", GREEN_ON)
+    pixel_text_v(c, wx + 1, wy + 4, tr("ON"), GREEN_ON)
     c.knots(ctx.knots())
     off = ctx.canvas(3)
     off.prect(0, 0, off.w, off.h, GLASS_D)
-    pixel_text_v(off, 1, 0, "OFF", (255, 60, 40))
+    pixel_text_v(off, 1, 0, tr("OFF"), (255, 60, 40))
     return [c, ctx.blank(2), off]
 
 

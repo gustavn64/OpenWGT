@@ -7,11 +7,20 @@ from __future__ import annotations
 
 import math
 
-from wgfx import (BRASS, BRASS_D, BRASS_L, GLASS, INK, LED_GREEN, LED_RED, LED_RED_OFF,
+from wgfx import (tr, BRASS, BRASS_D, BRASS_L, GLASS, INK, LED_GREEN, LED_RED, LED_RED_OFF,
                   PANEL_BLUE, PANEL_TEAL, STEEL, STEEL_D, STEEL_L, WHITE, darker, lighter, sheet)
 
+from ._numbers_kit import pixel_text, pixel_text_w
 from ._parts_kit import (CREAM, leds, vents, arrow_down, bezel, channel, crop, gear, grass, heart_pts, layer, nail,
                          pellet, plank, scale_pts, stamp, star_pts, tile)
+
+
+def pixel_word(c, cx, top, word, col):
+    """`word` in the bold pixel font, centred on `cx`, its letters' tops at
+    `top` (an Å's ring a row above): for the small ON/OFF words in a
+    language whose word has a ring or dots too small for a smooth font
+    (PÅ)."""
+    pixel_text(c, round(cx - pixel_text_w(word) / 2), top, word, col)
 
 ORANGE = (240, 150, 36)
 MAGENTA = (196, 74, 150)
@@ -253,7 +262,7 @@ def conversion(ctx):
     for i, u in enumerate(["°C", "M", "Kg", "°F", "Ft", "Lb"]):
         c = ctx.canvas(10 + i)
         tile(c, 0, 0, c.w, c.h, (255, 214, 190), radius=1.5)
-        c.text_fit(1.5, 1.5, c.w - 2, c.h - 2, u, INK, "sans", 9)
+        c.text_fit(1.5, 1.5, c.w - 2, c.h - 2, tr(u), INK, "sans", 9)
         out.append(c)
     return out
 
@@ -330,8 +339,12 @@ def switch(ctx):
         c.knots(k)
         c.panel(0, 0, 28, 42, PANEL_BLUE, radius=3, bevel=1.5, gloss=False)
         lit, dim = (255, 240, 120), lighter(PANEL_BLUE, 0.35)
-        c.text(14, 5.8, "ON", 8.5, lit if on else dim, "sans", stroke=0.7 if on else 0, stroke_fill=INK)
-        c.text(14, 36.2, "OFF", 8.5, dim if on else lit, "sans", stroke=0 if on else 0.7, stroke_fill=INK)
+        if tr("ON") == "ON":
+            c.text(14, 5.8, tr("ON"), 8.5, lit if on else dim, "sans", stroke=0.7 if on else 0, stroke_fill=INK)
+            c.text(14, 36.2, tr("OFF"), 8.5, dim if on else lit, "sans", stroke=0 if on else 0.7, stroke_fill=INK)
+        else:
+            pixel_word(c, 14, 3, tr("ON"), lit if on else dim)
+            pixel_word(c, 14, 33, tr("OFF"), dim if on else lit)
         # the toggle's plate and slot
         c.rect(7, 12, 21, 30, fill=INK, radius=3)
         c.gradient(8, 13, 20, 29, [STEEL_L, STEEL, STEEL_D], radius=2)
@@ -390,10 +403,11 @@ def light_bulb(ctx):
         c.panel(1, 43, 41, 49, STEEL, radius=2, bevel=1, gloss=False)
         c.rect(7, 36, 35, 45.5, fill=INK, radius=2)
         c.rect(8, 37, 34, 44.5, fill=(30, 34, 46), radius=1.5)
-        if on:
-            c.text(21, 40.8, "ON", 8, (255, 90, 60), "sans")
+        word, col = (tr("ON"), (255, 90, 60)) if on else (tr("OFF"), (170, 180, 200))
+        if tr("ON") == "ON":
+            c.text(21, 40.8, word, 8, col, "sans")
         else:
-            c.text(21, 40.8, "OFF", 8, (170, 180, 200), "sans")
+            pixel_word(c, 21, 38, word, col)
         out.append(c)
     out.append(ctx.blank(3))
     return out
@@ -496,7 +510,7 @@ def strip_chart(ctx):
     c.prect(ox - 1, oy - 79, ox, oy + 1, (90, 110, 140))
     c.prect(ox - 1, oy + 1, ox + 121, oy + 2, (90, 110, 140))
     # the reset label down the side, under its socket
-    for i, ch in enumerate("RESET"):
+    for i, ch in enumerate(tr("RESET")):
         c.text(16.5, 22 + i * 9, ch, 7.5, WHITE, "sans", stroke=0.5, stroke_fill=INK)
     pen = ctx.canvas(3)
     pen.prect(0, 0, 4, 3, INK)
@@ -843,7 +857,7 @@ def keep_off(ctx):
     plank(l, 4, 27, 78, 50, seed=2)
     for x, y in ((8, 11), (73, 11), (9, 44), (72, 44)):
         nail(l, x, y)
-    board_text(l, 10, 8, 72, 48, "KEEP\nOFF!", 22)
+    board_text(l, 10, 8, 72, 48, tr("KEEP\nOFF!"), 22)
     stamp(c, l, 4, 41, 28)
     return [c, ctx.blank(2)]
 
@@ -858,7 +872,7 @@ def stay_away(ctx):
     plank(l, 6, 28, 104, 44, seed=4)
     for x, y in ((8, 17), (102, 17), (11, 39), (99, 39)):
         nail(l, x, y)
-    board_text(l, 12, 14, 99, 42, "STAY AWAY!", 22)
+    board_text(l, 12, 14, 99, 42, tr("STAY AWAY!"), 22)
     stamp(c, l, -3, 55, 28)
     return [c, ctx.blank(2)]
 
@@ -884,12 +898,12 @@ def push_sign(ctx, text, base):
 
 @sheet(1054)
 def push_to_start(ctx):
-    return push_sign(ctx, "PUSH\nTO START", (40, 180, 60))
+    return push_sign(ctx, tr("PUSH\nTO START"), (40, 180, 60))
 
 
 @sheet(1055)
 def push_to_stop(ctx):
-    return push_sign(ctx, "PUSH\nTO STOP", (220, 40, 40))
+    return push_sign(ctx, tr("PUSH\nTO STOP"), (220, 40, 40))
 
 
 @sheet(1056)
@@ -901,8 +915,8 @@ def push_here(ctx):
     c.polygon(pts, fill=INK)
     c.polygon([(15.5, 2.5), (w - 15.5, 2.5), (w - 15.5, 31.5), (w - 5.5, 31.5), (w / 2, 56.5), (5.5, 31.5), (15.5, 31.5)], fill=base)
     c.polygon([(17, 4), (w - 17, 4), (w - 17, 7), (17, 7)], fill=lighter(base, 0.5))
-    c.text_fit(18, 4, w - 18, 30, "PUSH", INK, "sans", 18)
-    c.text_fit(23, 30, w - 23, 44, "HERE", INK, "sans", 13)
+    c.text_fit(18, 4, w - 18, 30, tr("PUSH"), INK, "sans", 18)
+    c.text_fit(23, 30, w - 23, 44, tr("HERE"), INK, "sans", 13)
     return [c, ctx.blank(2)]
 
 
@@ -918,7 +932,7 @@ def enter_here(ctx):
     c.polygon([(37.5, 57), (53, 65), (37.5, 73)], fill=base)
     c.line([(15.8, 40), (15.5, 49)], lighter(base, 0.4), 1.4)
     placard(c, 1, 1, 65, 40, base)
-    c.text_fit(5, 4, 61, 37, "ENTER\nHERE", WHITE, "sans", 18, stroke=1.2, stroke_fill=darker(base, 0.65))
+    c.text_fit(5, 4, 61, 37, tr("ENTER\nHERE"), WHITE, "sans", 18, stroke=1.2, stroke_fill=darker(base, 0.65))
     return [c, ctx.blank(2)]
 
 
@@ -942,7 +956,7 @@ def the_answer_is(ctx):
               fill=(255, 232, 140))
     c.polygon([(x, 28 + wave(x)) for x in range(11, 132, 4)] + [(x, 31.8 + wave(x)) for x in range(131, 10, -4)],
               fill=(214, 150, 40))
-    c.text_fit(16, 11, 128, 31, "THE ANSWER IS", (90, 40, 10), "DejaVu Serif:condensed:bold", 15)
+    c.text_fit(16, 11, 128, 31, tr("THE ANSWER IS"), (90, 40, 10), "DejaVu Serif:condensed:bold", 15)
     # the arrow pointing at the answer
     c.polygon([(133, 13), (143, 13), (143, 5), (156, 21.5), (143, 38), (143, 30), (133, 30)], fill=INK)
     c.polygon([(134.5, 14.5), (144.5, 14.5), (144.5, 9), (154, 21.5), (144.5, 34), (144.5, 28.5), (134.5, 28.5)],
@@ -973,10 +987,10 @@ def voice_activated(ctx):
     pink, cyan = (230, 50, 170), (40, 190, 230)
     c.rect(28, 2, 116, 24, fill=INK, radius=3)
     c.rect(29, 3, 115, 23, fill=pink, radius=2)
-    c.text_fit(32, 4, 112, 22, "VOICE", WHITE, ITALIC, 18, stroke=1, stroke_fill=darker(pink, 0.6))
+    c.text_fit(32, 4, 112, 22, tr("VOICE"), WHITE, ITALIC, 18, stroke=1, stroke_fill=darker(pink, 0.6))
     c.rect(28, 27, 116, 49, fill=INK, radius=3)
     c.rect(29, 28, 115, 48, fill=cyan, radius=2)
-    c.text_fit(32, 30, 112, 47, "ACTIVATED", INK, "sans", 14)
+    c.text_fit(32, 30, 112, 47, tr("ACTIVATED"), INK, "sans", 14)
     return [c, ctx.blank(2)]
 
 
@@ -1009,7 +1023,7 @@ def mad_scientist(ctx):
     c.rect(1, 2, w - 1, 39, fill=INK, radius=3)
     c.rect(2, 3, w - 2, 38, fill=(255, 236, 200), radius=2)
     c.rect(3.5, 4.5, w - 3.5, 36.5, fill=base, radius=1.5)
-    c.text_fit(14, 5, w - 14, 36, "Mad Scientist\nat Work!", INK, "sans", 16)
+    c.text_fit(14, 5, w - 14, 36, tr("Mad Scientist\nat Work!"), INK, "sans", 16)
     for x in (8.5, w - 8.5):
         c.circle(x, 28, 4.2, fill=INK)
         c.radial(x, 28, 3.4, (255, 255, 200), (250, 200, 0), -0.4, -0.4)
@@ -1036,6 +1050,6 @@ def its_magic(ctx):
     for x, y, r in ((14, 14, 5), (128, 12, 6), (8, 64, 4), (134, 70, 5), (40, 78, 3.5), (104, 4, 3.5), (30, 4, 3)):
         sparkle(c, x, y, r + 0.9, INK)
         sparkle(c, x, y, r)
-    c.text_fit(26, 6, 118, 80, "It's\nMagic!", (255, 200, 40), ITALIC, 30, stroke=1.6, stroke_fill=(120, 30, 0),
+    c.text_fit(26, 6, 118, 80, tr("It's\nMagic!"), (255, 200, 40), ITALIC, 30, stroke=1.6, stroke_fill=(120, 30, 0),
                shadow=(1.2, 1.2, INK))
     return [c, ctx.blank(2)]

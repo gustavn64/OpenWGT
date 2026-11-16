@@ -7,9 +7,12 @@ every frame's rectangle.
 It needs the sizes and places the game uses, from an export of the CD:
 
     openwgt --export=EXPORT CD.iso
-    tools/opengfx/make.py EXPORT [SHEET...] [--preview DIR] [--compare]
+    tools/opengfx/make.py EXPORT [SHEET...] [--preview DIR] [--compare] [--lang sv]
 
-Only the given sheets are drawn again when some are named. --preview also
+Only the given sheets are drawn again when some are named. --lang sv draws
+the pictures' words in Swedish (wgfx.WORDS) into the overlay pack
+crates/engine/opengfx-sv: only the sheets that come out different from
+the English pack's, so the engine takes the rest from it. --preview also
 writes a contact sheet per drawn sheet to DIR (with --compare, the CD's
 frames beside the new ones, to check sizes and the knots' places).
 
@@ -47,10 +50,14 @@ def load_sheets():
         importlib.import_module(f"sheets.{m.name}")
 
 
-def write_rects(geo: wgfx.Geometry):
+def write_rects(geo: wgfx.Geometry, overlay=False):
     lines = ["# OpenWGFX: every frame's rectangle, as the game's sheets have them.",
              "# sheet frame top left bottom right"]
+    if overlay:
+        lines[0] = "# OpenWGFX, the sheets with words in another language: their frames' rectangles."
     for sid in geo.sheet_ids():
+        if overlay and not (OUT / "gadgets" / str(sid)).is_dir():
+            continue
         for n, (t, l, b, r) in enumerate(geo.frames(sid), 1):
             lines.append(f"{sid} {n} {t} {l} {b} {r}")
     (OUT / "sheets.txt").write_text("\n".join(lines) + "\n")
@@ -61,18 +68,33 @@ def draw_sheet(geo, q, sid):
     frames = wgfx.REGISTRY[sid](ctx)
     if len(frames) != ctx.count:
         raise SystemExit(f"sheet {sid}: {len(frames)} frames drawn, the game has {ctx.count}")
-    d = OUT / "gadgets" / str(sid)
-    d.mkdir(parents=True, exist_ok=True)
-    for old in d.glob("*.png"):
-        old.unlink()
     out = []
     for n, c in enumerate(frames, 1):
         if (c.w, c.h) != ctx.size(n):
             raise SystemExit(f"sheet {sid} frame {n}: {c.w}×{c.h}, the game's is {ctx.size(n)[0]}×{ctx.size(n)[1]}")
-        img = c.finish(q)
+        out.append(c.finish(q))
+    d = OUT / "gadgets" / str(sid)
+    if d.is_dir():
+        for old in d.glob("*.png"):
+            old.unlink()
+    if OUT != wgfx.PACK and all(same(img, wgfx.PACK / "gadgets" / str(sid) / f"{n}.png")
+                                for n, img in enumerate(out, 1)):
+        # No words in it: the English pack's sheet does.
+        if d.is_dir():
+            d.rmdir()
+        return out
+    d.mkdir(parents=True, exist_ok=True)
+    for n, img in enumerate(out, 1):
         img.save(d / f"{n}.png", optimize=True)
-        out.append(img)
     return out
+
+
+def same(img, path):
+    """Whether `img` is the picture in the PNG at `path`."""
+    if not path.exists():
+        return False
+    old = Image.open(path)
+    return old.size == img.size and old.convert("RGBA").tobytes() == img.convert("RGBA").tobytes()
 
 
 def draw_cursors(geo, q):
@@ -130,6 +152,14 @@ def main(argv):
         parts = argv[argv.index("--parts") + 1]
         args.remove(parts)
         os.environ["OPENGFX_PARTS"] = parts
+    global OUT
+    if "--lang" in argv:
+        lang = argv[argv.index("--lang") + 1]
+        args.remove(lang)
+        if lang != "en" and lang not in wgfx.WORDS:
+            raise SystemExit(f"no words for --lang {lang} (wgfx.WORDS)")
+        wgfx.LANG = lang
+        OUT = wgfx.pack_dir(lang)
     if not args:
         raise SystemExit(__doc__)
     geo = wgfx.Geometry(Path(args[0]))
@@ -139,8 +169,8 @@ def main(argv):
     # The sheets made of the others' pictures last.
     wanted.sort(key=lambda s: s in wgfx.LATE)
     OUT.mkdir(parents=True, exist_ok=True)
-    write_rects(geo)
-    if not args[1:] or "cursors" in args:
+    overlay = OUT != wgfx.PACK
+    if not overlay and (not args[1:] or "cursors" in args):
         draw_cursors(geo, q)
     for sid in wanted:
         if sid not in wgfx.REGISTRY:
@@ -156,6 +186,10 @@ def main(argv):
             extra = cd_frames(geo, sid, geo.palette) if compare else None
             contact(frames, extra).save(preview / f"{sid}.png")
         print(f"sheet {sid}: {len(frames)} frames")
+    write_rects(geo, overlay)
+    if overlay:
+        kept = sorted(int(d.name) for d in (OUT / "gadgets").iterdir() if d.is_dir())
+        print(f"{wgfx.LANG}: {len(kept)} sheets with words of their own: {' '.join(map(str, kept))}")
     missing = [s for s in geo.sheet_ids() if s not in wgfx.REGISTRY]
     print(f"{len(wgfx.REGISTRY)} sheets drawn; not yet: {' '.join(map(str, missing)) or 'none'}")
 

@@ -27,6 +27,54 @@ from PIL import Image, ImageChops, ImageDraw, ImageFilter, ImageFont
 SS = 4  # supersampling
 
 # ---------------------------------------------------------------------------
+# Words. The pictures' words are drawn in LANG: "en", or "sv" for the
+# Swedish overlay pack (crates/engine/opengfx-sv, make.py --lang sv). Each
+# goes through tr(), which takes the English word to LANG's.
+
+LANG = "en"
+
+WORDS = {
+    "sv": {
+        # the main toolbar, the Stopwatch
+        "GO": "START", "STOP": "STOPP",
+        # the settings dialogs' arrows by the knots
+        "IN": "IN", "OUT": "UT",
+        # the logic gates
+        "AND": "OCH", "OR": "ELLER", "XOR": "XELLER", "NOT": "INTE",
+        # switches, the light bulb, the Sound Switch
+        "ON": "PÅ", "OFF": "AV",
+        # the tray's Text Label, the Converter's units, the Plotter's reset
+        "Label": "Etikett", "Ft": "Fot", "RESET": "NOLLA",
+        # the Digital Clock, the Totaler, the Numeric Keypad
+        "AM": "FM", "PM": "EM",
+        "AVERAGE": "MEDEL", "TOTAL": "SUMMA", "MAXIMUM": "STÖRST", "MINIMUM": "MINST",
+        "ENTER": "RETUR",
+        # the signs
+        "KEEP\nOFF!": "BETRÄD\nEJ!", "STAY AWAY!": "HÅLL AVSTÅND!",
+        "PUSH\nTO START": "TRYCK\nFÖR START", "PUSH\nTO STOP": "TRYCK\nFÖR STOPP",
+        "PUSH": "TRYCK", "HERE": "HÄR", "ENTER\nHERE": "GÅ IN\nHÄR",
+        "THE ANSWER IS": "SVARET ÄR", "VOICE": "RÖST", "ACTIVATED": "STYRD",
+        "Mad Scientist\nat Work!": "Galen forskare\ni arbete!", "It's\nMagic!": "Det är\nmagi!",
+        # the Coin Toss
+        "HEADS": "KRONA", "TAILS": "KLAVE",
+        # the Zodiac
+        "Aquarius": "Vattumannen", "Pisces": "Fiskarna", "Aries": "Väduren", "Taurus": "Oxen",
+        "Gemini": "Tvillingarna", "Cancer": "Kräftan", "Leo": "Lejonet", "Virgo": "Jungfrun",
+        "Libra": "Vågen", "Scorpio": "Skorpionen", "Sagittarius": "Skytten", "Capricorn": "Stenbocken",
+        # the Fortune Teller
+        "No": "Nej", "Yes": "Ja", "NEVER!": "ALDRIG!", "Ask\nagain\nlater": "Fråga\nigen\nsenare",
+        "Maybe": "Kanske", "For sure": "Absolut", "Of\nCourse!": "Så\nklart!", "Not Today": "Inte\nidag",
+        # the About box
+        "for Widget Workshop": "för Widget Workshop",
+    },
+}
+
+
+def tr(word: str) -> str:
+    """`word` (English) in LANG."""
+    return WORDS.get(LANG, {}).get(word, word)
+
+# ---------------------------------------------------------------------------
 # Colours: the kit's own names, taken to the palette in the end.
 
 BLACK = (0, 0, 0)
@@ -542,8 +590,17 @@ def part_picture(tray_index: int) -> Image.Image:
 
 def pack_frame(sheet_id: int, n: int = 1) -> Image.Image | None:
     """Frame `n` of the pack's sheet `sheet_id` as drawn (RGBA), or None."""
-    p = PACK / "gadgets" / str(sheet_id) / f"{n}.png"
-    return Image.open(p).convert("RGBA") if p.exists() else None
+    for pack in (pack_dir(LANG), PACK):
+        p = pack / "gadgets" / str(sheet_id) / f"{n}.png"
+        if p.exists():
+            return Image.open(p).convert("RGBA")
+    return None
+
+
+def pack_dir(lang: str) -> Path:
+    """The pack drawn in `lang`: the English one, or an overlay of the
+    sheets whose words differ (crates/engine/opengfx-<lang>)."""
+    return PACK if lang == "en" else PACK.with_name(f"opengfx-{lang}")
 
 
 class SheetContext:

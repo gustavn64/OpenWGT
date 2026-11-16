@@ -1,5 +1,5 @@
 """The logic gates (AND, OR, XOR, NOT: sheets 1029 to 1032)."""
-from wgfx import INK, PANEL_BLUE, WHITE, darker, lighter, sheet
+from wgfx import INK, PANEL_BLUE, WHITE, darker, lighter, sheet, tr
 
 
 def gate(ctx, label, base):
@@ -18,19 +18,19 @@ def gate(ctx, label, base):
 
 @sheet(1029)
 def and_gate(ctx):
-    return gate(ctx, "AND", PANEL_BLUE)
+    return gate(ctx, tr("AND"), PANEL_BLUE)
 
 
 @sheet(1030)
 def or_gate(ctx):
-    return gate(ctx, "OR", (30, 150, 90))
+    return gate(ctx, tr("OR"), (30, 150, 90))
 
 
 @sheet(1031)
 def xor_gate(ctx):
-    return gate(ctx, "XOR", (150, 70, 200))
+    return gate(ctx, tr("XOR"), (150, 70, 200))
 
 
 @sheet(1032)
 def not_gate(ctx):
-    return gate(ctx, "NOT", (210, 70, 50))
+    return gate(ctx, tr("NOT"), (210, 70, 50))

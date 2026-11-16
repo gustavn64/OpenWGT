@@ -37,6 +37,7 @@ nix-shell -p 'python3.withPackages(p: [p.pillow])' dejavu_fonts liberation_ttf
 openwgt --export=EXPORT CD.iso          # the sizes and places, from the CD
 tools/opengfx/make.py EXPORT           # every sheet and the pointers
 tools/opengfx/make.py EXPORT 1029 1030 --preview /tmp/pv --compare
+tools/opengfx/make.py EXPORT --lang sv  # the Swedish words' sheets (below)
 ```
 
 `make.py` reads the export only for numbers: the frames' rectangles, the
@@ -61,7 +62,32 @@ go into the pack.
   pictures (the publisher's and the developer's logos, the photo) become
   the port's own.
 - Text on parts: DejaVu Sans / Liberation Sans (free), in English as the
-  game is.
+  game is; every word through `wgfx.tr()`, so that other languages can
+  have their own (below).
+
+## Other languages: the Swedish overlay
+
+The pictures with words (GO/STOP, ON/OFF, the logic gates, the signs,
+the Zodiac's names, the Fortune Teller's answers, ...) have Swedish
+versions in an overlay pack, `crates/engine/opengfx-sv`: the same layout,
+but only the sheets whose words differ, and `sheets.txt` lines for those;
+the engine takes every other sheet from the English pack. The words are
+`wgfx.WORDS["sv"]` (English to Swedish, with `\n` where a sign breaks its
+lines); `--lang sv` draws everything with them and keeps the sheets that
+come out different from the English pack's:
+
+```sh
+tools/opengfx/make.py EXPORT --lang sv
+# the tray's icons and the puzzles' pictures, from the Swedish parts:
+cargo run --release -p engine --example render_parts -- EXPORT PARTS-SV --overlay crates/engine/opengfx-sv
+tools/opengfx/make.py EXPORT --lang sv --parts PARTS-SV
+```
+
+Draw the English pack first (the overlay is what differs from it). A new
+language is a new `WORDS` entry and `--lang` code; words that don't fit
+are shrunk by `text_fit`, and the pixel fonts (`TINY_FONT` in
+`sheets/chrome.py`, `GLYPHS` in `sheets/_numbers_kit.py`) need a glyph
+for every letter they draw.
 
 ## Style
 
