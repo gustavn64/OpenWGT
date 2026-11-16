@@ -1097,3 +1097,23 @@ fn enhanced_toolbars_follow_the_pointer() {
     assert_eq!(e.main_bar.pos, (at.0 + 20, at.1 + 20));
     e.mouse_up(from.0 + 20, from.1 + 20, Button::Left);
 }
+
+/// Switching the sound off plays its click and its own sound, after
+/// stopping what plays; what comes after is silent.
+#[test]
+fn sound_off_is_heard() {
+    use crate::sim::SoundCmd;
+    let Some(mut e) = editor() else { return };
+    let _ = e.take_sounds();
+    e.main_bar.get_mut(id::SOUND).unwrap().on = false;
+    e.toolbar_command(id::SOUND, false);
+    let v = e.take_sounds();
+    assert!(matches!(v.first(), Some(SoundCmd::StopAll)), "{v:?}");
+    assert_eq!(
+        v.iter().filter(|c| matches!(c, SoundCmd::Play { .. })).count(),
+        2,
+        "{v:?}"
+    );
+    e.toolbar_command(id::POINTER, true);
+    assert!(e.take_sounds().iter().all(|c| !matches!(c, SoundCmd::Play { .. })));
+}
