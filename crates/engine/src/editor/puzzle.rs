@@ -293,7 +293,7 @@ mod tests {
         e.key_down(0x0d);
         assert!(e.puzzle_dialog.is_none());
         assert_eq!(e.puzzle(), Some(3));
-        assert_eq!(e.title(), "Gadget Generator - puzzle");
+        assert_eq!(e.title(), "OpenWGT - puzzle");
         // Esc cancels: nothing changes.
         e.command(cmd::LOAD_PUZZLE);
         e.key_down(0x1b);
