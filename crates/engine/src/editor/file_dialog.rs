@@ -297,11 +297,22 @@ impl FileDialog {
         self.r.name.contains(q.0, q.1)
     }
 
-    /// Whether the file name has the focus (a touch screen's keyboard is
-    /// wanted).
+    /// The file name's text, if it has the focus.
     #[must_use]
-    pub fn wants_text(&self) -> bool {
-        self.focus == Focus::Name
+    pub fn focused_text(&self) -> Option<super::TextField> {
+        (self.focus == Focus::Name).then(|| super::TextField {
+            text: self.name.clone(),
+            multiline: false,
+            max: 255,
+        })
+    }
+
+    /// Replaces the file name.
+    pub fn set_focused_text(&mut self, text: &str) {
+        if self.focus == Focus::Name {
+            self.name = text.replace(['\r', '\n'], "").chars().take(255).collect();
+            self.name_sel = false;
+        }
     }
 
     /// The dialog showing `dir` with `name` in the field (selected),

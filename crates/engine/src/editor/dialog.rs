@@ -351,13 +351,47 @@ impl Dialog {
             .is_some_and(|i| matches!(self.controls[i].ctl, Ctl::Edit { .. }))
     }
 
-    /// Whether a text field has the focus (a touch screen's keyboard is
-    /// wanted).
+    /// The focused text field's text (lines apart by `\n`), whether it
+    /// takes lines, and how many characters it takes.
     #[must_use]
-    pub fn wants_text(&self) -> bool {
-        self.focus
-            .and_then(|f| self.controls.get(f))
-            .is_some_and(|c| matches!(c.ctl, Ctl::Edit { .. }))
+    pub fn focused_text(&self) -> Option<super::TextField> {
+        let c = self.controls.get(self.focus?)?;
+        let Ctl::Edit { filter, multiline, .. } = c.ctl else {
+            return None;
+        };
+        let max = if filter.max > 0 {
+            filter.max
+        } else if self.long_text {
+            239
+        } else {
+            59
+        };
+        Some(super::TextField {
+            text: c.text.replace("\r\n", "\n"),
+            multiline,
+            max,
+        })
+    }
+
+    /// Replaces the focused text field's text, as if typed: what the field
+    /// doesn't take is left out, and a number it doesn't take leaves it as
+    /// it was.
+    pub fn set_focused_text(&mut self, text: &str) {
+        let Some(field) = self.focused_text() else { return };
+        let Some(f) = self.focus else { return };
+        let mut t: String = if field.multiline {
+            text.replace("\r\n", "\n").replace('\n', "\r\n")
+        } else {
+            text.replace(['\r', '\n'], " ")
+        };
+        while t.len() > field.max {
+            t.pop();
+        }
+        if t.ends_with('\r') {
+            t.pop();
+        }
+        self.controls[f].text = t;
+        self.edit_changed(f);
     }
 
     /// Builds the dialog of `template` (`0x41acb9`), placed as the
@@ -1543,8 +1577,8 @@ mod tests {
         assert_eq!(d.previewed.as_ref().map(|s| s.numbers[0]), Some(0));
     }
 
-    /// The text pointer over a text field, and the keyboard wanted while
-    /// one has the focus.
+    /// The text pointer over a text field; its text read and replaced (a
+    /// phone's own text box).
     #[test]
     fn text_fields_want_typing() {
         let t = Template {
@@ -1560,8 +1594,11 @@ mod tests {
             font: None,
             items: vec![item(1, 0x80, 1, "OK"), item(40, 0x81, 0, "")],
         };
-        let d = Dialog::build(&Assets::default(), &t, Kind::Settings);
-        assert!(d.wants_text());
+        let mut d = Dialog::build(&Assets::default(), &t, Kind::Settings);
+        let field = d.focused_text().unwrap();
+        assert_eq!((field.text.as_str(), field.multiline, field.max), ("", false, 59));
+        d.set_focused_text("Two\nlines");
+        assert_eq!(d.focused_text().unwrap().text, "Two lines");
         let edit = d.controls[1].rect;
         let at = |q: (i32, i32)| (q.0 + d.client.x0, q.1 + d.client.y0);
         assert!(d.over_text(at((edit.x0 + 1, edit.y0 + 1))));
@@ -1571,7 +1608,11 @@ mod tests {
             items: vec![item(1, 0x80, 1, "OK")],
             ..t
         };
-        assert!(!Dialog::build(&Assets::default(), &t, Kind::Settings).wants_text());
+        assert!(
+            Dialog::build(&Assets::default(), &t, Kind::Settings)
+                .focused_text()
+                .is_none()
+        );
     }
 
     #[test]

@@ -138,7 +138,8 @@ pub fn download(name: &str, data: &[u8]) -> bool {
 }
 
 // A touch screen's keyboard: a hidden text field that has the focus while
-// the game wants typing (`App::wants_text`), focused from a touch (the
+// the game wants key presses (`App::wants_text`: a running Keypress),
+// focused from a touch (the
 // browsers bring up their keyboard only for one); what's typed into it
 // becomes the game's key presses, as Windows' virtual-key codes with
 // Shift around them (`editor::prompt::typed`'s keys), the key let go a
@@ -227,6 +228,56 @@ export function text_want(on) {
     canvas.focus({ preventScroll: true });
   }
 }
+let edited = [];
+// A text field tapped on a touch screen: the browser's own text box over
+// the game, with the field's text, so the device's keyboard (its letters,
+// corrections and selection) edits it; OK hands it back.
+export function text_edit(text, multiline, max) {
+  const back = document.createElement("div");
+  back.style.cssText = "position:fixed;inset:0;z-index:10;display:flex;align-items:flex-start;" +
+    "justify-content:center;padding-top:8vh;background:rgba(0,0,0,.35)";
+  const form = document.createElement("form");
+  form.style.cssText = "box-sizing:border-box;width:min(92vw,32em);padding:12px;background:#c0c0c0;" +
+    "border:2px solid;border-color:#fff #000 #000 #fff;font:16px system-ui,sans-serif";
+  const field = document.createElement(multiline ? "textarea" : "input");
+  if (multiline) field.rows = 5;
+  field.value = text;
+  if (max > 0) field.maxLength = max;
+  field.style.cssText = "box-sizing:border-box;width:100%;padding:6px;font:16px system-ui,sans-serif";
+  const row = document.createElement("div");
+  row.style.cssText = "display:flex;justify-content:flex-end;gap:8px;margin-top:10px";
+  const button = (label, type) => {
+    const b = document.createElement("button");
+    b.type = type;
+    b.textContent = label;
+    b.style.cssText = "min-width:6em;padding:.4em 1em;font:16px system-ui,sans-serif";
+    return b;
+  };
+  const cancel = button("Cancel", "button"), ok = button("OK", "submit");
+  row.append(cancel, ok);
+  form.append(field, row);
+  back.append(form);
+  document.body.append(back);
+  const close = (keep) => {
+    if (keep) edited.push(field.value);
+    back.remove();
+    if (canvas) canvas.focus({ preventScroll: true });
+  };
+  form.addEventListener("submit", (e) => { e.preventDefault(); close(true); });
+  form.addEventListener("keydown", (e) => { if (e.key === "Escape") close(false); });
+  cancel.addEventListener("click", () => close(false));
+  back.addEventListener("pointerdown", (e) => { if (e.target === back) close(false); });
+  field.focus();
+  if (!multiline) field.select();
+}
+export function text_edited() {
+  const e = edited;
+  edited = [];
+  return e;
+}
+export function coarse_pointer() {
+  return window.matchMedia("(pointer: coarse)").matches;
+}
 export function text_take() {
   const k = keys;
   keys = [];
@@ -237,6 +288,25 @@ extern "C" {
     fn text_setup(canvas: &web_sys::HtmlCanvasElement);
     fn text_want(on: bool);
     fn text_take() -> js_sys::Int32Array;
+    fn text_edit(text: &str, multiline: bool, max: u32);
+    fn text_edited() -> js_sys::Array;
+    fn coarse_pointer() -> bool;
+}
+
+/// Edits a text field's text in the browser's own text box (a touch
+/// screen's): [`take_edited`] has it once OK is pressed.
+pub(crate) fn edit_text(field: &crate::TextEdit) {
+    text_edit(&field.text, field.multiline, u32::try_from(field.max).unwrap_or(0));
+}
+
+/// The texts edited in the browser's text box since last time.
+pub(crate) fn take_edited() -> Vec<String> {
+    text_edited().iter().filter_map(|v| v.as_string()).collect()
+}
+
+/// Whether the main pointer is a finger (a phone's or a tablet's).
+pub(crate) fn touch_screen() -> bool {
+    coarse_pointer()
 }
 
 /// Sets up the touch screen's keyboard field for `canvas` (once).

@@ -73,9 +73,9 @@ pub const MAX_UI_SCALE: f64 = 4.0;
 pub const DEFAULT_DESKTOP: (u32, u32) = (800, 600);
 
 /// How long a finger held still on a touch screen takes to be a double
-/// click ([`Runner::long_press`]): within the game's double-click time
-/// (500 ms) of its first press.
-const LONG_PRESS: Duration = Duration::from_millis(400);
+/// click ([`Runner::long_press`]): longer than the game's double-click time
+/// (500 ms), so that the press itself is a click of its own.
+const LONG_PRESS: Duration = Duration::from_millis(650);
 /// How far (game pixels) a finger may move and still be held still.
 const LONG_PRESS_SLOP: i32 = 4;
 
@@ -248,6 +248,40 @@ pub enum Input {
     Close,
 }
 
+/// A text field's text for a touch screen's own text box
+/// ([`App::take_text_tapped`]): lines apart by `\n`.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct TextEdit {
+    pub text: String,
+    pub multiline: bool,
+    /// How many characters it takes.
+    pub max: usize,
+}
+
+/// Whether the main pointer is a finger: in a phone's or a tablet's
+/// browser. Natively it's taken as a mouse.
+#[must_use]
+pub fn touch_screen() -> bool {
+    #[cfg(target_arch = "wasm32")]
+    return web::touch_screen();
+    #[cfg(not(target_arch = "wasm32"))]
+    false
+}
+
+/// The least height (game pixels) the automatic UI scale leaves on a
+/// touch screen ([`touch_scale`]).
+pub const TOUCH_MIN_HEIGHT: u32 = 360;
+
+/// The automatic UI scale on a touch screen: the largest, in quarters up
+/// to [`MAX_UI_SCALE`], that leaves the desktop `width` wide (the
+/// toolbars, so that they fill the screen's width) and
+/// [`TOUCH_MIN_HEIGHT`] high; at least 1.
+#[must_use]
+pub fn touch_scale(client: (u32, u32), width: u32) -> f64 {
+    let fit = (f64::from(client.0) / f64::from(width.max(1))).min(f64::from(client.1) / f64::from(TOUCH_MIN_HEIGHT));
+    ((fit * 4.0).floor() / 4.0).clamp(1.0, MAX_UI_SCALE)
+}
+
 /// A file dropped onto the window: its name, where it is (natively; the
 /// browser gives only its bytes) and its bytes.
 #[derive(Debug, Clone)]
@@ -272,10 +306,23 @@ pub trait App {
     fn resize(&mut self, width: u32, height: u32);
     /// A file was dropped onto the window (a port extension).
     fn dropped(&mut self, _file: DroppedFile) {}
-    /// Whether the game wants typing (a text field has the focus): in the
-    /// browser a touch screen's keyboard comes up.
+    /// Whether the game wants key presses with no text field edited (a
+    /// running Keypress): in the browser a touch screen's keyboard comes
+    /// up.
     fn wants_text(&self) -> bool {
         false
+    }
+    /// The text field just pressed, once: after a finger's tap the browser
+    /// edits it in a text box of its own ([`App::text_edited`]).
+    fn take_text_tapped(&mut self) -> Option<TextEdit> {
+        None
+    }
+    /// The text field's new text, edited in the browser's text box.
+    fn text_edited(&mut self, _text: String) {}
+    /// How wide the game's toolbars are (game pixels): on a touch screen
+    /// the automatic UI scale makes them fill the screen's width.
+    fn touch_width(&self) -> u32 {
+        MIN_DESKTOP.0
     }
     /// Whether a finger held still on a touch screen is a double click
     /// ([`LONG_PRESS`]); while the game runs a held finger is a held
@@ -483,6 +530,28 @@ impl<A: App> Runner<A> {
         true
     }
 
+    /// A mouse button pressed or let go.
+    fn mouse_button(&mut self, state: ElementState, b: MouseButton) {
+        if state == ElementState::Pressed {
+            audio::resume();
+        }
+        let button = match b {
+            MouseButton::Right => Some(Button::Right),
+            MouseButton::Middle => Some(Button::Middle),
+            MouseButton::Left => Some(Button::Left),
+            _ => None,
+        };
+        if let Some(button) = button {
+            let (x, y) = self.mouse;
+            self.app.input(match state {
+                ElementState::Pressed => Input::MouseDown { x, y, button },
+                ElementState::Released => Input::MouseUp { x, y, button },
+            });
+            // With a mouse a text field is typed into in place.
+            let _ = self.app.take_text_tapped();
+        }
+    }
+
     /// A touch screen: the first finger down is the mouse with its left
     /// button held (the game has no use for the others), moved to where
     /// it touches first, so that what's under it is pointed at as the
@@ -529,6 +598,13 @@ impl<A: App> Runner<A> {
                     y,
                     button: Button::Left,
                 });
+                // A tapped text field: the browser's own text box edits it.
+                if let Some(field) = self.app.take_text_tapped() {
+                    #[cfg(target_arch = "wasm32")]
+                    web::edit_text(&field);
+                    #[cfg(not(target_arch = "wasm32"))]
+                    let _ = field;
+                }
             }
             _ => {}
         }
@@ -536,7 +612,8 @@ impl<A: App> Runner<A> {
 
     /// A finger held still for [`LONG_PRESS`] is a double click where it
     /// came down (the game's double click opens a part's settings), if the
-    /// game takes it so: it lets go, and clicks there again.
+    /// game takes it so: it lets go, then clicks there twice (the press,
+    /// held past the double-click time, was a click of its own).
     fn long_press(&mut self) {
         let Some((since, (x, y))) = self.pressing else { return };
         if Instant::now() < since + LONG_PRESS {
@@ -558,8 +635,11 @@ impl<A: App> Runner<A> {
             self.mouse = (x, y);
             self.app.input(Input::MouseMove { x, y });
         }
-        self.app.input(Input::MouseDown { x, y, button: left });
-        self.app.input(Input::MouseUp { x, y, button: left });
+        for _ in 0..2 {
+            self.app.input(Input::MouseDown { x, y, button: left });
+            self.app.input(Input::MouseUp { x, y, button: left });
+        }
+        let _ = self.app.take_text_tapped();
     }
 
     fn to_frame(&self, pos: PhysicalPosition<f64>) -> (i32, i32) {
@@ -579,7 +659,11 @@ impl<A: App> Runner<A> {
         let Some((window, _)) = &self.window else { return };
         let size = window.inner_size();
         let client = (size.width, size.height);
-        let scale = ui_scale(client, window.scale_factor(), self.ui);
+        let scale = if self.ui == UiScale::Auto && touch_screen() {
+            touch_scale(client, self.app.touch_width())
+        } else {
+            ui_scale(client, window.scale_factor(), self.ui)
+        };
         let desktop = desktop(client, scale);
         // Scales are whole quarters, exact in a float.
         #[allow(clippy::float_cmp)]
@@ -703,6 +787,9 @@ impl<A: App> ApplicationHandler for Runner<A> {
             self.take_display(event_loop);
             for f in web::take_drops() {
                 self.app.dropped(f);
+            }
+            for text in web::take_edited() {
+                self.app.text_edited(text);
             }
             for (vk, down) in web::take_typed() {
                 self.app.input(if down { Input::KeyDown(vk) } else { Input::KeyUp(vk) });
@@ -842,12 +929,6 @@ impl<A: App> Runner<A> {
     }
 
     fn handle(&mut self, event_loop: &ActiveEventLoop, event: WindowEvent) {
-        let button = |b| match b {
-            MouseButton::Right => Some(Button::Right),
-            MouseButton::Middle => Some(Button::Middle),
-            MouseButton::Left => Some(Button::Left),
-            _ => None,
-        };
         match event {
             WindowEvent::CloseRequested => self.app.input(Input::Close),
             WindowEvent::Resized(size) => {
@@ -876,18 +957,7 @@ impl<A: App> Runner<A> {
                     self.app.input(Input::MouseMove { x, y });
                 }
             }
-            WindowEvent::MouseInput { state, button: b, .. } => {
-                if state == ElementState::Pressed {
-                    audio::resume();
-                }
-                if let Some(button) = button(b) {
-                    let (x, y) = self.mouse;
-                    self.app.input(match state {
-                        ElementState::Pressed => Input::MouseDown { x, y, button },
-                        ElementState::Released => Input::MouseUp { x, y, button },
-                    });
-                }
-            }
+            WindowEvent::MouseInput { state, button: b, .. } => self.mouse_button(state, b),
             WindowEvent::Touch(t) => self.touch(t),
             WindowEvent::MouseWheel { delta, .. } => {
                 let (dx, dy) = wheel_notches(&mut self.wheel, delta);
@@ -934,10 +1004,10 @@ impl<A: App> Runner<A> {
                     }
                     let frame = self.app.frame();
                     self.shown.update(w, event_loop, &frame, self.scale);
-                    // Natively the window gets every frame (a window
-                    // system may have lost what it showed); the browser's
-                    // canvas keeps it.
-                    if let Err(e) = d.draw(&frame, self.scale, cfg!(not(target_arch = "wasm32"))) {
+                    // Every frame is shown again, changed or not: a window
+                    // system, or the browser behind a phone's keyboard, may
+                    // have lost what it showed. Only what changed is sent.
+                    if let Err(e) = d.draw(&frame, self.scale, true) {
                         self.fail(event_loop, e);
                     }
                 }
@@ -1046,6 +1116,18 @@ mod tests {
         assert_eq!(wheel_notches(&mut rest, px(30.0)), (0, 0));
         assert_eq!(wheel_notches(&mut rest, px(30.0)), (0, 1));
         assert_eq!(wheel_notches(&mut rest, px(-100.0)), (0, -2));
+    }
+
+    #[test]
+    #[allow(clippy::float_cmp)]
+    fn touch_scales_fill_the_width() {
+        // A phone upright, 1080 pixels across: toolbars 505 wide fill it at 2.
+        assert_eq!(touch_scale((1080, 2200), 505), 2.0);
+        // On its side the height decides: 1000 / 360 is 2.75.
+        assert_eq!(touch_scale((2400, 1000), 505), 2.75);
+        // Never below 1 nor above the most.
+        assert_eq!(touch_scale((400, 300), 505), 1.0);
+        assert_eq!(touch_scale((9000, 9000), 505), MAX_UI_SCALE);
     }
 
     #[test]

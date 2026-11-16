@@ -126,6 +126,17 @@ pub enum Pointer {
     Game(u8),
 }
 
+/// A text field's text, for editing it elsewhere (a phone's own text
+/// box, [`Editor::take_text_tapped`]): lines apart by `\n`.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct TextField {
+    pub text: String,
+    /// Whether it takes more than one line.
+    pub multiline: bool,
+    /// How many characters it takes.
+    pub max: usize,
+}
+
 /// Which toolbar.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 enum Which {
@@ -341,6 +352,9 @@ pub struct Editor {
     settings: Option<SettingsBox>,
     /// The UI scale asked for and the one it gives, as the host says.
     ui_scale: (Scale, f64),
+    /// A text field was pressed since the host last asked
+    /// ([`Editor::take_text_tapped`]).
+    text_tapped: bool,
     /// The player's choices in the Settings window the host hasn't taken
     /// yet.
     new_scale: Option<Scale>,
@@ -421,6 +435,7 @@ impl Editor {
             links: None,
             settings: None,
             ui_scale: (Scale::Auto, 1.0),
+            text_tapped: false,
             new_scale: None,
             new_enhanced: None,
             change_cd: false,
@@ -1422,14 +1437,18 @@ impl Editor {
             self.drag = Some(Drag::Modal);
             return;
         }
-        if self.file_dialog.is_some() {
+        if let Some((f, _)) = &self.file_dialog {
+            let on_text = f.over_text((x, y));
             self.file_mouse_down((x, y), dbl);
             self.drag = Some(Drag::Modal);
+            self.text_tapped = on_text;
             return;
         }
         if let Some(d) = &mut self.dialog {
+            let on_text = d.over_text((x, y));
             d.mouse_down(&self.assets, (x, y), dbl);
             self.drag = Some(Drag::Modal);
+            self.text_tapped = on_text;
             return;
         }
         if let Some(d) = &mut self.puzzle_dialog {
@@ -1946,14 +1965,49 @@ impl Editor {
         std::mem::take(&mut self.change_cd)
     }
 
-    /// Whether typing is wanted, for a touch screen's keyboard: a text
-    /// field has the focus, or a running widget has a Keypress.
+    /// Whether key presses are wanted though no text field is being
+    /// edited: a running widget has a Keypress (a touch screen's keyboard
+    /// comes up after a touch).
     #[must_use]
     pub fn wants_text(&self) -> bool {
-        self.dialog.as_ref().is_some_and(Dialog::wants_text)
-            || self.file_dialog.as_ref().is_some_and(|(f, _)| f.wants_text())
-            || self.help.as_ref().is_some_and(help::Help::wants_text)
-            || (self.running && self.doc.gadgets.iter().any(|g| g.core.tag == KEYPRESS))
+        self.running && self.doc.gadgets.iter().any(|g| g.core.tag == KEYPRESS)
+    }
+
+    /// The text field last pressed, once, if it still has the focus: on a
+    /// touch screen the host edits it in a text box of its own (the
+    /// device's keyboard, its letters) and hands it back
+    /// ([`Editor::set_focused_text`]).
+    pub fn take_text_tapped(&mut self) -> Option<TextField> {
+        if !std::mem::take(&mut self.text_tapped) {
+            return None;
+        }
+        self.focused_text()
+    }
+
+    /// The focused text field's text.
+    #[must_use]
+    pub fn focused_text(&self) -> Option<TextField> {
+        if let Some((f, _)) = &self.file_dialog {
+            return f.focused_text();
+        }
+        self.dialog.as_ref().and_then(Dialog::focused_text)
+    }
+
+    /// Replaces the focused text field's text (edited elsewhere).
+    pub fn set_focused_text(&mut self, text: &str) {
+        if let Some((f, _)) = &mut self.file_dialog {
+            f.set_focused_text(text);
+        } else if let Some(d) = &mut self.dialog {
+            d.set_focused_text(text);
+        }
+    }
+
+    /// How wide the toolbars are together, from the left edge: on a touch
+    /// screen the automatic UI scale makes them as wide as the screen.
+    #[must_use]
+    pub fn bars_width(&self) -> u32 {
+        let right = self.main_bar.rect().x1.max(self.tray.bar.rect().x1) + 2;
+        u32::try_from(right).unwrap_or(0)
     }
 
     fn settings_outcome(&mut self, o: settings::Outcome) {

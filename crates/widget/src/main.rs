@@ -384,6 +384,22 @@ impl App for Workshop {
         self.editor.wants_text()
     }
 
+    fn take_text_tapped(&mut self) -> Option<platform::TextEdit> {
+        self.editor.take_text_tapped().map(|f| platform::TextEdit {
+            text: f.text,
+            multiline: f.multiline,
+            max: f.max,
+        })
+    }
+
+    fn text_edited(&mut self, text: String) {
+        self.editor.set_focused_text(&text);
+    }
+
+    fn touch_width(&self) -> u32 {
+        self.editor.bars_width()
+    }
+
     fn long_press_doubles(&self) -> bool {
         !self.editor.running
     }
@@ -424,7 +440,13 @@ impl App for Workshop {
     }
 
     fn resize(&mut self, width: u32, height: u32) {
-        let (w, h) = (width.max(platform::MIN_DESKTOP.0), height.max(platform::MIN_DESKTOP.1));
+        // On a touch screen the desktop may be as small as the toolbars.
+        let least = if platform::touch_screen() {
+            (self.editor.bars_width(), platform::TOUCH_MIN_HEIGHT)
+        } else {
+            platform::MIN_DESKTOP
+        };
+        let (w, h) = (width.max(least.0), height.max(least.1));
         self.editor.resize(w, h);
         self.editor.draw();
         #[cfg(not(target_arch = "wasm32"))]

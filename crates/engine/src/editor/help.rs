@@ -915,13 +915,6 @@ pub struct Help {
 }
 
 impl Help {
-    /// Whether the Index's typing field is open (a touch screen's keyboard
-    /// is wanted).
-    #[must_use]
-    pub fn wants_text(&self) -> bool {
-        self.index.is_some()
-    }
-
     /// The window on `file`'s contents topic: at `at` (where it was last),
     /// else at the right of `area`, two thirds of it wide (at least wide
     /// enough for the 574-pixel screenshot) and all of it high.
