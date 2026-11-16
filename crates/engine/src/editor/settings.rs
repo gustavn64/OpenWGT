@@ -86,10 +86,11 @@ pub fn step(s: f64, up: bool) -> f64 {
     (n * STEP).clamp(MIN_SCALE, MAX_SCALE)
 }
 
-/// `s` as the window shows it: "1.5×".
+/// `s` as the window shows it: "1.5×", to two decimals (a touch
+/// screen's automatic scale isn't in quarters).
 #[must_use]
 pub fn label(s: f64) -> String {
-    format!("{s}×")
+    format!("{}×", (s * 100.0).round() / 100.0)
 }
 
 impl SettingsBox {
@@ -371,6 +372,7 @@ mod tests {
         assert!((step(1.6, true) - 1.75).abs() < f64::EPSILON);
         assert_eq!(label(1.5), "1.5×");
         assert_eq!(label(2.0), "2×");
+        assert_eq!(label(720.0 / 507.0), "1.42×");
     }
 
     #[test]

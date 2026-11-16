@@ -272,14 +272,15 @@ pub fn touch_screen() -> bool {
 /// touch screen ([`touch_scale`]).
 pub const TOUCH_MIN_HEIGHT: u32 = 360;
 
-/// The automatic UI scale on a touch screen: the largest, in quarters up
-/// to [`MAX_UI_SCALE`], that leaves the desktop `width` wide (the
-/// toolbars, so that they fill the screen's width) and
-/// [`TOUCH_MIN_HEIGHT`] high; at least 1.
+/// The automatic UI scale on a touch screen: the one that makes the
+/// desktop `width` wide (the toolbars, so that they fill the screen's
+/// width exactly, not in quarters: a phone's pixels are too small to see
+/// the uneven ones) while leaving it [`TOUCH_MIN_HEIGHT`] high; 1 to
+/// [`MAX_UI_SCALE`].
 #[must_use]
 pub fn touch_scale(client: (u32, u32), width: u32) -> f64 {
     let fit = (f64::from(client.0) / f64::from(width.max(1))).min(f64::from(client.1) / f64::from(TOUCH_MIN_HEIGHT));
-    ((fit * 4.0).floor() / 4.0).clamp(1.0, MAX_UI_SCALE)
+    fit.clamp(1.0, MAX_UI_SCALE)
 }
 
 /// A file dropped onto the window: its name, where it is (natively; the
@@ -394,7 +395,9 @@ pub fn ui_scale(client: (u32, u32), scale_factor: f64, scale: UiScale) -> f64 {
 pub fn desktop(client: (u32, u32), scale: f64) -> (u32, u32) {
     let scale = scale.max(1.0);
     #[allow(clippy::cast_possible_truncation, clippy::cast_sign_loss)]
-    let at = |px: u32| (f64::from(px) / scale).floor() as u32;
+    // A hair over, so that a scale that divides a size exactly (a touch
+    // screen's, `touch_scale`) isn't a pixel short by rounding.
+    let at = |px: u32| (f64::from(px) / scale + 1e-6).floor() as u32;
     (at(client.0), at(client.1))
 }
 
@@ -1121,10 +1124,10 @@ mod tests {
     #[test]
     #[allow(clippy::float_cmp)]
     fn touch_scales_fill_the_width() {
-        // A phone upright, 1080 pixels across: toolbars 505 wide fill it at 2.
-        assert_eq!(touch_scale((1080, 2200), 505), 2.0);
-        // On its side the height decides: 1000 / 360 is 2.75.
-        assert_eq!(touch_scale((2400, 1000), 505), 2.75);
+        // A phone upright, 720 pixels across: toolbars 507 wide fill it.
+        assert_eq!(touch_scale((720, 1600), 507), 720.0 / 507.0);
+        // On its side the height decides.
+        assert_eq!(touch_scale((2400, 1000), 507), 1000.0 / 360.0);
         // Never below 1 nor above the most.
         assert_eq!(touch_scale((400, 300), 505), 1.0);
         assert_eq!(touch_scale((9000, 9000), 505), MAX_UI_SCALE);
