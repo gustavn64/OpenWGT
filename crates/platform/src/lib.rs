@@ -53,7 +53,7 @@ use web_time::{Duration, Instant};
 
 use winit::application::ApplicationHandler;
 use winit::dpi::{LogicalSize, PhysicalPosition};
-use winit::event::{ElementState, MouseButton, MouseScrollDelta, WindowEvent};
+use winit::event::{ElementState, MouseButton, MouseScrollDelta, Touch, TouchPhase, WindowEvent};
 use winit::event_loop::{ActiveEventLoop, ControlFlow, EventLoop};
 use winit::keyboard::{KeyCode, ModifiersState, PhysicalKey};
 use winit::window::{CursorIcon, Fullscreen, Window, WindowId};
@@ -416,6 +416,8 @@ struct Runner<A> {
     #[cfg_attr(not(target_arch = "wasm32"), allow(dead_code))]
     frame_asked: Option<Instant>,
     mouse: (i32, i32),
+    /// The finger that is the mouse on a touch screen, while it's down.
+    finger: Option<u64>,
     error: Option<Error>,
     /// The desktop last handed to [`App::resize`].
     desktop: (u32, u32),
@@ -452,6 +454,44 @@ impl<A: App> Runner<A> {
         self.app.update(now - self.last);
         self.last = now;
         true
+    }
+
+    /// A touch screen: the first finger down is the mouse with its left
+    /// button held (the game has no use for the others), moved to where
+    /// it touches first, so that what's under it is pointed at as the
+    /// mouse would; other fingers meanwhile are ignored.
+    fn touch(&mut self, t: Touch) {
+        let (x, y) = self.to_frame(t.location);
+        match t.phase {
+            TouchPhase::Started if self.finger.is_none() => {
+                self.finger = Some(t.id);
+                audio::resume();
+                self.mouse = (x, y);
+                self.app.input(Input::MouseMove { x, y });
+                self.app.input(Input::MouseDown {
+                    x,
+                    y,
+                    button: Button::Left,
+                });
+            }
+            TouchPhase::Moved if self.finger == Some(t.id) && (x, y) != self.mouse => {
+                self.mouse = (x, y);
+                self.app.input(Input::MouseMove { x, y });
+            }
+            TouchPhase::Ended | TouchPhase::Cancelled if self.finger == Some(t.id) => {
+                self.finger = None;
+                if (x, y) != self.mouse {
+                    self.mouse = (x, y);
+                    self.app.input(Input::MouseMove { x, y });
+                }
+                self.app.input(Input::MouseUp {
+                    x,
+                    y,
+                    button: Button::Left,
+                });
+            }
+            _ => {}
+        }
     }
 
     fn to_frame(&self, pos: PhysicalPosition<f64>) -> (i32, i32) {
@@ -773,6 +813,7 @@ impl<A: App> Runner<A> {
                     });
                 }
             }
+            WindowEvent::Touch(t) => self.touch(t),
             WindowEvent::MouseWheel { delta, .. } => {
                 let (dx, dy) = wheel_notches(&mut self.wheel, delta);
                 if (dx, dy) != (0, 0) {
@@ -852,6 +893,7 @@ pub fn run<A: App + 'static>(title: &str, options: WindowOptions, app: A) -> Res
         last: Instant::now(),
         frame_asked: None,
         mouse: (0, 0),
+        finger: None,
         error: None,
         desktop: (0, 0),
         ui,
