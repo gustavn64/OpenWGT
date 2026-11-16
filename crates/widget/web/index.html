@@ -4,14 +4,29 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<!-- interactive-widget: a phone's keyboard shrinks the page (and so the
+     game's window) instead of covering it. -->
+<meta name="viewport" content="width=device-width, initial-scale=1, interactive-widget=resizes-content">
+<meta name="theme-color" content="#008080">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
 <title>OpenWGT</title>
 <link rel="icon" href="icon.png">
+<link rel="apple-touch-icon" href="icon.png">
+<!-- Added to a phone's home screen, the game starts full screen and in
+     landscape (manifest.webmanifest). -->
+<link rel="manifest" href="manifest.webmanifest">
 <style>
   html, body { margin: 0; height: 100%; background: #008080; color: #000; overflow: hidden;
-    font: 14px/1.4 "MS Sans Serif", Tahoma, system-ui, sans-serif; }
+    font: 14px/1.4 "MS Sans Serif", Tahoma, system-ui, sans-serif;
+    /* No pull-to-refresh or bounce while dragging on a touch screen. */
+    overscroll-behavior: none; }
   /* The game's window: the whole page; winit follows its size. */
-  canvas#widget { display: block; width: 100vw; height: 100vh; outline: none; touch-action: none; }
+  /* dvh: what's visible of the page, between a phone's bars and keyboard.
+     A finger held on it neither selects nor brings up a menu. */
+  canvas#widget { display: block; width: 100vw; height: 100vh; height: 100dvh; outline: none; touch-action: none;
+    user-select: none; -webkit-user-select: none; -webkit-touch-callout: none;
+    -webkit-tap-highlight-color: transparent; }
   /* The start form, a Windows 95 dialog like the editor's own. */
   #setup { position: fixed; inset: 0; display: flex; align-items: center; justify-content: center;
     background: #008080; }

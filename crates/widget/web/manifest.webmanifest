@@ -1,0 +1,10 @@
+{
+  "name": "OpenWGT",
+  "short_name": "OpenWGT",
+  "description": "An open engine for Widget Workshop: A Mad Scientist's Laboratory",
+  "display": "fullscreen",
+  "orientation": "landscape",
+  "background_color": "#008080",
+  "theme_color": "#008080",
+  "icons": [{ "src": "icon.png", "sizes": "512x512", "type": "image/png", "purpose": "any" }]
+}

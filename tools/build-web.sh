@@ -48,5 +48,6 @@ rm -rf "$out/snippets"
 "$bindgen" --target web --no-typescript --out-dir "$out" --out-name widget \
     "$root/target/wasm32-unknown-unknown/$profile/openwgt.wasm"
 cp "$root/crates/widget/web/index.html" "$out/index.html"
+cp "$root/crates/widget/web/manifest.webmanifest" "$out/manifest.webmanifest"
 cp "$root/crates/widget/res/icon.png" "$out/icon.png"
 echo "built $out: serve it over HTTP (python3 -m http.server -d $out 8000)"

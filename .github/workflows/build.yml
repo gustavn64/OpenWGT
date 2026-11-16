@@ -191,11 +191,11 @@ jobs:
       - name: Assemble the site
         run: |
           # The site must never carry game data, only the port's own files.
-          if find web -type f ! -name '*.js' ! -name '*.wasm' ! -name '*.html' ! -name icon.png | grep .; then
+          if find web -type f ! -name '*.js' ! -name '*.wasm' ! -name '*.html' ! -name icon.png ! -name manifest.webmanifest | grep .; then
             echo "unexpected files in the build"; exit 1
           fi
           mkdir _site
-          cp -r web/widget.js web/widget_bg.wasm web/snippets web/icon.png _site/
+          cp -r web/widget.js web/widget_bg.wasm web/snippets web/icon.png web/manifest.webmanifest _site/
           cp web/index.html _site/widget.html
           cp crates/widget/web/front.html _site/index.html
           d=openwgt-web
