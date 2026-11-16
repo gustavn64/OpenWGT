@@ -269,6 +269,11 @@ pub trait App {
     fn resize(&mut self, width: u32, height: u32);
     /// A file was dropped onto the window (a port extension).
     fn dropped(&mut self, _file: DroppedFile) {}
+    /// Whether the game wants typing (a text field has the focus): in the
+    /// browser a touch screen's keyboard comes up.
+    fn wants_text(&self) -> bool {
+        false
+    }
     /// Whether a finger held still on a touch screen is a double click
     /// ([`LONG_PRESS`]); while the game runs a held finger is a held
     /// button.
@@ -696,6 +701,9 @@ impl<A: App> ApplicationHandler for Runner<A> {
             for f in web::take_drops() {
                 self.app.dropped(f);
             }
+            for (vk, down) in web::take_typed() {
+                self.app.input(if down { Input::KeyDown(vk) } else { Input::KeyUp(vk) });
+            }
         }
         self.long_press();
         for t in clipboard::take_pasted() {
@@ -765,6 +773,9 @@ impl<A: App> Runner<A> {
             Ok(w) => {
                 let w = Arc::new(w);
                 w.focus_window();
+                if let Some(c) = winit::platform::web::WindowExtWebSys::canvas(&*w) {
+                    web::setup_text(&c);
+                }
                 let slot = display::Display::start(event_loop, Arc::clone(&w));
                 self.pending = Some((w, slot));
             }
@@ -907,6 +918,7 @@ impl<A: App> Runner<A> {
                 {
                     self.long_press();
                     self.step(BROWSER_STEP);
+                    web::want_text(self.app.wants_text());
                 }
                 if let Some((w, d)) = &mut self.window {
                     // The next frame, asked for once this one is over

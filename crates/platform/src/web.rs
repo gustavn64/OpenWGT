@@ -136,3 +136,128 @@ pub fn download(name: &str, data: &[u8]) -> bool {
     };
     go().is_some()
 }
+
+// A touch screen's keyboard: a hidden text field that has the focus while
+// the game wants typing (`App::wants_text`), focused from a touch (the
+// browsers bring up their keyboard only for one); what's typed into it
+// becomes the game's key presses, as Windows' virtual-key codes with
+// Shift around them (`editor::prompt::typed`'s keys), the key let go a
+// little later so that a Keypress part sees it held.
+#[wasm_bindgen::prelude::wasm_bindgen(inline_js = r#"
+const KEEP = "~~";
+const SPECIAL = { Backspace: 8, Tab: 9, Enter: 13, Escape: 27, End: 35, Home: 36,
+  ArrowLeft: 37, ArrowUp: 38, ArrowRight: 39, ArrowDown: 40, Delete: 46 };
+const SHIFTED_DIGITS = ")!@#$%^&*(";
+const PUNCT = { " ": [32, false], ".": [0xbe, false], ",": [0xbc, false], "-": [0xbd, false],
+  "_": [0xbd, true], "/": [0xbf, false], "\\": [0xdc, false], ":": [0xba, true], ";": [0xba, false],
+  "'": [0xde, false], "=": [0xbb, false], "+": [0xbb, true], "[": [0xdb, false], "]": [0xdd, false],
+  "~": [0xc0, true], "\n": [13, false] };
+let field = null, canvas = null, wanted = false, touched = -1e9, keys = [];
+
+function key(vk, shift) {
+  if (shift) keys.push(16, 1);
+  keys.push(vk, 1);
+  if (shift) keys.push(16, 0);
+  setTimeout(() => keys.push(vk, 0), 80);
+}
+function typed(c) {
+  const code = c.charCodeAt(0);
+  if (c >= "a" && c <= "z") return key(code - 32, false);
+  if (c >= "A" && c <= "Z") return key(code, true);
+  if (c >= "0" && c <= "9") return key(code, false);
+  const d = SHIFTED_DIGITS.indexOf(c);
+  if (d >= 0) return key(48 + d, true);
+  const p = PUNCT[c];
+  if (p) key(p[0], p[1]);
+}
+function reset() {
+  field.value = KEEP;
+  try { field.setSelectionRange(KEEP.length, KEEP.length); } catch (_) {}
+}
+function changed() {
+  const v = field.value;
+  let same = 0;
+  while (same < KEEP.length && same < v.length && v[same] === KEEP[same]) same++;
+  for (let i = same; i < KEEP.length; i++) key(8, false);
+  for (const c of v.slice(same)) typed(c);
+  reset();
+}
+function focus() {
+  field.focus({ preventScroll: true });
+  reset();
+}
+export function text_setup(c) {
+  if (field) return;
+  canvas = c;
+  field = document.createElement("input");
+  field.type = "text";
+  for (const [k, v] of [["autocomplete", "off"], ["autocapitalize", "off"], ["autocorrect", "off"],
+      ["spellcheck", "false"], ["aria-hidden", "true"], ["tabindex", "-1"]]) field.setAttribute(k, v);
+  field.style.cssText = "position:fixed;left:0;bottom:0;width:1px;height:1px;opacity:0;border:0;" +
+    "padding:0;margin:0;font-size:16px;pointer-events:none";
+  document.body.appendChild(field);
+  reset();
+  field.addEventListener("input", (e) => { if (!e.isComposing) changed(); });
+  field.addEventListener("compositionend", changed);
+  field.addEventListener("keydown", (e) => {
+    const vk = SPECIAL[e.key];
+    if (vk !== undefined) { e.preventDefault(); key(vk, false); return; }
+    // A keyboard's shortcuts (Ctrl+S) still reach the game.
+    if ((e.ctrlKey || e.metaKey) && e.key.length === 1) {
+      const c = e.key.toUpperCase().charCodeAt(0);
+      if ((c >= 65 && c <= 90) || (c >= 48 && c <= 57)) {
+        e.preventDefault();
+        keys.push(17, 1, c, 1, c, 0, 17, 0);
+      }
+    }
+  });
+  canvas.addEventListener("pointerup", (e) => {
+    if (e.pointerType === "mouse") return;
+    touched = performance.now();
+    if (wanted) focus();
+  });
+}
+export function text_want(on) {
+  if (!field || on === wanted) return;
+  wanted = on;
+  if (on) {
+    if (performance.now() - touched < 1500) focus();
+  } else if (document.activeElement === field) {
+    field.blur();
+    canvas.focus({ preventScroll: true });
+  }
+}
+export function text_take() {
+  const k = keys;
+  keys = [];
+  return new Int32Array(k);
+}
+"#)]
+extern "C" {
+    fn text_setup(canvas: &web_sys::HtmlCanvasElement);
+    fn text_want(on: bool);
+    fn text_take() -> js_sys::Int32Array;
+}
+
+/// Sets up the touch screen's keyboard field for `canvas` (once).
+pub(crate) fn setup_text(canvas: &web_sys::HtmlCanvasElement) {
+    text_setup(canvas);
+}
+
+/// Whether the game wants typing now: the keyboard comes up (after a
+/// touch) or goes.
+pub(crate) fn want_text(on: bool) {
+    text_want(on);
+}
+
+/// The keys typed on the touch screen's keyboard since last time: (code,
+/// pressed).
+pub(crate) fn take_typed() -> Vec<(u16, bool)> {
+    text_take()
+        .to_vec()
+        .as_chunks::<2>()
+        .0
+        .iter()
+        .filter_map(|&[vk, down]| Some((u16::try_from(vk).ok()?, down != 0)))
+        .collect()
+}

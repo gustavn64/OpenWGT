@@ -286,6 +286,13 @@ fn root_label(p: &Path, cd: &str) -> String {
 }
 
 impl FileDialog {
+    /// Whether the file name has the focus (a touch screen's keyboard is
+    /// wanted).
+    #[must_use]
+    pub fn wants_text(&self) -> bool {
+        self.focus == Focus::Name
+    }
+
     /// The dialog showing `dir` with `name` in the field (selected),
     /// centred in `area`.
     #[must_use]

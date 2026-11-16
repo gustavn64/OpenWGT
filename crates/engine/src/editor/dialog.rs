@@ -338,6 +338,15 @@ pub(super) fn mul_div(a: i32, b: i32, c: i32) -> i32 {
 }
 
 impl Dialog {
+    /// Whether a text field has the focus (a touch screen's keyboard is
+    /// wanted).
+    #[must_use]
+    pub fn wants_text(&self) -> bool {
+        self.focus
+            .and_then(|f| self.controls.get(f))
+            .is_some_and(|c| matches!(c.ctl, Ctl::Edit { .. }))
+    }
+
     /// Builds the dialog of `template` (`0x41acb9`), placed as the
     /// template says relative to the frame's client area.
     fn build(assets: &Assets, t: &Template, kind: Kind) -> Dialog {

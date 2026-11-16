@@ -65,6 +65,8 @@ const UNTITLED: &str = "untitled.wgt";
 
 /// The Label's tag (`TxLb`).
 const LABEL: crate::gadget::Tag = crate::gadget::Tag::new(b"TxLb");
+/// The Keypress's tag (`Key_`).
+const KEYPRESS: crate::gadget::Tag = crate::gadget::Tag::new(b"Key_");
 
 const VK_SHIFT: u16 = 0x10;
 const VK_CONTROL: u16 = 0x11;
@@ -1928,6 +1930,16 @@ impl Editor {
     /// once, after "Save changes?": the host picks it and starts over.
     pub fn take_change_cd(&mut self) -> bool {
         std::mem::take(&mut self.change_cd)
+    }
+
+    /// Whether typing is wanted, for a touch screen's keyboard: a text
+    /// field has the focus, or a running widget has a Keypress.
+    #[must_use]
+    pub fn wants_text(&self) -> bool {
+        self.dialog.as_ref().is_some_and(Dialog::wants_text)
+            || self.file_dialog.as_ref().is_some_and(|(f, _)| f.wants_text())
+            || self.help.as_ref().is_some_and(help::Help::wants_text)
+            || (self.running && self.doc.gadgets.iter().any(|g| g.core.tag == KEYPRESS))
     }
 
     fn settings_outcome(&mut self, o: settings::Outcome) {

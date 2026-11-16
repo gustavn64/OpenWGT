@@ -380,6 +380,10 @@ impl App for Workshop {
         }
     }
 
+    fn wants_text(&self) -> bool {
+        self.editor.wants_text()
+    }
+
     fn long_press_doubles(&self) -> bool {
         !self.editor.running
     }
