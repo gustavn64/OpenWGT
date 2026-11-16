@@ -3,8 +3,9 @@
 //! each `shot`: for comparing the port with the original running the same
 //! script (`tools/compare/`).
 //!
-//! `cargo run -p engine --example script -- CD_DIR SCRIPT OUT_DIR [--opengfx] [--enhanced]`
-//! (`-` for `CD_DIR`: no CD, the port's own packs alone)
+//! `cargo run -p engine --example script -- CD_DIR SCRIPT OUT_DIR [--opengfx] [--enhanced] [--opendata=DIR]`
+//! (`-` for `CD_DIR`: no CD, the port's own packs alone; `--opendata=DIR`
+//! a data pack from a folder, such as the Swedish `crates/engine/opendata-sv`)
 //!
 //! The script, a command a line (`#` starts a comment), in the editor's
 //! coordinates (the menu bar's top left is 0, 0):
@@ -149,11 +150,15 @@ fn main() {
     let script = std::fs::read_to_string(&args[2]).unwrap();
     let out = PathBuf::from(&args[3]);
     std::fs::create_dir_all(&out).unwrap();
-    let (graphics, data) = (engine::opengfx::builtin(), engine::opendata::builtin());
+    let graphics = engine::opengfx::builtin();
+    let data: Box<dyn engine::assets::Source> = match args.iter().find_map(|a| a.strip_prefix("--opendata=")) {
+        Some(dir) => Box::new(Dir(PathBuf::from(dir))),
+        None => Box::new(engine::opendata::builtin()),
+    };
     let packs = Packs {
         graphics: (open || args.iter().any(|a| a == "--opengfx")).then_some(&graphics as _),
         sounds: None,
-        data: open.then_some(&data as _),
+        data: open.then_some(data.as_ref()),
     };
     let assets = Assets::load_with((!open).then_some(&cd as _), packs, None).unwrap();
     let palette = assets.palette();

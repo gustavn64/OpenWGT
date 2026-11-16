@@ -17,6 +17,7 @@
 
 # The port's own data (OpenWDATA) is the project's, in the game's formats.
 !/crates/engine/opendata/**
+!/crates/engine/opendata-sv/**
 
 # Build output
 /target/

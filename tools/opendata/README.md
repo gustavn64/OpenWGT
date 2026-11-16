@@ -42,6 +42,26 @@ cargo run --release -p engine --example recipe -- tools/opendata crates/engine/o
 cargo run --release -p engine --example recipe -- --parts   # every part's knots
 ```
 
+## Swedish
+
+The Swedish pack, `crates/engine/opendata-sv`, is built from the same
+sources with `sv/` over them: `sv/src/` holds the texts that differ
+(strings, menus, the drop-down lists, every dialog, the parts' texts),
+`sv/help/HELP.TXT` the help, `sv/samples/` and `sv/puzzles/` the
+recipes with Swedish labels. The tables, the palette and the layout are
+shared.
+
+```sh
+python3 tools/opendata/build.py --lang sv
+cargo run --release -p engine --example recipe -- \
+    --data crates/engine/opendata-sv tools/opendata/sv crates/engine/opendata-sv
+```
+
+The words follow one glossary, shared with OpenWGFX's Swedish pictures:
+widget uppfinning, part del, puzzle pussel, parts tray verktygslåda,
+worksheet arbetsyta, wire sladd, knot kontakt, GO/STOP START/STOPP,
+ON/OFF PÅ/AV, YES/NO JA/NEJ, AND/OR/XOR/NOT OCH/ELLER/XELLER/INTE.
+
 `build.py --verify EXPORT` compares the built resources with a CD's
 (`openwgt --export=EXPORT CD.iso`): every format but the texts must come
 out byte for byte the same, which is what keeps saved widgets, the

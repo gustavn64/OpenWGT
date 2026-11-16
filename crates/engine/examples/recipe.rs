@@ -3,7 +3,11 @@
 //! (`crates/engine/opendata`: `samples/*.WGT`, `WIDGET.PZL`).
 //!
 //! `cargo run -p engine --example recipe -- tools/opendata crates/engine/opendata`
+//! `cargo run -p engine --example recipe -- --data crates/engine/opendata-sv tools/opendata/sv crates/engine/opendata-sv`
 //! `cargo run -p engine --example recipe -- --parts [TAG...]`   (the parts' knots)
+//!
+//! `--data DIR` builds against that data pack instead of the built-in
+//! English one (a language's: a fresh Billboard's text is its string).
 //!
 //! A recipe, a command a line (`#` starts a comment; text in "quotes",
 //! `\n` a line break):
@@ -26,7 +30,7 @@
 
 use std::path::{Path, PathBuf};
 
-use engine::assets::{Assets, Packs};
+use engine::assets::{Assets, Dir, Packs, Source};
 use engine::doc::{Document, new_gadget};
 use engine::gadget::Tag;
 
@@ -167,12 +171,19 @@ fn recipes(dir: &Path) -> Vec<PathBuf> {
 }
 
 fn main() {
-    let args: Vec<String> = std::env::args().skip(1).collect();
-    let data = engine::opendata::builtin();
+    let mut args: Vec<String> = std::env::args().skip(1).collect();
+    let data: Box<dyn Source> = match args.iter().position(|a| a == "--data") {
+        Some(i) => {
+            let dir = args.remove(i + 1);
+            args.remove(i);
+            Box::new(Dir(PathBuf::from(dir)))
+        }
+        None => Box::new(engine::opendata::builtin()),
+    };
     let packs = Packs {
         graphics: None,
         sounds: None,
-        data: Some(&data),
+        data: Some(data.as_ref()),
     };
     let assets = Assets::load_with(None, packs, None).unwrap();
     if args.first().map(String::as_str) == Some("--parts") {
@@ -221,7 +232,8 @@ fn main() {
         let (doc, title) = build(&assets, &std::fs::read_to_string(p).unwrap(), p);
         let title = title.unwrap_or_else(|| panic!("{}: no title", p.display()));
         println!("puzzle {}: {title}: {} parts", n + 1, doc.gadgets.len());
-        puzzles.push((i16::try_from(n + 1).unwrap(), title.into_bytes(), doc.save()));
+        // The title in Windows-1252 (formats::pzl reads it so).
+        puzzles.push((i16::try_from(n + 1).unwrap(), ansi(&title), doc.save()));
     }
     if !puzzles.is_empty() {
         let list: Vec<(i16, &[u8], &[u8])> = puzzles.iter().map(|(i, t, w)| (*i, &t[..], &w[..])).collect();
