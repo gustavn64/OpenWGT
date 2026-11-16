@@ -104,7 +104,12 @@ struct Shown {
 fn same(a: &[u8], b: &[u8]) -> bool {
     let (wa, ra) = a.as_chunks::<8>();
     let (wb, rb) = b.as_chunks::<8>();
-    wa.len() == wb.len() && ra == rb && wa.iter().zip(wb).all(|(x, y)| u64::from_ne_bytes(*x) == u64::from_ne_bytes(*y))
+    wa.len() == wb.len()
+        && ra == rb
+        && wa
+            .iter()
+            .zip(wb)
+            .all(|(x, y)| u64::from_ne_bytes(*x) == u64::from_ne_bytes(*y))
 }
 
 /// The rows `from` and `to` (as long, `width` bytes a row) differ in, as
@@ -341,7 +346,10 @@ impl Display {
         );
         self.ensure_textures(frame.width, frame.height, overlay_size);
         let width = frame.width as usize;
-        let pixels = frame.pixels.get(..width * frame.height as usize).unwrap_or(frame.pixels);
+        let pixels = frame
+            .pixels
+            .get(..width * frame.height as usize)
+            .unwrap_or(frame.pixels);
         let (rows, palette, placed) = match &self.shown {
             Some(s) if (s.width, s.height) == (frame.width, frame.height) => (
                 changed_rows(&s.pixels, pixels, width),
