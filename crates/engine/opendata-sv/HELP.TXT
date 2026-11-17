@@ -48,7 +48,7 @@ Välkommen till verkstaden i OpenWGT! Välj ett ämne nedan, eller tryck på **R
 - [Menyerna](#menus)
 - [Kortkommandon](#keys)
 - [Fönstret Inställningar](#openwgt-settings)
-- [Med eller utan cd-skivan](#cd)
+- [Med eller utan skivan](#cd)
 - [Tips och felsökning](#tips)
 - [Om OpenWGT](#about)
 
@@ -246,7 +246,7 @@ STOPP ställer tillbaka varje del som den var före START: räknare går tillbak
 En [vinstkollare](#win-lose) kan stanna en uppfinning av sig själv.
 
 = Ändra en dels inställningar {#settings}
-keywords: inställningar, dialogruta, dubbelklicka, alternativ, Professorn, byggtips, egenskaper
+keywords: inställningar, dialogruta, dubbelklicka, alternativ, Doc, byggtips, egenskaper
 
 De flesta delar kan ställas in att bete sig på olika sätt: en metronoms takt, vilket djur djurlätena låter som, orden på en anslagstavla.
 
@@ -261,8 +261,8 @@ Fönstret visar:
 
 Klicka på **OK** för att behålla ändringarna, eller på **Avbryt** för att lämna delen som den var.
 
-## Professorns knapp
-I bubblans hörn sitter verkstadens vetenskapsman, Professorn. Klicka på honom för att se ett *byggtips*: en idé om något att bygga med delen. Klicka igen för att läsa beskrivningen en gång till.
+## Knappen Doc
+I bubblans hörn sitter verkstadens vetenskapsman, Doc. Klicka på honom för att se ett *byggtips*: en idé om något att bygga med delen. Klicka igen för att läsa beskrivningen en gång till.
 
 = Alla delar {#parts}
 keywords: delar, lista över delar
@@ -488,11 +488,11 @@ keywords: exempel, exempeluppfinningar, funwidge, idéer
 
 OpenWGT har färdiga uppfinningar att leka med, plocka isär och lära sig av.
 
-Välj **Arkiv > Öppna...** och öppna listan **Leta i** högst upp i fönstret. Under **OpenWGT-exempel** hittar du exemplen. Öppna ett, tryck på START och se vad det gör; tryck sedan på STOPP och titta på hur det är kopplat. Dubbelklicka på en del för att se hur den är inställd.
+Välj **Arkiv > Öppna...** och öppna listan **Leta i** högst upp i fönstret. Under **OpenWGT-exempel** hittar du mappen **FUNWIDGE** med exemplen. Öppna ett, tryck på START och se vad det gör; tryck sedan på STOPP och titta på hur det är kopplat. Dubbelklicka på en del för att se hur den är inställd.
 
 Du får ändra ett exempel så mycket du vill. För att behålla ändringarna sparar du det med **Spara som...** i en egen mapp.
 
-Utan cd-skivan är exemplen OpenWGT:s egna; med cd-skivan är de originalets, i mappen **FUNWIDGE**.
+Utan skivan är exemplen OpenWGT:s egna; med skivan är de originalets, under **Widget Workshop-skivan**.
 
 = Länkar till uppfinningar {#links}
 keywords: länk, dela, urklipp, kopiera länk, öppna länk, webbadress, webb
@@ -552,7 +552,7 @@ keywords: meny, menyer, arkivmenyn, redigeramenyn, alternativmenyn, hjälpmenyn,
 
 ## Alternativ
 - **Enkel bakgrund**, **Metallvågor**, **Brus**, **Stål** - arbetsytans bakgrund.
-- **Inställningar...** - skalningen, förbättringarna och cd-skivan. Se [Fönstret Inställningar](#openwgt-settings).
+- **Inställningar...** - skalan, förbättringarna, helskärmen, språket och skivan. Se [Fönstret Inställningar](#openwgt-settings).
 
 ## Hjälp
 - **Om OpenWGT...** - titeln, versionen och tacklistan. Klicka eller tryck på mellanslag för att stänga.
@@ -586,11 +586,11 @@ keywords: tangentbord, tangenter, kortkommandon, snabbtangenter
 - **Alt** eller **F10** - gå till menyraden; sedan piltangenterna, Enter och Esc. Alt tillsammans med en understruken bokstav öppnar den menyn.
 
 = Fönstret Inställningar {#openwgt-settings}
-keywords: inställningar, alternativ, skalning, skala, zooma, storlek, förbättringar, byt cd, helskärm
+keywords: inställningar, alternativ, skalning, skala, zooma, storlek, förbättringar, helskärm, språk, engelska, svenska, franska, byt skiva, utan skivan
 
-**Alternativ > Inställningar...** öppnar OpenWGT:s eget inställningsfönster. Ändringarna gäller direkt och sparas till nästa gång.
+**Alternativ > Inställningar...** öppnar OpenWGT:s eget inställningsfönster. Skalan, förbättringarna och helskärmen ändras direkt, språket när du stänger fönstret, och OpenWGT kommer ihåg alltihop till nästa gång.
 
-## Skalning
+## Skala
 Hur stort allt ritas. **Automatiskt** följer skärmens egen inställning; på en pekskärm blir verktygsfälten lika breda som skärmen. Kryssa ur rutan och använd **-** och **+** för att välja en storlek från 1x till 4x, i steg om en fjärdedel.
 
 ## Förbättringar
@@ -601,22 +601,31 @@ Några ändringar som gör OpenWGT lite lättare att använda än originalet:
 
 Förbättringarna är avstängda från början, så att allt är precis som i originalet. Kryssa i **Förbättringar** för att slå på dem.
 
-## Byt cd...
-Väljer en avbildning av Widget Workshop-skivan (en .iso-fil) som OpenWGT ska använda och startar sedan verkstaden igen med den. Den frågar först om du vill spara uppfinningen. Om datorn inte har något sätt att välja filen ber OpenWGT dig att släppa skivavbildningen på fönstret i stället. Se [Med eller utan cd-skivan](#cd).
+## Helskärm
+Låter OpenWGT fylla hela skärmen, eller går tillbaka till ett fönster. **F11** och **Alt+Enter** gör samma sak.
 
-= Med eller utan cd-skivan {#cd}
-keywords: cd, iso, ingen cd, utan cd, OpenWGFX, OpenWSFX, OpenWDATA, data, original, språk, svenska
+## Språk
+Varje klick på språkknappen väljer nästa språk: engelska (English), svenska eller franska (français). När du stänger fönstret frågar OpenWGT om du vill spara uppfinningen och startar sedan om på det språket. Med en skiva är knappen grå: då bestämmer skivan språket.
+
+## Byt skiva...
+Väljer en skivavbildning av Widget Workshop (en .iso-fil) som OpenWGT ska använda och startar sedan verkstaden igen med den. Den frågar först om du vill spara uppfinningen. Om datorn inte har något sätt att välja filen ber OpenWGT dig att släppa skivavbildningen på fönstret i stället; i webbläsaren frågar sidan efter den. Se [Med eller utan skivan](#cd).
+
+## Spela utan skivan
+Med en skiva startar OpenWGT om med sina egna bilder, ljud och texter i stället, efter att ha frågat om du vill spara uppfinningen. Sedan väljer språkknappen språket igen.
+
+= Med eller utan skivan {#cd}
+keywords: cd, skiva, iso, ingen skiva, utan skivan, OpenWGFX, OpenWSFX, OpenWDATA, data, original, språk, Uppfinnarverkstan, Eurêka
 
 Du behöver inte Widget Workshop-skivan för att spela. OpenWGT har allt den behöver av eget:
 
 - **OpenWGFX** - egna bilder av varje del, knapp och pekare;
 - **OpenWSFX** - egna ljud;
-- **OpenWDATA** - egna texter, inställningsfönster, menyer, pussel, exempeluppfinningar och den här hjälpen, på engelska och svenska.
+- **OpenWDATA** - egna texter, inställningsfönster, menyer, pussel, exempeluppfinningar och den här hjälpen, på engelska, svenska och franska.
 
 Varje del har kvar originalets storlek, kontakter och uppgift, så uppfinningar som är gjorda med det ursprungliga Widget Workshop öppnas och fungerar likadant i OpenWGT, och tvärtom.
 
-## Använda din cd-skiva
-Om du har originalskivan (pc/Mac-skivan, eller skivan för OS/2 Warp) kan OpenWGT använda dess bilder, ljud, pussel, exempel och hjälp i stället. Välj den med **Byt cd...** i [Alternativ > Inställningar](#openwgt-settings). OpenWGT kommer ihåg ditt val. En .iso-fil i mappen som OpenWGT startar i hittas också av sig själv. Med en skiva följer språket skivans.
+## Använda din skiva
+Om du har originalskivan (pc/Mac-skivan, den svenska utgåvan Uppfinnarverkstan, den franska utgåvan Eurêka, le Laboratoire du savant fou, eller skivan för OS/2 Warp) kan OpenWGT använda dess bilder, ljud, pussel, exempel och hjälp i stället, och talar skivans språk. Välj den med **Byt skiva...** i [Alternativ > Inställningar](#openwgt-settings). OpenWGT kommer ihåg ditt val. En .iso-fil i mappen som OpenWGT startar i hittas också av sig själv. **Spela utan skivan**, i samma fönster, går tillbaka till OpenWGT:s egna.
 
 = Så använder du hjälpen {#using-help}
 keywords: hjälp, register, tillbaka, innehåll, F1, sök
@@ -630,7 +639,7 @@ keywords: hjälp, register, tillbaka, innehåll, F1, sök
 - **<<** och **>>** stegar genom ämnena i tur och ordning.
 
 = Tips och felsökning {#tips}
-keywords: tips, felsökning, problem, hjälp, inget händer, inget ljud, rött X
+keywords: tips, felsökning, problem, hjälp, inget händer, inget ljud, rött X, mobil, surfplatta, pekskärm
 
 ## Sladden vill inte kopplas in
 Varje kontakt tar bara en sladd, och sladdar går bara från en utgång till en ingång. Om kontakten du vill använda är upptagen flyttar eller tar du bort den gamla sladden först, eller så använder du en [delare](#switch-parts).
@@ -653,10 +662,13 @@ Använd handen (eller håll ner Ctrl) för att skjuta tillbaka den, eller välj 
 ## Bygg steg för steg
 Lägg till en eller två delar i taget, tryck på START, kontrollera att de fungerar och lägg sedan till fler. Koppla en tresiffrig display till en utgång för att se vad en del skickar.
 
+## På en mobil eller surfplatta
+Ett tryck är ett klick, och ett finger som hålls stilla på en del öppnar dess inställningar, som ett dubbelklick gör. I webbläsaren kommer tangentbordet fram när du trycker på en ruta att skriva i. Vänd telefonen på sidan för en större verkstad, och slå på **Helskärm** i [Alternativ > Inställningar](#openwgt-settings).
+
 = Om OpenWGT {#about}
 keywords: om, tack, licens, AGPL, Maxis, Doridian, upphovsrätt, version
 
-**OpenWGT** är en motor med öppen källkod för **Widget Workshop: A Mad Scientist's Laboratory**, uppfinnarleksaken som Maxis gav ut 1995. Den bygger upp verkstaden från grunden för dagens datorer - Linux, Windows, macOS och webbläsaren - så att originalets uppfinningar och pussel fortsätter att fungera.
+**OpenWGT** är en motor med öppen källkod för **Widget Workshop: A Mad Scientist's Laboratory**, uppfinnarleksaken som Maxis gav ut 1995 (på svenska Uppfinnarverkstan, på franska Eurêka, le Laboratoire du savant fou). Den bygger upp verkstaden från grunden för dagens datorer - Linux, Windows, macOS och webbläsaren - så att originalets uppfinningar och pussel fortsätter att fungera.
 
 ## Tack
 OpenWGT är en förgrening av Doridians port av Widget Workshop (github.com/Doridian/GadgetGenerator), som återskapade hur spelet fungerar. Den här förgreningen lägger till egna bilder (OpenWGFX), ljud (OpenWSFX) och data (OpenWDATA: texterna, inställningsfönstren, pusslen, exempeluppfinningarna och den här hjälpen), så att den går utan originalskivan, tillsammans med rättelser och nya funktioner som länkar till uppfinningar och fönstret Inställningar.

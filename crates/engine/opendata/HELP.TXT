@@ -83,7 +83,7 @@ Click the green **GO** button on the left (or press Enter). The tray disappears 
 ## 5. Press STOP
 Click **STOP** (or press Esc) to go back to building. Everything is put back the way it was at the start.
 
-Now try changing things: put a [NOT gate](#number-parts) between the switch and the bulb, or wire the switch to a [sound part](#sound-parts) and a Speaker. When you've made something you like, [save it](#files).
+Now try changing things: put a [NOT Gate](#number-parts) between the switch and the bulb, or wire the switch to a [sound part](#sound-parts) and a Speaker. When you've made something you like, [save it](#files).
 
 = The Editor at a Glance {#editor}
 keywords: editor, screen, window, layout, toolbar
@@ -251,7 +251,7 @@ keywords: settings, dialog, double-click, options, Doc, construction tip, proper
 Most parts can be set up to behave in different ways: a Metronome's speed, the animal of the Animal Sounds, the words on a Billboard.
 
 ## Opening the settings
-While the widget isn't running, **double-click** the part with the Pointer tool. Its settings window opens. (Double-click on the part itself, not on a wire passing over it.)
+While the widget isn't running, **double-click** the part with the Pointer tool. Its settings window opens. (Double-click on the part itself, not on a wire passing over it.) On a touch screen, hold your finger still on the part for a moment instead.
 
 The window shows:
 
@@ -272,8 +272,8 @@ Here are the seven folders of the [parts tray](#tray) and what's in them:
 - [Display parts](#display-parts): Light Bulb, Color Mixer, Strip Chart, Graphic Projector, Three-Digit Display, Ten-Digit Display.
 - [Timer parts](#timer-parts): Digital Clock, Stopwatch, Metronome.
 - [Sound parts](#sound-parts): Sound Switch, Animal Sounds, Assorted Sounds, Speaker, Tuning Fork, Recorder, Sound Transformer.
-- [Number parts](#number-parts): Numeric Key Pad, Three-Digit Number, Counter, Mini Three-Digit Number, Slider, Adder, Subtractor, Multiplier, Divider, Coin Toss, Random Number Generator, Totaler, Comparer, Math Functions, Area/Volume, Conversion, and the And, Or, Xor and Not Gates.
-- [Switch parts](#switch-parts): Light Switch, Key Press, Mouse Button, Mouse Distance Measurer, Dynamite Plunger, Switcher, and the Two, Three and Four Way Splitters.
+- [Number parts](#number-parts): Numeric Keypad, Three-Digit Number, Counter, Mini Three-Digit Number, Slider, Adder, Subtractor, Multiplier, Divider, Coin Toss, Random Number Generator, Totaler, Comparer, Math Functions, Area/Volume, Converter, and the AND, OR, XOR and NOT Gates.
+- [Switch parts](#switch-parts): Light Switch, Keypress, Mouse Button, Mouse Distance Measurer, Dynamite Plunger, Switcher, and the Two-way, Three-way and Four-way Splitters.
 - [Text parts](#text-parts): Label, Message List, Billboard and ten Stickers.
 - [Super parts](#super-parts): Win / Lose Checker, Pendulum, Gravity Chamber, Cannon, Heart, Solar System.
 
@@ -331,7 +331,7 @@ keywords: number, math, maths, keypad, three-digit number, counter, slider, adde
 The folder with 1-2-3 on its tab. It's the biggest folder, with five pages.
 
 ## Page 1: numbers in
-- **Numeric Key Pad** - type in a number while the widget runs, like on a calculator. It can hide the number, for secret codes.
+- **Numeric Keypad** - type in a number while the widget runs, like on a calculator. It can hide the number, for secret codes.
 - **Three-Digit Number** - sends out a number from 0 to 999. Click the arrows above and below the digits to change it, even while the widget runs.
 - **Counter** - counts one each time its input changes, and sends out the count.
 - **Mini Three-Digit Number** - a small part that always sends the same number, from 0 to 999. You set it in its settings.
@@ -352,15 +352,15 @@ The folder with 1-2-3 on its tab. It's the biggest folder, with five pages.
 ## Page 4: math and science
 - **Math Functions** - square root, square, factorial, sine, cosine, tangent, or rounding down to a whole number.
 - **Area/Volume** - the area of a square or circle, or the volume of a cube or sphere, from a side or a radius.
-- **Conversion** - changes Fahrenheit to Celsius, feet to meters, pounds to kilograms, and back.
+- **Converter** - changes Fahrenheit to Celsius, feet to meters, pounds to kilograms, and back.
 
 ## Page 5: logic gates
 Gates work with YES and NO (ON and OFF). Any number but 0 counts as YES.
 
-- **And Gate** - YES only when both inputs are YES.
-- **Or Gate** - YES when at least one input is YES.
-- **Xor Gate** - YES when exactly one input is YES.
-- **Not Gate** - turns YES into NO and NO into YES.
+- **AND Gate** - YES only when both inputs are YES.
+- **OR Gate** - YES when at least one input is YES.
+- **XOR Gate** - YES when exactly one input is YES.
+- **NOT Gate** - turns YES into NO and NO into YES.
 
 See also [Display parts](#display-parts) to show your answers, and [Switch parts](#switch-parts).
 
@@ -371,14 +371,14 @@ The folder with the switch on its tab. These are the parts you control your widg
 
 ## Page 1: controls
 - **Light Switch** - click it to switch between ON and OFF. You choose whether it starts on or off.
-- **Key Press** - ON while its key on the keyboard is held down. You pick the letter or digit; clicking it with the mouse works too.
+- **Keypress** - ON while its key on the keyboard is held down. You pick the letter or digit; clicking it with the mouse works too.
 - **Mouse Button** - ON while a mouse button is held down, anywhere in the window.
 - **Mouse Distance Measurer** - measures in inches how far the mouse travels while you hold a button down.
 - **Dynamite Plunger** - push it once and it turns ON, and stays on until the widget stops.
 
 ## Page 2: steering
 - **Switcher** - two data inputs, one output. Normally the upper input gets through; send ON to the input on top and the lower one gets through instead.
-- **Two Way Splitter**, **Three Way Splitter**, **Four Way Splitter** - copy whatever comes in (ON/OFF, a number or a sound) to every output. Since each [knot holds only one wire](#wires), these are how one part feeds several others.
+- **Two-way Splitter**, **Three-way Splitter**, **Four-way Splitter** - copy whatever comes in (ON/OFF, a number or a sound) to every output. Since each [knot holds only one wire](#wires), these are how one part feeds several others.
 
 = Text Parts {#text-parts}
 keywords: text, label, message list, billboard, sticker, words, title, decoration
@@ -410,7 +410,7 @@ The folder with the planet on its tab: the science lab, and the part that ends g
 - **Heart** - beats like the heart of an animal you choose, from a gerbil to an elephant. It sends ON with each beat, or the pulse rate or the heart's weight.
 - **Solar System** - pick a planet and it sends out a fact about it as a number: its size, the length of its day or year, its distance from the Sun and more.
 
-Tip: a [Conversion](#number-parts) part turns the Cannon's feet into meters.
+Tip: a [Converter](#number-parts) part turns the Cannon's feet into meters.
 
 = Playing Puzzles {#puzzles}
 keywords: puzzle, puzzles, load puzzle, challenge, solved, locked
@@ -418,7 +418,7 @@ keywords: puzzle, puzzles, load puzzle, challenge, solved, locked
 A puzzle is a widget that's not quite finished. Your job is to finish it.
 
 ## Loading a puzzle
-Choose **File > Load Puzzle...**. Pick a puzzle from the list and click **Ok** (or double-click it). Puzzles you've already solved have a **+** in front of their name. **Clear Solved Puzzles** takes all the marks away so you can start fresh.
+Choose **File > Load Puzzle...**. Pick a puzzle from the list and click **OK** (or double-click it). Puzzles you've already solved have a **+** in front of their name. **Clear Solved Puzzles** takes all the marks away so you can start fresh.
 
 ## How a puzzle works
 - **The instructions are on the worksheet**, written on Labels and Billboards. Read them first!
@@ -488,11 +488,11 @@ keywords: samples, examples, funwidge, sample widgets, ideas
 
 OpenWGT comes with ready-made widgets to play with, take apart and learn from.
 
-Choose **File > Open...** and open the **Look in** list at the top of the window. Under **Widget Workshop CD** you'll find the folder **FUNWIDGE** with the samples. Open one, press GO and see what it does; then press STOP and look at how it's wired. Double-clicking a part shows how it's set up.
+Choose **File > Open...** and open the **Look in** list at the top of the window. Under **OpenWGT Samples** you'll find the folder **FUNWIDGE** with the samples. Open one, press GO and see what it does; then press STOP and look at how it's wired. Double-clicking a part shows how it's set up.
 
 You can change a sample as much as you like. To keep your changes, save it with **Save As...** in a folder of your own.
 
-Without the CD, the samples are OpenWGT's own; with the CD, they're the original's.
+Without the CD, the samples are OpenWGT's own; with the CD, they're the original's, under **Widget Workshop CD**.
 
 = Widget Links {#links}
 keywords: link, share, clipboard, copy link, open widget link, URL, web
@@ -528,7 +528,7 @@ The **Recorder**, in the [Sound parts](#sound-parts) folder, holds a sound of yo
 Click **Load a .WAV File** instead and choose a sound file from your computer. Short, simple sounds work best.
 
 ## Playing it
-Wire something to the Recorder's input, such as a Key Press or a Light Switch, and wire its output to a **Speaker**. While its input is ON, the Recorder plays. You can also send its sound through a Sound Transformer first to make it higher, lower or backwards.
+Wire something to the Recorder's input, such as a Keypress or a Light Switch, and wire its output to a **Speaker**. While its input is ON, the Recorder plays. You can also send its sound through a Sound Transformer first to make it higher, lower or backwards.
 
 The recording is saved inside your widget. A new recording goes into the part straight away, so clicking Cancel afterwards doesn't bring the old sound back.
 
@@ -552,7 +552,7 @@ keywords: menu, menus, file menu, edit menu, options menu, help menu, print
 
 ## Options
 - **Plain Background**, **Metal Waves**, **Noise**, **Steel** - the worksheet's background.
-- **Settings...** - the UI scale, the enhancements and the CD. See [The Settings window](#openwgt-settings).
+- **Settings...** - the UI scale, the enhancements, full screen, the language and the CD. See [The Settings window](#openwgt-settings).
 
 ## Help
 - **About OpenWGT...** - the title, the version and the credits. Click or press Space to close it.
@@ -574,7 +574,7 @@ keywords: keyboard, keys, shortcuts, hotkeys, accelerators
 ## Running
 - **Esc** - STOP.
 - **Ctrl** (held) - drag to slide the whole widget.
-- Any key a [Key Press](#switch-parts) part listens for.
+- Any key a [Keypress](#switch-parts) part listens for.
 
 ## Menus
 - **Ctrl+N** - New
@@ -586,12 +586,12 @@ keywords: keyboard, keys, shortcuts, hotkeys, accelerators
 - **Alt** or **F10** - go to the menu bar; then the arrow keys, Enter and Esc. Alt with an underlined letter opens that menu.
 
 = The Settings Window {#openwgt-settings}
-keywords: settings, options, UI scale, scale, zoom, size, enhancements, change CD, preferences
+keywords: settings, options, UI scale, scale, zoom, size, enhancements, full screen, language, English, Swedish, French, change CD, without the CD, preferences
 
-**Options > Settings...** opens OpenWGT's own Settings window. Changes take effect at once and are remembered for next time.
+**Options > Settings...** opens OpenWGT's own Settings window. The UI scale, the enhancements and full screen change at once, the language when you close the window, and OpenWGT remembers them all for next time.
 
 ## UI scale
-How big everything is drawn. **Automatic** follows your screen's own setting. Untick it and use **-** and **+** to pick a size from 1x to 4x, in quarter steps.
+How big everything is drawn. **Automatic** follows your screen's own setting; on a touch screen the toolbars become as wide as the screen. Untick it and use **-** and **+** to pick a size from 1x to 4x, in quarter steps.
 
 ## Enhancements
 A few changes that make OpenWGT a little easier to use than the original:
@@ -599,24 +599,33 @@ A few changes that make OpenWGT a little easier to use than the original:
 - the parts tray shows a whole folder at once, its pages one under the other, without page arrows;
 - the toolbars, settings windows and message boxes move whole when you drag them, not as an outline.
 
-Untick **Enhancements** to have everything exactly like the original.
+The enhancements are off at first, so that everything is exactly like the original. Tick **Enhancements** to switch them on.
+
+## Full screen
+Fills the whole screen with OpenWGT, or goes back to a window. **F11** and **Alt+Enter** do the same.
+
+## Language
+Each click on the language button picks the next language: English, Swedish (svenska) or French (français). When you close the window, OpenWGT asks whether to save your widget and starts again in that language. With a CD the button is greyed: the CD decides the language.
 
 ## Change CD...
-Picks a Widget Workshop CD image (an .iso file) for OpenWGT to use, then starts the workshop again with it. It asks to save your widget first. Where your computer has no file chooser for it, OpenWGT asks you to drop the CD image on its window instead. See [Playing with or without the CD](#cd).
+Picks a Widget Workshop CD image (an .iso file) for OpenWGT to use, then starts the workshop again with it. It asks to save your widget first. Where your computer has no file chooser for it, OpenWGT asks you to drop the CD image on its window instead; in the web browser, the page asks for it. See [Playing with or without the CD](#cd).
+
+## Play without the CD
+With a CD, starts OpenWGT again on its own pictures, sounds and texts instead, after asking whether to save your widget. Then the language button chooses the language again.
 
 = Playing With or Without the CD {#cd}
-keywords: CD, iso, no CD, without CD, OpenWGFX, OpenWSFX, OpenWDATA, data, original
+keywords: CD, iso, no CD, without CD, OpenWGFX, OpenWSFX, OpenWDATA, data, original, language, Uppfinnarverkstan, Eurêka
 
 You don't need the Widget Workshop CD to play. OpenWGT comes with everything it needs of its own:
 
 - **OpenWGFX** - its own pictures of every part, button and pointer;
 - **OpenWSFX** - its own sounds;
-- **OpenWDATA** - its own texts, settings windows, menus, puzzles, sample widgets and this help.
+- **OpenWDATA** - its own texts, settings windows, menus, puzzles, sample widgets and this help, in English, Swedish and French.
 
 Every part keeps the original's size, knots and job, so widgets made with the original Widget Workshop open and work the same in OpenWGT, and the other way round.
 
 ## Using your CD
-If you have the original CD (the PC/Mac CD, or the OS/2 Warp CD), OpenWGT can use its pictures, sounds, puzzles, samples and help instead. Choose it with **Change CD...** in [Options > Settings](#openwgt-settings). OpenWGT remembers your choice. An .iso file in the folder OpenWGT starts in is also picked up by itself.
+If you have the original CD (the PC/Mac CD, its Swedish edition Uppfinnarverkstan, its French edition Eurêka, le Laboratoire du savant fou, or the OS/2 Warp CD), OpenWGT can use its pictures, sounds, puzzles, samples and help instead, and speaks the CD's language. Choose it with **Change CD...** in [Options > Settings](#openwgt-settings). OpenWGT remembers your choice. An .iso file in the folder OpenWGT starts in is also picked up by itself. **Play without the CD**, in the same window, goes back to OpenWGT's own.
 
 = Using This Help {#using-help}
 keywords: help, index, back, contents, F1, search
@@ -630,7 +639,7 @@ Open this help at any time with **Help > Contents** or **F1**. The help window f
 - **<<** and **>>** step through the topics in order.
 
 = Tips and Troubleshooting {#tips}
-keywords: tips, troubleshooting, problems, help, nothing happens, no sound, red X
+keywords: tips, troubleshooting, problems, help, nothing happens, no sound, red X, phone, tablet, touch screen
 
 ## My wire won't connect
 Each knot holds only one wire, and wires only go from an output to an input. If the knot you want is taken, move or remove the old wire first, or use a [Splitter](#switch-parts).
@@ -653,10 +662,13 @@ Use the Move tool (or hold Ctrl) to slide it back into view, or choose **Edit > 
 ## Build step by step
 Add one or two parts at a time, press GO, check that they work, then add more. Wire a Three-Digit Display to an output to see what a part is sending.
 
+## On a phone or tablet
+A tap is a click, and a finger held still on a part opens its settings, as a double click does. In the web browser, tapping a box you type in brings up the keyboard. Turn the phone sideways for a bigger workshop, and switch on **Full screen** in [Options > Settings](#openwgt-settings).
+
 = About OpenWGT {#about}
 keywords: about, credits, license, licence, AGPL, Maxis, Doridian, copyright, version
 
-**OpenWGT** is an open-source engine for **Widget Workshop: A Mad Scientist's Laboratory**, the invention toy Maxis published in 1995. It recreates the workshop from scratch for today's computers - Linux, Windows, macOS and the web browser - so that the widgets and puzzles of the original keep working.
+**OpenWGT** is an open-source engine for **Widget Workshop: A Mad Scientist's Laboratory**, the invention toy Maxis published in 1995 (in Swedish Uppfinnarverkstan, in French Eurêka, le Laboratoire du savant fou). It recreates the workshop from scratch for today's computers - Linux, Windows, macOS and the web browser - so that the widgets and puzzles of the original keep working.
 
 ## Credits
 OpenWGT is a fork of Doridian's port of Widget Workshop (github.com/Doridian/GadgetGenerator), which recreated the game's workings. This fork adds its own pictures (OpenWGFX), sounds (OpenWSFX) and data (OpenWDATA: the texts, settings windows, puzzles, sample widgets and this help), so that it runs without the original CD, along with fixes and new features such as widget links and the Settings window.
