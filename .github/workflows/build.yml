@@ -6,7 +6,7 @@ name: build
 # run on the port's own packs (OpenWGFX, OpenWSFX, OpenWDATA), or on the
 # CD image the player gives at run time, natively on the command line or
 # in Change CD... (`pick`), in the browser on the page. A push
-# to master also deploys the page to GitHub Pages (docs/web.md); a tag v*
+# to master builds them all; a tag v*
 # publishes every package on the tag's release.
 
 on:
@@ -163,9 +163,9 @@ jobs:
           path: openwgt-macos.dmg
 
   # The browser build (docs/web.md), without the CD's data: the page plays
-  # without it or asks the player for their CD image.
-  # crates/widget/web/front.html is the front
-  # page, widget.html the game next to it.
+  # without it or asks the player for their CD image. The site: the front
+  # page (crates/widget/web/front.html) with the game in play/ under it,
+  # as openwgt-web.zip on every release; it's hosted elsewhere.
   web:
     runs-on: ubuntu-26.04
     steps:
@@ -194,12 +194,11 @@ jobs:
           if find web -type f ! -name '*.js' ! -name '*.wasm' ! -name '*.html' ! -name icon.png ! -name manifest.webmanifest | grep .; then
             echo "unexpected files in the build"; exit 1
           fi
-          mkdir _site
-          cp -r web/widget.js web/widget_bg.wasm web/snippets web/icon.png web/manifest.webmanifest _site/
-          cp web/index.html _site/widget.html
-          cp crates/widget/web/front.html _site/index.html
           d=openwgt-web
-          cp -r _site $d
+          mkdir -p $d/play
+          cp -r web/index.html web/widget.js web/widget_bg.wasm web/snippets web/icon.png web/manifest.webmanifest $d/play/
+          cp crates/widget/web/front.html $d/index.html
+          cp crates/widget/res/icon.png $d/
           cp LICENSE README.md $d/
           zip -r $d.zip $d
 
@@ -207,31 +206,6 @@ jobs:
         with:
           name: openwgt-web
           path: openwgt-web.zip
-
-      - if: github.event_name == 'push' && github.ref == 'refs/heads/master'
-        uses: actions/configure-pages@v6
-
-      - if: github.event_name == 'push' && github.ref == 'refs/heads/master'
-        uses: actions/upload-pages-artifact@v5
-        with:
-          path: _site
-
-  pages:
-    if: github.event_name == 'push' && github.ref == 'refs/heads/master'
-    needs: web
-    runs-on: ubuntu-26.04
-    permissions:
-      pages: write
-      id-token: write
-    concurrency:
-      group: pages
-      cancel-in-progress: false
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
-    steps:
-      - id: deployment
-        uses: actions/deploy-pages@v5
 
   release:
     if: startsWith(github.ref, 'refs/tags/v')

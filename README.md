@@ -6,7 +6,7 @@ non-matching decompilation of the game, with its own graphics
 (OpenWGFX), sounds (OpenWSFX) and data (OpenWDATA), as OpenTTD has
 OpenGFX, OpenSFX and OpenMSX, so it runs without the original CD.
 
-**Play it in your browser:** <https://gustavn64.github.io/OpenWGT/>
+**Play it in your browser:** <https://gustavn.se/openwgt/>
 ([docs/web.md](docs/web.md)), or download it for Linux, Windows or macOS
 from the [releases](https://github.com/gustavn64/OpenWGT/releases)
 ([Packages](#packages)).
@@ -76,7 +76,7 @@ is dropped on the game's window) and keeps its path in the data directory
 ```sh
 cargo run --release -p openwgt                       # the .iso here, else orig/, else no CD
 cargo run --release -p openwgt -- CD.iso MY.WGT      # a CD and a widget to open
-cargo run --release -p openwgt -- CD.iso 'https://…/widget.html#w=…'   # a widget link
+cargo run --release -p openwgt -- CD.iso 'https://gustavn.se/openwgt/play/#w=…'   # a widget link
 cargo run --release -p openwgt -- --help
 ```
 

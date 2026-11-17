@@ -61,7 +61,7 @@ use crate::sound::Sound;
 /// project's site (`.github/workflows/build.yml`). In the browser they
 /// open the page they were made on.
 #[cfg(not(target_arch = "wasm32"))]
-const LINK_PAGE: &str = "https://gustavn64.github.io/OpenWGT/widget.html";
+const LINK_PAGE: &str = "https://gustavn.se/openwgt/play/";
 
 const USAGE: &str =
     "usage: openwgt [--open] [--lang=en|sv] [--opengfx[=DIR]] [--opensfx[=DIR]] [--opendata[=DIR]] [--overrides=DIR] [--export=DIR] [--no-audio] [--window-size=WxH] \

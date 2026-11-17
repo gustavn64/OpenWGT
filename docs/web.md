@@ -31,15 +31,24 @@ code, `crates/widget/src/web.js`, and the touch keyboard's field,
 Upgrading wasm-bindgen means changing the pin in both crates and
 installing the matching CLI.
 
-## GitHub Pages
+## The site
 
-`.github/workflows/build.yml` publishes the build on every push to
-`master` on the repository's GitHub Pages site (upstream's:
-<https://doridian.github.io/WidgetWorkshop/>), without the CD's data
-(the workflow fails if anything but the pages, the icon, the glue and
-the module is in the build). `crates/widget/web/front.html` is the
-site's front page: where to get the CD image, the downloads, and a link
-to the game, `widget.html` (the build's `index.html`).
+`.github/workflows/build.yml` builds the site on every push and puts it
+on every release as `openwgt-web.zip`, without the CD's data (the
+workflow fails if anything but the pages, the icon, the manifest, the
+glue and the module is in the build):
+
+```text
+openwgt-web/index.html     the front page (crates/widget/web/front.html):
+                           playing, the CD, the downloads, the source
+openwgt-web/icon.png
+openwgt-web/play/          the game: the build's index.html, widget.js,
+                           widget_bg.wasm, snippets/, the manifest
+```
+
+Any static host serves it as it is. The project's own,
+<https://gustavn.se/openwgt/>, takes each release's zip from the site's
+own repository; this one knows nothing of it.
 
 ## Serving and running
 
@@ -115,7 +124,7 @@ its fragment, which the browser never sends to the server, so the site
 still never sees a widget.
 
 ```
-https://gustavn64.github.io/OpenWGT/widget.html#n=CLOCK.WGT&w=Ae1a…
+https://gustavn.se/openwgt/play/#n=CLOCK.WGT&w=Ae1a…
 ```
 
 `n` is the widget's name (optional, percent-encoded); `w` is base64url,
