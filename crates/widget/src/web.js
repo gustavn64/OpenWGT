@@ -1,5 +1,5 @@
 // The browser build's storage and start form (docs/web.md), for
-// src/web.rs. Everything is kept in one IndexedDB database:
+// src/web.rs. The files are kept in one IndexedDB database:
 //
 // - "cd": the game's CD image the player picked, as the Blob the file
 //   input gave (key "image": { blob, name, size }). IndexedDB keeps
@@ -8,6 +8,11 @@
 // - "files": the port's own files, the widgets the player saves
 //   (*.WGT), WIDGET.INI and settings.ini, by their path below the
 //   storage's mount point, as Uint8Arrays.
+//
+// and three small marks beside it: localStorage "openwgt-lang", the
+// packs' language picked last; localStorage "openwgt-no-cd", that the
+// player chose to play without the CD; sessionStorage "openwgt-change-cd",
+// that the next start shows the form (Settings ▸ Change CD...).
 //
 // Nothing is fetched or sent anywhere: the files come from the player.
 
