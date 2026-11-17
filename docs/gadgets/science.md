@@ -967,7 +967,9 @@ speed in thousand km/h, diameter in km, density, gravity, mass):
 | Neptune | 15.8, 60190, 4504, 19.58, 48600, 1.8, 1.1, 103.9 | 15.8, 60191, 4470, 19, 48320, 1.8, 1.23, 102.238 |
 | Pluto | 159.32, 90800, 5913, 17.06, 2414, 0.7, 0.07, 0.0132 | 159.32, 90475, 5856, 17, 2400, 0.7, 0.03, 0.059 |
 
-The Swedish Venus, 842 km across, is the edition's slip (about 12 100);
+The Swedish Venus, 842 km across, is the edition's slip (about 12 100),
+kept with its CD; the port's own Swedish pack, without a CD, says 12 104
+(`SWEDISH_PACK`);
 the mass is in 10¹² gigatons in both (the Swedish list says so, the French
 says 10¹³). The Converter (`0x443c3b`) is the same in all three, °C/°F,
 m/ft, kg/lb both ways; its picture (WWGADGET 1026, frames 10–15) reads

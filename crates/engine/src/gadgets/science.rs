@@ -139,6 +139,12 @@ const SWEDISH: Physics = Physics {
     planets: PLANETS_SV,
 };
 
+/// The Swedish pack's, without a CD: the edition's, its Venus put right.
+const SWEDISH_PACK: Physics = Physics {
+    planets: PLANETS_SV_PACK,
+    ..SWEDISH
+};
+
 /// The French edition's.
 const FRENCH: Physics = Physics {
     heights: HEIGHTS_M_FR,
@@ -161,9 +167,13 @@ impl Physics {
     }
 }
 
-/// The units of the game's language.
+/// The units of the game's language: its edition's with its CD, the same
+/// on the port's own packs but for the Swedish edition's slip (Venus).
 fn physics(io: &Io<'_>) -> &'static Physics {
-    Physics::of(io.assets.lang)
+    match io.assets.lang {
+        Lang::Sv if !io.assets.from_cd() => &SWEDISH_PACK,
+        lang => Physics::of(lang),
+    }
 }
 
 /// 2π as the pendulum stores it (`0x44f1af`, 6.283185307178).
@@ -718,6 +728,13 @@ planets! { PLANETS_SV;
     159.32 90800.0 5913.0 17.06 2414.0 0.7 0.07 0.0132;
 }
 
+/// The Swedish pack's planets: the edition's, but Venus 12 104 km across.
+const PLANETS_SV_PACK: [PlanetData; 9] = {
+    let mut p = PLANETS_SV;
+    p[1].diameter = 12_104.0;
+    p
+};
+
 // The French edition's (Eurêka's `WIDGET.EXE`, `0x49ac8e`), in the same
 // units: the English numbers converted.
 planets! { PLANETS_FR;
@@ -1158,6 +1175,18 @@ mod tests {
         assert_eq!((sv.distance, sv.orbit_speed), (149.0, 107.24));
         let fr = &Physics::of(Lang::Fr).planets[4];
         assert_eq!((fr.diameter, fr.mass), (142_000.0, 1889.28));
+    }
+
+    /// The Swedish CD keeps its edition's Venus, 842 km across; the
+    /// Swedish pack puts it right, the rest the same.
+    #[test]
+    fn the_swedish_pack_puts_venus_right() {
+        assert_eq!(Physics::of(Lang::Sv).planets[1].diameter, 842.0);
+        assert_eq!(SWEDISH_PACK.planets[1].diameter, 12_104.0);
+        for i in [0, 2, 3, 4, 5, 6, 7, 8] {
+            assert_eq!(SWEDISH_PACK.planets[i].diameter, PLANETS_SV[i].diameter);
+        }
+        assert_eq!(SWEDISH_PACK.heights, SWEDISH.heights);
     }
 
     #[test]
