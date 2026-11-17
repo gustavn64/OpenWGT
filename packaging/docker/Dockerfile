@@ -4,6 +4,6 @@
 #
 #   docker run -p 8080:80 ghcr.io/gustavn64/openwgt   (or :0.11.0, a release)
 #   (then http://localhost:8080/)
-FROM nginx:1.27-alpine
+FROM nginx:1.30-alpine
 COPY openwgt-web/ /usr/share/nginx/html/
 EXPOSE 80
