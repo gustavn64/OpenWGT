@@ -1,0 +1,1 @@
+Besoin d'un nombre que personne ne peut deviner? Le Générateur de nombres aléatoires en tire un pour toi. Il peut en donner un seul ou en tirer sans cesse de nouveaux, entre les limites que tu choisis.

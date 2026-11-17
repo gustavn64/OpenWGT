@@ -1,0 +1,79 @@
+# Lucky Seven: one key rolls two dice. An Adder totals them, and a
+# Comparer lights a lamp and claps when the total is 7.
+background 0
+
+part title TxLb 20 98
+label title 0 "Le sept porte-bonheur"
+radio title 0 1
+
+# The R key starts both dice at once.
+part key Key_ 10 190
+label key 0 "R"
+part ks Spl2 65 192
+wire key 0 ks 0
+
+# Two dice: random numbers from 1 to 6.
+part da rand 120 120
+radio da 0 1
+label da 0 "1"
+label da 1 "6"
+part db rand 120 255
+radio db 0 1
+label db 0 "1"
+label db 1 "6"
+wire ks 1 da 0
+wire ks 2 db 0
+
+part sa Spl2 215 129
+part sb Spl2 215 264
+wire da 1 sa 0
+wire db 1 sb 0
+
+part va disp 275 116
+part vb disp 275 330
+wire sa 1 va 0
+wire sb 2 vb 0
+part na TxLb 383 128
+label na 0 "Dé A"
+part nb TxLb 383 342
+label nb 0 "Dé B"
+
+# The total.
+part add Addr 275 172
+wire sa 2 add 1
+wire sb 1 add 0
+part st Spl2 380 190
+wire add 2 st 0
+part vt disp 435 177
+wire st 1 vt 0
+part nt TxLb 545 189
+label nt 0 "Total"
+
+# Is it 7?
+part seven MiCo 330 263
+label seven 0 "7"
+part cmp Comp 400 240
+radio cmp 0 2
+wire st 2 cmp 1
+wire seven 0 cmp 0
+part sc Spl2 490 258
+wire cmp 2 sc 0
+part lamp bulb 588 215
+wire sc 1 lamp 0
+part clap MsSd 490 330
+number clap 0 3
+part spk Spkr 560 344
+wire sc 2 clap 0
+wire clap 1 spk 0
+
+# What to do.
+part t1 TxLb 16 312
+label t1 0 "Appuie sur GO, puis sur R"
+part t2 TxLb 16 329
+label t2 0 "(ou clique sur la touche R)"
+part t3 TxLb 16 346
+label t3 0 "pour lancer les dés."
+part t4 TxLb 16 370
+label t4 0 "Fais 7 pour être acclamé!"
+part t5 TxLb 16 387
+label t5 0 "Garde R enfoncé pour relancer."

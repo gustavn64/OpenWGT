@@ -1,0 +1,1 @@
+Le Métronome bat la mesure à un rythme régulier et envoie une courte impulsion ON à chaque battement. Tu choisis combien de battements il fait par minute.

@@ -1,0 +1,1 @@
+Ce Coeur bat comme celui de l'animal que tu choisis, de la gerbille à l'éléphant. Chaque coeur a sa taille et son rythme. Le Coeur peut envoyer son pouls, son poids ou un signal ON à chaque battement.

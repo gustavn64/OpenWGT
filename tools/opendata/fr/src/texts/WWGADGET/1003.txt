@@ -1,0 +1,1 @@
+Le Magnétophone rejoue des sons enregistrés. Si ton ordinateur a un micro, tu pourras peut-être aussi enregistrer tes propres sons.

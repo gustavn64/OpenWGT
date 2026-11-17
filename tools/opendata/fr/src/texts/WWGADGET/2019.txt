@@ -1,0 +1,1 @@
+Le Diviseur divise le nombre de gauche par le nombre du haut et envoie le quotient. Diviser par 0 donne un X rouge.

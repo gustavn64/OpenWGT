@@ -1,0 +1,2 @@
+Astuce de construction :
+Prends le Carillon pour une bonne réponse et la Sonnerie pour une mauvaise : une Porte INV change « juste » en « faux ». N'oublie pas que rien ne s'entend sans Haut-parleur.

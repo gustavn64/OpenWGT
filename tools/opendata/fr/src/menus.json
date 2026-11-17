@@ -1,0 +1,167 @@
+{
+ "2": {
+  "header": [
+   0,
+   0
+  ],
+  "items": [
+   {
+    "id": 32784,
+    "text": " ",
+    "flags": 1
+   }
+  ]
+ },
+ "3": {
+  "header": [
+   0,
+   0
+  ],
+  "items": [
+   {
+    "popup": "&Fichier",
+    "flags": 0,
+    "items": [
+     {
+      "id": 57600,
+      "text": "&Nouveau",
+      "flags": 0
+     },
+     {
+      "id": 57601,
+      "text": "&Ouvrir...",
+      "flags": 0
+     },
+     {
+      "id": 32771,
+      "text": "Charger un problème...",
+      "flags": 0
+     },
+     "-",
+     {
+      "id": 57603,
+      "text": "&Enregistrer",
+      "flags": 1
+     },
+     {
+      "id": 57604,
+      "text": "Enregistrer &sous...",
+      "flags": 0
+     },
+     {
+      "id": 32772,
+      "text": "Revenir à la version enregistrée",
+      "flags": 1
+     },
+     "-",
+     {
+      "id": 32773,
+      "text": "Importer un Eurêka indépendant...",
+      "flags": 0
+     },
+     {
+      "id": 32774,
+      "text": "Sauvegarder en logiciel indépendant",
+      "flags": 0
+     },
+     "-",
+     {
+      "id": 57608,
+      "text": "Aperçu avant impression",
+      "flags": 0
+     },
+     {
+      "id": 57606,
+      "text": "Configuration de l'impression...",
+      "flags": 0
+     },
+     {
+      "id": 57607,
+      "text": "Imprimer",
+      "flags": 0
+     },
+     "-",
+     {
+      "id": 57665,
+      "text": "&Quitter",
+      "flags": 0
+     }
+    ]
+   },
+   {
+    "popup": "&Édition",
+    "flags": 0,
+    "items": [
+     {
+      "id": 57643,
+      "text": "&Annuler",
+      "flags": 1
+     },
+     "-",
+     {
+      "id": 32777,
+      "text": "Vider la zone de travail",
+      "flags": 0
+     },
+     {
+      "id": 32778,
+      "text": "Supprimer toutes les connexions",
+      "flags": 0
+     },
+     {
+      "id": 32779,
+      "text": "Supprimer toutes les jonctions",
+      "flags": 0
+     },
+     {
+      "id": 32785,
+      "text": "Ajuster la zone de travail ...",
+      "flags": 0
+     }
+    ]
+   },
+   {
+    "popup": "Options",
+    "flags": 0,
+    "items": [
+     {
+      "id": 32780,
+      "text": "Fond uni",
+      "flags": 8
+     },
+     {
+      "id": 32781,
+      "text": "Vagues de métal",
+      "flags": 0
+     },
+     {
+      "id": 32782,
+      "text": "Parasites",
+      "flags": 0
+     },
+     {
+      "id": 32783,
+      "text": "Acier",
+      "flags": 0
+     }
+    ]
+   },
+   {
+    "popup": "&Aide",
+    "flags": 0,
+    "items": [
+     {
+      "id": 57664,
+      "text": "À &propos d'OpenWGT...",
+      "flags": 0
+     },
+     {
+      "id": 32784,
+      "text": "Sommaire\tF1",
+      "flags": 0
+     }
+    ]
+   }
+  ]
+ }
+}

@@ -1,0 +1,2 @@
+Astuce de construction :
+Chaque fois que son entrée passe à ON, le Diapason joue une note courte. Fabrique un petit clavier : plusieurs diapasons réglés sur des notes différentes, chacun avec sa Touche clavier et son Haut-parleur.

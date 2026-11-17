@@ -1,0 +1,1 @@
+Pour être entendues, les pièces sonores ont besoin d'un Haut-parleur : relie-les à son entrée. Envoie un nombre à un Haut-parleur et il joue une note de cette hauteur.

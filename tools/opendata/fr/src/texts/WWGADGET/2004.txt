@@ -1,0 +1,1 @@
+Le Nombre à trois chiffres envoie n'importe quel nombre entier de 0 à 999. Pendant que ton Eurêka tourne, clique sur les flèches au-dessus et en dessous de chaque chiffre pour le changer.

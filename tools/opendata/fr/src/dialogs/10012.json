@@ -1,0 +1,115 @@
+{
+ "style": "0x90c800c0",
+ "ex_style": "0x00000000",
+ "rect": [
+  44,
+  46,
+  147,
+  80
+ ],
+ "menu": null,
+ "class": null,
+ "title": "OpenWGT",
+ "font": [
+  8,
+  "MS Sans Serif"
+ ],
+ "items": [
+  {
+   "id": 1,
+   "class": "button",
+   "text": "&OK",
+   "rect": [
+    16,
+    59,
+    41,
+    14
+   ],
+   "style": "0x50030001"
+  },
+  {
+   "id": 2,
+   "class": "button",
+   "text": "&Annuler",
+   "rect": [
+    88,
+    59,
+    41,
+    14
+   ],
+   "style": "0x50010000"
+  },
+  {
+   "id": 65535,
+   "class": "static",
+   "text": "Faire tenir toutes les pièces",
+   "rect": [
+    4,
+    10,
+    137,
+    11
+   ],
+   "style": "0x50020001"
+  },
+  {
+   "id": 65535,
+   "class": "static",
+   "text": "dans une zone de",
+   "rect": [
+    4,
+    21,
+    137,
+    11
+   ],
+   "style": "0x50020001"
+  },
+  {
+   "id": 11,
+   "class": "edit",
+   "text": null,
+   "rect": [
+    31,
+    36,
+    21,
+    12
+   ],
+   "style": "0x50810000"
+  },
+  {
+   "id": 12,
+   "class": "edit",
+   "text": null,
+   "rect": [
+    77,
+    36,
+    21,
+    12
+   ],
+   "style": "0x50810000"
+  },
+  {
+   "id": 65535,
+   "class": "static",
+   "text": "x",
+   "rect": [
+    63,
+    38,
+    9,
+    8
+   ],
+   "style": "0x50020000"
+  },
+  {
+   "id": 65535,
+   "class": "static",
+   "text": "pixels",
+   "rect": [
+    105,
+    37,
+    24,
+    8
+   ],
+   "style": "0x50020000"
+  }
+ ]
+}

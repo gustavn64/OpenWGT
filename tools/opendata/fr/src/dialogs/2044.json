@@ -1,0 +1,247 @@
+{
+ "style": "0x90c800c0",
+ "ex_style": "0x00000000",
+ "rect": [
+  110,
+  93,
+  235,
+  153
+ ],
+ "menu": null,
+ "class": null,
+ "title": "Traceur de courbes",
+ "font": [
+  8,
+  "MS Sans Serif"
+ ],
+ "items": [
+  {
+   "id": 150,
+   "class": "button",
+   "text": null,
+   "rect": [
+    201,
+    65,
+    31,
+    19
+   ],
+   "style": "0x5002000b"
+  },
+  {
+   "id": 1,
+   "class": "button",
+   "text": "OK",
+   "rect": [
+    178,
+    135,
+    49,
+    14
+   ],
+   "style": "0x50010001"
+  },
+  {
+   "id": 2,
+   "class": "button",
+   "text": "Annuler",
+   "rect": [
+    124,
+    135,
+    45,
+    14
+   ],
+   "style": "0x50010000"
+  },
+  {
+   "id": 103,
+   "class": "button",
+   "text": "Doc",
+   "rect": [
+    107,
+    3,
+    124,
+    79
+   ],
+   "style": "0x5800000b"
+  },
+  {
+   "id": 104,
+   "class": "static",
+   "text": "Traceur de courbes",
+   "rect": [
+    2,
+    -58,
+    71,
+    59
+   ],
+   "style": "0x50020000"
+  },
+  {
+   "id": 105,
+   "class": "static",
+   "text": "Plage de nombres :",
+   "rect": [
+    4,
+    89,
+    82,
+    10
+   ],
+   "style": "0x50020000"
+  },
+  {
+   "id": 106,
+   "class": "static",
+   "text": "À :",
+   "rect": [
+    4,
+    120,
+    19,
+    9
+   ],
+   "style": "0x50020000"
+  },
+  {
+   "id": 107,
+   "class": "static",
+   "text": "De :",
+   "rect": [
+    4,
+    103,
+    22,
+    10
+   ],
+   "style": "0x50020000"
+  },
+  {
+   "id": 108,
+   "class": "edit",
+   "text": "5.#-",
+   "rect": [
+    39,
+    101,
+    45,
+    12
+   ],
+   "style": "0x50830000"
+  },
+  {
+   "id": 109,
+   "class": "edit",
+   "text": "5.#-",
+   "rect": [
+    39,
+    118,
+    45,
+    12
+   ],
+   "style": "0x50830000"
+  },
+  {
+   "id": 110,
+   "class": "static",
+   "text": "Durée du tracé :",
+   "rect": [
+    105,
+    89,
+    99,
+    10
+   ],
+   "style": "0x50020000"
+  },
+  {
+   "id": 113,
+   "class": "combobox",
+   "text": null,
+   "rect": [
+    158,
+    101,
+    69,
+    49
+   ],
+   "style": "0x50030003"
+  },
+  {
+   "id": 114,
+   "class": "edit",
+   "text": "3.#",
+   "rect": [
+    158,
+    117,
+    22,
+    12
+   ],
+   "style": "0x50830000"
+  },
+  {
+   "id": 115,
+   "class": "button",
+   "text": "Réinitialiser la plage",
+   "rect": [
+    2,
+    135,
+    100,
+    14
+   ],
+   "style": "0x50010000"
+  },
+  {
+   "id": 116,
+   "class": "static",
+   "text": "h",
+   "rect": [
+    189,
+    119,
+    22,
+    10
+   ],
+   "style": "0x50020000"
+  },
+  {
+   "id": 111,
+   "class": "button",
+   "text": "Liste :1",
+   "rect": [
+    105,
+    102,
+    44,
+    10
+   ],
+   "style": "0x50030009"
+  },
+  {
+   "id": 112,
+   "class": "button",
+   "text": "Au choix :1",
+   "rect": [
+    105,
+    118,
+    47,
+    10
+   ],
+   "style": "0x50000009"
+  },
+  {
+   "id": 149,
+   "class": "static",
+   "text": null,
+   "rect": [
+    3,
+    85,
+    231,
+    1
+   ],
+   "style": "0x50020007"
+  },
+  {
+   "id": 102,
+   "class": "button",
+   "text": "Pic2044",
+   "rect": [
+    2,
+    3,
+    101,
+    75
+   ],
+   "style": "0x5800000b"
+  }
+ ]
+}

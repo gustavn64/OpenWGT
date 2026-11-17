@@ -1,0 +1,175 @@
+{
+ "style": "0x90c800c0",
+ "ex_style": "0x00000000",
+ "rect": [
+  98,
+  69,
+  236,
+  172
+ ],
+ "menu": null,
+ "class": null,
+ "title": "Aire / Volume",
+ "font": [
+  8,
+  "MS Sans Serif"
+ ],
+ "items": [
+  {
+   "id": 150,
+   "class": "button",
+   "text": null,
+   "rect": [
+    201,
+    65,
+    31,
+    19
+   ],
+   "style": "0x5002000b"
+  },
+  {
+   "id": 1,
+   "class": "button",
+   "text": "OK",
+   "rect": [
+    178,
+    152,
+    49,
+    14
+   ],
+   "style": "0x50010001"
+  },
+  {
+   "id": 2,
+   "class": "button",
+   "text": "Annuler",
+   "rect": [
+    124,
+    152,
+    45,
+    14
+   ],
+   "style": "0x50010000"
+  },
+  {
+   "id": 103,
+   "class": "button",
+   "text": "Doc",
+   "rect": [
+    107,
+    14,
+    124,
+    70
+   ],
+   "style": "0x5800000b"
+  },
+  {
+   "id": 104,
+   "class": "static",
+   "text": "Nombre",
+   "rect": [
+    105,
+    3,
+    125,
+    11
+   ],
+   "style": "0x50020000"
+  },
+  {
+   "id": 105,
+   "class": "static",
+   "text": "Aire / Volume",
+   "rect": [
+    2,
+    -58,
+    71,
+    59
+   ],
+   "style": "0x50020000"
+  },
+  {
+   "id": 110,
+   "class": "static",
+   "text": "Pick what to work out:",
+   "rect": [
+    11,
+    91,
+    147,
+    9
+   ],
+   "style": "0x50020000"
+  },
+  {
+   "id": 106,
+   "class": "button",
+   "text": "Aire du carré (entrée : côté)1",
+   "rect": [
+    16,
+    101,
+    206,
+    10
+   ],
+   "style": "0x50030009"
+  },
+  {
+   "id": 107,
+   "class": "button",
+   "text": "Aire du cercle (entrée : rayon)1",
+   "rect": [
+    16,
+    123,
+    206,
+    10
+   ],
+   "style": "0x50000009"
+  },
+  {
+   "id": 108,
+   "class": "button",
+   "text": "Volume du cube (entrée : côté)1",
+   "rect": [
+    16,
+    112,
+    206,
+    10
+   ],
+   "style": "0x50000009"
+  },
+  {
+   "id": 109,
+   "class": "button",
+   "text": "Volume de la sphère (entrée : rayon)1",
+   "rect": [
+    16,
+    134,
+    206,
+    10
+   ],
+   "style": "0x50000009"
+  },
+  {
+   "id": 149,
+   "class": "static",
+   "text": null,
+   "rect": [
+    3,
+    85,
+    231,
+    1
+   ],
+   "style": "0x50020007"
+  },
+  {
+   "id": 102,
+   "class": "button",
+   "text": "Pic",
+   "rect": [
+    2,
+    3,
+    101,
+    75
+   ],
+   "style": "0x5800000b"
+  }
+ ]
+}

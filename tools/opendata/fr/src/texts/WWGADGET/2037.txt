@@ -1,0 +1,1 @@
+L'Interrupteur sonore passe à ON quand il entend un son assez fort, comme un claquement de mains ou un cri, et reste à ON jusqu'à l'arrêt de l'Eurêka. Il lui faut une carte son et un micro ou une autre entrée son.

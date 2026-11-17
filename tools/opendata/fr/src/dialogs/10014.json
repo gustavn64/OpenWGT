@@ -1,0 +1,175 @@
+{
+ "style": "0x90c800c0",
+ "ex_style": "0x00000000",
+ "rect": [
+  9,
+  18,
+  192,
+  154
+ ],
+ "menu": null,
+ "class": null,
+ "title": "OpenWGT",
+ "font": [
+  8,
+  "MS Sans Serif"
+ ],
+ "items": [
+  {
+   "id": 6,
+   "class": "button",
+   "text": "Oui",
+   "rect": [
+    16,
+    134,
+    40,
+    14
+   ],
+   "style": "0x50010001"
+  },
+  {
+   "id": 7,
+   "class": "button",
+   "text": "Non",
+   "rect": [
+    76,
+    134,
+    40,
+    14
+   ],
+   "style": "0x50010000"
+  },
+  {
+   "id": 2,
+   "class": "button",
+   "text": "Annuler",
+   "rect": [
+    135,
+    134,
+    40,
+    14
+   ],
+   "style": "0x50010000"
+  },
+  {
+   "id": 101,
+   "class": "button",
+   "text": "640 x 480 - le plus sûr pour Macintosh",
+   "rect": [
+    7,
+    57,
+    176,
+    12
+   ],
+   "style": "0x50030009"
+  },
+  {
+   "id": 102,
+   "class": "button",
+   "text": "720 x 540 - le plus grand pour Macintosh",
+   "rect": [
+    7,
+    71,
+    176,
+    12
+   ],
+   "style": "0x50000009"
+  },
+  {
+   "id": 103,
+   "class": "button",
+   "text": "800 x 600",
+   "rect": [
+    7,
+    85,
+    60,
+    12
+   ],
+   "style": "0x50000009"
+  },
+  {
+   "id": 104,
+   "class": "button",
+   "text": "1024 x 768",
+   "rect": [
+    7,
+    99,
+    60,
+    12
+   ],
+   "style": "0x50000009"
+  },
+  {
+   "id": 105,
+   "class": "button",
+   "text": "1280 x 1024",
+   "rect": [
+    7,
+    113,
+    60,
+    12
+   ],
+   "style": "0x50000009"
+  },
+  {
+   "id": 65535,
+   "class": "static",
+   "text": "Rapprocher les pièces pour que",
+   "rect": [
+    7,
+    6,
+    111,
+    8
+   ],
+   "style": "0x50020000"
+  },
+  {
+   "id": 65535,
+   "class": "static",
+   "text": "tout l'Eurêka tienne sur ton",
+   "rect": [
+    7,
+    17,
+    113,
+    8
+   ],
+   "style": "0x50020000"
+  },
+  {
+   "id": 65535,
+   "class": "static",
+   "text": "écran, ou sur un plus petit?",
+   "rect": [
+    7,
+    28,
+    159,
+    8
+   ],
+   "style": "0x50020000"
+  },
+  {
+   "id": 65535,
+   "class": "static",
+   "text": "Faire tenir dans (choisis une taille) :",
+   "rect": [
+    7,
+    46,
+    124,
+    8
+   ],
+   "style": "0x50020000"
+  },
+  {
+   "id": 65535,
+   "class": "static",
+   "text": null,
+   "rect": [
+    6,
+    42,
+    182,
+    1
+   ],
+   "style": "0x50000004"
+  }
+ ]
+}

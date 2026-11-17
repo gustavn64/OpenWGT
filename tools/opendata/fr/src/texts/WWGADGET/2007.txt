@@ -1,0 +1,1 @@
+Tape des nombres dans ton Eurêka avec le Pavé numérique, comme sur une calculatrice. Son écran a de la place pour 10 caractères, signe moins compris. Choisis d'abord un nombre de départ, puis tapes-en d'autres pendant que l'Eurêka tourne.

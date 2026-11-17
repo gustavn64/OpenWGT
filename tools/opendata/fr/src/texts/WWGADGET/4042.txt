@@ -1,0 +1,2 @@
+Astuce de construction :
+Un Haut-parleur peut aussi jouer un nombre : relie-le directement à un Curseur ou à un Nombre à trois chiffres, et il joue une note d'autant de hertz (440, c'est le la des musiciens). Un signal OUI donne un bourdonnement grave.

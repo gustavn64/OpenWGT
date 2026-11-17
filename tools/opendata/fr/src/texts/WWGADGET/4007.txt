@@ -1,0 +1,2 @@
+Astuce de construction :
+Coche Cacher pour un cadenas à code secret : compare le pavé à un Mini nombre à trois chiffres qui garde le code, avec un Comparateur réglé sur Égal à, puis un Vérificateur gagné/perdu. Rien ne sort du pavé avant la touche ENTRÉE.

@@ -1,0 +1,2 @@
+Astuce de construction :
+Un Comparateur change n'importe quel nombre en OUI ou NON. Mets une limite sur son entrée du haut avec un Nombre à trois chiffres et relie le résultat à une Ampoule ou à une pièce sonore : voyant, alarme ou ligne d'arrivée.

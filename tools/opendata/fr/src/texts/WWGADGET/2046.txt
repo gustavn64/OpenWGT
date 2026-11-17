@@ -1,0 +1,1 @@
+Le Mini nombre à trois chiffres envoie toujours le même nombre, de 0 à 999. Tu le règles avant de lancer l'Eurêka ; on ne peut pas le changer pendant qu'il tourne.

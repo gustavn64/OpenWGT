@@ -1,0 +1,187 @@
+{
+ "style": "0x90c800c0",
+ "ex_style": "0x00000000",
+ "rect": [
+  104,
+  81,
+  236,
+  153
+ ],
+ "menu": null,
+ "class": null,
+ "title": "Pavé numérique",
+ "font": [
+  8,
+  "MS Sans Serif"
+ ],
+ "items": [
+  {
+   "id": 150,
+   "class": "button",
+   "text": null,
+   "rect": [
+    201,
+    65,
+    31,
+    19
+   ],
+   "style": "0x5002000b"
+  },
+  {
+   "id": 1,
+   "class": "button",
+   "text": "OK",
+   "rect": [
+    178,
+    135,
+    49,
+    14
+   ],
+   "style": "0x50010001"
+  },
+  {
+   "id": 2,
+   "class": "button",
+   "text": "Annuler",
+   "rect": [
+    124,
+    135,
+    45,
+    14
+   ],
+   "style": "0x50010000"
+  },
+  {
+   "id": 103,
+   "class": "button",
+   "text": "Doc",
+   "rect": [
+    107,
+    14,
+    124,
+    70
+   ],
+   "style": "0x5800000b"
+  },
+  {
+   "id": 104,
+   "class": "static",
+   "text": "Nombre",
+   "rect": [
+    105,
+    3,
+    125,
+    11
+   ],
+   "style": "0x50020000"
+  },
+  {
+   "id": 105,
+   "class": "static",
+   "text": "Pavé numérique",
+   "rect": [
+    4,
+    -59,
+    87,
+    59
+   ],
+   "style": "0x50020000"
+  },
+  {
+   "id": 106,
+   "class": "static",
+   "text": "Nombre de départ :",
+   "rect": [
+    4,
+    93,
+    98,
+    10
+   ],
+   "style": "0x50020000"
+  },
+  {
+   "id": 107,
+   "class": "edit",
+   "text": "10.-#",
+   "rect": [
+    118,
+    91,
+    74,
+    12
+   ],
+   "style": "0x50830000"
+  },
+  {
+   "id": 108,
+   "class": "button",
+   "text": "Verrouiller",
+   "rect": [
+    16,
+    116,
+    71,
+    10
+   ],
+   "style": "0x50030003"
+  },
+  {
+   "id": 109,
+   "class": "button",
+   "text": "Cacher",
+   "rect": [
+    16,
+    128,
+    71,
+    10
+   ],
+   "style": "0x50030003"
+  },
+  {
+   "id": 110,
+   "class": "button",
+   "text": "Remise à zéro",
+   "rect": [
+    16,
+    140,
+    68,
+    10
+   ],
+   "style": "0x50030003"
+  },
+  {
+   "id": 111,
+   "class": "static",
+   "text": "Options :",
+   "rect": [
+    4,
+    106,
+    40,
+    10
+   ],
+   "style": "0x50020000"
+  },
+  {
+   "id": 149,
+   "class": "static",
+   "text": null,
+   "rect": [
+    3,
+    85,
+    231,
+    1
+   ],
+   "style": "0x50020007"
+  },
+  {
+   "id": 102,
+   "class": "button",
+   "text": "Pic2007",
+   "rect": [
+    2,
+    3,
+    101,
+    75
+   ],
+   "style": "0x5800000b"
+  }
+ ]
+}

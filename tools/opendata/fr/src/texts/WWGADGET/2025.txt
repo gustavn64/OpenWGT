@@ -1,0 +1,1 @@
+L'Aiguillage est comme un aiguillage de chemin de fer pour les données : deux voies entrent, une seule sort. D'habitude, c'est la voie du haut qui passe. Envoie 1 ou OUI à l'entrée du dessus, et c'est la voie du bas qui passe.

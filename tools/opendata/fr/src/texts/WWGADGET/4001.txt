@@ -1,0 +1,2 @@
+Astuce de construction :
+Sur Maximum ou Minimum, le Totalisateur retient la valeur la plus haute ou la plus basse atteinte, comme le plus grand nombre tiré au hasard. Avec un Répartiteur, deux Totalisateurs surveillent la même pièce.

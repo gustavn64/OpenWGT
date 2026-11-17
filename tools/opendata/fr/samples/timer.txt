@@ -1,0 +1,51 @@
+# Kitchen Timer: the plunger starts a stopwatch, and a Comparer rings a
+# bell, lights a lamp and shows a message once the seconds you set have
+# gone by.
+background 0
+
+part title TxLb 20 98
+label title 0 "Minuteur"
+radio title 0 1
+
+# How long: a number you set with its arrows.
+part secs cnst 165 105
+label secs 0 "20"
+part sl TxLb 274 128
+label sl 0 "secondes"
+
+# The plunger starts the stopwatch.
+part go DnPl 20 158
+part watch Wtch 100 185
+wire go 0 watch 0
+
+# Has that much time gone by?
+part cmp Comp 215 203
+radio cmp 0 5
+wire watch 3 cmp 0
+wire secs 0 cmp 1
+part s Spl3 305 211
+wire cmp 2 s 0
+
+# Then: a lamp, a message and a bell.
+part lamp bulb 360 150
+wire s 1 lamp 0
+part msg TxBx 420 197
+text msg "Temps écoulé!\nFais STOP puis GO\npour recommencer."
+wire s 2 msg 0
+part bell MsSd 360 265
+number bell 0 1
+wire s 3 bell 0
+part spk Spkr 445 285
+wire bell 1 spk 0
+
+# What to do.
+part t1 TxLb 16 292
+label t1 0 "Appuie sur GO et règle le temps"
+part t2 TxLb 16 309
+label t2 0 "avec les flèches. Puis enfonce"
+part t3 TxLb 16 326
+label t3 0 "le détonateur pour démarrer."
+part t4 TxLb 16 351
+label t4 0 "Quand le temps est écoulé, la"
+part t5 TxLb 16 368
+label t5 0 "lampe s'allume, la cloche sonne."

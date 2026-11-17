@@ -1,0 +1,2 @@
+Astuce de construction :
+Règle la sortie sur Heures depuis minuit et relie l'horloge à l'entrée de côté d'un Comparateur, avec un Mini nombre à trois chiffres réglé sur 21 en haut. Choisis Supérieur ou égal à, et un Panneau d'affichage dira à tous d'aller se coucher.

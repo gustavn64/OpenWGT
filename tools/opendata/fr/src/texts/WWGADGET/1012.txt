@@ -1,0 +1,1 @@
+Clique sur cet interrupteur pour allumer et éteindre des choses.

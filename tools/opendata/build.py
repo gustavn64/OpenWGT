@@ -5,11 +5,12 @@ overrides' layout (`<MODULE>/<type>/<id>.bin`), so the engine reads them
 as it reads the CD's.
 
     build.py [SRC] [--verify EXPORT]
-    build.py --lang sv
+    build.py --lang sv|fr
 
 `--lang sv` builds the Swedish pack (crates/engine/opendata-sv): the
 sources in src/ with sv/src/ over them (a JSON file's entries by key,
-sv's winning; a dialog or text file whole), and sv/help/HELP.TXT. The
+sv's winning; a dialog or text file whole), and sv/help/HELP.TXT; `--lang
+fr` the French one (fr/, crates/engine/opendata-fr) the same way. The
 tables, the palette and the layout are the same for every language.
 
 The sample widgets and the puzzles are built from their recipes
@@ -32,7 +33,10 @@ import resfmt as R  # noqa: E402
 HERE = Path(__file__).resolve().parent
 OUT = HERE.parent.parent / "crates/engine/opendata"
 # The languages besides English: their sources over src/, their packs.
-LANGS = {"sv": (HERE / "sv", HERE.parent.parent / "crates/engine/opendata-sv")}
+LANGS = {
+    "sv": (HERE / "sv", HERE.parent.parent / "crates/engine/opendata-sv"),
+    "fr": (HERE / "fr", HERE.parent.parent / "crates/engine/opendata-fr"),
+}
 
 
 def load(p):

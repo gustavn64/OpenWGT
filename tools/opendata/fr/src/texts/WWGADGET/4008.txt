@@ -1,0 +1,2 @@
+Astuce de construction :
+Une Porte ET fait une serrure de sécurité à deux touches : relie-lui deux Touches clavier, et elle ne dit OUI que si les deux sont enfoncées. Pour plus de deux conditions, envoie la sortie d'une porte dans une autre Porte ET.

@@ -1,0 +1,2 @@
+Astuce de construction :
+Fabrique un clavier de la ferme : donne à chaque pièce Cris d'animaux un animal différent, sa propre Touche clavier et son propre Haut-parleur, puis joue un air d'aboiements et de meuglements.

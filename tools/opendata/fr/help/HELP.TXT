@@ -1,0 +1,670 @@
+title: Aide d'OpenWGT
+
+= Sommaire
+keywords: sommaire, aide, rubriques
+
+Bienvenue dans l'atelier d'OpenWGT! Choisis une rubrique ci-dessous, ou appuie sur **Index** pour chercher un mot.
+
+## Pour commencer
+- [Bienvenue dans OpenWGT](#welcome)
+- [Ton premier Eurêka : un interrupteur et une ampoule](#first-widget)
+- [Utiliser cette aide](#using-help)
+
+## Construire des Eurêkas
+- [L'atelier en un coup d'oeil](#editor)
+- [La boîte de contrôle : GO, STOP, lumière et son](#control-box)
+- [La fenêtre à outils](#tray)
+- [Les trois outils : Pointeur, Ciseaux et Main](#tools)
+- [La zone de travail](#worksheet)
+- [Bornes et connexions](#wires)
+- [Les jonctions](#joints)
+- [Ce qui passe dans une connexion](#values)
+- [Faire marcher un Eurêka](#running)
+- [Changer les réglages d'une pièce](#settings)
+
+## Les pièces
+- [Toutes les pièces](#parts)
+- [Pièces d'affichage](#display-parts)
+- [Pièces de temps](#timer-parts)
+- [Pièces sonores](#sound-parts)
+- [Pièces numériques](#number-parts)
+- [Pièces interrupteurs](#switch-parts)
+- [Pièces de texte](#text-parts)
+- [Superpièces](#super-parts)
+
+## Problèmes
+- [Résoudre des problèmes](#puzzles)
+- [Le Vérificateur gagné/perdu](#win-lose)
+- [Créer tes propres problèmes](#make-puzzles)
+
+## Fichiers et partage
+- [Enregistrer et ouvrir des Eurêkas](#files)
+- [Les Eurêkas d'exemple](#samples)
+- [Les liens d'Eurêka](#links)
+- [Les Eurêkas indépendants](#standalone)
+- [Enregistrer tes propres sons](#recording)
+
+## Menus, touches et paramètres
+- [Les menus](#menus)
+- [Raccourcis clavier](#keys)
+- [La fenêtre Paramètres](#openwgt-settings)
+- [Jouer avec ou sans le CD](#cd)
+- [Astuces et dépannage](#tips)
+- [À propos d'OpenWGT](#about)
+
+= Bienvenue dans OpenWGT {#welcome}
+keywords: bienvenue, présentation, eurêka, qu'est-ce que
+
+OpenWGT est un atelier d'inventions. Tu prends des pièces dans une fenêtre à outils - interrupteurs, ampoules, horloges, cases de nombres, haut-parleurs, un canon et bien d'autres choses - tu les poses sur une grande zone de travail vide et tu les relies par des connexions. Ensuite tu appuies sur **GO**, et ton invention, qu'on appelle un *Eurêka*, se met à vivre.
+
+Un Eurêka peut être tout simple, comme un interrupteur qui allume une ampoule, ou très astucieux, comme un quiz, un jeu de réflexes ou une expérience qui fait tomber un éléphant sur la Lune. Il n'y a pas de mauvaise façon d'en construire un : essaie, appuie sur GO et regarde ce qui se passe.
+
+Si tu as envie d'un défi, charge un des [problèmes](#puzzles) : chacun est un Eurêka à moitié construit que tu dois terminer.
+
+Tu débutes? Commence par [ton premier Eurêka](#first-widget).
+
+= Ton premier Eurêka {#first-widget}
+keywords: premier eurêka, tutoriel, pour commencer, ampoule, interrupteur, débutant
+
+Construisons une ampoule que tu peux allumer et éteindre. Cela prend environ une minute.
+
+## 1. Prends un interrupteur
+Dans la [fenêtre à outils](#tray), en haut, clique sur l'onglet qui porte un petit interrupteur (les **pièces interrupteurs**). Appuie sur le bouton de la souris sur l'**Interrupteur**, garde-le enfoncé et fais glisser l'interrupteur jusque sur la zone de travail blanche. Lâche-le où tu veux.
+
+## 2. Prends une ampoule
+Clique sur l'onglet avec l'écran (les **pièces d'affichage**). Fais glisser l'**Ampoule** sur la zone de travail, un peu à droite de l'interrupteur.
+
+## 3. Relie-les
+Regarde bien l'interrupteur : il a un petit point sur son bord. Ce point est une *borne*, l'endroit où se branchent les connexions. Montre-le avec le pointeur (il devient une main qui tient une fiche), appuie sur le bouton de la souris et fais glisser. Une connexion suit le pointeur. Amène-la sur l'Ampoule : quand elle devient verte, elle a trouvé la borne de l'ampoule. Lâche, et la connexion reste en place. Pour en savoir plus, lis [Bornes et connexions](#wires).
+
+## 4. Appuie sur GO
+Clique sur le bouton vert **GO** à gauche (ou appuie sur Entrée). La fenêtre à outils disparaît et ton Eurêka fonctionne. Clique sur l'interrupteur : l'ampoule s'allume! Clique encore une fois, et elle s'éteint.
+
+## 5. Appuie sur STOP
+Clique sur **STOP** (ou appuie sur Échap) pour revenir à la construction. Tout redevient comme au départ.
+
+Maintenant, amuse-toi à changer des choses : place une [porte INV](#number-parts) entre l'interrupteur et l'ampoule, ou relie l'interrupteur à une [pièce sonore](#sound-parts) et à un Haut-parleur. Quand tu as créé quelque chose qui te plaît, [enregistre-le](#files).
+
+= L'atelier en un coup d'oeil {#editor}
+keywords: atelier, écran, fenêtre, disposition, barre d'outils
+
+La fenêtre d'OpenWGT se compose de quatre parties :
+
+- **La barre de menus**, tout en haut, avec Fichier, Édition, Options et Aide. Voir [Les menus](#menus).
+- **La boîte de contrôle**, le petit panneau en haut à gauche, avec GO, STOP et les boutons de la lumière et du son. Voir [La boîte de contrôle](#control-box).
+- **La fenêtre à outils**, le large panneau à côté, avec les outils, les onglets des dossiers et les pièces elles-mêmes. Voir [La fenêtre à outils](#tray) et [Les trois outils](#tools).
+- **La zone de travail**, la grande surface qui occupe le reste de la fenêtre et où tu construis. Voir [La zone de travail](#worksheet).
+
+La boîte de contrôle et la fenêtre à outils flottent au-dessus de la zone de travail. Pour en écarter une, fais-la glisser par la barre foncée le long de son bord supérieur.
+
+Quand tu montres un bouton ou une pièce de la fenêtre à outils avec le pointeur, son nom s'affiche dans la bande en haut de la fenêtre à outils.
+
+= La boîte de contrôle {#control-box}
+keywords: boîte de contrôle, GO, STOP, lumière, son, silence, obscurité
+
+La boîte de contrôle est le petit panneau dans le coin en haut à gauche.
+
+- **GO** met ton Eurêka en marche. La fenêtre à outils disparaît pendant qu'il fonctionne. La touche Entrée fait la même chose. Voir [Faire marcher un Eurêka](#running).
+- **STOP** l'arrête et remet chaque pièce dans l'état où elle était avant que tu appuies sur GO. La touche Échap fait la même chose.
+- **Lumière** (le bouton avec l'ampoule) éteint et rallume la lumière de ton atelier. Dans le noir, la zone de travail s'assombrit et les pièces prennent leur air de nuit - parfait pour un spectacle de lumières.
+- **Son** (le bouton avec le haut-parleur) coupe et remet tous les sons : ceux de ton Eurêka comme les clics et les petits bruits de l'atelier.
+
+Tu peux déplacer la boîte de contrôle où tu veux en la faisant glisser par la barre foncée du haut.
+
+= La fenêtre à outils {#tray}
+keywords: fenêtre à outils, outils, dossier, onglet, page, flèches, prendre une pièce
+
+La fenêtre à outils contient toutes les pièces avec lesquelles tu peux construire, rangées dans sept dossiers. Clique sur un onglet en haut de la fenêtre à outils pour ouvrir un dossier :
+
+- l'écran : [Pièces d'affichage](#display-parts)
+- le chronomètre : [Pièces de temps](#timer-parts)
+- l'oreille : [Pièces sonores](#sound-parts)
+- le 1-2-3 : [Pièces numériques](#number-parts)
+- l'interrupteur : [Pièces interrupteurs](#switch-parts)
+- la lettre A : [Pièces de texte](#text-parts)
+- la planète : [Superpièces](#super-parts)
+
+La plupart des dossiers ont plusieurs pages. Les flèches au bout droit de la fenêtre à outils passent à la page précédente ou suivante, et le nombre entre elles t'indique la page où tu te trouves.
+
+## Prendre une pièce
+Appuie sur le bouton de la souris sur une pièce de la fenêtre à outils et, sans le lâcher, fais glisser la pièce sur la zone de travail. Lâche-la là où tu la veux. Si tu changes d'avis, repose-la sur la fenêtre à outils.
+
+## Les nombres et les pièces grisées
+Dans un Eurêka ordinaire, tu peux prendre autant de pièces de chaque sorte que tu veux. Dans un [problème](#puzzles), la fenêtre à outils peut n'en donner que quelques-unes : un petit nombre sur une pièce indique combien il en reste, et une pièce grisée est épuisée. Si tu supprimes une pièce de la zone de travail, elle retourne dans la fenêtre à outils.
+
+## Tout le dossier d'un coup
+Si les **Améliorations** sont activées dans [Options > Paramètres](#openwgt-settings), la fenêtre à outils montre toutes les pages d'un dossier en même temps, l'une sous l'autre ; il n'y a alors plus de flèches.
+
+= Les trois outils {#tools}
+keywords: outils, pointeur, gant, couper, ciseaux, déplacer, main, faire défiler
+
+Les trois boutons au bout gauche de la [fenêtre à outils](#tray) choisissent ce que fait la souris sur la zone de travail.
+
+## Pointeur (le gant)
+Le grand bouton. C'est l'outil dont tu te serviras le plus. Avec lui, tu peux :
+
+- déplacer les pièces sur la zone de travail,
+- tirer une connexion depuis une borne (voir [Bornes et connexions](#wires)),
+- cliquer sur une connexion pour y ajouter une jonction (voir [Les jonctions](#joints)),
+- double-cliquer sur une pièce pour ouvrir ses [réglages](#settings).
+
+## Ciseaux (couper)
+Clique avec les ciseaux sur une pièce, une connexion ou une jonction pour l'enlever. Une pièce retourne dans la fenêtre à outils, avec toutes les connexions qui y étaient branchées. Garde la touche **Maj** enfoncée pour prendre les ciseaux un instant ; lâche-la et tu retrouves ton outil.
+
+## Main (déplacer)
+Fais glisser la main n'importe où pour faire défiler *tout* l'Eurêka sur la zone de travail : les pièces, les connexions et les jonctions bougent ensemble. La main ne peut pas pousser ton Eurêka hors de l'écran. Garde la touche **Ctrl** enfoncée pour prendre la main un instant ; cela marche aussi pendant que l'Eurêka fonctionne.
+
+Prendre une pièce dans la fenêtre à outils, appuyer sur GO ou ouvrir un fichier te rend toujours le Pointeur.
+
+= La zone de travail {#worksheet}
+keywords: zone de travail, fond, sélectionner, surligner, supprimer, annuler
+
+La zone de travail est la grande surface où tu construis. Il n'y a pas de grille : les pièces restent exactement là où tu les lâches, et elles peuvent se chevaucher. Une pièce sur laquelle tu cliques passe devant les autres.
+
+## Ce qui se trouve sous le pointeur
+Inutile de cliquer pour choisir quelque chose. Ce qui se trouve sous le pointeur - une pièce, une connexion ou une jonction - est mis en évidence, et c'est sur lui qu'agissent la touche **Suppr** et les ciseaux. Une pièce s'entoure d'un cadre vert, une connexion s'épaissit.
+
+## Annuler
+**Édition > Annuler** (Ctrl+Z) défait ta dernière action : un déplacement, une connexion, une suppression, un réglage modifié, etc. Il n'y a qu'un seul niveau d'annulation ; si tu choisis Annuler une deuxième fois, le changement revient.
+
+## Faire le ménage
+- **Édition > Vider la zone de travail** enlève toutes les pièces et toutes les connexions.
+- **Édition > Supprimer toutes les connexions** enlève toutes les connexions mais garde les pièces.
+- **Édition > Supprimer toutes les jonctions** redresse toutes les connexions.
+- **Édition > Ajuster la zone de travail...** rapproche les pièces pour que ton Eurêka tienne sur un écran plus petit. Tu choisis la taille de l'écran.
+
+Dans un [problème](#puzzles), les pièces et les connexions verrouillées restent en place malgré toutes ces commandes.
+
+## Les fonds
+Le menu **Options** propose quatre fonds pour ta zone de travail : Fond uni, Vagues de métal, Parasites et Acier. Les fonds à motif ont en plus un cadre de tuyaux tout autour. Le fond est enregistré avec ton Eurêka.
+
+= Bornes et connexions {#wires}
+keywords: borne, connexion, relier, entrée, sortie, fiche, brancher, répartiteur
+
+Les pièces communiquent entre elles par des connexions. Chaque connexion va d'une *borne* à une autre ; les bornes sont les petits points sur le bord des pièces.
+
+## Entrées et sorties
+Chaque borne est soit une **sortie**, par où une pièce envoie quelque chose, soit une **entrée**, par où une pièce reçoit quelque chose. Une connexion va toujours d'une sortie à une entrée. Un interrupteur, par exemple, a une sortie ; une ampoule a une entrée. Dans la [fenêtre de réglages](#settings) d'une pièce, tu vois son image avec ses bornes indiquées.
+
+## Créer une connexion
+Avec l'outil Pointeur, montre une borne libre : le pointeur devient une main qui tient une fiche. Appuie sur le bouton de la souris et fais glisser. La nouvelle connexion est rouge tant que son bout pend dans le vide. Amène le pointeur sur une autre pièce : la connexion saute vers la borne libre la plus proche qui convient, et devient verte. Lâche pour la brancher. Si tu lâches au-dessus d'un endroit vide, la connexion disparaît.
+
+## Une connexion par borne
+Chaque borne ne reçoit qu'une seule connexion. Pour envoyer une sortie à plusieurs endroits, utilise un [Répartiteur](#switch-parts) : il recopie ce qu'il reçoit sur chacune de ses sorties.
+
+## Déplacer une connexion
+Appuie sur une borne qui a déjà une connexion : tu attrapes ce bout de la connexion. Pose-le sur une autre borne libre pour le brancher là. Si tu le lâches ailleurs, il revient à sa place.
+
+## Enlever une connexion
+Clique dessus avec les ciseaux, ou montre-la avec le pointeur et appuie sur **Suppr**. **Édition > Supprimer toutes les connexions** les enlève toutes. Quand tu supprimes une pièce, les connexions qui y sont branchées partent avec elle.
+
+Tu peux aussi ajouter des [jonctions](#joints) à une connexion pour garder ton Eurêka bien rangé. Ce que transporte une connexion est expliqué dans [Ce qui passe dans une connexion](#values).
+
+= Les jonctions {#joints}
+keywords: jonction, coude, angle, redresser
+
+Une connexion n'est pas obligée d'être toute droite. Clique n'importe où sur une connexion avec l'outil Pointeur : une *jonction* (un petit carré foncé) y apparaît. Garde le bouton enfoncé et fais-la glisser là où tu veux faire l'angle. Chaque clic sur une connexion ajoute une nouvelle jonction.
+
+- Pour déplacer une jonction, fais-la glisser.
+- Pour en enlever une, clique dessus avec les ciseaux, ou montre-la et appuie sur **Suppr**.
+- Pour redresser toutes les connexions d'un coup, choisis **Édition > Supprimer toutes les jonctions**.
+
+Les jonctions restent où tu les as mises quand tu déplaces une pièce ; après avoir bougé des pièces, tu voudras peut-être aussi ranger les jonctions. L'outil Main et Ajuster la zone de travail les déplacent avec tout le reste.
+
+= Ce qui passe dans une connexion {#values}
+keywords: valeurs, signal, on, off, oui, non, vrai, faux, nombre, son
+
+Trois sortes de choses circulent dans les connexions.
+
+## ON et OFF
+Les interrupteurs, les touches, les portes logiques et beaucoup d'autres pièces envoient un simple **ON ou OFF**. On dit aussi OUI et NON, ou VRAI et FAUX : c'est la même chose. Quand il faut un nombre, ON vaut 1 et OFF vaut 0.
+
+## Les nombres
+Les pièces numériques, les curseurs, les horloges et les pièces scientifiques envoient des **nombres**, y compris des nombres négatifs et à virgule. Quand une pièce attend ON ou OFF, tout nombre autre que 0 compte comme ON, et 0 compte comme OFF. Tu peux donc relier un nombre directement à une Ampoule : elle s'allume pour tout sauf 0.
+
+## Les sons
+Les pièces sonores comme les Cris d'animaux ou l'Enregistreur envoient un **son**. Un son ne s'entend que s'il arrive à un [Haut-parleur](#sound-parts). En chemin, il peut passer par un Répartiteur, un Aiguillage ou un Transformateur de son.
+
+## Quand les choses se passent
+Pendant que l'Eurêka fonctionne, les pièces surveillent sans arrêt leurs entrées : un changement se propage donc presque tout de suite à travers l'Eurêka. Quelques pièces, comme l'Additionneur, ont besoin d'un instant pour calculer leur réponse.
+
+= Faire marcher un Eurêka {#running}
+keywords: marche, GO, STOP, lancer, démarrer, arrêter, jouer
+
+Appuie sur **GO** (ou Entrée) pour lancer ton Eurêka, et sur **STOP** (ou Échap) pour l'arrêter.
+
+## Pendant qu'il fonctionne
+- La fenêtre à outils est cachée, et tu ne peux ni déplacer, ni relier, ni supprimer de pièces.
+- Tu peux *te servir* des pièces : cliquer sur les interrupteurs, les touches et les boutons, faire glisser le bouton du Curseur, taper sur le Pavé numérique, cliquer sur les flèches du Nombre à trois chiffres, et ainsi de suite.
+- Les horloges tournent, les métronomes battent, les sons jouent et les pièces scientifiques font leurs expériences.
+- Garde **Ctrl** enfoncée et fais glisser pour déplacer tout l'Eurêka.
+- La plupart des commandes des menus sont grisées jusqu'à ce que tu arrêtes.
+
+## Quand il s'arrête
+Un appui sur STOP remet chaque pièce comme elle était avant GO : les compteurs reviennent à 0, les interrupteurs à leur position de départ, les courbes sont effacées. Ton Eurêka est prêt à repartir.
+
+Un [Vérificateur gagné/perdu](#win-lose) peut arrêter un Eurêka tout seul.
+
+= Changer les réglages d'une pièce {#settings}
+keywords: réglages, fenêtre de réglages, double-clic, options, Doc, conseil de construction, propriétés
+
+La plupart des pièces peuvent se régler pour se comporter de différentes façons : la vitesse d'un Métronome, l'animal des Cris d'animaux, le texte d'un Panneau d'affichage.
+
+## Ouvrir les réglages
+Quand l'Eurêka ne fonctionne pas, **double-clique** sur la pièce avec l'outil Pointeur. Sa fenêtre de réglages s'ouvre. (Double-clique sur la pièce elle-même, pas sur une connexion qui passe par-dessus.)
+
+La fenêtre montre :
+
+- l'image de la pièce, avec ses bornes, et ce qu'elle envoie,
+- une bulle qui t'explique à quoi sert la pièce,
+- les choix propres à la pièce : des boutons, des listes et des cases où taper.
+
+Clique sur **OK** pour garder tes changements, ou sur **Annuler** pour laisser la pièce comme elle était.
+
+## Le bouton Doc
+Dans le coin de la bulle se tient le savant de l'atelier, Doc. Clique sur lui pour voir un *conseil de construction* : une idée de ce que tu peux construire avec la pièce. Clique encore une fois pour relire la description.
+
+= Toutes les pièces {#parts}
+keywords: pièces, liste des pièces, gadgets
+
+Voici les sept dossiers de la [fenêtre à outils](#tray) et ce qu'ils contiennent :
+
+- [Pièces d'affichage](#display-parts) : Ampoule, Mélangeur de couleurs, Traceur de courbes, Projecteur d'images, Afficheur à trois chiffres, Afficheur à dix chiffres.
+- [Pièces de temps](#timer-parts) : Horloge numérique, Chronomètre, Métronome.
+- [Pièces sonores](#sound-parts) : Interrupteur sonore, Cris d'animaux, Sons variés, Haut-parleur, Diapason, Enregistreur, Transformateur de son.
+- [Pièces numériques](#number-parts) : Pavé numérique, Nombre à trois chiffres, Compteur, Mini nombre à trois chiffres, Curseur, Additionneur, Soustracteur, Multiplicateur, Diviseur, Pile ou face, Générateur de nombres aléatoires, Totalisateur, Comparateur, Fonctions mathématiques, Aire/Volume, Convertisseur, et les portes ET, OU, XOU et INV.
+- [Pièces interrupteurs](#switch-parts) : Interrupteur, Touche clavier, Bouton de souris, Mesureur de distance, Détonateur, Aiguillage, et les Répartiteurs à deux, trois et quatre sorties.
+- [Pièces de texte](#text-parts) : Étiquette, Liste de messages, Panneau d'affichage et dix Autocollants.
+- [Superpièces](#super-parts) : Vérificateur gagné/perdu, Pendule, Chambre de gravité, Canon, Coeur, Système solaire.
+
+Chaque pièce s'explique aussi elle-même : double-clique dessus sur la zone de travail et lis sa [fenêtre de réglages](#settings).
+
+= Pièces d'affichage {#display-parts}
+keywords: affichage, ampoule, lampe, mélangeur de couleurs, couleur, traceur de courbes, graphique, projecteur d'images, image, afficheur à trois chiffres, afficheur à dix chiffres
+
+Le dossier avec l'écran sur son onglet. Ces pièces montrent ce que fait ton Eurêka.
+
+## Page 1
+- **Ampoule** - s'allume quand son entrée est ON ou un nombre autre que 0.
+- **Mélangeur de couleurs** - une grosse tache de couleur. Envoie des nombres de 0 à 100 dans ses entrées rouge, verte et bleue pour mélanger presque n'importe quelle couleur.
+- **Traceur de courbes** - trace la courbe d'un nombre au fil du temps. Tu choisis l'étendue des nombres et la durée de la courbe ; un ON sur sa deuxième entrée l'efface.
+- **Projecteur d'images** - montre des images tirées d'une série parmi six. Envoie-lui le numéro d'une image pour l'afficher.
+
+## Page 2
+- **Afficheur à trois chiffres** - montre les nombres entiers de -99 à 999. Un X rouge veut dire que le nombre ne rentre pas.
+- **Afficheur à dix chiffres** - montre les grands nombres et les nombres à virgule, jusqu'à dix caractères.
+
+Astuce : pendant que tu construis, relie un afficheur à n'importe quelle sortie pour voir ce que la pièce envoie. Voir aussi [Pièces numériques](#number-parts) et [Pièces de texte](#text-parts).
+
+= Pièces de temps {#timer-parts}
+keywords: temps, minuterie, horloge, horloge numérique, chronomètre, métronome, battement
+
+Le dossier avec le chronomètre sur son onglet.
+
+- **Horloge numérique** - montre l'heure de l'horloge de ton ordinateur, sur 12 heures ou sur 24 heures. Elle peut envoyer les secondes, les minutes ou les heures.
+- **Chronomètre** - mesure des durées. Il a sur le côté une entrée pour démarrer et une entrée pour arrêter, et en haut une entrée de remise à zéro. Il peut envoyer les secondes, les minutes, ou simplement ON tant qu'il tourne.
+- **Métronome** - envoie une courte impulsion ON à chaque battement, de 1 à 120 battements par minute. Relie-le à un Compteur pour compter les secondes, ou à une pièce sonore pour faire un rythme de tambour.
+
+Voir aussi [Pièces numériques](#number-parts) pour le Compteur, et [Pièces sonores](#sound-parts).
+
+= Pièces sonores {#sound-parts}
+keywords: son, haut-parleur, bruit, cris d'animaux, sons variés, diapason, enregistreur, transformateur de son, interrupteur sonore, micro, applaudissement
+
+Le dossier avec l'oreille sur son onglet. N'oublie pas : un son ne s'entend que s'il arrive à un **Haut-parleur**.
+
+## Page 1
+- **Interrupteur sonore** - passe à ON quand il entend un bruit fort dans ton micro, comme un clap des mains, et reste allumé jusqu'à l'arrêt de l'Eurêka. Tu peux régler sa sensibilité.
+- **Cris d'animaux** - quand son entrée s'allume, il envoie un chien, un chat, un coq ou une vache.
+- **Sons variés** - pareil, avec dix sons au choix, comme une sonnerie, un carillon, un applaudissement ou un coucou.
+- **Haut-parleur** - joue tous les sons qui lui arrivent. Envoie-lui plutôt un nombre, et il joue une note d'autant de hertz (440, c'est le la sur lequel les musiciens s'accordent).
+
+## Page 2
+- **Diapason** - envoie une note courte et pure chaque fois que son entrée s'allume. C'est toi qui choisis la note.
+- **Enregistreur** - rejoue un son que tu as enregistré toi-même ou chargé depuis un fichier .WAV. Voir [Enregistrer tes propres sons](#recording).
+- **Transformateur de son** - modifie un son qui le traverse : plus aigu, plus grave, ou à l'envers.
+
+Le son du Haut-parleur et les bruits de l'atelier se coupent avec le bouton Son de la [boîte de contrôle](#control-box). Voir aussi [Ce qui passe dans une connexion](#values).
+
+= Pièces numériques {#number-parts}
+keywords: nombre, maths, calcul, pavé numérique, nombre à trois chiffres, compteur, curseur, additionneur, soustracteur, multiplicateur, diviseur, pile ou face, hasard, totalisateur, comparateur, fonctions mathématiques, aire, volume, conversion, convertisseur, portes logiques, porte et, porte ou, porte xou, porte inv
+
+Le dossier avec 1-2-3 sur son onglet. C'est le plus grand dossier, avec cinq pages.
+
+## Page 1 : entrer des nombres
+- **Pavé numérique** - tape un nombre pendant que l'Eurêka fonctionne, comme sur une calculatrice. Il peut cacher le nombre, pour les codes secrets.
+- **Nombre à trois chiffres** - envoie un nombre de 0 à 999. Clique sur les flèches au-dessus et au-dessous des chiffres pour le changer, même pendant que l'Eurêka fonctionne.
+- **Compteur** - compte un de plus à chaque fois que son entrée change, et envoie le total.
+- **Mini nombre à trois chiffres** - une petite pièce qui envoie toujours le même nombre, de 0 à 999. Tu le choisis dans ses réglages.
+- **Curseur** - fais glisser son bouton, ou clique sur ses flèches, pour envoyer un nombre pris dans une étendue que tu choisis.
+
+## Page 2 : le calcul
+- **Additionneur** - additionne ses deux entrées.
+- **Soustracteur** - retire le nombre du haut du nombre du côté.
+- **Multiplicateur** - multiplie ses deux entrées.
+- **Diviseur** - divise le nombre du côté par le nombre du haut. Diviser par 0 le met en panne.
+
+## Page 3 : le hasard et les comparaisons
+- **Pile ou face** - lance une pièce quand son entrée est ON : 1 pour face, 0 pour pile.
+- **Générateur de nombres aléatoires** - tire des nombres que personne ne peut deviner, dans une étendue que tu choisis.
+- **Totalisateur** - surveille tous les nombres qu'on lui envoie et donne leur total, leur moyenne, le plus grand ou le plus petit.
+- **Comparateur** - compare le nombre du côté au nombre du haut (égal, différent, plus grand, plus petit...) et envoie OUI ou NON.
+
+## Page 4 : maths et sciences
+- **Fonctions mathématiques** - racine carrée, carré, factorielle, sinus, cosinus, tangente, ou arrondi au nombre entier inférieur.
+- **Aire/Volume** - l'aire d'un carré ou d'un disque, ou le volume d'un cube ou d'une sphère, à partir d'un côté ou d'un rayon.
+- **Convertisseur** - change les degrés Fahrenheit en Celsius, les pieds en mètres, les livres en kilogrammes, et inversement.
+
+## Page 5 : les portes logiques
+Les portes logiques travaillent avec OUI et NON (ON et OFF). Tout nombre autre que 0 compte comme OUI.
+
+- **Porte ET** - OUI seulement quand les deux entrées sont OUI.
+- **Porte OU** - OUI quand au moins une entrée est OUI.
+- **Porte XOU** - OUI quand une seule entrée exactement est OUI.
+- **Porte INV** - change OUI en NON et NON en OUI.
+
+Voir aussi [Pièces d'affichage](#display-parts) pour montrer tes résultats, et [Pièces interrupteurs](#switch-parts).
+
+= Pièces interrupteurs {#switch-parts}
+keywords: interrupteur, touche clavier, touche, clavier, bouton de souris, distance de la souris, détonateur, aiguillage, répartiteur
+
+Le dossier avec l'interrupteur sur son onglet. Ce sont les pièces qui te permettent de commander ton Eurêka, et celles qui dirigent les connexions.
+
+## Page 1 : les commandes
+- **Interrupteur** - clique dessus pour passer de ON à OFF et inversement. Tu choisis s'il démarre sur ON ou sur OFF.
+- **Touche clavier** - ON tant que sa touche du clavier est enfoncée. Tu choisis la lettre ou le chiffre ; cliquer dessus avec la souris marche aussi.
+- **Bouton de souris** - ON tant qu'un bouton de la souris est enfoncé, n'importe où dans la fenêtre.
+- **Mesureur de distance** - mesure en pouces le chemin parcouru par la souris pendant que tu tiens un bouton enfoncé.
+- **Détonateur** - appuie dessus une fois : il passe à ON et y reste jusqu'à l'arrêt de l'Eurêka.
+
+## Page 2 : l'aiguillage
+- **Aiguillage** - deux entrées de données, une sortie. Normalement, c'est l'entrée du haut qui passe ; envoie ON sur l'entrée du dessus et c'est celle du bas qui passe à sa place.
+- **Répartiteur à deux sorties**, **Répartiteur à trois sorties**, **Répartiteur à quatre sorties** - recopient ce qu'ils reçoivent (ON/OFF, un nombre ou un son) sur chacune de leurs sorties. Comme chaque [borne ne prend qu'une connexion](#wires), ce sont eux qui permettent à une pièce d'en alimenter plusieurs.
+
+= Pièces de texte {#text-parts}
+keywords: texte, étiquette, liste de messages, panneau d'affichage, autocollant, mots, titre, décoration
+
+Le dossier avec la lettre A sur son onglet.
+
+## Page 1
+- **Étiquette** - un nom ou une note sur ton Eurêka, en petits ou en grands caractères. Elle n'a pas de bornes.
+- **Liste de messages** - contient quatre messages. Envoie 1, 2, 3 ou 4 pour afficher ce message, 0 pour n'en afficher aucun.
+- **Panneau d'affichage** - montre un message plus long, écrit par toi, tant que son entrée est ON.
+
+## Pages 2 à 4
+- **Autocollants** - dix images qui servent juste à décorer ton Eurêka. Elles ne se relient à rien.
+
+Les problèmes utilisent des Étiquettes et des Panneaux d'affichage pour te donner leurs consignes. Voir [Résoudre des problèmes](#puzzles).
+
+= Superpièces {#super-parts}
+keywords: superpièces, sciences, gagné, perdu, vérificateur, pendule, chambre de gravité, canon, coeur, système solaire, planète, expérience
+
+Le dossier avec la planète sur son onglet : le laboratoire de sciences, et la pièce qui termine les parties.
+
+## Page 1
+- **Vérificateur gagné/perdu** - attend que son entrée atteigne un but, puis joue un son de victoire ou de défaite et arrête l'Eurêka. Voir [Le Vérificateur gagné/perdu](#win-lose).
+- **Pendule** - se met à osciller quand son entrée s'allume. Change sa longueur et la gravité pour voir comment l'oscillation change ; il peut envoyer la durée d'une oscillation, ou ON à chaque passage au milieu.
+- **Chambre de gravité** - quand son entrée s'allume, elle lâche une plume, un éléphant ou une balle de baseball depuis la hauteur que tu choisis, sur la planète que tu choisis, et passe à ON à l'arrivée au sol.
+- **Canon** - tire un boulet quand son entrée s'allume. Il peut envoyer la distance, la hauteur, la vitesse, ou ON quand le boulet retombe. Il compte en pieds et en milles à l'heure.
+
+## Page 2
+- **Coeur** - bat comme le coeur d'un animal que tu choisis, de la gerboise à l'éléphant. Il envoie ON à chaque battement, ou bien le rythme cardiaque ou le poids du coeur.
+- **Système solaire** - choisis une planète et il envoie un renseignement sur elle sous forme de nombre : sa taille, la durée de son jour ou de son année, sa distance au Soleil et d'autres encore.
+
+Astuce : un [Convertisseur](#number-parts) transforme les pieds du Canon en mètres.
+
+= Résoudre des problèmes {#puzzles}
+keywords: problème, problèmes, charger un problème, défi, résolu, verrouillé
+
+Un problème est un Eurêka qui n'est pas tout à fait terminé. À toi de le finir.
+
+## Charger un problème
+Choisis **Fichier > Charger un problème...**. Prends un problème dans la liste et clique sur **OK** (ou double-clique dessus). Les problèmes que tu as déjà résolus ont un **+** devant leur nom. **Effacer les résolus** enlève toutes ces marques pour que tu puisses tout recommencer.
+
+## Comment marche un problème
+- **Les consignes sont sur la zone de travail**, écrites sur des Étiquettes et des Panneaux d'affichage. Lis-les d'abord!
+- **Certaines pièces et connexions sont verrouillées.** Elles ne s'éclairent pas sous le pointeur, et tu ne peux ni les déplacer, ni les couper, ni les rebrancher. Elles font partie du problème.
+- **La fenêtre à outils peut être limitée.** Un petit nombre sur une pièce indique combien tu peux encore en prendre ; les pièces grisées ne sont pas disponibles du tout. Supprimer une pièce te la rend.
+- **Un Vérificateur gagné/perdu décide.** Quand ton Eurêka fait ce que demande le problème, le [Vérificateur gagné/perdu](#win-lose) joue son son de victoire, arrête l'Eurêka et marque le problème comme résolu.
+
+## Recommencer
+**Fichier > Revenir à la version enregistrée** remet le problème dans l'état où il était quand tu l'as chargé.
+
+## Garder ton travail
+**Fichier > Enregistrer sous...** enregistre ta solution comme un Eurêka ordinaire : les verrous et les limites de la fenêtre à outils disparaissent, et ce n'est plus un problème. Tu veux créer tes propres problèmes? Voir [Créer tes propres problèmes](#make-puzzles).
+
+= Le Vérificateur gagné/perdu {#win-lose}
+keywords: gagné, perdu, vérificateur, arrêt, fin de partie, fin, but
+
+Le Vérificateur gagné/perdu, dans le dossier des [Superpièces](#super-parts), permet à un Eurêka de se terminer tout seul. Il a une entrée.
+
+Dans ses réglages, tu choisis ce qu'il attend :
+
+- **Gagné si elle est : Vraie ou Fausse** - il attend que son entrée soit ON (ou OFF).
+- **Gagné ou perdu si l'entrée est :** égale, différente, supérieure, inférieure, supérieure ou égale, ou inférieure ou égale **au nombre** que tu tapes.
+
+et ce qu'il joue :
+
+- **Son gagné** - une fin joyeuse. Dans un problème, il marque le problème comme résolu.
+- **Son perdu** - une fin triste, quand le temps ou les essais sont épuisés.
+
+Dès que son entrée correspond, le vérificateur joue son animation et son son, et arrête l'Eurêka.
+
+Tu peux en mettre plusieurs dans un Eurêka : un avec le son gagné qui guette la bonne réponse, et un avec le son perdu qui surveille un Chronomètre, pour une course contre la montre.
+
+= Créer tes propres problèmes {#make-puzzles}
+keywords: créer un problème, auteur, verrouiller, limite, nombre de pièces, pavé numérique du clavier
+
+N'importe quel Eurêka peut devenir un problème pour un ami. Construis les parties de l'Eurêka qui doivent être fournies, écris les consignes sur des Étiquettes ou un Panneau d'affichage, et ajoute un [Vérificateur gagné/perdu](#win-lose) qui signale quand le problème est résolu. Ensuite :
+
+- **Verrouille des pièces et des connexions.** Montre une pièce ou une connexion avec le pointeur et appuie sur **L**. Elle est verrouillée : on ne peut plus la déplacer, la couper ni la rebrancher. (Édition > Annuler enlève un verrou.)
+- **Limite la fenêtre à outils.** Montre une pièce de la fenêtre à outils, ou une pièce de la même sorte sur la zone de travail, et appuie sur **+** ou **-** sur le pavé numérique du clavier. Le premier + sur une pièce sans limite la met à 0 (aucune à prendre) ; chaque + suivant en donne une de plus. Appuyer sur - en dessous de 0 enlève la limite.
+- **Enregistre-le** avec Fichier > Enregistrer sous... Les verrous et les limites sont enregistrés avec lui, et reviennent quand ton ami ouvre le fichier.
+
+Un Eurêka ouvert depuis un fichier ne compte pas comme un des problèmes fournis : son son gagné n'ajoute donc pas de + dans la liste des problèmes - mais le Vérificateur termine quand même la partie.
+
+= Enregistrer et ouvrir des Eurêkas {#files}
+keywords: enregistrer, ouvrir, nouveau, revenir, fichier, wgt, charger, déposer
+
+Les Eurêkas sont enregistrés dans des fichiers **.wgt**, du même genre que ceux du Widget Workshop d'origine : les Eurêkas passent donc de l'un à l'autre dans les deux sens.
+
+- **Fichier > Nouveau** te donne une zone de travail vide.
+- **Fichier > Ouvrir...** ouvre un Eurêka enregistré.
+- **Fichier > Enregistrer** enregistre ton Eurêka sous son nom. La première fois, il t'en demande un.
+- **Fichier > Enregistrer sous...** l'enregistre sous un nouveau nom.
+- **Fichier > Revenir à la version enregistrée** revient à la dernière copie que tu as enregistrée.
+
+Si ton Eurêka est trop étalé pour un petit écran, l'enregistrement peut te proposer de rapprocher ses pièces, pour que tes amis qui ont la version Macintosh de Widget Workshop puissent l'ouvrir eux aussi. Tu peux cocher la case pour garder ta réponse.
+
+## Déposer un fichier
+Tu peux aussi faire glisser un fichier .wgt de ton ordinateur sur la fenêtre d'OpenWGT pour l'ouvrir.
+
+## Dans un navigateur web
+Dans le navigateur, Ouvrir et Enregistrer utilisent le stockage du navigateur. **Fichier > Enregistrer pour téléchargement** te donne ton Eurêka sous forme de fichier à garder, et **Fichier > Télécharger un Eurêka...** te laisse choisir un Eurêka enregistré dans le navigateur et te le donne en téléchargement. Pour faire entrer un fichier, dépose-le sur la page.
+
+Avant de remplacer un Eurêka que tu as modifié, OpenWGT te demande s'il faut d'abord l'enregistrer. Voir aussi [Les Eurêkas d'exemple](#samples) et [Les liens d'Eurêka](#links).
+
+= Les Eurêkas d'exemple {#samples}
+keywords: exemples, eurêkas d'exemple, funwidge, idées, modèles
+
+OpenWGT est livré avec des Eurêkas tout faits, pour jouer avec, les démonter et apprendre.
+
+Choisis **Fichier > Ouvrir...** et ouvre la liste **Rechercher dans** en haut de la fenêtre. Sous **CD de Widget Workshop**, tu trouveras le dossier **FUNWIDGE** avec les exemples. Ouvre-en un, appuie sur GO et regarde ce qu'il fait ; puis appuie sur STOP et observe comment il est relié. Un double-clic sur une pièce montre comment elle est réglée.
+
+Tu peux modifier un exemple autant que tu veux. Pour garder tes changements, enregistre-le avec **Enregistrer sous...** dans un dossier à toi.
+
+Sans le CD, les exemples sont ceux d'OpenWGT ; avec le CD, ce sont ceux de l'original.
+
+= Les liens d'Eurêka {#links}
+keywords: lien, partager, presse-papiers, copier le lien, ouvrir un lien, adresse, web
+
+Un Eurêka tient dans un lien web : tu peux donc le partager dans un message ou un e-mail.
+
+- **Fichier > Copier le lien vers l'Eurêka** place un lien vers ton Eurêka dans le presse-papiers. Colle-le où tu veux. Celui qui l'ouvre retrouve ton Eurêka dans OpenWGT, dans son navigateur web.
+- **Fichier > Ouvrir un lien d'Eurêka** (Ctrl+V) ouvre l'Eurêka dont le lien est dans le presse-papiers.
+
+Les liens des Eurêkas qui ont beaucoup de pièces sont plus longs, et chaque Enregistreur allonge beaucoup un lien, car il emporte tout son enregistrement. Certains programmes de discussion coupent les messages trop longs.
+
+Un lien n'est pas un fichier enregistré : utilise aussi [Fichier > Enregistrer](#files) pour garder ton Eurêka. Copier le lien n'est pas proposé quand un problème est chargé.
+
+= Les Eurêkas indépendants {#standalone}
+keywords: indépendant, logiciel indépendant, exe, autonome, importer
+
+Le Widget Workshop d'origine pouvait enregistrer un Eurêka dans un programme à part, un *Eurêka indépendant*, qui fonctionne sans l'atelier.
+
+- **Fichier > Importer un Eurêka indépendant...** ouvre un tel programme et en sort l'Eurêka, pour que tu puisses l'examiner et le modifier.
+- **Fichier > Sauvegarder en logiciel indépendant** n'est pas disponible dans OpenWGT ; la commande reste grisée. Partage plutôt tes Eurêkas sous forme de [fichiers .wgt](#files) ou de [liens](#links).
+
+= Enregistrer tes propres sons {#recording}
+keywords: enregistrer un son, enregistreur, micro, microphone, wav, fichier son, voix
+
+L'**Enregistreur**, dans le dossier des [Pièces sonores](#sound-parts), garde un son à toi d'environ trois secondes et demie au plus.
+
+## Enregistrer
+- Pose un Enregistreur sur la zone de travail et double-clique dessus.
+- Clique sur **Enregistrer un son** et parle (ou chante, ou tape dans tes mains) devant ton micro. La barre montre le temps qui reste.
+- Clique sur OK.
+
+## Charger un fichier .WAV
+Clique plutôt sur **Charger un fichier .WAV** et choisis un fichier son sur ton ordinateur. Les sons courts et simples marchent le mieux.
+
+## Le faire jouer
+Relie quelque chose à l'entrée de l'Enregistreur, comme une Touche clavier ou un Interrupteur, et relie sa sortie à un **Haut-parleur**. Tant que son entrée est ON, l'Enregistreur joue. Tu peux aussi faire passer son son par un Transformateur de son pour le rendre plus aigu, plus grave ou le jouer à l'envers.
+
+L'enregistrement est gardé à l'intérieur de ton Eurêka. Un nouvel enregistrement entre tout de suite dans la pièce : si tu cliques ensuite sur Annuler, l'ancien son ne revient pas.
+
+L'**Interrupteur sonore** écoute lui aussi ton micro, pour s'allumer quand tu tapes dans tes mains ou que tu cries. Tous deux ont besoin d'un micro, et ton ordinateur ou ton navigateur peut te demander si OpenWGT a le droit de s'en servir.
+
+= Les menus {#menus}
+keywords: menu, menus, menu fichier, menu édition, menu options, menu aide, imprimer
+
+## Fichier
+- **Nouveau**, **Ouvrir...**, **Enregistrer**, **Enregistrer sous...**, **Revenir à la version enregistrée** - voir [Enregistrer et ouvrir des Eurêkas](#files).
+- **Charger un problème...** - voir [Résoudre des problèmes](#puzzles).
+- **Importer un Eurêka indépendant...**, **Sauvegarder en logiciel indépendant** - voir [Les Eurêkas indépendants](#standalone).
+- **Enregistrer pour téléchargement**, **Télécharger un Eurêka...** - seulement dans le navigateur web.
+- **Ouvrir un lien d'Eurêka**, **Copier le lien vers l'Eurêka** - voir [Les liens d'Eurêka](#links).
+- **Aperçu avant impression**, **Configuration de l'impression...**, **Imprimer** - gardés de l'original, mais OpenWGT n'imprime pas.
+- **Quitter** - ferme OpenWGT, en te demandant d'abord s'il faut enregistrer ton Eurêka.
+
+## Édition
+- **Annuler** - défait le dernier changement ; choisis-le encore une fois pour faire revenir le changement.
+- **Vider la zone de travail**, **Supprimer toutes les connexions**, **Supprimer toutes les jonctions**, **Ajuster la zone de travail...** - voir [La zone de travail](#worksheet).
+
+## Options
+- **Fond uni**, **Vagues de métal**, **Parasites**, **Acier** - le fond de la zone de travail.
+- **Paramètres...** - l'échelle, les améliorations et le CD. Voir [La fenêtre Paramètres](#openwgt-settings).
+
+## Aide
+- **À propos d'OpenWGT...** - le titre, la version et les remerciements. Clique ou appuie sur Espace pour la fermer.
+- **Sommaire** - cette aide (F1).
+
+Pendant qu'un Eurêka fonctionne, la plupart des commandes des menus sont grisées. Appuie d'abord sur STOP.
+
+= Raccourcis clavier {#keys}
+keywords: clavier, touches, raccourcis, raccourcis clavier, accélérateurs
+
+## Pour construire
+- **Entrée** - GO : lance l'Eurêka.
+- **Suppr** - enlève la pièce, la connexion ou la jonction sous le pointeur.
+- **Maj** (enfoncée) - l'outil Ciseaux, jusqu'à ce que tu la lâches.
+- **Ctrl** (enfoncée) - l'outil Main, jusqu'à ce que tu la lâches.
+- **L** - verrouille la pièce ou la connexion sous le pointeur (voir [Créer tes propres problèmes](#make-puzzles)).
+- **+** et **-** sur le pavé numérique du clavier - changent le nombre de pièces d'une sorte que donne la fenêtre à outils.
+
+## Pendant que l'Eurêka fonctionne
+- **Échap** - STOP.
+- **Ctrl** (enfoncée) - fais glisser pour déplacer tout l'Eurêka.
+- Toutes les touches qu'attend une pièce [Touche clavier](#switch-parts).
+
+## Les menus
+- **Ctrl+N** - Nouveau
+- **Ctrl+O** - Ouvrir
+- **Ctrl+S** - Enregistrer
+- **Ctrl+Z** ou **Alt+Retour arrière** - Annuler
+- **Ctrl+V** ou **Maj+Inser** - Ouvrir un lien d'Eurêka
+- **F1** - Sommaire de l'aide
+- **Alt** ou **F10** - va dans la barre de menus ; ensuite les flèches, Entrée et Échap. Alt avec une lettre soulignée ouvre ce menu.
+
+= La fenêtre Paramètres {#openwgt-settings}
+keywords: paramètres, options, échelle, zoom, taille, améliorations, changer de cd, préférences
+
+**Options > Paramètres...** ouvre la fenêtre Paramètres propre à OpenWGT. Les changements s'appliquent tout de suite et sont gardés pour la prochaine fois.
+
+## Échelle
+La taille à laquelle tout est dessiné. **Automatique** suit le réglage de ton écran. Décoche-la et utilise **-** et **+** pour choisir une taille de 1x à 4x, par quarts.
+
+## Améliorations
+Quelques changements qui rendent OpenWGT un peu plus facile à utiliser que l'original :
+
+- la fenêtre à outils montre un dossier entier d'un coup, ses pages l'une sous l'autre, sans flèches ;
+- les barres d'outils, les fenêtres de réglages et les boîtes de message se déplacent en entier quand tu les fais glisser, et pas seulement leur contour.
+
+Décoche **Améliorations** pour que tout soit exactement comme dans l'original.
+
+## Changer de CD...
+Choisit une image du CD de Widget Workshop (un fichier .iso) à utiliser par OpenWGT, puis relance l'atelier avec elle. Il te propose d'abord d'enregistrer ton Eurêka. Si ton ordinateur n'a pas de sélecteur de fichiers pour cela, OpenWGT te demande plutôt de déposer l'image du CD sur sa fenêtre. Voir [Jouer avec ou sans le CD](#cd).
+
+= Jouer avec ou sans le CD {#cd}
+keywords: cd, iso, sans cd, pas de cd, OpenWGFX, OpenWSFX, OpenWDATA, données, original
+
+Tu n'as pas besoin du CD de Widget Workshop pour jouer. OpenWGT apporte tout ce qu'il lui faut :
+
+- **OpenWGFX** - ses propres images de chaque pièce, de chaque bouton et de chaque pointeur ;
+- **OpenWSFX** - ses propres sons ;
+- **OpenWDATA** - ses propres textes, fenêtres de réglages, menus, problèmes, Eurêkas d'exemple et cette aide.
+
+Chaque pièce garde la taille, les bornes et le rôle de l'original : les Eurêkas créés avec le Widget Workshop d'origine s'ouvrent et fonctionnent de la même façon dans OpenWGT, et inversement.
+
+## Utiliser ton CD
+Si tu as le CD d'origine (le CD PC/Mac ou le CD OS/2 Warp), OpenWGT peut utiliser à la place ses images, ses sons, ses problèmes, ses exemples et son aide. Choisis-le avec **Changer de CD...** dans [Options > Paramètres](#openwgt-settings). OpenWGT se souvient de ton choix. Un fichier .iso posé dans le dossier où démarre OpenWGT est aussi pris tout seul.
+
+= Utiliser cette aide {#using-help}
+keywords: aide, index, précédent, sommaire, F1, chercher
+
+Ouvre cette aide quand tu veux avec **Aide > Sommaire** ou **F1**. La fenêtre d'aide flotte au-dessus de l'atelier ; tu peux continuer à construire pendant qu'elle est ouverte.
+
+- Clique sur un mot souligné pour sauter à cette rubrique.
+- **Sommaire** te ramène à la liste des rubriques.
+- **Index** donne la liste des mots que tu peux chercher. Tape les premières lettres d'un mot, choisis-le dans la liste et clique sur **Afficher**.
+- **Précédent** te ramène à la rubrique que tu lisais avant.
+- **<<** et **>>** passent d'une rubrique à l'autre dans l'ordre.
+
+= Astuces et dépannage {#tips}
+keywords: astuces, dépannage, problèmes, aide, rien ne se passe, pas de son, x rouge
+
+## Ma connexion ne se branche pas
+Chaque borne ne prend qu'une connexion, et une connexion va toujours d'une sortie à une entrée. Si la borne que tu veux est déjà prise, déplace ou enlève d'abord l'ancienne connexion, ou utilise un [Répartiteur](#switch-parts).
+
+## Je n'entends rien
+Y a-t-il un **Haut-parleur** relié au bout de tes pièces sonores? Le bouton Son de la [boîte de contrôle](#control-box) est-il allumé? Certaines pièces, comme les Cris d'animaux, ne jouent que quand leur entrée s'allume.
+
+## Rien ne se passe quand je clique sur une pièce
+Les pièces ne réagissent que pendant que l'Eurêka fonctionne : appuie d'abord sur GO. Si une pièce ne veut ni bouger ni s'éclairer pendant que tu construis, elle est peut-être verrouillée par un [problème](#puzzles).
+
+## Un afficheur montre un X rouge
+Le nombre ne rentre pas, ou une pièce n'a pas pu calculer de réponse (en divisant par 0, par exemple). Essaie l'Afficheur à dix chiffres pour les grands nombres.
+
+## Je ne vois plus mon Eurêka
+Utilise l'outil Main (ou garde Ctrl enfoncée) pour le ramener en vue, ou choisis **Édition > Ajuster la zone de travail...**.
+
+## Oups!
+**Édition > Annuler** (Ctrl+Z) défait le dernier changement.
+
+## Construis pas à pas
+Ajoute une ou deux pièces à la fois, appuie sur GO, vérifie qu'elles marchent, puis ajoutes-en d'autres. Relie un Afficheur à trois chiffres à une sortie pour voir ce qu'envoie une pièce.
+
+= À propos d'OpenWGT {#about}
+keywords: à propos, remerciements, licence, AGPL, Maxis, Doridian, droits d'auteur, version
+
+**OpenWGT** est un moteur libre pour **Widget Workshop: A Mad Scientist's Laboratory**, le jouet d'invention publié par Maxis en 1995 (en français : Eurêka, le Laboratoire du savant fou). Il refait l'atelier de zéro pour les ordinateurs d'aujourd'hui - Linux, Windows, macOS et le navigateur web - pour que les Eurêkas et les problèmes de l'original continuent de fonctionner.
+
+## Remerciements
+OpenWGT est une branche dérivée du portage de Widget Workshop réalisé par Doridian (github.com/Doridian/GadgetGenerator), qui a reconstitué le fonctionnement du jeu. Cette branche ajoute ses propres images (OpenWGFX), ses propres sons (OpenWSFX) et ses propres données (OpenWDATA : les textes, les fenêtres de réglages, les problèmes, les Eurêkas d'exemple et cette aide), pour fonctionner sans le CD d'origine, ainsi que des corrections et des nouveautés comme les liens d'Eurêka et la fenêtre Paramètres.
+
+## Licence
+OpenWGT est un logiciel libre, sous la licence GNU Affero General Public License, version 3 ou ultérieure (AGPL-3.0-or-later). Ses propres images, sons et données sont sous la même licence. Tu peux l'utiliser, l'étudier, le partager et le modifier selon les termes de cette licence.
+
+## Widget Workshop
+Widget Workshop est (c) Maxis, et son nom est une marque de ses propriétaires. OpenWGT est un projet non officiel, qui n'est ni réalisé, ni approuvé, ni soutenu par Maxis ou Electronic Arts, et il ne contient aucune donnée du jeu d'origine. Pour utiliser les images et les sons de l'original, il te faut ta propre copie du CD.
+
+Merci à tous ceux qui ont créé le jouet d'origine, et à tous ceux qui le font vivre encore.

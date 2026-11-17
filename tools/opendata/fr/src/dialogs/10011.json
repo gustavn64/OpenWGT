@@ -1,0 +1,67 @@
+{
+ "style": "0x90c80040",
+ "ex_style": "0x00000000",
+ "rect": [
+  63,
+  51,
+  137,
+  96
+ ],
+ "menu": null,
+ "class": null,
+ "title": "OpenWGT",
+ "font": [
+  8,
+  "MS Sans Serif"
+ ],
+ "items": [
+  {
+   "id": 101,
+   "class": "button",
+   "text": "&Nouvel Eurêka",
+   "rect": [
+    18,
+    11,
+    100,
+    14
+   ],
+   "style": "0x50010001"
+  },
+  {
+   "id": 102,
+   "class": "button",
+   "text": "&Ouvrir un Eurêka",
+   "rect": [
+    18,
+    31,
+    100,
+    14
+   ],
+   "style": "0x50010000"
+  },
+  {
+   "id": 103,
+   "class": "button",
+   "text": "Essayer un &problème",
+   "rect": [
+    18,
+    51,
+    100,
+    14
+   ],
+   "style": "0x50010000"
+  },
+  {
+   "id": 104,
+   "class": "button",
+   "text": "&Quitter",
+   "rect": [
+    18,
+    71,
+    100,
+    14
+   ],
+   "style": "0x50010000"
+  }
+ ]
+}

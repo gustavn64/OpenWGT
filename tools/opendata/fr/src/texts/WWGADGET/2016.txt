@@ -1,0 +1,1 @@
+L'Additionneur ajoute ses deux nombres d'entrée et envoie la somme.

@@ -1,0 +1,2 @@
+Astuce de construction :
+Le Mini nombre à trois chiffres prend peu de place : utilise-le pour les nombres fixes d'un Eurêka, comme les limites des Comparateurs ou les facteurs des Multiplicateurs, et garde le grand pour les nombres que les joueurs changent.

@@ -1,0 +1,53 @@
+# Space Scale: your weight on Earth, times each planet's gravity
+# (Earth = 1), is what you would weigh there.
+background 0
+
+part title TxLb 20 98
+label title 0 "La balance de l'espace"
+radio title 0 1
+part q1 TxLb 16 135
+label q1 0 "Combien pèserais-tu"
+part q2 TxLb 16 153
+label q2 0 "sur d'autres"
+part q3 TxLb 16 171
+label q3 0 "planètes?"
+
+# Your weight, split two ways.
+part w cnst 10 230
+label w 0 "100"
+part ws Spl2 115 245
+wire w 0 ws 0
+
+# Mars: its gravity times your weight.
+part mars Plnt 150 100
+number mars 0 3
+number mars 1 6
+part mm Mulr 215 215
+wire mars 0 mm 1
+wire ws 1 mm 0
+part md disp 325 230
+wire mm 2 md 0
+part ml TxLb 330 278
+label ml 0 "sur Mars"
+
+# Jupiter.
+part jup Plnt 337 100
+number jup 0 4
+number jup 1 6
+part jm Mulr 400 300
+wire jup 0 jm 1
+wire ws 2 jm 0
+part jd disp 510 315
+wire jm 2 jd 0
+part jl TxLb 515 362
+label jl 0 "sur Jupiter"
+
+# What to do.
+part t1 TxLb 16 330
+label t1 0 "Appuie sur GO, puis sur les"
+part t2 TxLb 16 347
+label t2 0 "flèches pour régler ton poids."
+part t3 TxLb 16 372
+label t3 0 "Mars attire moins que la Terre,"
+part t4 TxLb 16 389
+label t4 0 "Jupiter, bien plus fort!"

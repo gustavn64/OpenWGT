@@ -1,0 +1,2 @@
+Astuce de construction :
+Sers-t'en pour savoir quand quelque chose dépasse un objectif, comme un score qui passe 100. Si atteindre l'objectif doit aussi compter, choisis Supérieur ou égal à.

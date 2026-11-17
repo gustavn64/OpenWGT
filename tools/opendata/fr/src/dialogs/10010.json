@@ -1,0 +1,127 @@
+{
+ "style": "0x90c800c0",
+ "ex_style": "0x00000000",
+ "rect": [
+  44,
+  46,
+  198,
+  119
+ ],
+ "menu": null,
+ "class": null,
+ "title": "OpenWGT",
+ "font": [
+  8,
+  "MS Sans Serif"
+ ],
+ "items": [
+  {
+   "id": 6,
+   "class": "button",
+   "text": "&Oui",
+   "rect": [
+    17,
+    98,
+    41,
+    14
+   ],
+   "style": "0x50030001"
+  },
+  {
+   "id": 7,
+   "class": "button",
+   "text": "&Non",
+   "rect": [
+    77,
+    98,
+    41,
+    14
+   ],
+   "style": "0x50010000"
+  },
+  {
+   "id": 2,
+   "class": "button",
+   "text": "&Annuler",
+   "rect": [
+    140,
+    98,
+    41,
+    14
+   ],
+   "style": "0x50010000"
+  },
+  {
+   "id": 13,
+   "class": "button",
+   "text": "&Garder cette réponse",
+   "rect": [
+    8,
+    61,
+    106,
+    12
+   ],
+   "style": "0x50030003"
+  },
+  {
+   "id": 65535,
+   "class": "static",
+   "text": "Cet Eurêka est plus grand que ce que la",
+   "rect": [
+    8,
+    10,
+    164,
+    11
+   ],
+   "style": "0x50020000"
+  },
+  {
+   "id": 65535,
+   "class": "static",
+   "text": "version Macintosh de Widget Workshop ouvre.",
+   "rect": [
+    8,
+    21,
+    185,
+    11
+   ],
+   "style": "0x50020000"
+  },
+  {
+   "id": 65535,
+   "class": "static",
+   "text": "Rapprocher ses pièces pour que les",
+   "rect": [
+    8,
+    32,
+    185,
+    11
+   ],
+   "style": "0x50020000"
+  },
+  {
+   "id": 65535,
+   "class": "static",
+   "text": "utilisateurs de Mac puissent l'ouvrir?",
+   "rect": [
+    8,
+    43,
+    137,
+    11
+   ],
+   "style": "0x50020000"
+  },
+  {
+   "id": 65535,
+   "class": "static",
+   "text": " et ne plus demander",
+   "rect": [
+    17,
+    75,
+    118,
+    8
+   ],
+   "style": "0x50020000"
+  }
+ ]
+}

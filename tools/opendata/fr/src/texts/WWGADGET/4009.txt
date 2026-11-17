@@ -1,0 +1,2 @@
+Astuce de construction :
+Prends une Porte OU quand plusieurs choses doivent pouvoir déclencher la même action, comme une Touche clavier ou le Bouton de souris. Enchaîne d'autres portes OU pour plus de déclencheurs.

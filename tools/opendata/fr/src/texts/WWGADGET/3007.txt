@@ -1,0 +1,2 @@
+Astuce de construction :
+Mets un Interrupteur sur son entrée : il tire un nouveau nombre environ chaque seconde tant que l'interrupteur est à ON. Coche Au choix, de 200 à 800, et relie-le à un Haut-parleur pour une musique de robot.

@@ -1,0 +1,2 @@
+Astuce de construction :
+Besoin de plus de quatre copies? Branche une des sorties sur un autre Répartiteur. Chaque sortie porte toujours exactement ce qui est entré, pas une part.

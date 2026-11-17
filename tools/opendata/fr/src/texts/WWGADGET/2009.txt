@@ -1,0 +1,1 @@
+La Porte OU a deux entrées et une sortie. Si au moins une entrée dit OUI, la sortie dit OUI (1) ; c'est seulement quand les deux entrées disent NON qu'elle dit NON (0). Tout nombre autre que 0 compte comme OUI.

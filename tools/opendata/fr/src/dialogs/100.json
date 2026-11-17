@@ -1,0 +1,45 @@
+{
+ "style": "0x80c800c0",
+ "ex_style": "0x00000000",
+ "rect": [
+  34,
+  22,
+  217,
+  55
+ ],
+ "menu": null,
+ "class": null,
+ "title": "À propos d'OpenWGT",
+ "font": [
+  8,
+  "MS Sans Serif"
+ ],
+ "items": [
+  {
+   "id": 65535,
+   "class": "static",
+   "text": {
+    "ordinal": 2
+   },
+   "rect": [
+    11,
+    17,
+    18,
+    20
+   ],
+   "style": "0x50000003"
+  },
+  {
+   "id": 65535,
+   "class": "static",
+   "text": "OpenWGT",
+   "rect": [
+    40,
+    35,
+    119,
+    8
+   ],
+   "style": "0x50020000"
+  }
+ ]
+}

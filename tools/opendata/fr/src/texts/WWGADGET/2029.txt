@@ -1,0 +1,1 @@
+Cette pièce mesure, en pouces, la distance parcourue par la souris pendant que tu tiens un bouton de la souris enfoncé. Relie-la à l'Afficheur à dix chiffres pour voir aussi les fractions de pouce.

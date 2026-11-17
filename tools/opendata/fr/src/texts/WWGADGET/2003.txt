@@ -1,0 +1,1 @@
+Cette pièce calcule des aires et des volumes. Donne-lui une longueur (un côté ou un rayon) et elle te donne l'aire d'un carré ou d'un cercle, ou le volume d'un cube ou d'une sphère.
