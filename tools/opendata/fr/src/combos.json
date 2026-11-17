@@ -2,27 +2,27 @@
  "1000": [
   [
    107,
-   "29,029 pieds (mont Everest)"
+   "8 848 m (mont Everest)"
   ],
   [
    107,
-   "4,190 pieds (le Vésuve)"
+   "1 277 m (le Vésuve)"
   ],
   [
    107,
-   "1,472 pieds (Empire State)"
+   "449 m (Empire State)"
   ],
   [
    107,
-   "984 pieds (tour Eiffel)"
+   "300 m (tour Eiffel)"
   ],
   [
    107,
-   "20 pieds (T. rex)"
+   "6,1 m (T. rex)"
   ],
   [
    107,
-   "6 pieds (grande personne)"
+   "1,83 m (grande personne)"
   ],
   [
    109,
@@ -42,19 +42,19 @@
   ],
   [
    111,
-   "La Terre (1,32E+25 livres)"
+   "La Terre (5,99E+24 kg)"
   ],
   [
    111,
-   "Gros éléphant (13 000 livres)"
+   "Gros éléphant (5 900 kg)"
   ],
   [
    111,
-   "Adulte (175 livres)"
+   "Adulte (79 kg)"
   ],
   [
    111,
-   "Mouche (0,00031 livre)"
+   "Mouche (0,00014 kg)"
   ]
  ],
  "1001": [
@@ -76,27 +76,27 @@
   ],
   [
    109,
-   "29,029 pieds (mont Everest)"
+   "8 848 m (mont Everest)"
   ],
   [
    109,
-   "4,190 pieds (le Vésuve)"
+   "1 277 m (le Vésuve)"
   ],
   [
    109,
-   "1,472 pieds (Empire State)"
+   "449 m (Empire State)"
   ],
   [
    109,
-   "984 pieds (tour Eiffel)"
+   "300 m (tour Eiffel)"
   ],
   [
    109,
-   "20 pieds (T. rex)"
+   "6,1 m (T. rex)"
   ],
   [
    109,
-   "6 pieds (grande personne)"
+   "1,83 m (grande personne)"
   ],
   [
    111,
@@ -114,19 +114,19 @@
  "1002": [
   [
    107,
-   "Capsule Apollo 10 (24 791 mi/h)"
+   "Capsule Apollo 10 (39 889 km/h)"
   ],
   [
    107,
-   "Balle de fusil (1000 mi/h)"
+   "Balle de fusil (1 609 km/h)"
   ],
   [
    107,
-   "Avion de ligne (561 mi/h)"
+   "Avion de ligne (903 km/h)"
   ],
   [
    107,
-   "Balle de baseball (90 mi/h)"
+   "Balle de baseball (145 km/h)"
   ],
   [
    107,
@@ -150,27 +150,27 @@
   ],
   [
    111,
-   "29,029 pieds (mont Everest)"
+   "8 848 m (mont Everest)"
   ],
   [
    111,
-   "4,190 pieds (le Vésuve)"
+   "1 277 m (le Vésuve)"
   ],
   [
    111,
-   "1,472 pieds (Empire State)"
+   "449 m (Empire State)"
   ],
   [
    111,
-   "984 pieds (tour Eiffel)"
+   "300 m (tour Eiffel)"
   ],
   [
    111,
-   "20 pieds (T. rex)"
+   "6,1 m (T. rex)"
   ],
   [
    111,
-   "6 pieds (grande personne)"
+   "1,83 m (grande personne)"
   ]
  ],
  "1003": [
@@ -370,7 +370,7 @@
   ],
   [
    109,
-   "Diamètre (milles)"
+   "Diamètre (km)"
   ],
   [
    109,
@@ -382,11 +382,11 @@
   ],
   [
    109,
-   "Distance au Soleil (millions de milles)"
+   "Distance au Soleil (millions de km)"
   ],
   [
    109,
-   "Masse (x 10 000 000 000 000 gigatonnes)"
+   "Masse (x 1 000 000 000 000 gigatonnes)"
   ],
   [
    109,
@@ -398,7 +398,7 @@
   ],
   [
    109,
-   "Vitesse orbitale (x1000 mi/h)"
+   "Vitesse orbitale (x1000 km/h)"
   ]
  ],
  "2005": [

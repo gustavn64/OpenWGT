@@ -24,6 +24,7 @@ use super::common::{any, format_number, parse_num, scan_f64, trunc_sat};
 use super::x87::Ext;
 use crate::assets::{Assets, Module, rt};
 use crate::gadget::{Behavior, Core, DrawCx};
+use crate::lang::Lang;
 use crate::sim::Io;
 
 // ---------------------------------------------------------------------------
@@ -839,9 +840,26 @@ pub fn mouse_click() -> Box<dyn Behavior> {
 /// two agree to the double's last bit for this product).
 const INCH: f64 = 1.0 / 72.0;
 
+/// The metric editions' pixel, in centimeters: 1/28.35 in the Swedish
+/// edition (`0x44a408`, 72 pixels to 2.54 cm), 1/28 in the French
+/// (`0x44a8b8`); both 80-bit constants that hold a double exactly.
+const CM_SV: f64 = f64::from_bits(0x3fa2_0f59_d92b_cba0);
+const CM_FR: f64 = f64::from_bits(0x3fa2_4924_9249_2492);
+
+/// A screen pixel in the unit of the edition in `lang`: inches in the
+/// English build, centimeters in the Swedish and French editions.
+#[must_use]
+pub fn mouse_unit(lang: Lang) -> f64 {
+    match lang {
+        Lang::En => INCH,
+        Lang::Sv => CM_SV,
+        Lang::Fr => CM_FR,
+    }
+}
+
 /// The Mouse Distance Measurer (`MsMv`, cMouseMove, io.md 8): how far the
-/// cursor went with a button down, in inches (72 screen pixels each); its
-/// picture shows how fast.
+/// cursor went with a button down, in inches (72 screen pixels each), or
+/// centimeters in the metric editions; its picture shows how fast.
 #[derive(Debug, Default)]
 pub struct MouseMove {
     /// The cursor at the last tick (`+0x197`, `+0x199`), in screen pixels.
@@ -852,7 +870,8 @@ pub struct MouseMove {
     sampled: f64,
     /// The tick of the next speed sample (`+0x1a3`).
     next: u32,
-    /// The last speed, inches per 30 ticks (the global `0x499fd8`).
+    /// The last speed, inches (centimeters) per 30 ticks (the global
+    /// `0x499fd8`).
     speed: f64,
 }
 
@@ -874,7 +893,7 @@ impl Behavior for MouseMove {
             }
             self.last = Some(c);
         }
-        core.number = Ext::from(INCH).mul(d).add(core.number).to_f64();
+        core.number = Ext::from(mouse_unit(io.assets.lang)).mul(d).add(core.number).to_f64();
         if d != 0.0 {
             io.fire(core, 0);
         }
@@ -969,6 +988,43 @@ const HEARTS: [(f64, f64); 8] = [
     (280.0, 0.003),
 ];
 
+/// The Swedish edition's, the weights in kilograms (Uppfinnarverkstan's
+/// `WIDGET.EXE`, `0x498fba`).
+const HEARTS_SV: [(f64, f64); 8] = [
+    (70.0, 0.3),
+    (120.0, 0.03),
+    (60.0, 0.01),
+    (11.0, 0.004),
+    (49.0, 22.0),
+    (120.0, 0.01),
+    (100.0, 0.12),
+    (280.0, 0.001),
+];
+
+/// The French edition's, the weights in kilograms (Eurêka's `WIDGET.EXE`,
+/// `0x498f1e`; its dialog says grams).
+const HEARTS_FR: [(f64, f64); 8] = [
+    (70.0, 0.28),
+    (120.0, 0.027),
+    (60.0, 0.009),
+    (11.0, 0.004),
+    (49.0, 19.64),
+    (120.0, 0.009),
+    (100.0, 0.107),
+    (280.0, 0.001),
+];
+
+/// The hearts of the edition in `lang`: the beats are the same, the
+/// weights in pounds or kilograms.
+#[must_use]
+pub fn hearts(lang: Lang) -> &'static [(f64, f64); 8] {
+    match lang {
+        Lang::En => &HEARTS,
+        Lang::Sv => &HEARTS_SV,
+        Lang::Fr => &HEARTS_FR,
+    }
+}
+
 /// The ticks a beat of animal `i` takes: `ftol(3600.0f / bpm)`.
 #[must_use]
 pub fn heart_period(i: usize) -> u32 {
@@ -1001,7 +1057,8 @@ impl Behavior for Heart {
             io.play(HEART_SOUND);
             core.state = false;
         }
-        let (bpm, weight) = HEARTS.get(i).copied().unwrap_or(HEARTS[0]);
+        let hearts = hearts(io.assets.lang);
+        let (bpm, weight) = hearts.get(i).copied().unwrap_or(hearts[0]);
         match core.settings.radios[0] {
             0 => core.number = bpm,
             1 => core.number = weight,
@@ -1284,5 +1341,47 @@ mod tests {
         b.tick_at(&mut h, 13);
         assert_eq!(b.out(&h, 0), crate::gadget::Value::Number(0.003));
         let _ = Source::default();
+    }
+
+    #[test]
+    fn metric_editions_weigh_hearts_in_kilograms() {
+        // The beats are the same; a human heart weighs 0.63 lb, 0.3 kg in
+        // the Swedish edition, 0.28 kg in the French, an elephant's 44 lb,
+        // 22 or 19.64 kg.
+        for lang in Lang::ALL {
+            assert_eq!(hearts(lang).map(|h| h.0), HEARTS.map(|h| h.0));
+        }
+        assert_eq!((hearts(Lang::Sv)[0].1, hearts(Lang::Sv)[4].1), (0.3, 22.0));
+        assert_eq!((hearts(Lang::Fr)[0].1, hearts(Lang::Fr)[4].1), (0.28, 19.64));
+        let mut b = out();
+        b.assets.lang = Lang::Sv;
+        let mut h = Heart;
+        b.fresh(&mut h);
+        b.core.settings.radios[0] = 1;
+        b.core.settings.numbers[0] = 4;
+        b.start(&mut h);
+        b.tick_at(&mut h, 1);
+        assert_eq!(b.out(&h, 0), crate::gadget::Value::Number(22.0));
+    }
+
+    #[test]
+    fn metric_editions_measure_the_mouse_in_centimeters() {
+        // 28.35 pixels to the centimeter in the Swedish edition (72 to the
+        // inch), 28 in the French.
+        assert_eq!(mouse_unit(Lang::Sv), 1.0 / 28.35);
+        assert_eq!(mouse_unit(Lang::Fr), 1.0 / 28.0);
+        for (lang, px, cm) in [(Lang::Sv, 567, 20.0), (Lang::Fr, 560, 20.0), (Lang::En, 144, 2.0)] {
+            let mut b = out();
+            b.assets.lang = lang;
+            let mut m = MouseMove::default();
+            b.fresh(&mut m);
+            b.start(&mut m);
+            b.env.cursor_screen = (0, 100);
+            b.tick_at(&mut m, 0);
+            b.env.mouse_down = true;
+            b.env.cursor_screen = (px, 100);
+            b.tick_at(&mut m, 1);
+            assert!((b.core.number - cm).abs() < 1e-12, "{lang:?}: {}", b.core.number);
+        }
     }
 }

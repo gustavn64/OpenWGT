@@ -1,2 +1,2 @@
 Astuce de construction :
-Le Canon compte en pieds : place un Convertisseur réglé sur Pieds en mètres après sa sortie Distance ou Hauteur pour avoir la réponse en mètres. Livres en kilogrammes fait de même pour les poids.
+Le Canon compte en mètres : place un Convertisseur réglé sur Mètres en pieds après sa sortie Distance ou Hauteur pour avoir la réponse en pieds. Kilogrammes en livres fait de même pour les poids.

@@ -1,1 +1,1 @@
-Den här delen mäter i tum hur långt musen rör sig medan du håller ner en musknapp. Koppla den till den tiosiffriga displayen så ser du delarna av en tum också.
+Den här delen mäter i centimeter hur långt musen rör sig medan du håller ner en musknapp. Koppla den till den tiosiffriga displayen så ser du delarna av en centimeter också.

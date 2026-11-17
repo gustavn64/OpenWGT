@@ -74,6 +74,9 @@ AND/OR/XOR/NOT OCH/ELLER/XELLER/INTE (OCH-grind, ...), Preset/Custom
 Förval/Eget, the scientist Doc, the CD skivan (Byt skiva..., Spela utan
 skivan, Widget Workshop-skivan), CD image skivavbildning, the Settings
 window Inställningar.
+The parts reckon in meters, km/h and kilograms, as in the Swedish
+edition (`engine::gadgets::science::Physics`), so the texts do, with
+spaces between thousands and a decimal comma: 8 848 m, 0,17 g.
 
 ## French
 
@@ -107,8 +110,8 @@ Windows-1252, which every font draws as a space and no line breaks at)
 before `:`, `;`, `!` and `?`, so that a wrapped line never starts with
 one; not in an English title (Widget Workshop: A Mad Scientist's
 Laboratory).
-The parts reckon in the original's units, so the texts keep them in
-French words: pieds (pi), livres, mi/h, milles, pouces. The help and the
+The parts reckon in meters, km/h and kilograms, as in the edition, so
+the texts do: 8 848 m, 0,17 g, 39 889 km/h. The help and the
 worksheet's labels can't show œ, so the pack writes *oe* throughout
 (Coeur), as the edition does.
 
@@ -131,8 +134,9 @@ parts' wiring and the dialogs working as the game expects.
   in its own words; no prose of the original's. Very short generic UI
   words (OK, Cancel, Open..., a part's plain name, units) aren't anyone's.
 - **Some texts are code.** A dialog's `Pic1004` names a picture sheet, an
-  edit field's text like `5#` is its input filter, a preset's leading
-  number is the value the part reads, `%s`/`%d` and `&` mnemonics are the
+  edit field's text like `5#` is its input filter, a drop-down list's
+  choices are taken by their place (the numbers in them only say what
+  the part's table holds there), `%s`/`%d` and `&` mnemonics are the
   code's: keep them as they are.
 - **Labels fit their controls.** A dialog control's rectangle is in
   dialog units (about 4 to a character across in MS Sans Serif 8).

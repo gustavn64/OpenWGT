@@ -43,8 +43,10 @@ WORDS = {
         "AND": "OCH", "OR": "ELLER", "XOR": "XELLER", "NOT": "INTE",
         # switches, the light bulb, the Sound Switch
         "ON": "PÅ", "OFF": "AV",
-        # the tray's Text Label, the Converter's units, the Plotter's reset
-        "Label": "Etikett", "Ft": "Fot", "RESET": "NOLLA",
+        # the tray's Text Label, the Plotter's reset
+        "Label": "Etikett", "RESET": "NOLLA",
+        # the Converter's units: m and kg as the Swedish edition writes them
+        "M": "m", "Kg": "kg", "Ft": "fot", "Lb": "lb",
         # the Digital Clock, the Totaler, the Numeric Keypad
         "AM": "FM", "PM": "EM",
         "AVERAGE": "MEDEL", "TOTAL": "SUMMA", "MAXIMUM": "STÖRST", "MINIMUM": "MINST",
@@ -77,8 +79,10 @@ WORDS = {
         "IN": "E", "OUT": "S",
         # the logic gates
         "AND": "ET", "OR": "OU", "XOR": "XOU", "NOT": "INV",
-        # the tray's Text Label, the Converter's units, the Plotter's reset
-        "Label": "Étiquette", "Ft": "pi", "RESET": "ZÉRO",
+        # the tray's Text Label, the Plotter's reset
+        "Label": "Étiquette", "RESET": "ZÉRO",
+        # the Converter's units (pi: pied)
+        "M": "m", "Kg": "kg", "Ft": "pi", "Lb": "lb",
         # the Totaler, the Numeric Keypad
         "AVERAGE": "MOYENNE", "TOTAL": "TOTAL", "MAXIMUM": "MAXIMUM", "MINIMUM": "MINIMUM",
         "ENTER": "ENTRÉE",

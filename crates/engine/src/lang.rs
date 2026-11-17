@@ -258,6 +258,17 @@ fn sv(en: &str) -> Option<&'static str> {
         "Can`t open file" => "Kan inte öppna filen",
         "Bad file format" => "Felaktigt filformat",
         "Can't import non-8 bit sound" => "Kan bara importera 8-bitars ljud",
+        // The planets' captions (the Solar System; the Swedish edition's,
+        // with the pack's Jorden for its Tellus).
+        "MERCURY" => "MERKURIUS",
+        "VENUS" => "VENUS",
+        "EARTH" => "JORDEN",
+        "MARS" => "MARS",
+        "JUPITER" => "JUPITER",
+        "SATURN" => "SATURNUS",
+        "URANUS" => "URANUS",
+        "NEPTUNE" => "NEPTUNUS",
+        "PLUTO" => "PLUTO",
         _ => return None,
     })
 }
@@ -399,6 +410,17 @@ fn fr(en: &str) -> Option<&'static str> {
         "Can`t open file" => "Ce fichier ne peut pas être ouvert",
         "Bad file format" => "Ce fichier n'a pas le bon format",
         "Can't import non-8 bit sound" => "Seuls les sons 8 bits peuvent être importés",
+        // The planets' captions (the Solar System; as the French edition
+        // writes them, not in capitals).
+        "MERCURY" => "Mercure",
+        "VENUS" => "Vénus",
+        "EARTH" => "Terre",
+        "MARS" => "Mars",
+        "JUPITER" => "Jupiter",
+        "SATURN" => "Saturne",
+        "URANUS" => "Uranus",
+        "NEPTUNE" => "Neptune",
+        "PLUTO" => "Pluton",
         _ => return None,
     })
 }

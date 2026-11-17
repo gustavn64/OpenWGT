@@ -138,7 +138,7 @@
   {
    "id": 110,
    "class": "button",
-   "text": "Poids du coeur (livres)1",
+   "text": "Poids du coeur (kg)1",
    "rect": [
     116,
     123,
