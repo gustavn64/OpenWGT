@@ -88,7 +88,19 @@ jobs:
           # (it starts: the libraries are all there)
           { ./$out --help 2>&1 || true; } | grep "usage:"
 
-      - uses: taiki-e/install-action@v2
+      # cargo-deb and cargo-generate-rpm have no aarch64 Linux binaries to
+      # download, so install-action builds them there (a minute): the
+      # built ones are kept between runs. A new key builds newer ones.
+      - id: tools
+        uses: actions/cache@v6
+        with:
+          path: |
+            ~/.cargo/bin/cargo-deb
+            ~/.cargo/bin/cargo-generate-rpm
+          key: packaging-tools-v1-${{ runner.os }}-${{ runner.arch }}
+
+      - if: steps.tools.outputs.cache-hit != 'true'
+        uses: taiki-e/install-action@v2
         with:
           tool: cargo-deb,cargo-generate-rpm
 
