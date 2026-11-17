@@ -193,13 +193,20 @@ impl Assets {
 }
 
 /// The language of the game on `cd` (its `WIDGET.EXE`'s resources), to
-/// choose the port's own packs in it before loading; `None` if there's no
-/// game there or it doesn't say (the OS/2 CD: English).
+/// choose the port's own packs in it before loading: English where it
+/// doesn't say (the OS/2 CD); `None` if there's no game there.
 #[must_use]
 pub fn cd_language(cd: &dyn Source) -> Option<crate::lang::Lang> {
     let dir = game_dir(cd)?;
     let exe = cd.read(&join(dir, Module::Exe.file()))?;
-    crate::lang::Lang::of_resources(&parse_module(Module::Exe, &exe).ok()?)
+    // A game that doesn't say (the OS/2 CD's) is the English one, as
+    // its texts are: the packs' language mustn't decide it.
+    Some(
+        parse_module(Module::Exe, &exe)
+            .ok()
+            .and_then(|m| crate::lang::Lang::of_resources(&m))
+            .unwrap_or_default(),
+    )
 }
 
 /// The port's own packs to use instead of the CD's pictures and sounds

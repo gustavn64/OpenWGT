@@ -4,7 +4,8 @@
 //! ([`super::tray`]'s whole-folder tray, windows dragged whole). The host keeps both
 //! ([`super::Editor::take_ui_scale`], [`super::Editor::take_enhanced`]).
 //! Change CD... asks the host for another CD image
-//! ([`super::Editor::take_change_cd`]).
+//! ([`super::Editor::take_change_cd`]); Play without the CD starts the
+//! game again on the port's own packs, in the language played.
 
 use crate::assets::Assets;
 use crate::gfx::{IRect, Surface};
@@ -36,12 +37,13 @@ const CHECK_H: i32 = 16;
 const NOTE: &str = "The parts tray shows a whole folder at once; windows drag whole.";
 
 /// The parts a letter presses: their labels' underlined letters.
-const MNEMONIC_PARTS: [(Part, &str); 5] = [
+const MNEMONIC_PARTS: [(Part, &str); 6] = [
     (Part::Auto, "&Automatic (the display's)"),
     (Part::Enhanced, "&Enhancements"),
     (Part::FullScreen, "&Full screen"),
     (Part::Language, "&Language:"),
     (Part::ChangeCd, "&Change CD..."),
+    (Part::NoCd, "Play &without the CD"),
 ];
 
 /// What an input did.
@@ -50,7 +52,8 @@ pub enum Outcome {
     None,
     Scale(Scale),
     Enhanced(bool),
-    /// Another language: the game starts again in it (without a CD).
+    /// Another language, or Play without the CD: the game starts again
+    /// in it without a CD.
     Language(Lang),
     /// Full screen on or off.
     FullScreen(bool),
@@ -71,9 +74,10 @@ enum Part {
     Language,
     FullScreen,
     ChangeCd,
+    NoCd,
 }
 
-const PARTS: [Part; 9] = [
+const PARTS: [Part; 10] = [
     Part::Close,
     Part::CloseBox,
     Part::Auto,
@@ -83,6 +87,7 @@ const PARTS: [Part; 9] = [
     Part::Language,
     Part::FullScreen,
     Part::ChangeCd,
+    Part::NoCd,
 ];
 
 /// The window.
@@ -178,6 +183,8 @@ impl SettingsBox {
             + MARGIN
             + BUTTON_H
             + MARGIN
+            + BUTTON_H
+            + MARGIN
     }
 
     /// The client area's top left.
@@ -190,7 +197,7 @@ impl SettingsBox {
 
     /// The rectangles: the UI scale's group, its check box, −, the value,
     /// +, the enhancements' check box, full screen's, the language's
-    /// button, Change CD..., Close.
+    /// button, Play without the CD, Change CD..., Close.
     fn layout(&self, assets: &Assets) -> Layout {
         let lh = ui::font(assets).map_or(13, |f| i32::from(f.height));
         let (x, y) = self.client();
@@ -211,7 +218,8 @@ impl SettingsBox {
             BUTTON_H,
         );
         let change_cd = IRect::sized(x, close.y0, CHANGE_W, BUTTON_H);
-        let language = IRect::sized(x, close.y0 - MARGIN - BUTTON_H, inner, BUTTON_H);
+        let no_cd = IRect::sized(x, close.y0 - MARGIN - BUTTON_H, inner, BUTTON_H);
+        let language = IRect::sized(x, no_cd.y0 - MARGIN - BUTTON_H, inner, BUTTON_H);
         Layout {
             group,
             auto,
@@ -222,6 +230,7 @@ impl SettingsBox {
             language,
             full_screen,
             change_cd,
+            no_cd,
             close,
         }
     }
@@ -237,6 +246,7 @@ impl SettingsBox {
             Part::Language => l.language,
             Part::FullScreen => l.full_screen,
             Part::ChangeCd => l.change_cd,
+            Part::NoCd => l.no_cd,
         }
     }
 
@@ -254,6 +264,8 @@ impl SettingsBox {
             Part::Smaller => self.shown() > MIN_SCALE,
             Part::Bigger => self.shown() < MAX_SCALE,
             Part::Language => !self.lang_fixed,
+            // Only with a CD: without one the game is on the packs.
+            Part::NoCd => self.lang_fixed,
             _ => true,
         }
     }
@@ -293,6 +305,7 @@ impl SettingsBox {
                 Outcome::FullScreen(self.full_screen)
             }
             Part::ChangeCd => Outcome::ChangeCd,
+            Part::NoCd => Outcome::Language(self.played),
         }
     }
 
@@ -435,6 +448,15 @@ impl SettingsBox {
             false,
             true,
         );
+        ui::button(
+            s,
+            font,
+            l.no_cd,
+            tr("Play &without the CD"),
+            pressed(Part::NoCd),
+            false,
+            self.enabled(Part::NoCd),
+        );
         ui::button(s, font, l.close, tr("Close"), pressed(Part::Close), true, true);
     }
 }
@@ -449,6 +471,7 @@ struct Layout {
     language: IRect,
     full_screen: IRect,
     change_cd: IRect,
+    no_cd: IRect,
     close: IRect,
 }
 
@@ -510,9 +533,15 @@ mod tests {
         assert_eq!(b.key(0x1b), Outcome::Language(Lang::Fr));
         b.lang = Lang::En;
         assert_eq!(b.key(0x1b), Outcome::Close, "back to the one played");
+        assert_eq!(b.key(0x57), Outcome::None, "no CD to leave");
         b.lang_fixed = true;
         assert_eq!(b.key(0x4c), Outcome::None, "a CD's language stays");
         assert_eq!(b.lang, Lang::En);
+        assert_eq!(
+            b.key(0x57),
+            Outcome::Language(Lang::En),
+            "the packs, in the CD's language"
+        );
         assert_eq!(b.key(0x43), Outcome::ChangeCd);
         assert_eq!(b.key(0x1b), Outcome::Close);
     }

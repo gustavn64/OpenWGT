@@ -289,8 +289,9 @@ impl Workshop {
     /// there's no file dialog, `pick`) and the game starts again on it;
     /// in the browser the page reloads into its start form.
     #[cfg_attr(target_arch = "wasm32", allow(clippy::unused_self))]
-    /// Settings ▸ Language: kept in the settings file, and the game started
-    /// again in it without a CD (the page reloaded in the browser).
+    /// Settings ▸ Language (or Play without the CD): kept in the settings
+    /// file, and the game started again in it without a CD, even with one
+    /// remembered or here (the page reloaded in the browser).
     fn change_lang(&mut self, lang: engine::lang::Lang) {
         if let Some(path) = &self.settings_file
             && let Err(e) = platform::settings::save_value(path, LANGUAGE_KEY, lang.code())
@@ -305,6 +306,7 @@ impl Workshop {
             let started = exe.and_then(|exe| {
                 std::process::Command::new(exe)
                     .args(&self.options)
+                    .arg("--open")
                     .arg(format!("--lang={}", lang.code()))
                     .spawn()
             });
