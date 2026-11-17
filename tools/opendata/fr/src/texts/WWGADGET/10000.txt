@@ -30,6 +30,8 @@ Logiciel libre :
 
 OpenWGT est publié sous la GNU Affero General Public License, version 3 ou (à ton choix) toute version ultérieure. Tu peux le lire, le modifier et le partager.
 
+Ses polices : MS Sans Serif et Small Fonts, issues de Wine, sous la GNU LGPL 2.1 ou ultérieure, et Widget Sans, tirée de Liberation Sans, sous la SIL Open Font License 1.1.
+
 Merci tout particulièrement à :
 
 tous ceux qui ont gardé leur CD de Widget Workshop

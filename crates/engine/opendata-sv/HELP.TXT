@@ -666,7 +666,7 @@ Lägg till en eller två delar i taget, tryck på START, kontrollera att de fung
 Ett tryck är ett klick, och ett finger som hålls stilla på en del öppnar dess inställningar, som ett dubbelklick gör. I webbläsaren kommer tangentbordet fram när du trycker på en ruta att skriva i. Vänd telefonen på sidan för en större verkstad, och slå på **Helskärm** i [Alternativ > Inställningar](#openwgt-settings).
 
 = Om OpenWGT {#about}
-keywords: om, tack, licens, AGPL, Maxis, Doridian, upphovsrätt, version
+keywords: om, tack, licens, AGPL, Maxis, Doridian, upphovsrätt, version, LGPL, OFL, typsnitt
 
 **OpenWGT** är en motor med öppen källkod för **Widget Workshop: A Mad Scientist's Laboratory**, uppfinnarleksaken som Maxis gav ut 1995 (på svenska Uppfinnarverkstan, på franska Eurêka, le Laboratoire du savant fou). Den bygger upp verkstaden från grunden för dagens datorer - Linux, Windows, macOS och webbläsaren - så att originalets uppfinningar och pussel fortsätter att fungera.
 
@@ -674,7 +674,7 @@ keywords: om, tack, licens, AGPL, Maxis, Doridian, upphovsrätt, version
 OpenWGT är en förgrening av Doridians port av Widget Workshop (github.com/Doridian/GadgetGenerator), som återskapade hur spelet fungerar. Den här förgreningen lägger till egna bilder (OpenWGFX), ljud (OpenWSFX) och data (OpenWDATA: texterna, inställningsfönstren, pusslen, exempeluppfinningarna och den här hjälpen), så att den går utan originalskivan, tillsammans med rättelser och nya funktioner som länkar till uppfinningar och fönstret Inställningar.
 
 ## Licens
-OpenWGT är fri programvara under GNU Affero General Public License, version 3 eller senare (AGPL-3.0-or-later). Dess egna bilder, ljud och data har samma licens. Du får använda, studera, dela och ändra den enligt villkoren i licensen.
+OpenWGT är fri programvara under GNU Affero General Public License, version 3 eller senare (AGPL-3.0-or-later). Dess egna bilder, ljud och data har samma licens. Du får använda, studera, dela och ändra den enligt villkoren i licensen. Typsnitten som följer med har egna licenser: MS Sans Serif och Small Fonts, från Wine, har GNU Lesser General Public License, version 2.1 eller senare, och Widget Sans, gjort av Liberation Sans, har SIL Open Font License 1.1.
 
 ## Widget Workshop
 Widget Workshop är (c) Maxis, och namnet är ett varumärke som tillhör sina ägare. OpenWGT är ett inofficiellt projekt som inte är gjort, godkänt eller stött av Maxis eller Electronic Arts, och det innehåller inget av originalspelets data. För att använda originalets bilder och ljud behöver du en egen kopia av skivan.

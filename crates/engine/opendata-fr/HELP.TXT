@@ -666,7 +666,7 @@ Ajoute une ou deux pièces à la fois, appuie sur GO, vérifie qu'elles marchent
 Toucher l'écran, c'est cliquer, et un doigt gardé immobile sur une pièce ouvre ses réglages, comme un double-clic. Dans le navigateur web, toucher une case où l'on tape fait apparaître le clavier. Tourne le téléphone sur le côté pour un atelier plus grand, et active **Plein écran** dans [Options > Paramètres](#openwgt-settings).
 
 = À propos d'OpenWGT {#about}
-keywords: à propos, remerciements, licence, AGPL, Maxis, Doridian, droits d'auteur, version
+keywords: à propos, remerciements, licence, AGPL, Maxis, Doridian, droits d'auteur, version, LGPL, OFL, polices
 
 **OpenWGT** est un moteur libre pour **Widget Workshop: A Mad Scientist's Laboratory**, le jouet d'invention publié par Maxis en 1995 (en suédois Uppfinnarverkstan, en français Eurêka, le Laboratoire du savant fou). Il refait l'atelier de zéro pour les ordinateurs d'aujourd'hui - Linux, Windows, macOS et le navigateur web - pour que les Eurêkas et les problèmes de l'original continuent de fonctionner.
 
@@ -674,7 +674,7 @@ keywords: à propos, remerciements, licence, AGPL, Maxis, Doridian, droits d'aut
 OpenWGT est un *fork*, une version dérivée, du portage de Widget Workshop réalisé par Doridian (github.com/Doridian/GadgetGenerator), qui a reconstitué le fonctionnement du jeu. Ce fork ajoute ses propres images (OpenWGFX), ses propres sons (OpenWSFX) et ses propres données (OpenWDATA : les textes, les fenêtres de réglages, les problèmes, les Eurêkas d'exemple et cette aide), pour fonctionner sans le CD d'origine, ainsi que des corrections et des nouveautés comme les liens d'Eurêka et la fenêtre Paramètres.
 
 ## Licence
-OpenWGT est un logiciel libre, sous la licence GNU Affero General Public License, version 3 ou ultérieure (AGPL-3.0-or-later). Ses propres images, sons et données sont sous la même licence. Tu peux l'utiliser, l'étudier, le partager et le modifier selon les termes de cette licence.
+OpenWGT est un logiciel libre, sous la licence GNU Affero General Public License, version 3 ou ultérieure (AGPL-3.0-or-later). Ses propres images, sons et données sont sous la même licence. Tu peux l'utiliser, l'étudier, le partager et le modifier selon les termes de cette licence. Les polices qu'il contient ont leurs propres licences : MS Sans Serif et Small Fonts, issues de Wine, sont sous la GNU Lesser General Public License, version 2.1 ou ultérieure, et Widget Sans, tirée de Liberation Sans, sous la SIL Open Font License 1.1.
 
 ## Widget Workshop
 Widget Workshop est (c) Maxis, et son nom est une marque de ses propriétaires. OpenWGT est un projet non officiel, qui n'est ni réalisé, ni approuvé, ni soutenu par Maxis ou Electronic Arts, et il ne contient aucune donnée du jeu d'origine. Pour utiliser les images et les sons de l'original, il te faut ta propre copie du CD.

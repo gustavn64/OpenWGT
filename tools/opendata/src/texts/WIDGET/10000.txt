@@ -30,6 +30,8 @@ Free software:
 
 OpenWGT is released under the GNU Affero General Public License, version 3 or (at your option) any later version. You can read, change and share it.
 
+Its fonts: MS Sans Serif and Small Fonts from Wine, under the GNU LGPL 2.1 or later, and Widget Sans, made from Liberation Sans, under the SIL Open Font License 1.1.
+
 Special thanks to:
 
 everyone who kept their Widget Workshop CD
