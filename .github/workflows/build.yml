@@ -290,6 +290,8 @@ jobs:
             org.opencontainers.image.licenses=AGPL-3.0-or-later
 
       - uses: docker/build-push-action@v7
+        env:
+          DOCKER_BUILD_RECORD_UPLOAD: false
         with:
           context: .
           file: packaging/docker/Dockerfile
@@ -306,9 +308,12 @@ jobs:
     permissions:
       contents: write
     steps:
+      # Only the packages: not the container build's record, which
+      # docker/build-push-action keeps as an artifact of its own.
       - uses: actions/download-artifact@v8
         with:
           path: dist
+          pattern: openwgt-*
           merge-multiple: true
 
       - name: Publish on the release
