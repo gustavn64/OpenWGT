@@ -759,6 +759,8 @@ fn help_shows_the_swedish_file() {
         eprintln!("no WIDGET_SV_CD: skipped");
         return;
     };
+    // The Swedish game makes the port speak Swedish.
+    let _lang = crate::lang::hold();
     let root = std::path::Path::new(env!("CARGO_MANIFEST_DIR")).join("../../orig");
     let Ok(mut assets) = Assets::load(Some(&Dir(root)), None) else {
         return;

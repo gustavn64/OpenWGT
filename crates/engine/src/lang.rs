@@ -92,6 +92,14 @@ pub fn set(lang: Lang) {
     );
 }
 
+/// For tests that change the language or depend on it (it's one for the
+/// whole process, and tests run at once): held, no other such test runs.
+#[cfg(test)]
+pub(crate) fn hold() -> std::sync::MutexGuard<'static, ()> {
+    static LOCK: std::sync::Mutex<()> = std::sync::Mutex::new(());
+    LOCK.lock().unwrap_or_else(std::sync::PoisonError::into_inner)
+}
+
 /// The current language.
 #[must_use]
 pub fn current() -> Lang {
