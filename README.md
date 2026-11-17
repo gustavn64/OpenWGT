@@ -180,7 +180,11 @@ The packs are in `crates/engine/opengfx`, `crates/engine/opensfx` and
 
 ## Languages
 
-OpenWGT speaks English, Swedish and French. With a CD it plays in the
+OpenWGT speaks English, Swedish and French: as far as is known, the
+languages Widget Workshop itself came out in, as Widget Workshop: A Mad
+Scientist's Laboratory, Uppfinnarverkstan and Eurêka, le Laboratoire du
+savant fou. (If you know of another edition, please say so in an
+issue.) With a CD it plays in the
 CD's language (the Swedish edition, Uppfinnarverkstan, and the French
 one, Eurêka, le Laboratoire du savant fou, as well: the Swedish puzzle
 file is read too); the port's own words, what the original took from
