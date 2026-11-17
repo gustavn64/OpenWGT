@@ -67,6 +67,39 @@ WORDS = {
         # the About box
         "for Widget Workshop": "för Widget Workshop",
     },
+    # French, after the French edition (Eurêka, le Laboratoire du savant
+    # fou) where it put its pictures' words in French: the gates, the
+    # signs, the Coin Toss, the Zodiac, the Fortune Teller, the Totaler.
+    # Like it, GO/STOP, ON/OFF, AM/PM and the Stopwatch's START/STOP stay.
+    "fr": {
+        # the settings dialogs' arrows by the knots (3×5 letters: room for
+        # two on an input's arrow): entrée, sortie
+        "IN": "E", "OUT": "S",
+        # the logic gates
+        "AND": "ET", "OR": "OU", "XOR": "XOU", "NOT": "INV",
+        # the tray's Text Label, the Converter's units, the Plotter's reset
+        "Label": "Étiquette", "Ft": "pi", "RESET": "ZÉRO",
+        # the Totaler, the Numeric Keypad
+        "AVERAGE": "MOYENNE", "TOTAL": "TOTAL", "MAXIMUM": "MAXIMUM", "MINIMUM": "MINIMUM",
+        "ENTER": "ENTRÉE",
+        # the signs
+        "KEEP\nOFF!": "PAS\nTOUCHE!", "STAY AWAY!": "DÉFENSE D'ENTRER!",
+        "PUSH\nTO START": "APPUIE\nPOUR LANCER", "PUSH\nTO STOP": "APPUIE\nPOUR ARRÊTER",
+        "PUSH": "APPUIE", "HERE": "ICI", "ENTER\nHERE": "ENTRE\nICI",
+        "THE ANSWER IS": "LA RÉPONSE EST", "VOICE": "VOIX", "ACTIVATED": "ACTIVÉE",
+        "Mad Scientist\nat Work!": "Savant fou\nen action!", "It's\nMagic!": "C'est\nmagique!",
+        # the Coin Toss
+        "HEADS": "FACE", "TAILS": "PILE",
+        # the Zodiac
+        "Aquarius": "Verseau", "Pisces": "Poissons", "Aries": "Bélier", "Taurus": "Taureau",
+        "Gemini": "Gémeaux", "Cancer": "Cancer", "Leo": "Lion", "Virgo": "Vierge",
+        "Libra": "Balance", "Scorpio": "Scorpion", "Sagittarius": "Sagittaire", "Capricorn": "Capricorne",
+        # the Fortune Teller
+        "No": "Non", "Yes": "Oui", "NEVER!": "JAMAIS!", "Ask\nagain\nlater": "Redemande\nplus\ntard",
+        "Maybe": "Peut-être", "For sure": "C'est sûr", "Of\nCourse!": "Bien\nsûr!", "Not Today": "Pas\naujourd'hui",
+        # the About box
+        "for Widget Workshop": "pour Widget Workshop",
+    },
 }
 
 

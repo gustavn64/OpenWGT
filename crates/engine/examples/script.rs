@@ -3,9 +3,11 @@
 //! each `shot`: for comparing the port with the original running the same
 //! script (`tools/compare/`).
 //!
-//! `cargo run -p engine --example script -- CD_DIR SCRIPT OUT_DIR [--opengfx] [--enhanced] [--opendata=DIR]`
+//! `cargo run -p engine --example script -- CD_DIR SCRIPT OUT_DIR [--opengfx] [--enhanced] [--opendata=DIR] [--lang=CODE]`
 //! (`-` for `CD_DIR`: no CD, the port's own packs alone; `--opendata=DIR`
-//! a data pack from a folder, such as the Swedish `crates/engine/opendata-sv`)
+//! a data pack from a folder, such as the Swedish `crates/engine/opendata-sv`;
+//! `--lang=fr` the port's own words in that language and its built-in packs:
+//! its data, its pictures with words over the English ones)
 //!
 //! The script, a command a line (`#` starts a comment), in the editor's
 //! coordinates (the menu bar's top left is 0, 0):
@@ -142,25 +144,40 @@ impl Run {
     }
 }
 
-fn main() {
-    let args: Vec<String> = std::env::args().collect();
-    // `-` for no CD: the port's own packs alone.
+/// The game's assets: the CD's at `args[1]` (`-`: none, the port's own
+/// packs alone), with the packs and language the options ask for.
+fn load(args: &[String]) -> Assets {
     let open = args[1] == "-";
     let cd = Dir(PathBuf::from(&args[1]));
-    let script = std::fs::read_to_string(&args[2]).unwrap();
-    let out = PathBuf::from(&args[3]);
-    std::fs::create_dir_all(&out).unwrap();
-    let graphics = engine::opengfx::builtin();
+    let lang = args
+        .iter()
+        .find_map(|a| a.strip_prefix("--lang="))
+        .map(|c| engine::lang::Lang::from_code(c).unwrap_or_else(|| panic!("no language {c}")))
+        .unwrap_or_default();
+    let graphics = engine::opengfx::builtin_for(lang);
     let data: Box<dyn engine::assets::Source> = match args.iter().find_map(|a| a.strip_prefix("--opendata=")) {
         Some(dir) => Box::new(Dir(PathBuf::from(dir))),
-        None => Box::new(engine::opendata::builtin()),
+        None => Box::new(engine::opendata::builtin_for(lang)),
     };
     let packs = Packs {
-        graphics: (open || args.iter().any(|a| a == "--opengfx")).then_some(&graphics as _),
+        graphics: (open || args.iter().any(|a| a == "--opengfx")).then_some(graphics.as_ref()),
         sounds: None,
         data: open.then_some(data.as_ref()),
     };
-    let assets = Assets::load_with((!open).then_some(&cd as _), packs, None).unwrap();
+    let mut assets = Assets::load_with((!open).then_some(&cd as _), packs, None).unwrap();
+    // The editor speaks the assets' language (a CD's, else this one).
+    if args.iter().any(|a| a.starts_with("--lang=")) {
+        assets.lang = lang;
+    }
+    assets
+}
+
+fn main() {
+    let args: Vec<String> = std::env::args().collect();
+    let script = std::fs::read_to_string(&args[2]).unwrap();
+    let out = PathBuf::from(&args[3]);
+    std::fs::create_dir_all(&out).unwrap();
+    let assets = load(&args);
     let palette = assets.palette();
     let mut size = (640, 433);
     if let Some(l) = script.lines().find(|l| l.trim_start().starts_with("size ")) {
