@@ -1258,6 +1258,14 @@ mod tests {
                     near(label, h);
                 }
             }
+            // Gravity in g: the table over the Earth's.
+            for (dialog, id) in [(1000, 109), (1001, 107), (1002, 109)] {
+                let labels = combo(dialog, id);
+                assert_eq!(labels.len(), 4);
+                for (label, g) in labels.iter().zip(p.gravity) {
+                    near(label, g / p.gravity[2]);
+                }
+            }
             let speeds = combo(1002, 107);
             assert_eq!(speeds.len(), 5);
             for (label, v) in speeds.iter().zip(p.cannon_speed).take(4) {
