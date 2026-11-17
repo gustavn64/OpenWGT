@@ -373,7 +373,7 @@ Fliken med strömbrytaren. Det här är delarna som du styr uppfinningen med, pl
 - **Strömbrytare** - klicka på den för att växla mellan PÅ och AV. Du väljer om den börjar på eller av.
 - **Tangenttryck** - PÅ medan dess tangent på tangentbordet hålls nere. Du väljer bokstaven eller siffran; det går också att klicka på den med musen.
 - **Musknapp** - PÅ medan en musknapp hålls nere, var som helst i fönstret.
-- **Musavståndsmätare** - mäter i tum hur långt musen rör sig medan du håller ner en knapp.
+- **Musavståndsmätare** - mäter i centimeter hur långt musen rör sig medan du håller ner en knapp.
 - **Dynamittändare** - tryck ner den en gång så slås den PÅ, och den förblir på tills uppfinningen stannar.
 
 ## Sida 2: styrning
@@ -404,13 +404,13 @@ Fliken med planeten: vetenskapslabbet, och delen som avslutar spel.
 - **Vinstkollare** - väntar tills ingången når ett mål, spelar sedan ett vinst- eller förlustljud och stannar uppfinningen. Se [Vinstkollaren](#win-lose).
 - **Pendel** - börjar svänga när ingången slås på. Ändra längden och tyngdkraften (G-kraften) för att se hur svängningen ändras; den kan skicka ut hur lång tid en svängning tar, eller PÅ varje gång den passerar mitten.
 - **Gravitationskammare** - när ingången slås på släpper den en fjäder, en elefant eller en baseboll från en höjd du väljer, på den planet du väljer, och slås PÅ när den landar.
-- **Kanon** - skjuter en kula när ingången slås på. Den kan skicka ut sträckan, höjden, farten eller PÅ när kulan landar. Den räknar i fot och engelska mil i timmen.
+- **Kanon** - skjuter en kula när ingången slås på. Den kan skicka ut sträckan, höjden, farten eller PÅ när kulan landar. Den räknar i meter och kilometer i timmen.
 
 ## Sida 2
 - **Hjärta** - slår som hjärtat hos ett djur du väljer, från en ökenråtta till en elefant. Det skickar PÅ vid varje slag, eller pulsen eller hjärtats vikt.
 - **Solsystemet** - välj en planet så skickar den ut ett faktum om den som ett tal: storleken, hur långt dygnet eller året är, avståndet till solen med mera.
 
-Tips: en [omvandlare](#number-parts) gör om kanonens fot till meter.
+Tips: en [omvandlare](#number-parts) gör om kanonens meter till fot.
 
 = Lösa pussel {#puzzles}
 keywords: pussel, hämta pussel, utmaning, löst, låst

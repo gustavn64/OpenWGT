@@ -1,2 +1,2 @@
 Astuce de construction :
-Prends cet afficheur quand les réponses ont des décimales ou deviennent grandes, comme une factorielle des Fonctions mathématiques ou la distance du Canon en pieds. L'Afficheur à trois chiffres ne montre que des entiers.
+Prends cet afficheur quand les réponses ont des décimales ou deviennent grandes, comme une factorielle des Fonctions mathématiques ou la distance du Canon en mètres. L'Afficheur à trois chiffres ne montre que des entiers.

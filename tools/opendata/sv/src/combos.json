@@ -2,69 +2,69 @@
  "1000": [
   [
    107,
-   "29,029 fot (Mount Everest)"
+   "8 848 m (Mount Everest)"
   ],
   [
    107,
-   "4,190 fot (vulkanen Vesuvius)"
+   "1 280 m (vulkanen Vesuvius)"
   ],
   [
    107,
-   "1,472 fot (Empire State Building)"
+   "448 m (Empire State Building)"
   ],
   [
    107,
-   "984 fot (Eiffeltornet)"
+   "300 m (Eiffeltornet)"
   ],
   [
    107,
-   "20 fot (T. rex)"
+   "6 m (T. rex)"
   ],
   [
    107,
-   "6 fot (lång person)"
+   "1,8 m (lång person)"
   ],
   [
    109,
-   "Solen (27.9 g)"
+   "Solen (27,9 g)"
   ],
   [
    109,
-   "Jupiter (2.87 g)"
+   "Jupiter (2,87 g)"
   ],
   [
    109,
-   "Jorden (1g)"
+   "Jorden (1 g)"
   ],
   [
    109,
-   "Månen (.17g)"
+   "Månen (0,17 g)"
   ],
   [
    111,
-   "Planeten jorden (1.32E+25 pund)"
+   "Planeten jorden (5,99E+24 kg)"
   ],
   [
    111,
-   "Stor elefant (13,000 pund)"
+   "Stor elefant (5 900 kg)"
   ],
   [
    111,
-   "Vuxen (175 pund)"
+   "Vuxen (79 kg)"
   ],
   [
    111,
-   "Husfluga (.00031 pund)"
+   "Husfluga (0,00014 kg)"
   ]
  ],
  "1001": [
   [
    107,
-   "Solen (27.9 g)"
+   "Solen (27,9 g)"
   ],
   [
    107,
-   "Jupiter (2.87 g)"
+   "Jupiter (2,87 g)"
   ],
   [
    107,
@@ -72,31 +72,31 @@
   ],
   [
    107,
-   "Månen (.17g)"
+   "Månen (0,17 g)"
   ],
   [
    109,
-   "29,029 fot (Mount Everest)"
+   "8 848 m (Mount Everest)"
   ],
   [
    109,
-   "4,190 fot (vulkanen Vesuvius)"
+   "1 280 m (vulkanen Vesuvius)"
   ],
   [
    109,
-   "1,472 fot (Empire State Building)"
+   "448 m (Empire State Building)"
   ],
   [
    109,
-   "984 fot (Eiffeltornet)"
+   "300 m (Eiffeltornet)"
   ],
   [
    109,
-   "20 fot (T. rex)"
+   "6 m (T. rex)"
   ],
   [
    109,
-   "6 fot (lång person)"
+   "1,8 m (lång person)"
   ],
   [
    111,
@@ -114,19 +114,19 @@
  "1002": [
   [
    107,
-   "Apollo 10-kapseln (24,791 mph)"
+   "Apollo 10-kapseln (27 200 km/h)"
   ],
   [
    107,
-   "Gevärskula (1000 mph)"
+   "Gevärskula (1 100 km/h)"
   ],
   [
    107,
-   "Jetplan (561 mph)"
+   "Jetplan (600 km/h)"
   ],
   [
    107,
-   "Snabbt kast (90 mph)"
+   "Snabbt kast (100 km/h)"
   ],
   [
    107,
@@ -134,11 +134,11 @@
   ],
   [
    109,
-   "Solen (27.9 g)"
+   "Solen (27,9 g)"
   ],
   [
    109,
-   "Jupiter (2.87 g)"
+   "Jupiter (2,87 g)"
   ],
   [
    109,
@@ -146,31 +146,31 @@
   ],
   [
    109,
-   "Månen (.17g)"
+   "Månen (0,17 g)"
   ],
   [
    111,
-   "29,029 fot (Mount Everest)"
+   "8 848 m (Mount Everest)"
   ],
   [
    111,
-   "4,190 fot (vulkanen Vesuvius)"
+   "1 280 m (vulkanen Vesuvius)"
   ],
   [
    111,
-   "1,472 fot (Empire State Building)"
+   "448 m (Empire State Building)"
   ],
   [
    111,
-   "984 fot (Eiffeltornet)"
+   "300 m (Eiffeltornet)"
   ],
   [
    111,
-   "20 fot (T. rex)"
+   "6 m (T. rex)"
   ],
   [
    111,
-   "6 fot (lång person)"
+   "1,8 m (lång person)"
   ]
  ],
  "1003": [
@@ -370,7 +370,7 @@
   ],
   [
    109,
-   "Diameter (eng. mil)"
+   "Diameter (km)"
   ],
   [
    109,
@@ -382,11 +382,11 @@
   ],
   [
    109,
-   "Avstånd till solen (miljoner eng. mil)"
+   "Avstånd till solen (miljoner km)"
   ],
   [
    109,
-   "Massa (x 10,000,000,000,000 gigaton)"
+   "Massa (x 1 000 000 000 000 gigaton)"
   ],
   [
    109,
@@ -398,7 +398,7 @@
   ],
   [
    109,
-   "Banfart (x1000 mph)"
+   "Banfart (x1000 km/h)"
   ]
  ],
  "2005": [

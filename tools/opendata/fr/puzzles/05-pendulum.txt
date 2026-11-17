@@ -1,7 +1,7 @@
 # Puzzle 5: change the Pendulum's settings (it is not locked) until one
 # swing there and back takes 2.0 to 2.09 seconds. Period x 10, rounded
-# down, must be 20. On Earth no whole number of feet works (3.26-3.59 ft
-# would); 8 ft on Jupiter (2.04 s) or 92-100 ft on the Sun do.
+# down, must be 20. In meters (the French units): 1 m on Earth (2.006 s)
+# or 28-30 m on the Sun do; no whole number on Jupiter or the Moon.
 title "Le pendule de deux secondes"
 background 0
 
@@ -13,7 +13,7 @@ label t1 0 "L'horloge de Doc a besoin d'un"
 part t2 TxLb 16 152
 label t2 0 "pendule qui fait l'aller-retour"
 part t3 TxLb 16 169
-label t3 0 "en 2 secondes : de 2.0 à 2.09."
+label t3 0 "en 2 secondes : de 2,0 à 2,09."
 part t4 TxLb 16 194
 label t4 0 "Appuie sur STOP et double-clique"
 part t5 TxLb 16 211
@@ -25,9 +25,9 @@ label t7 0 "plus vite, tout comme une"
 part t8 TxLb 330 169
 label t8 0 "gravité plus forte."
 part t9 TxLb 330 194
-label t9 0 "Aucun nombre entier de pieds"
+label t9 0 "Essaie d'autres longueurs"
 part t10 TxLb 330 211
-label t10 0 "ne va sur Terre. Et ailleurs?"
+label t10 0 "et d'autres gravités."
 
 # The switch lets the pendulum go as soon as you press GO.
 part sw swit 10 301

@@ -1,7 +1,7 @@
 # Puzzle 5: change the Pendulum's settings (it is not locked) until one
 # swing there and back takes 2.0 to 2.09 seconds. Period x 10, rounded
-# down, must be 20. On Earth no whole number of feet works (3.26-3.59 ft
-# would); 8 ft on Jupiter (2.04 s) or 92-100 ft on the Sun do.
+# down, must be 20. In meters (the Swedish units): 1 m on Earth (2.006 s)
+# or 28-30 m on the Sun do; no whole number on Jupiter or the Moon.
 title "Tvåsekunderspendeln"
 background 0
 
@@ -13,7 +13,7 @@ label t1 0 "Professorns klocka behöver"
 part t2 TxLb 16 152
 label t2 0 "en pendel som svänger fram"
 part t3 TxLb 16 169
-label t3 0 "och åter på 2 s: 2.0 till 2.09."
+label t3 0 "och åter på 2 s: 2,0 till 2,09."
 part t4 TxLb 16 194
 label t4 0 "Tryck STOPP och dubbelklicka"
 part t5 TxLb 16 211
@@ -25,9 +25,9 @@ label t7 0 "fortare, och det gör även"
 part t8 TxLb 330 169
 label t8 0 "en starkare tyngdkraft."
 part t9 TxLb 330 194
-label t9 0 "Inget helt antal fot"
+label t9 0 "Prova andra längder"
 part t10 TxLb 330 211
-label t10 0 "duger på jorden. Någon annanstans?"
+label t10 0 "och andra tyngdkrafter."
 
 # The switch lets the pendulum go as soon as you press GO.
 part sw swit 10 301

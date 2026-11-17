@@ -373,7 +373,7 @@ Le dossier avec l'interrupteur sur son onglet. Ce sont les pièces qui te permet
 - **Interrupteur** - clique dessus pour passer de ON à OFF et inversement. Tu choisis s'il démarre sur ON ou sur OFF.
 - **Touche clavier** - ON tant que sa touche du clavier est enfoncée. Tu choisis la lettre ou le chiffre ; cliquer dessus avec la souris marche aussi.
 - **Bouton de souris** - ON tant qu'un bouton de la souris est enfoncé, n'importe où dans la fenêtre.
-- **Mesureur de distance** - mesure en pouces le chemin parcouru par la souris pendant que tu tiens un bouton enfoncé.
+- **Mesureur de distance** - mesure en centimètres le chemin parcouru par la souris pendant que tu tiens un bouton enfoncé.
 - **Détonateur** - appuie dessus une fois : il passe à ON et y reste jusqu'à l'arrêt de l'Eurêka.
 
 ## Page 2 : l'aiguillage
@@ -404,13 +404,13 @@ Le dossier avec la planète sur son onglet : le laboratoire de sciences, et la p
 - **Vérificateur gagné/perdu** - attend que son entrée atteigne un but, puis joue un son de victoire ou de défaite et arrête l'Eurêka. Voir [Le Vérificateur gagné/perdu](#win-lose).
 - **Pendule** - se met à osciller quand son entrée s'allume. Change sa longueur et la gravité pour voir comment l'oscillation change ; il peut envoyer la durée d'une oscillation, ou ON à chaque passage au milieu.
 - **Chambre de gravité** - quand son entrée s'allume, elle lâche une plume, un éléphant ou une balle de baseball depuis la hauteur que tu choisis, sur la planète que tu choisis, et passe à ON à l'arrivée au sol.
-- **Canon** - tire un boulet quand son entrée s'allume. Il peut envoyer la distance, la hauteur, la vitesse, ou ON quand le boulet retombe. Il compte en pieds et en milles à l'heure.
+- **Canon** - tire un boulet quand son entrée s'allume. Il peut envoyer la distance, la hauteur, la vitesse, ou ON quand le boulet retombe. Il compte en mètres et en kilomètres à l'heure.
 
 ## Page 2
 - **Coeur** - bat comme le coeur d'un animal que tu choisis, de la gerboise à l'éléphant. Il envoie ON à chaque battement, ou bien le rythme cardiaque ou le poids du coeur.
 - **Système solaire** - choisis une planète et il envoie un renseignement sur elle sous forme de nombre : sa taille, la durée de son jour ou de son année, sa distance au Soleil et d'autres encore.
 
-Astuce : un [Convertisseur](#number-parts) transforme les pieds du Canon en mètres.
+Astuce : un [Convertisseur](#number-parts) transforme les mètres du Canon en pieds.
 
 = Résoudre des problèmes {#puzzles}
 keywords: problème, problèmes, charger un problème, défi, résolu, verrouillé

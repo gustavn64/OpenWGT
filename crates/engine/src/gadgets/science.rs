@@ -1195,4 +1195,75 @@ mod tests {
         let (v, vy) = (fr.cannon_speed[3], fr.gravity[2] * tf);
         assert!(close(b.core.number, (vy * vy + v * v).sqrt() * 3.6));
     }
+
+    /// A number as `lang` writes it, from its first digit: thousands
+    /// grouped with "," in English, with spaces in Swedish and French,
+    /// which write a decimal comma. With the decimals it was given to.
+    fn local_number(s: &str, lang: Lang) -> (f64, i32) {
+        let (group, point) = if lang == Lang::En { (',', '.') } else { (' ', ',') };
+        let start = s.find(|c: char| c.is_ascii_digit() || c == point).unwrap();
+        let mut digits = String::new();
+        let mut decimals = None;
+        for c in s[start..].chars() {
+            if c.is_ascii_digit() {
+                digits.push(c);
+                decimals = decimals.map(|d| d + 1);
+            } else if c == point && decimals.is_none() {
+                digits.push('.');
+                decimals = Some(0);
+            } else if c != group && c != '\u{a0}' {
+                break;
+            }
+        }
+        (digits.parse().unwrap(), decimals.unwrap_or(0))
+    }
+
+    #[test]
+    fn reads_numbers_as_each_language_writes_them() {
+        assert_eq!(local_number("29,029 ft.(Mount Everest)", Lang::En), (29_029.0, 0));
+        assert_eq!(local_number("Moon (.17g)", Lang::En), (0.17, 2));
+        assert_eq!(local_number("8 848 m (Mount Everest)", Lang::Sv), (8848.0, 0));
+        assert_eq!(local_number("1,83 m (grande personne)", Lang::Fr), (1.83, 2));
+        assert_eq!(local_number("(39 889 km/h)", Lang::Fr), (39_889.0, 0));
+    }
+
+    /// The presets are read by their place in the list, not their text
+    /// (the original never asks a list for its text): each pack's
+    /// numbers in the labels must say what the table at that place holds.
+    #[test]
+    fn the_packs_presets_say_what_the_tables_hold() {
+        use crate::assets::Source;
+        for lang in Lang::ALL {
+            let pack = crate::opendata::builtin_for(lang);
+            let combo = |dialog: u32, id: u16| -> Vec<String> {
+                let d = pack.read(&format!("WIDGET/1022/{dialog}.bin")).unwrap();
+                formats::tables::strings(&d)
+                    .into_iter()
+                    .filter(|(c, _)| *c == id)
+                    .map(|(_, t)| t)
+                    .collect()
+            };
+            let near = |label: &str, value: f64| {
+                let (n, decimals) = local_number(label, lang);
+                assert!(
+                    (n - value).abs() <= 0.5 * 10f64.powi(-decimals) + 1e-9,
+                    "{lang:?}: {label:?} for {value}"
+                );
+            };
+            let p = Physics::of(lang);
+            for (dialog, id) in [(1000, 107), (1001, 109), (1002, 111)] {
+                let labels = combo(dialog, id);
+                assert_eq!(labels.len(), 6);
+                for (label, h) in labels.iter().zip(p.heights) {
+                    near(label, h);
+                }
+            }
+            let speeds = combo(1002, 107);
+            assert_eq!(speeds.len(), 5);
+            for (label, v) in speeds.iter().zip(p.cannon_speed).take(4) {
+                let inside = &label[label.find('(').unwrap()..];
+                near(inside, v * p.speed_out);
+            }
+        }
+    }
 }

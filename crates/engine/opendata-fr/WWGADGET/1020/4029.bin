@@ -1,2 +1,2 @@
 Astuce de construction :
-Il ne mesure que lorsqu'un bouton de la souris est enfoncé : tiens un bouton et trace un chemin à l'écran pour le mesurer en pouces. Ajoute un Comparateur et un Vérificateur gagné/perdu pour finir la partie après 100 pouces de gribouillis.
+Il ne mesure que lorsqu'un bouton de la souris est enfoncé : tiens un bouton et trace un chemin à l'écran pour le mesurer en centimètres. Ajoute un Comparateur et un Vérificateur gagné/perdu pour finir la partie après 250 centimètres de gribouillis.
