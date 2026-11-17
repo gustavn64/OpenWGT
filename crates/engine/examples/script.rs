@@ -7,7 +7,9 @@
 //! (`-` for `CD_DIR`: no CD, the port's own packs alone; `--opendata=DIR`
 //! a data pack from a folder, such as the Swedish `crates/engine/opendata-sv`;
 //! `--lang=fr` the port's own words in that language and its built-in packs:
-//! its data, its pictures with words over the English ones)
+//! its data, its pictures with words over the English ones). Settings ▸
+//! Language switches as the game does: the packs are built again in the
+//! language it asks for and handed to the editor.
 //!
 //! The script, a command a line (`#` starts a comment), in the editor's
 //! coordinates (the menu bar's top left is 0, 0):
@@ -45,6 +47,8 @@ struct Run {
     palette: [[u8; 3]; 256],
     mouse: (i32, i32),
     out: PathBuf,
+    /// The command line, to build the packs in another language with.
+    args: Vec<String>,
 }
 
 impl Run {
@@ -53,6 +57,12 @@ impl Run {
         while left > 0 {
             let step = left.min(FRAME_MS);
             self.editor.update(step, (12, 0, 0));
+            // The host's part of Settings ▸ Language.
+            if let Some(lang) = self.editor.take_change_lang() {
+                let assets = load(&self.args, Some(lang));
+                self.palette = assets.palette();
+                self.editor.set_assets(assets);
+            }
             left -= step;
         }
         self.editor.draw();
@@ -145,15 +155,17 @@ impl Run {
 }
 
 /// The game's assets: the CD's at `args[1]` (`-`: none, the port's own
-/// packs alone), with the packs and language the options ask for.
-fn load(args: &[String]) -> Assets {
-    let open = args[1] == "-";
+/// packs alone), with the packs and language the options ask for; or,
+/// with `switch`, the packs alone in that language (Settings ▸ Language).
+fn load(args: &[String], switch: Option<engine::lang::Lang>) -> Assets {
+    let open = args[1] == "-" || switch.is_some();
     let cd = Dir(PathBuf::from(&args[1]));
-    let lang = args
-        .iter()
-        .find_map(|a| a.strip_prefix("--lang="))
-        .map(|c| engine::lang::Lang::from_code(c).unwrap_or_else(|| panic!("no language {c}")))
-        .unwrap_or_default();
+    let lang = switch.unwrap_or_else(|| {
+        args.iter()
+            .find_map(|a| a.strip_prefix("--lang="))
+            .map(|c| engine::lang::Lang::from_code(c).unwrap_or_else(|| panic!("no language {c}")))
+            .unwrap_or_default()
+    });
     let graphics = engine::opengfx::builtin_for(lang);
     let data: Box<dyn engine::assets::Source> = match args.iter().find_map(|a| a.strip_prefix("--opendata=")) {
         Some(dir) => Box::new(Dir(PathBuf::from(dir))),
@@ -166,7 +178,7 @@ fn load(args: &[String]) -> Assets {
     };
     let mut assets = Assets::load_with((!open).then_some(&cd as _), packs, None).unwrap();
     // The editor speaks the assets' language (a CD's, else this one).
-    if args.iter().any(|a| a.starts_with("--lang=")) {
+    if switch.is_some() || args.iter().any(|a| a.starts_with("--lang=")) {
         assets.lang = lang;
     }
     assets
@@ -177,7 +189,7 @@ fn main() {
     let script = std::fs::read_to_string(&args[2]).unwrap();
     let out = PathBuf::from(&args[3]);
     std::fs::create_dir_all(&out).unwrap();
-    let assets = load(&args);
+    let assets = load(&args, None);
     let palette = assets.palette();
     let mut size = (640, 433);
     if let Some(l) = script.lines().find(|l| l.trim_start().starts_with("size ")) {
@@ -193,6 +205,7 @@ fn main() {
         palette,
         mouse: (0, 0),
         out,
+        args: args.clone(),
     };
     run.wait(500);
     for (n, line) in script.lines().enumerate() {
