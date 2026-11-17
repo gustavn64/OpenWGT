@@ -1,0 +1,1 @@
+Le Comparateur compare le nombre de gauche (le premier) au nombre du haut (le second). Tu choisis le test : égal, différent, supérieur, inférieur, supérieur ou égal, ou inférieur ou égal. Si le test est juste, il envoie VRAI (1), sinon FAUX (0).

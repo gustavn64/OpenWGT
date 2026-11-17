@@ -1,0 +1,1 @@
+La Porte XOU (OU exclusif) a deux entrées et une sortie. La sortie dit OUI (1) quand une seule des entrées dit OUI. Quand les deux disent OUI, ou les deux NON, elle dit NON (0). Tout nombre autre que 0 compte comme OUI.

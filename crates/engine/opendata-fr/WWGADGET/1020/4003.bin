@@ -1,0 +1,2 @@
+Astuce de construction :
+Relie-y un Curseur, choisis Volume de la sphère et regarde ce qui se passe quand tu doubles le rayon : le volume est multiplié par huit. L'aire d'un carré ou d'un cercle, elle, est multipliée par quatre.

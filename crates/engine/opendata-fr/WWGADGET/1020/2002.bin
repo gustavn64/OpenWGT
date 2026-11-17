@@ -1,0 +1,1 @@
+Cet afficheur montre les nombres entiers de -99 à 999. Les nombres à virgule sont arrondis à l'entier le plus proche, et un X rouge apparaît quand un nombre ne rentre pas.

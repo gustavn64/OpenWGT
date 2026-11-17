@@ -1,0 +1,1 @@
+Astuce de construction :Commande plusieurs pièces d'un seul geste : un Répartiteur à trois sorties permet à un seul Curseur de régler à la fois le rouge, le vert et le bleu d'un Mélangeur de couleurs, pour tous les gris. Chaque sortie a la valeur entière.

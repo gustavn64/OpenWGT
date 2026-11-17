@@ -1,0 +1,1 @@
+Astuce de construction :Sers-toi d'un Interrupteur comme interrupteur général : relie-le avec ton signal à une Porte ET, et le signal ne passe que si l'interrupteur est à ON. Choisis ON au départ s'il doit commencer allumé.

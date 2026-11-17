@@ -1,0 +1,1 @@
+Astuce de construction :Une Porte INV change ON en OFF : relie un Détonateur à une Ampoule à travers elle, et la lampe reste allumée jusqu'à ce qu'on appuie sur le détonateur. Mets-en une après une porte ET ou OU pour obtenir un NON-ET ou un NON-OU.

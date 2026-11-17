@@ -1,0 +1,1 @@
+Astuce de construction :Chaque borne ne prend qu'une connexion : quand une sortie doit aller à deux endroits, mets un Répartiteur à deux sorties entre les deux. Chaque sortie porte la valeur entière, rien n'est coupé en deux.
