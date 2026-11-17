@@ -10,8 +10,8 @@ OpenWGT is a fork of Doridian's port,
 [Doridian/GadgetGenerator](https://github.com/Doridian/GadgetGenerator),
 under the same licence (AGPL-3.0-or-later). This fork adds the port's
 own graphics, sounds and data ([below](#without-the-cd-openwgfx-openwsfx-openwdata)),
-Swedish, touch screens, fixes, a Nix flake and tools that compare it with
-the original running in an emulator (`tools/compare/`).
+Swedish and French, touch screens, fixes, a Nix flake and tools that
+compare it with the original running in an emulator (`tools/compare/`).
 
 This repository contains **none of the game's pictures, sounds, texts
 or code**. It runs without the game's CD on its own pictures, sounds and
@@ -66,7 +66,8 @@ with neither, drop the CD image on the game's window).
 
 It reads the **Mac/PC CD** (volume `WIDGETS`). The Internet Archive has
 the `.iso`: [widget-workshop](https://archive.org/details/widget-workshop).
-The Swedish edition, **Uppfinnarverkstan**, works too ([Languages](#languages)).
+The Swedish edition, **Uppfinnarverkstan**, and the French one, **Eurêka,
+le Laboratoire du savant fou**, work too ([Languages](#languages)).
 
 It also reads the much smaller **OS/2 Warp CD** (`WW1_01A.ISO`, game folder
 `WIDGET/`): its modules are OS/2 executables whose dialogs, menu, strings
@@ -169,15 +170,18 @@ The packs are in `crates/engine/opengfx`, `crates/engine/opensfx` and
 
 ## Languages
 
-OpenWGT speaks English and Swedish. With a CD it plays in the CD's
-language (the Swedish edition, Uppfinnarverkstan, as well: its puzzle
+OpenWGT speaks English, Swedish and French. With a CD it plays in the
+CD's language (the Swedish edition, Uppfinnarverkstan, and the French
+one, Eurêka, le Laboratoire du savant fou, as well: the Swedish puzzle
 file is read too); the port's own words, what the original took from
 Windows and what the port adds, follow it (`engine::lang`). Without a CD
-the packs come in the language chosen: `--lang=sv` (`?lang=sv` in the
-browser, whose start page has a list for it), else the system's.
-Swedish OpenWDATA is `tools/opendata/sv` (`crates/engine/opendata-sv`),
-Swedish OpenWGFX the pictures with words, `crates/engine/opengfx-sv`,
-over the English ones.
+the packs come in the language chosen: `--lang=sv` or `--lang=fr`
+(`?lang=sv`, `?lang=fr` in the browser, whose start page has a list for
+it), else the system's. Swedish OpenWDATA is `tools/opendata/sv`
+(`crates/engine/opendata-sv`), Swedish OpenWGFX the pictures with words,
+`crates/engine/opengfx-sv`, over the English ones; French OpenWDATA is
+`tools/opendata/fr` (`crates/engine/opendata-fr`) and French OpenWGFX
+`crates/engine/opengfx-fr`.
 
 ## Tools
 

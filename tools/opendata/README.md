@@ -62,6 +62,33 @@ widget uppfinning, part del, puzzle pussel, parts tray verktygslåda,
 worksheet arbetsyta, wire sladd, knot kontakt, GO/STOP START/STOPP,
 ON/OFF PÅ/AV, YES/NO JA/NEJ, AND/OR/XOR/NOT OCH/ELLER/XELLER/INTE.
 
+## French
+
+The French pack, `crates/engine/opendata-fr`, is built the same way from
+`fr/` (`fr/src/`, `fr/help/HELP.TXT`, `fr/samples/`, `fr/puzzles/`):
+
+```sh
+python3 tools/opendata/build.py --lang fr
+cargo run --release -p engine --example recipe -- \
+    --data crates/engine/opendata-fr tools/opendata/fr crates/engine/opendata-fr
+```
+
+Its words follow the French edition's (Eurêka, le Laboratoire du savant
+fou) where it has them, and the port's own French (`engine::lang`); the
+game says *tu*. The glossary, shared with OpenWGFX's French pictures:
+widget Eurêka (un Eurêka, des Eurêkas), part pièce, puzzle problème,
+parts tray fenêtre à outils, worksheet zone de travail, wire connexion,
+joint jonction, knot borne, input/output entrée/sortie, control box boîte
+de contrôle, settings réglages, YES/NO OUI/NON, TRUE/FALSE VRAI/FAUX,
+AND/OR/XOR/NOT ET/OU/XOU/INV; GO/STOP and ON/OFF stay, as in the edition.
+The parts reckon in the original's units, so the texts keep them in
+French words: pieds (pi), livres, mi/h, milles, pouces. The help and the
+worksheet's labels can't show œ, so the pack writes *oe* throughout
+(Coeur), as the edition does.
+
+The French edition's dialogs have layouts of their own; the pack keeps
+OpenWDATA's (shared by every language), with labels that fit them.
+
 `build.py --verify EXPORT` compares the built resources with a CD's
 (`openwgt --export=EXPORT CD.iso`): every format but the texts must come
 out byte for byte the same, which is what keeps saved widgets, the

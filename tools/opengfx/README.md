@@ -86,8 +86,31 @@ tools/opengfx/make.py EXPORT --lang sv --parts PARTS-SV
 Draw the English pack first (the overlay is what differs from it). A new
 language is a new `WORDS` entry and `--lang` code; words that don't fit
 are shrunk by `text_fit`, and the pixel fonts (`TINY_FONT` in
-`sheets/chrome.py`, `GLYPHS` in `sheets/_numbers_kit.py`) need a glyph
-for every letter they draw.
+`sheets/chrome.py`, `GLYPHS` in `sheets/_numbers_kit.py`, `_G` in
+`sheets/_science_kit.py`) need a glyph for every letter they draw.
+
+### French
+
+`crates/engine/opengfx-fr`, made the same way with `--lang fr` (and
+`render_parts ... --overlay crates/engine/opengfx-fr --data
+crates/engine/opendata-fr --lang fr`). It follows the French edition
+(Eurêka, le Laboratoire du savant fou) where that put its pictures in
+French, in pictures of its own:
+
+| English | French | the edition |
+|---|---|---|
+| AND, OR, XOR, NOT | ET, OU, XOU, INV | the same |
+| HEADS, TAILS | FACE, PILE | the same |
+| the Zodiac's names, the Fortune Teller's answers, the signs | in French | in French |
+| AVERAGE, TOTAL, MAXIMUM, MINIMUM | MOYENNE, TOTAL, MAXIMUM, MINIMUM | MOYENNE, TOTAUX, ... |
+| RESET (the Strip Chart) | ZÉRO | REMIS A ZERO |
+| ENTER (the keypad) | ENTRÉE | |
+| Ft (the Converter) | pi | Ft |
+| IN, OUT (the settings' arrows) | E, S (entrée, sortie) | no words |
+| for Widget Workshop | pour Widget Workshop | |
+| GO/STOP, ON/OFF, AM/PM, the Stopwatch's START/STOP | kept | kept |
+
+The texts' glossary is OpenWDATA's (`tools/opendata/README.md`).
 
 ## Style
 
