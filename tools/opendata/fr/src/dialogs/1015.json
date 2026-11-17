@@ -90,7 +90,7 @@
   {
    "id": 106,
    "class": "static",
-   "text": "Plage de nombres :",
+   "text": "Plage de nombres :",
    "rect": [
     2,
     91,
@@ -162,7 +162,7 @@
   {
    "id": 107,
    "class": "button",
-   "text": "Liste :1",
+   "text": "Liste :1",
    "rect": [
     10,
     104,
@@ -174,7 +174,7 @@
   {
    "id": 109,
    "class": "button",
-   "text": "Au choix :1",
+   "text": "Au choix :1",
    "rect": [
     10,
     118,

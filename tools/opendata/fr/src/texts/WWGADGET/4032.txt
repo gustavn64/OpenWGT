@@ -1,1 +1,1 @@
-Le Bouton de souris est à ON tant qu'un bouton de la souris est enfoncé, où que tu cliques, même sur d'autres pièces. Le clic sur GO ne compte pas : la pièce attend que tu aies relâché le bouton avant d'écouter.
+Le Bouton de souris est à ON tant qu'un bouton de la souris est enfoncé, où que tu cliques, même sur d'autres pièces. Le clic sur GO ne compte pas : la pièce attend que tu aies relâché le bouton avant d'écouter.

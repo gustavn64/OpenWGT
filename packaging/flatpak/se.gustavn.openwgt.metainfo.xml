@@ -3,6 +3,8 @@
   <id>se.gustavn.openwgt</id>
   <name>OpenWGT</name>
   <summary>An open engine for Maxis' Widget Workshop</summary>
+  <summary xml:lang="sv">En öppen motor för Maxis Widget Workshop</summary>
+  <summary xml:lang="fr">Un moteur libre pour Widget Workshop de Maxis</summary>
   <metadata_license>CC0-1.0</metadata_license>
   <project_license>AGPL-3.0-or-later</project_license>
   <developer id="se.gustavn">
@@ -15,15 +17,21 @@
       watch them run, or solve the puzzles.
     </p>
     <p>
-      It comes with its own pictures, sounds, texts and puzzles, in English and
-      Swedish, so it runs without the original CD; with the CD it can use the
-      original's instead.
+      It comes with its own pictures, sounds, texts and puzzles, in English,
+      Swedish and French, so it runs without the original CD; with the CD (the
+      original, or its Swedish or French edition) it can use the original's
+      instead.
     </p>
   </description>
   <launchable type="desktop-id">se.gustavn.openwgt.desktop</launchable>
   <url type="homepage">https://gustavn.se/openwgt</url>
   <url type="vcs-browser">https://github.com/gustavn64/OpenWGT</url>
   <content_rating type="oars-1.1"/>
+  <languages>
+    <lang>en</lang>
+    <lang>sv</lang>
+    <lang>fr</lang>
+  </languages>
   <releases>
     <release version="0.11.0" date="2026-11-17"/>
   </releases>

@@ -32,7 +32,7 @@ OpenWGT ges ut under GNU Affero General Public License, version 3 eller (om du v
 
 Ett särskilt tack till:
 
-alla som har sparat sin Widget Workshop-cd
+alla som har sparat sin Widget Workshop-skiva
 och alla som fortfarande bygger uppfinningar
 
 Widget Workshop är (c) 1995 Maxis. Widget Workshop och Maxis är varumärken som tillhör sina respektive ägare. OpenWGT är ett inofficiellt projekt och har ingen koppling till dem och stöds inte av dem.

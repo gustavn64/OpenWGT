@@ -90,7 +90,7 @@
   {
    "id": 106,
    "class": "static",
-   "text": "Vitesse de tir :",
+   "text": "Vitesse de tir :",
    "rect": [
     4,
     95,
@@ -114,7 +114,7 @@
   {
    "id": 108,
    "class": "static",
-   "text": "Gravité :",
+   "text": "Gravité :",
    "rect": [
     4,
     111,
@@ -174,7 +174,7 @@
   {
    "id": 115,
    "class": "static",
-   "text": "Sortie :",
+   "text": "Sortie :",
    "rect": [
     4,
     125,
@@ -186,7 +186,7 @@
   {
    "id": 120,
    "class": "static",
-   "text": "Hauteur :",
+   "text": "Hauteur :",
    "rect": [
     76,
     125,
@@ -198,7 +198,7 @@
   {
    "id": 110,
    "class": "button",
-   "text": "Liste :1",
+   "text": "Liste :1",
    "rect": [
     73,
     137,
@@ -210,7 +210,7 @@
   {
    "id": 112,
    "class": "button",
-   "text": "Au choix :1",
+   "text": "Au choix :1",
    "rect": [
     73,
     153,

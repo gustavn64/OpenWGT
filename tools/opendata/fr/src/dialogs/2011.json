@@ -9,7 +9,7 @@
  ],
  "menu": null,
  "class": null,
- "title": "Porte logique XOU",
+ "title": "Porte XOU",
  "font": [
   8,
   "MS Sans Serif"
@@ -42,7 +42,7 @@
   {
    "id": 101,
    "class": "static",
-   "text": "Porte logique XOU",
+   "text": "Porte XOU",
    "rect": [
     3,
     -58,

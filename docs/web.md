@@ -9,13 +9,13 @@ the files and the clock differ.
 ## Building
 
 Needs the `wasm32-unknown-unknown` target and the `wasm-bindgen` CLI in
-the version the crates pin (`wasm-bindgen = "=0.2.129"` in
+the version the crates pin (`wasm-bindgen = "=0.2.130"` in
 `crates/widget/Cargo.toml` and `crates/platform/Cargo.toml`; the CLI
 refuses a module from another version):
 
 ```sh
 rustup target add wasm32-unknown-unknown
-cargo install wasm-bindgen-cli --version 0.2.129
+cargo install wasm-bindgen-cli --version 0.2.130
 tools/build-web.sh            # release build into web/
 tools/build-web.sh --debug    # quicker to build, slow to run
 ```
@@ -59,8 +59,8 @@ python3 -m http.server -d web 8000    # then open http://localhost:8000/
 ```
 
 On the first start the page asks for the game's CD image: the Mac/PC CD's
-`.iso` or the OS/2 CD's `WW1_01A.ISO`. **Play without the CD** (the
-query `?open`) skips it: the game runs on the port's own packs,
+`.iso` (the Swedish and French editions' too) or the OS/2 CD's
+`WW1_01A.ISO`. **Play without the CD** (the query `?open`) skips it: the game runs on the port's own packs,
 OpenWGFX, OpenWSFX and OpenWDATA, built into the module. **Start** reads
 the image into memory and opens the editor. Later starts skip the form
 and open the editor on the image it kept. Options ▸ Settings ▸ **Change
@@ -69,6 +69,13 @@ shows the kept image: **Start** goes on with it, picking another file
 replaces it. If the kept image no longer reads or opens, the form asks
 for one again. The page never fetches or sends the CD's data: the image
 comes from the player.
+
+The form and the page's other words (the hint to turn a phone, the
+status line, a touch screen's text box) are in the browser's language
+if the port speaks it, English otherwise, and once the game starts in
+the game's; the form's list picks the language **Play without the CD**
+starts in (`?open&lang=`), remembered in the browser's `localStorage`.
+Settings ▸ Language reloads the page the same way.
 
 A browser won't let a page play sound before a click or key press: the
 `AudioContext` is resumed on every click or key press
@@ -151,7 +158,7 @@ not.
 - Opened with a link as its address, the page opens the widget once the
   CD is in, as `?MYWIDGET.WGT` does; a link pasted into the address bar
   of the open page opens too. Natively a link is an argument like a
-  widget's file (`widget CD.iso 'https://…#w=…'`).
+  widget's file (`openwgt CD.iso 'https://…#w=…'`).
 
 The clipboard is `platform::clipboard`: arboard natively (X11, Wayland
 where the compositor offers data control, Windows, macOS),
@@ -166,7 +173,9 @@ The page's query string takes the command line's options without their
 `--`: `?no-audio`, `?ui-scale=2`, `?open` (no CD), `?opengfx`,
 `?opensfx` and `?opendata` (the port's own graphics, sounds and data
 with the CD, the built-in packs; a folder after `=` means nothing
-there). A `.WGT` name opens that widget from the storage
+there), `?lang=en`, `?lang=sv` or `?lang=fr` (the packs' language
+without a CD; else the one Settings ▸ Language picked, else the
+browser's). A `.WGT` name opens that widget from the storage
 (`?MYWIDGET.WGT`). `--overrides`, `--export` and the window's size mean
 nothing there. A bad option stops the page with the reason shown at the
 bottom. What the port would print on the terminal goes to

@@ -1,14 +1,14 @@
 <!doctype html>
 <!-- SPDX-License-Identifier: AGPL-3.0-or-later -->
-<!-- The front page of the published browser build (GitHub Pages, see
-     .github/workflows/build.yml). The game itself is play/ under it
-     (index.html here, copied by tools/build-web.sh). -->
+<!-- The front page of the published browser build (openwgt-web.zip,
+     .github/workflows/build.yml; docs/web.md). The game itself is play/
+     under it (index.html here, copied by tools/build-web.sh). -->
 <html lang="en">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="color-scheme" content="dark light">
-<meta name="description" content="OpenWGT, an open engine for Maxis' Widget Workshop (1995) in Rust, with its own graphics and sounds: play it in your browser, or on Linux, Windows and macOS.">
+<meta name="description" content="OpenWGT, an open engine for Maxis' Widget Workshop (1995) in Rust, with its own graphics, sounds and texts in English, Swedish and French: play it in your browser, on a phone or tablet too, or on Linux, Windows and macOS.">
 <title>OpenWGT</title>
 <link rel="icon" href="icon.png">
 <style>
@@ -75,7 +75,7 @@
     <img src="icon.png" alt="">
     <div>
       <h1>OpenWGT</h1>
-      <p class="sub">An open engine for Widget Workshop: A Mad Scientist's Laboratory, Maxis' 1995 gadget-building toy, in Rust, playable in your browser.</p>
+      <p class="sub">An open engine for Widget Workshop: A Mad Scientist's Laboratory, Maxis' 1995 gadget-building toy, in Rust, playable in your browser, on a phone or tablet too, in English, Swedish and French.</p>
       <div class="cta">
         <a class="button primary" href="play/">Play in the browser</a>
         <a class="button" href="#downloads">Download</a>
@@ -89,21 +89,26 @@
     <div class="steps">
       <div class="card">
         <h3>Play</h3>
-        <p><a href="play/?open">Open the game</a> and press <strong>Play without the CD</strong>: it runs on
-          OpenWGT's own pictures, sounds, texts and puzzles. This site has none of the original's.</p>
+        <p><a href="play/?open">Play without the CD</a>: the game runs on OpenWGT's own pictures, sounds,
+          texts and puzzles. This site has none of the original's.</p>
+        <p><a href="play/?open&amp;lang=en" hreflang="en">In English</a>,
+          <a href="play/?open&amp;lang=sv" hreflang="sv" lang="sv">på svenska</a>,
+          <a href="play/?open&amp;lang=fr" hreflang="fr" lang="fr">en français</a>.</p>
       </div>
       <div class="card">
         <h3>Or with the CD</h3>
-        <p>The original's pictures and sounds come from its Mac/PC CD, which is on the Internet Archive as an <code>.iso</code>.</p>
+        <p>The original's pictures and sounds come from its Mac/PC CD, which is on the Internet Archive as an <code>.iso</code>.
+          The Swedish and French editions, Uppfinnarverkstan and Eurêka, le Laboratoire du savant fou, work too, in their language.</p>
         <p><a href="https://archive.org/details/widget-workshop" target="_blank" rel="noopener">Widget Workshop on archive.org</a>
           (<a href="https://archive.org/download/widget-workshop/Widget%20Workshop%20-%20A%20Mad%20Scientist%27s%20Laboratory%20%281996%29%28Maxis%29%5BMac-PC%5D.iso" rel="noopener">iso, 327&nbsp;MB</a>)</p>
       </div>
       <div class="card">
+        <h3>Start</h3>
         <p><a href="play/">Open the game</a>, choose the <code>.iso</code> and press <strong>Start</strong>.
           The game reads it in your browser; nothing is uploaded.</p>
       </div>
       <div class="card">
-        <h3>Build</h3>
+        <h3>Keep</h3>
         <p>The browser keeps the CD and the widgets you save, so next time it starts straight away.
           Drag a <code>.wgt</code> onto the game to open it; the File menu downloads widgets.</p>
       </div>
@@ -138,6 +143,9 @@
       <li>The puzzles, saving and loading widgets in the original's <code>.WGT</code> format, and the help.</li>
       <li>Sound, and recording through the microphone.</li>
       <li>A resizable window with scaling, in the browser with WebGPU or WebGL2.</li>
+      <li>English, Swedish and French: OpenWGT's own texts, help and puzzles in each, or the CD's language.</li>
+      <li>Phones and tablets: a tap is a click, a long press a double click, and the keyboard comes up for typing.
+        Turned sideways, or added to the home screen, it fills the screen.</li>
     </ul>
   </section>
 
@@ -151,7 +159,7 @@
   </section>
 
   <footer>
-    OpenWGT is an unofficial fork of Doridian's port of the 1995 Maxis game. Widget Workshop is a trademark of its owners; none of the game's pictures, sounds or texts are included.
+    OpenWGT is an unofficial fork of Doridian's port of the 1995 Maxis game. Widget Workshop is a trademark of its owners; none of the game's pictures, sounds or code are included, and its texts are the project's own.
   </footer>
 </main>
 </body>

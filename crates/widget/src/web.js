@@ -95,19 +95,21 @@ function size(n) {
 
 // The session's mark that the next start shows the form even with an
 // image stored (Settings > Change CD...).
-const CHANGE = "widget-workshop-change-cd";
+const CHANGE = "openwgt-change-cd";
 
 // The start form's words in Swedish and French, for a browser in either.
+// French puts a no-break space ( ) before ":".
 const SV = {
-  "t-cd": "Spelets cd-avbild (.iso)",
+  "t-cd": "Spelets skivavbildning (.iso)",
   "t-kept": "Sparad sedan förra gången:",
   "t-kept2": ". Välj en annan för att byta.",
   "t-note":
-    "Widget Workshop: A Mad Scientist's Laboratory, Mac/PC-skivan. Avbilden sparas i den här " +
-    "webbläsaren och skickas ingenstans, precis som uppfinningarna du sparar. Uppfinningar som dras " +
-    "till spelet öppnas, och Arkiv ▸ Spara för nedladdning och Ladda ner en uppfinning ger dig dem " +
-    "igen. Arkiv ▸ Kopiera länk till uppfinningen gör en länk som öppnar uppfinningen för alla som " +
-    "har skivan.",
+    "Widget Workshop: A Mad Scientist's Laboratory (Mac/PC-skivan), den svenska utgåvan " +
+    "Uppfinnarverkstan eller den franska, Eurêka, le Laboratoire du savant fou. Avbildningen sparas " +
+    "i den här webbläsaren och skickas ingenstans, precis som uppfinningarna du sparar. Uppfinningar " +
+    "som dras till spelet öppnas, och Arkiv ▸ Spara för nedladdning och Ladda ner en uppfinning ger " +
+    "dig dem igen. Arkiv ▸ Kopiera länk till uppfinningen gör en länk som öppnar uppfinningen för " +
+    "alla som har skivan.",
   open: "Spela utan skivan",
   start: "Starta",
   "t-open-note": "Utan skivan använder spelet OpenWGT:s egna bilder, ljud, texter och pussel, på",
@@ -115,13 +117,14 @@ const SV = {
 };
 const FR = {
   "t-cd": "L'image du CD du jeu (.iso)",
-  "t-kept": "Gardée depuis la dernière fois :",
+  "t-kept": "Gardée depuis la dernière fois :",
   "t-kept2": ". Choisis-en une autre pour la remplacer.",
   "t-note":
-    "Widget Workshop: A Mad Scientist's Laboratory (le CD Mac/PC) ou Eurêka, le Laboratoire du " +
-    "savant fou. L'image reste dans ce navigateur et n'est envoyée nulle part, tout comme les " +
-    "Eurêkas que tu sauvegardes. Les Eurêkas glissés sur le jeu s'ouvrent, et Fichier ▸ Enregistrer " +
-    "pour téléchargement et Télécharger un Eurêka te les rendent. Fichier ▸ Copier le lien vers " +
+    "Widget Workshop: A Mad Scientist's Laboratory (le CD Mac/PC), sa version suédoise, " +
+    "Uppfinnarverkstan, ou sa version française, Eurêka, le Laboratoire du savant fou. L'image " +
+    "reste dans ce navigateur et n'est envoyée nulle part, tout comme les Eurêkas que tu " +
+    "enregistres. Les Eurêkas glissés sur le jeu s'ouvrent, et Fichier ▸ Enregistrer pour " +
+    "téléchargement et Télécharger un Eurêka te les rendent. Fichier ▸ Copier le lien vers " +
     "l'Eurêka crée un lien qui ouvre l'Eurêka pour tous ceux qui ont le CD.",
   open: "Jouer sans le CD",
   start: "Démarrer",
@@ -130,9 +133,29 @@ const FR = {
 };
 const WORDS = { sv: SV, fr: FR };
 
+// The page's own words outside the form, in every language.
+const TURN = {
+  en: "Turn the phone sideways for a bigger workshop.",
+  sv: "Vänd telefonen på sidan för en större verkstad.",
+  fr: "Tourne le téléphone sur le côté pour un atelier plus grand.",
+};
+const LANGUAGE = { en: "Language", sv: "Språk", fr: "Langue" };
+
+// Puts the page in the language `code`: its `lang` (which the touch
+// screen's text box follows, platform::web) and the words outside the
+// form. The form's language first, the game's once it starts.
+export function pageLanguage(code) {
+  if (!TURN[code]) return;
+  document.documentElement.lang = code;
+  const turn = document.getElementById("turn");
+  if (turn) turn.textContent = TURN[code];
+  const lang = document.getElementById("lang");
+  if (lang) lang.setAttribute("aria-label", LANGUAGE[code]);
+}
+
 // The form in the browser's language, and its language list, which
-// "Play without the CD" follows (`?open&lang=`): the browser's language
-// first, else the one picked last time.
+// "Play without the CD" follows (`?open&lang=`): the one picked last
+// time, else the browser's.
 function formLanguage($) {
   const browser = (navigator.language || "").toLowerCase().slice(0, 2);
   const words = WORDS[browser];
@@ -142,6 +165,7 @@ function formLanguage($) {
       if (el) el.textContent = text;
     }
   }
+  pageLanguage(words ? browser : "en");
   const lang = $("lang");
   const open = $("open");
   if (!lang || !open) return;

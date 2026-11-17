@@ -9,7 +9,7 @@
  ],
  "menu": null,
  "class": null,
- "title": "XOR Logic Gate",
+ "title": "XOR Gate",
  "font": [
   8,
   "MS Sans Serif"
@@ -42,7 +42,7 @@
   {
    "id": 101,
    "class": "static",
-   "text": "XOR Logic Gate",
+   "text": "XOR Gate",
    "rect": [
     3,
     -58,

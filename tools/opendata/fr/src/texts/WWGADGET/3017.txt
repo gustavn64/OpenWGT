@@ -1,2 +1,2 @@
-Astuce de construction :
-Laisse le Coeur sur ON à chaque battement et relie-le à une Ampoule : le coeur d'une gerbille la fait clignoter, celui d'une tortue la fait à peine cligner. Passe la sortie sur Pouls ou Poids du coeur pour calculer avec.
+Astuce de construction :
+Laisse le Coeur sur ON à chaque battement et relie-le à une Ampoule : le coeur d'une gerbille la fait clignoter, celui d'une tortue la fait à peine cligner. Passe la sortie sur Pouls ou Poids du coeur pour calculer avec.

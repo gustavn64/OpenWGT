@@ -13,7 +13,7 @@ label t2 0 "Prends un Interrupteur dans la"
 part t3 TxLb 16 177
 label t3 0 "fenêtre à outils et pose-le."
 part t4 TxLb 16 202
-label t4 0 "Relie-le au répartiteur : tire"
+label t4 0 "Relie-le au répartiteur : tire"
 part t5 TxLb 16 219
 label t5 0 "de la borne de l'interrupteur"
 part t6 TxLb 16 236
@@ -21,7 +21,7 @@ label t6 0 "à la borne gauche du répartiteur."
 part t7 TxLb 16 261
 label t7 0 "Appuie ensuite sur GO et clique"
 part t8 TxLb 16 278
-label t8 0 "sur l'interrupteur. Lumière!"
+label t8 0 "sur l'interrupteur. Lumière !"
 
 part s Spl2 330 250
 part lamp bulb 400 148

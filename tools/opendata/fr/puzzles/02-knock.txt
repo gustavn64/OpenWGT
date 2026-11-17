@@ -17,7 +17,7 @@ label t4 0 "la fenêtre à outils et relie-la"
 part t5 TxLb 16 211
 label t5 0 "au Compteur."
 part t6 TxLb 16 236
-label t6 0 "Appuie sur GO, puis frappe : tape"
+label t6 0 "Appuie sur GO, puis frappe : tape"
 part t7 TxLb 16 253
 label t7 0 "sur la touche A de ton clavier,"
 part t8 TxLb 16 270

@@ -1,2 +1,2 @@
-Astuce de construction :
-Pendant que tu construis, relie-en un à n'importe quelle sortie pour voir ce qu'une pièce envoie. Il montre les entiers de -99 à 999 ; pour les décimales ou les grands nombres, prends l'Afficheur à dix chiffres.
+Astuce de construction :
+Pendant que tu construis, relie-en un à n'importe quelle sortie pour voir ce qu'une pièce envoie. Il montre les entiers de -99 à 999 ; pour les décimales ou les grands nombres, prends l'Afficheur à dix chiffres.

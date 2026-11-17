@@ -1,2 +1,2 @@
-Astuce de construction :
-Relie un Métronome à un Compteur et le Compteur à un Projecteur d'images réglé sur Phases de la Lune, en boucle : la lune croît et décroît sans fin.
+Astuce de construction :
+Relie un Métronome à un Compteur et le Compteur à un Projecteur d'images réglé sur Phases de la Lune, en boucle : la lune croît et décroît sans fin.

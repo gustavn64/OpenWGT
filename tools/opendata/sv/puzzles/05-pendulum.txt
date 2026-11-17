@@ -9,7 +9,7 @@ part title TxLb 20 98
 label title 0 "Tvåsekunderspendeln"
 radio title 0 1
 part t1 TxLb 16 135
-label t1 0 "Professorns klocka behöver"
+label t1 0 "Docs klocka behöver"
 part t2 TxLb 16 152
 label t2 0 "en pendel som svänger fram"
 part t3 TxLb 16 169

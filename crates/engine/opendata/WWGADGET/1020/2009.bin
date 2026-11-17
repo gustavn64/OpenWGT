@@ -1,1 +1,1 @@
-The OR Logic Gate has two inputs and one output. If at least one input is YES, the output says YES (1); only when both inputs are NO does it say NO (0). Any number other than 0 counts as YES.
+The OR Gate has two inputs and one output. If at least one input is YES, the output says YES (1); only when both inputs are NO does it say NO (0). Any number other than 0 counts as YES.

@@ -54,7 +54,7 @@ label t1 0 "Appuie sur GO, puis clique"
 part t2 TxLb 470 128
 label t2 0 "sur les interrupteurs."
 part t3 TxLb 470 160
-label t3 0 "Chaque interrupteur est un bit :"
+label t3 0 "Chaque interrupteur est un bit :"
 part t4 TxLb 470 178
 label t4 0 "OFF vaut 0 et ON vaut 1."
 part t5 TxLb 470 210
@@ -64,4 +64,4 @@ label t6 0 "en binaire. La lampe 2 vaut"
 part t7 TxLb 470 246
 label t7 0 "deux, la lampe 1 vaut un."
 part t8 TxLb 470 278
-label t8 0 "Donc 1 + 1 = 10 : deux!"
+label t8 0 "Donc 1 + 1 = 10 : deux !"

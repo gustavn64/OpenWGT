@@ -10,7 +10,7 @@ label q1 0 "Combien pèserais-tu"
 part q2 TxLb 16 153
 label q2 0 "sur d'autres"
 part q3 TxLb 16 171
-label q3 0 "planètes?"
+label q3 0 "planètes ?"
 
 # Your weight, split two ways.
 part w cnst 10 230
@@ -50,4 +50,4 @@ label t2 0 "flèches pour régler ton poids."
 part t3 TxLb 16 372
 label t3 0 "Mars attire moins que la Terre,"
 part t4 TxLb 16 389
-label t4 0 "Jupiter, bien plus fort!"
+label t4 0 "Jupiter, bien plus fort !"

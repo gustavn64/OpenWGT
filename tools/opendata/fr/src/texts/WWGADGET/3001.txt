@@ -1,2 +1,2 @@
-Astuce de construction :
-Fais la course entre une plume et un éléphant : relie un Interrupteur, par un Répartiteur à deux sorties, à deux Chambres de gravité, avec une Ampoule pour chacune. Il n'y a pas d'air dans les chambres : les deux arrivent ensemble, sauf sur des planètes différentes.
+Astuce de construction :
+Fais la course entre une plume et un éléphant : relie un Interrupteur, par un Répartiteur à deux sorties, à deux Chambres de gravité, avec une Ampoule pour chacune. Il n'y a pas d'air dans les chambres : les deux arrivent ensemble, sauf sur des planètes différentes.

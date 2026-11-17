@@ -90,7 +90,7 @@
   {
    "id": 108,
    "class": "static",
-   "text": "Fréquence de sortie :",
+   "text": "Fréquence de sortie :",
    "rect": [
     2,
     94,
@@ -138,7 +138,7 @@
   {
    "id": 106,
    "class": "button",
-   "text": "Liste :1",
+   "text": "Liste :1",
    "rect": [
     8,
     110,
@@ -150,7 +150,7 @@
   {
    "id": 107,
    "class": "button",
-   "text": "Au choix :1",
+   "text": "Au choix :1",
    "rect": [
     8,
     124,

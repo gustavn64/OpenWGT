@@ -9,7 +9,7 @@
  ],
  "menu": null,
  "class": null,
- "title": "Aire / Volume",
+ "title": "Aire/Volume",
  "font": [
   8,
   "MS Sans Serif"
@@ -78,7 +78,7 @@
   {
    "id": 105,
    "class": "static",
-   "text": "Aire / Volume",
+   "text": "Aire/Volume",
    "rect": [
     2,
     -58,
@@ -90,7 +90,7 @@
   {
    "id": 110,
    "class": "static",
-   "text": "Pick what to work out:",
+   "text": "Choisis ce qu'il faut calculer :",
    "rect": [
     11,
     91,
@@ -102,7 +102,7 @@
   {
    "id": 106,
    "class": "button",
-   "text": "Aire du carré (entrée : côté)1",
+   "text": "Aire du carré (entrée : côté)1",
    "rect": [
     16,
     101,
@@ -114,7 +114,7 @@
   {
    "id": 107,
    "class": "button",
-   "text": "Aire du cercle (entrée : rayon)1",
+   "text": "Aire du cercle (entrée : rayon)1",
    "rect": [
     16,
     123,
@@ -126,7 +126,7 @@
   {
    "id": 108,
    "class": "button",
-   "text": "Volume du cube (entrée : côté)1",
+   "text": "Volume du cube (entrée : côté)1",
    "rect": [
     16,
     112,
@@ -138,7 +138,7 @@
   {
    "id": 109,
    "class": "button",
-   "text": "Volume de la sphère (entrée : rayon)1",
+   "text": "Volume de la sphère (entrée : rayon)1",
    "rect": [
     16,
     134,

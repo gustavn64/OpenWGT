@@ -1,2 +1,2 @@
-Astuce de construction :
-Donne une limite de temps à un problème : relie un Chronomètre réglé sur Secondes à un Vérificateur gagné/perdu qui arrête l'Eurêka avec le Son perdu à 60. Un second vérificateur avec le Son gagné guette la bonne réponse.
+Astuce de construction :
+Donne une limite de temps à un problème : relie un Chronomètre réglé sur Secondes à un Vérificateur gagné/perdu qui arrête l'Eurêka avec le Son perdu à 60. Un second vérificateur avec le Son gagné guette la bonne réponse.

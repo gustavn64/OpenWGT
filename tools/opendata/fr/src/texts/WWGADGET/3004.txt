@@ -1,2 +1,2 @@
-Astuce de construction :
-Relie deux Touches clavier aux entrées de départ et d'arrêt pour chronométrer à la main. Règle la sortie sur Chrono ON/OFF : elle dit OUI tant que le chrono tourne. Relie-la à une Ampoule pour voir quand il compte.
+Astuce de construction :
+Relie deux Touches clavier aux entrées de départ et d'arrêt pour chronométrer à la main. Règle la sortie sur Chrono ON/OFF : elle dit OUI tant que le chrono tourne. Relie-la à une Ampoule pour voir quand il compte.

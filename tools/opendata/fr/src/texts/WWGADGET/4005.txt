@@ -1,2 +1,2 @@
-Astuce de construction :
-Sin, Cos et Tan travaillent en degrés : le sinus de 90 vaut 1. Partie entière arrondit à l'entier inférieur, pratique pour transformer la réponse d'un Diviseur en groupes entiers.
+Astuce de construction :
+Sin, Cos et Tan travaillent en degrés : le sinus de 90 vaut 1. Partie entière arrondit à l'entier inférieur, pratique pour transformer la réponse d'un Diviseur en groupes entiers.

@@ -9,7 +9,7 @@
  ],
  "menu": null,
  "class": null,
- "title": "NOT Logic Gate",
+ "title": "NOT Gate",
  "font": [
   8,
   "MS Sans Serif"
@@ -42,7 +42,7 @@
   {
    "id": 101,
    "class": "static",
-   "text": "NOT Logic Gate",
+   "text": "NOT Gate",
    "rect": [
     4,
     -58,

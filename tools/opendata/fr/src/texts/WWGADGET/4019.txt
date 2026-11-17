@@ -1,2 +1,2 @@
-Astuce de construction :
-L'ordre compte : le nombre de côté est divisé par celui du haut, donc 12 sur le côté et 4 en haut donnent 3. Diviser par 0 bloque le Diviseur, qui donne 0.
+Astuce de construction :
+L'ordre compte : le nombre de côté est divisé par celui du haut, donc 12 sur le côté et 4 en haut donnent 3. Diviser par 0 bloque le Diviseur, qui donne 0.

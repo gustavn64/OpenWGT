@@ -13,9 +13,12 @@ own graphics, sounds and data ([below](#without-the-cd-openwgfx-openwsfx-openwda
 Swedish and French, touch screens, fixes, a Nix flake and tools that
 compare it with the original running in an emulator (`tools/compare/`).
 
-This repository contains **none of the game's pictures, sounds, texts
-or code**. It runs without the game's CD on its own pictures, sounds and
-data; with your own copy of the CD it can use the original's instead.
+This repository contains **none of the game's pictures, sounds or
+code, and none of its prose**: the texts, the help, the puzzles and the
+samples are the project's own; only names, presets and short words of
+the interface may match the original's ([Legal](#legal)). It runs
+without the game's CD on its own pictures, sounds and data; with your
+own copy of the CD it can use the original's instead.
 
 ## Play
 
@@ -31,7 +34,7 @@ data; with your own copy of the CD it can use the original's instead.
 | macOS | `openwgt-macos.dmg`, for Apple silicon and Intel: drag `OpenWGT.app` to Applications; the first start needs a right click, Open (it's signed ad hoc only) |
 | Linux, any | `openwgt-x86_64.AppImage` (`-aarch64` on Arm): make it executable and run it |
 | Debian, Ubuntu | `openwgt-x86_64.deb`: `sudo apt install ./openwgt-x86_64.deb` |
-| Fedora, openSUSE | `openwgt-x86_64.rpm`: `sudo dnf install ./openwgt-x86_64.rpm` |
+| Fedora | `openwgt-x86_64.rpm`: `sudo dnf install ./openwgt-x86_64.rpm` |
 | Linux, by hand | `openwgt-linux-x86_64.tar.gz`: the bare program |
 
 The Linux builds want glibc 2.35 or newer (Ubuntu 22.04 and later).
@@ -92,7 +95,8 @@ the same bytes. The stack is winit, wgpu and cpal, with a resizable
 window, fullscreen and UI scaling.
 
 Options ▸ Settings, the port's own, changes the UI scale on the spot
-(Automatic, or 1× to 4× in quarters), the language without a CD, and
+(Automatic, or 1× to 4× in quarters), the language without a CD (with
+one, the CD's decides), and
 switches the port's enhancements of the original on or off, all of them
 at once. They're off until the player turns them on (`original=false` in
 the settings file). The enhancements: the parts tray shows a whole folder
@@ -102,7 +106,8 @@ toolbars, dialogs and message boxes are dragged whole, not as an outline.
 Alt+Enter do (on a phone, where there are no such keys).
 Its **Change CD...** button, after "Save changes?", picks another CD
 image and starts the game again on it (in the browser, the page's start
-form comes back).
+form comes back); **Play without the CD** starts it again on the port's
+own packs.
 
 On a touch screen a tap is a click, a long press a double click, and a
 tap on a text field opens the device's own text box (in the browser).
@@ -127,7 +132,7 @@ the window and the sound load, and the Python tools' packages; `nix run
 . -- CD.iso` builds and starts it (`flake.nix`).
 
 Options: `--open`, `--opengfx`, `--opensfx` and `--opendata`
-([below](#without-the-cd-openwgfx-openwsfx-openwdata)), `--lang=en|sv`,
+([below](#without-the-cd-openwgfx-openwsfx-openwdata)), `--lang=en|sv|fr`,
 `--no-audio`, `--window-size=WxH`, `--fullscreen`, `--windowed`,
 `--ui-scale=N|auto` (remembered in the settings file), `--overrides=DIR`
 (resources that replace or add to the CD's) and `--export=DIR` (writes
@@ -177,7 +182,7 @@ file is read too); the port's own words, what the original took from
 Windows and what the port adds, follow it (`engine::lang`). Without a CD
 the packs come in the language chosen: `--lang=sv` or `--lang=fr`
 (`?lang=sv`, `?lang=fr` in the browser, whose start page has a list for
-it), else the system's. Swedish OpenWDATA is `tools/opendata/sv`
+it), else the one picked in Options ▸ Settings, else the system's. Swedish OpenWDATA is `tools/opendata/sv`
 (`crates/engine/opendata-sv`), Swedish OpenWGFX the pictures with words,
 `crates/engine/opengfx-sv`, over the English ones; French OpenWDATA is
 `tools/opendata/fr` (`crates/engine/opendata-fr`) and French OpenWGFX
@@ -218,9 +223,13 @@ tools that make them, are made for this project and under the same
 licence. The bundled fonts have their own
 ([crates/engine/fonts](crates/engine/fonts/README.md)).
 
-None of the game's pictures, sounds, texts or code is included. OpenWDATA
-keeps the numbers the code and saved widgets rely on (where the knots
-are, the dialogs' layouts and ids, the palette), so that widgets made
-with the original work the same. Widget Workshop is © Maxis and a
+None of the game's pictures, sounds or code is included, nor its prose:
+the parts' descriptions and tips, the messages, the help, the puzzles and
+the samples are written anew, in English, Swedish and French alike.
+OpenWDATA keeps the numbers the code and saved widgets rely on (where the
+knots are, the dialogs' layouts and ids, the palette), so that widgets
+made with the original work the same; the parts' plain names, the
+drop-down lists' presets and short words of the interface (OK, Cancel,
+Open...) may match the original's. Widget Workshop is © Maxis and a
 trademark of its owners; OpenWGT is an unofficial project, not
 affiliated with them.

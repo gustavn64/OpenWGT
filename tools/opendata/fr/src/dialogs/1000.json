@@ -102,7 +102,7 @@
   {
    "id": 108,
    "class": "static",
-   "text": "Gravité :",
+   "text": "Gravité :",
    "rect": [
     2,
     94,
@@ -126,7 +126,7 @@
   {
    "id": 110,
    "class": "static",
-   "text": "Poids :",
+   "text": "Poids :",
    "rect": [
     2,
     109,
@@ -150,7 +150,7 @@
   {
    "id": 112,
    "class": "static",
-   "text": "Sortie :",
+   "text": "Sortie :",
    "rect": [
     158,
     94,
@@ -174,7 +174,7 @@
   {
    "id": 116,
    "class": "static",
-   "text": "Longueur du pendule :",
+   "text": "Longueur du pendule :",
    "rect": [
     2,
     124,
@@ -222,7 +222,7 @@
   {
    "id": 106,
    "class": "button",
-   "text": "Liste :2",
+   "text": "Liste :2",
    "rect": [
     10,
     137,
@@ -234,7 +234,7 @@
   {
    "id": 114,
    "class": "button",
-   "text": "Au choix :2",
+   "text": "Au choix :2",
    "rect": [
     10,
     153,

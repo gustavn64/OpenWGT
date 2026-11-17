@@ -1,3 +1,3 @@
-Ce comparateur pose une seule question sur deux nombres :
-Le nombre 1 est-il plus petit que le nombre 2?
-Si oui, il envoie OUI (1) ; sinon, il envoie NON (0).
+Ce comparateur pose une seule question sur deux nombres :
+Le nombre 1 est-il plus petit que le nombre 2 ?
+Si oui, il envoie OUI (1) ; sinon, il envoie NON (0).

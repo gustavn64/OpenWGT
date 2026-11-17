@@ -1,2 +1,2 @@
-Astuce de construction :
-Enregistre ta voix qui dit « Bravo! » (ou importe un court fichier .WAV 8 bits) dans les réglages avant d'appuyer sur GO, puis relie l'Enregistreur après la pièce qui vérifie la réponse, et ensuite à un Haut-parleur.
+Astuce de construction :
+Enregistre ta voix qui dit « Bravo ! » (ou importe un court fichier .WAV 8 bits) dans les réglages avant d'appuyer sur GO, puis relie l'Enregistreur après la pièce qui vérifie la réponse, et ensuite à un Haut-parleur.

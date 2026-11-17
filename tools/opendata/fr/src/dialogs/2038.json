@@ -90,7 +90,7 @@
   {
    "id": 108,
    "class": "button",
-   "text": "Transposer :",
+   "text": "Transposer :",
    "rect": [
     14,
     118,
@@ -138,7 +138,7 @@
   {
    "id": 107,
    "class": "button",
-   "text": "Changer le son :1",
+   "text": "Changer le son :1",
    "rect": [
     5,
     104,

@@ -41,3 +41,5 @@ around it take. None of it carries the CD's data.
    (`flatpak-cargo-generator.py Cargo.lock -o cargo-sources.json`, from
    `flatpak/flatpak-builder-tools`); the first time a submission to
    Flathub, afterwards its own repository `flathub/se.gustavn.openwgt`.
+   Flathub wants screenshots in the metainfo (`<screenshots>`, pictures
+   at a stable address) before the first submission; it has none yet.

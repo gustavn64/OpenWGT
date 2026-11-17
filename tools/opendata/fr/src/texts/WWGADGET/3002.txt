@@ -1,2 +1,2 @@
-Astuce de construction :
+Astuce de construction :
 Règle la sortie sur Distance, envoie-la à un Afficheur à dix chiffres, puis fais le même tir sur la Terre et sur la Lune. Passe sur Vitesse pour voir à quelle vitesse va le boulet quand il touche le sol, en milles à l'heure.

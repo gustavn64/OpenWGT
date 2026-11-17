@@ -1,1 +1,1 @@
-La Porte ET a deux entrées et une sortie. La sortie dit OUI (1) seulement quand la première entrée ET la seconde disent toutes les deux OUI ; dans tous les autres cas, elle dit NON (0). Tout nombre autre que 0 compte comme OUI.
+La Porte ET a deux entrées et une sortie. La sortie dit OUI (1) seulement quand la première entrée ET la seconde disent toutes les deux OUI ; dans tous les autres cas, elle dit NON (0). Tout nombre autre que 0 compte comme OUI.

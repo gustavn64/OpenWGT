@@ -1,2 +1,2 @@
-Astuce de construction :
-Écris les instructions de ton problème sur un Panneau d'affichage et relie-lui un Interrupteur : les joueurs pourront montrer et cacher l'aide quand ils le veulent.
+Astuce de construction :
+Écris les instructions de ton problème sur un Panneau d'affichage et relie-lui un Interrupteur : les joueurs pourront montrer et cacher l'aide quand ils le veulent.

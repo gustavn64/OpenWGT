@@ -14,13 +14,13 @@ label t2 0 "que si SES DEUX entrées"
 part t3 TxLb 16 169
 label t3 0 "sont à ON. Mais l'un de ces deux"
 part t4 TxLb 16 186
-label t4 0 "nombres est toujours à OFF (0)!"
+label t4 0 "nombres est toujours à OFF (0) !"
 part t5 TxLb 330 135
 label t5 0 "Relie-les et allume la lampe"
 part t6 TxLb 330 152
 label t6 0 "avec une seule pièce de la"
 part t7 TxLb 330 169
-label t7 0 "fenêtre à outils. Ensuite, GO!"
+label t7 0 "fenêtre à outils. Ensuite, GO !"
 
 part on MiCo 30 245
 label on 0 "1"

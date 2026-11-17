@@ -231,7 +231,8 @@ export function text_want(on) {
 let edited = [];
 // A text field tapped on a touch screen: the browser's own text box over
 // the game, with the field's text, so the device's keyboard (its letters,
-// corrections and selection) edits it; OK hands it back.
+// corrections and selection) edits it; OK hands it back. Cancel is in
+// the page's language (its `lang`, the game's: the widget crate's web.js).
 export function text_edit(text, multiline, max) {
   const back = document.createElement("div");
   back.style.cssText = "position:fixed;inset:0;z-index:10;display:flex;align-items:flex-start;" +
@@ -253,7 +254,8 @@ export function text_edit(text, multiline, max) {
     b.style.cssText = "min-width:6em;padding:.4em 1em;font:16px system-ui,sans-serif";
     return b;
   };
-  const cancel = button("Cancel", "button"), ok = button("OK", "submit");
+  const cancelWord = { sv: "Avbryt", fr: "Annuler" }[document.documentElement.lang] || "Cancel";
+  const cancel = button(cancelWord, "button"), ok = button("OK", "submit");
   row.append(cancel, ok);
   form.append(field, row);
   back.append(form);
