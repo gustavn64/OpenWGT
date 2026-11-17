@@ -7,9 +7,9 @@ part title TxLb 20 98
 label title 0 "Coeurs en rythme"
 radio title 0 1
 part i1 TxLb 236 100
-label i1 0 "Appuie sur GO : les interrupteurs"
+label i1 0 "Appuie sur GO : les interrupteurs"
 part i2 TxLb 236 117
-label i2 0 "font jouer ou taire les musiciens!"
+label i2 0 "font jouer ou taire les musiciens !"
 
 # Human heart: clap 70 beats a minute
 part humh hart 20 136
@@ -25,7 +25,7 @@ wire humg 2 humn 0
 part hump Spkr 330 148
 wire humn 1 hump 0
 part hum1 TxLb 425 146
-label hum1 0 "Coeur humain : clap"
+label hum1 0 "Coeur humain : clap"
 part hum2 TxLb 425 163
 label hum2 0 "70 battements/minute"
 
@@ -43,7 +43,7 @@ wire dogg 2 dogn 0
 part dogp Spkr 330 215
 wire dogn 1 dogp 0
 part dog1 TxLb 425 213
-label dog1 0 "Coeur de chien : ouaf"
+label dog1 0 "Coeur de chien : ouaf"
 part dog2 TxLb 425 230
 label dog2 0 "100 battements/minute"
 
@@ -61,7 +61,7 @@ wire eleg 2 elen 0
 part elep Spkr 330 282
 wire elen 1 elep 0
 part ele1 TxLb 425 280
-label ele1 0 "Coeur d'éléphant : meuh"
+label ele1 0 "Coeur d'éléphant : meuh"
 part ele2 TxLb 425 297
 label ele2 0 "49 battements/minute"
 
@@ -79,6 +79,6 @@ wire torg 2 torn 0
 part torp Spkr 330 349
 wire torn 1 torp 0
 part tor1 TxLb 425 347
-label tor1 0 "Coeur de tortue :"
+label tor1 0 "Coeur de tortue :"
 part tor2 TxLb 425 364
-label tor2 0 "cocorico!"
+label tor2 0 "cocorico !"

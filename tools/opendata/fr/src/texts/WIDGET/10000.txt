@@ -1,19 +1,19 @@
 OpenWGT – un moteur libre pour Widget Workshop
 
-Une façon libre et ouverte de continuer à construire des Eurêkas sur les ordinateurs d'aujourd'hui. Voici les personnes et les pièces qui le font apparaître à l'écran :
+Une façon libre et ouverte de continuer à construire des Eurêkas sur les ordinateurs d'aujourd'hui. Voici les personnes et les pièces qui le font apparaître à l'écran :
 
 
-OpenWGT :
+OpenWGT :
 
 gustavn64
 gustavn.se/openwgt
 
-Le portage sur lequel il s'appuie :
+Le portage sur lequel il s'appuie :
 
 Doridian
 github.com/Doridian/GadgetGenerator
 
-OpenWGT ajoute ses propres paquets libres, tous faits pour le projet :
+OpenWGT ajoute ses propres paquets libres, tous faits pour le projet :
 
 OpenWGFX
 les images
@@ -26,11 +26,11 @@ les textes
 
 Construit en Rust, avec winit, wgpu et cpal
 
-Logiciel libre :
+Logiciel libre :
 
 OpenWGT est publié sous la GNU Affero General Public License, version 3 ou (à ton choix) toute version ultérieure. Tu peux le lire, le modifier et le partager.
 
-Merci tout particulièrement à :
+Merci tout particulièrement à :
 
 tous ceux qui ont gardé leur CD de Widget Workshop
 et tous ceux qui construisent encore des Eurêkas

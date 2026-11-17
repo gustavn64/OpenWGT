@@ -90,7 +90,7 @@
   {
    "id": 108,
    "class": "static",
-   "text": "Sortie :",
+   "text": "Sortie :",
    "rect": [
     8,
     93,
@@ -102,7 +102,7 @@
   {
    "id": 112,
    "class": "static",
-   "text": "Type d'horloge :",
+   "text": "Type d'horloge :",
    "rect": [
     141,
     92,

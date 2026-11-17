@@ -9,7 +9,7 @@
  ],
  "menu": null,
  "class": null,
- "title": "AND Logic Gate ",
+ "title": "AND Gate",
  "font": [
   8,
   "MS Sans Serif"
@@ -42,7 +42,7 @@
   {
    "id": 101,
    "class": "static",
-   "text": "AND Logic Gate ",
+   "text": "AND Gate",
    "rect": [
     5,
     -58,

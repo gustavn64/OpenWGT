@@ -13,7 +13,7 @@ label t1 0 "L'horloge de Doc a besoin d'un"
 part t2 TxLb 16 152
 label t2 0 "pendule qui fait l'aller-retour"
 part t3 TxLb 16 169
-label t3 0 "en 2 secondes : de 2.0 à 2.09."
+label t3 0 "en 2 secondes : de 2.0 à 2.09."
 part t4 TxLb 16 194
 label t4 0 "Appuie sur STOP et double-clique"
 part t5 TxLb 16 211
@@ -27,7 +27,7 @@ label t8 0 "gravité plus forte."
 part t9 TxLb 330 194
 label t9 0 "Aucun nombre entier de pieds"
 part t10 TxLb 330 211
-label t10 0 "ne va sur Terre. Et ailleurs?"
+label t10 0 "ne va sur Terre. Et ailleurs ?"
 
 # The switch lets the pendulum go as soon as you press GO.
 part sw swit 10 301
@@ -56,7 +56,7 @@ wire int 1 win 0
 part show di10 270 364
 wire sp 2 show 0
 part sl TxLb 16 380
-label sl 0 "Secondes par oscillation :"
+label sl 0 "Secondes par oscillation :"
 
 lock title
 lock t1

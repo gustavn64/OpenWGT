@@ -9,7 +9,7 @@
  ],
  "menu": null,
  "class": null,
- "title": "OR Logic Gate",
+ "title": "OR Gate",
  "font": [
   8,
   "MS Sans Serif"
@@ -42,7 +42,7 @@
   {
    "id": 101,
    "class": "static",
-   "text": "OR Logic Gate",
+   "text": "OR Gate",
    "rect": [
     4,
     -58,

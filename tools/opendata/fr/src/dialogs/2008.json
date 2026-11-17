@@ -9,7 +9,7 @@
  ],
  "menu": null,
  "class": null,
- "title": "Porte logique ET ",
+ "title": "Porte ET",
  "font": [
   8,
   "MS Sans Serif"
@@ -42,7 +42,7 @@
   {
    "id": 101,
    "class": "static",
-   "text": "Porte logique ET ",
+   "text": "Porte ET",
    "rect": [
     5,
     -58,

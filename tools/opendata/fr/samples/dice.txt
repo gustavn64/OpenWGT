@@ -74,6 +74,6 @@ label t2 0 "(ou clique sur la touche R)"
 part t3 TxLb 16 346
 label t3 0 "pour lancer les dés."
 part t4 TxLb 16 370
-label t4 0 "Fais 7 pour être acclamé!"
+label t4 0 "Fais 7 pour être acclamé !"
 part t5 TxLb 16 387
 label t5 0 "Garde R enfoncé pour relancer."

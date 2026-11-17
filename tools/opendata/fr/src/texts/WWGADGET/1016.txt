@@ -1,1 +1,1 @@
-Envoie à l'Ampoule un ON, un OUI ou n'importe quel nombre sauf 0, et elle s'allume. Elle est soit allumée, soit éteinte : on ne peut pas la tamiser.
+Envoie à l'Ampoule un ON, un OUI ou n'importe quel nombre sauf 0, et elle s'allume. Elle est soit allumée, soit éteinte : on ne peut pas la tamiser.

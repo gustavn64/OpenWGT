@@ -1,2 +1,2 @@
-Astuce de construction :
+Astuce de construction :
 Multiplie par un nombre fixe venu d'un Nombre à trois chiffres pour changer d'unité, par exemple par 60 pour passer des minutes aux secondes, ou par 12 pour passer des pieds aux pouces.

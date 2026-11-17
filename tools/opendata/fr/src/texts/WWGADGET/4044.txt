@@ -1,2 +1,2 @@
-Astuce de construction :
-Règle De et À sur l'étendue que tes nombres utilisent vraiment, et fais le graphique un peu plus long que ton expérience : une fois plein, il ne trace plus. Une Touche clavier sur l'entrée de remise à zéro l'efface sans arrêter l'Eurêka.
+Astuce de construction :
+Règle De et À sur l'étendue que tes nombres utilisent vraiment, et fais le graphique un peu plus long que ton expérience : une fois plein, il ne trace plus. Une Touche clavier sur l'entrée de remise à zéro l'efface sans arrêter l'Eurêka.

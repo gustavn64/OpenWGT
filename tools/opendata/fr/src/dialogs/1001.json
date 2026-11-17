@@ -90,7 +90,7 @@
   {
    "id": 106,
    "class": "static",
-   "text": "Gravité :",
+   "text": "Gravité :",
    "rect": [
     3,
     110,
@@ -126,7 +126,7 @@
   {
    "id": 110,
    "class": "static",
-   "text": "Objet qui tombe :",
+   "text": "Objet qui tombe :",
    "rect": [
     2,
     95,
@@ -162,7 +162,7 @@
   {
    "id": 114,
    "class": "static",
-   "text": "Hauteur :",
+   "text": "Hauteur :",
    "rect": [
     3,
     125,
@@ -186,7 +186,7 @@
   {
    "id": 108,
    "class": "button",
-   "text": "Liste :2",
+   "text": "Liste :2",
    "rect": [
     7,
     137,
@@ -198,7 +198,7 @@
   {
    "id": 112,
    "class": "button",
-   "text": "Au choix :2",
+   "text": "Au choix :2",
    "rect": [
     7,
     152,

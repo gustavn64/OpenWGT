@@ -138,7 +138,7 @@
   {
    "id": 65535,
    "class": "static",
-   "text": "écran, ou sur un plus petit?",
+   "text": "écran, ou sur un plus petit ?",
    "rect": [
     7,
     28,
@@ -150,7 +150,7 @@
   {
    "id": 65535,
    "class": "static",
-   "text": "Faire tenir dans (choisis une taille) :",
+   "text": "Faire tenir dans (choisis une taille) :",
    "rect": [
     7,
     46,

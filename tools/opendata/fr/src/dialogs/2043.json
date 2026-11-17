@@ -90,7 +90,7 @@
   {
    "id": 116,
    "class": "static",
-   "text": "le nombre :",
+   "text": "le nombre :",
    "rect": [
     5,
     171,
@@ -102,7 +102,7 @@
   {
    "id": 119,
    "class": "static",
-   "text": "Jouer :",
+   "text": "Jouer :",
    "rect": [
     136,
     136,
@@ -114,7 +114,7 @@
   {
    "id": 105,
    "class": "button",
-   "text": "Gagné si elle est :1",
+   "text": "Gagné si elle est :1",
    "rect": [
     140,
     90,
@@ -126,7 +126,7 @@
   {
    "id": 106,
    "class": "button",
-   "text": "Gagné/perdu si elle est :1",
+   "text": "Gagné/perdu si elle est :1",
    "rect": [
     4,
     90,

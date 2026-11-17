@@ -1,2 +1,2 @@
-Astuce de construction :
-Ce qui entre ressort tel quel par chaque sortie : envoie 7 et chaque sortie donne 7. Sers-t'en chaque fois qu'un signal doit atteindre plus d'une pièce.
+Astuce de construction :
+Ce qui entre ressort tel quel par chaque sortie : envoie 7 et chaque sortie donne 7. Sers-t'en chaque fois qu'un signal doit atteindre plus d'une pièce.

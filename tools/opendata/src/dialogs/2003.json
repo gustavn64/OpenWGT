@@ -9,7 +9,7 @@
  ],
  "menu": null,
  "class": null,
- "title": "Area / Volume",
+ "title": "Area/Volume",
  "font": [
   8,
   "MS Sans Serif"
@@ -78,7 +78,7 @@
   {
    "id": 105,
    "class": "static",
-   "text": "Area / Volume",
+   "text": "Area/Volume",
    "rect": [
     2,
     -58,

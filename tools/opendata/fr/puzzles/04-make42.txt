@@ -7,7 +7,7 @@ part title TxLb 20 98
 label title 0 "Faire 42"
 radio title 0 1
 part t1 TxLb 16 135
-label t1 0 "Fais afficher 42 à l'afficheur!"
+label t1 0 "Fais afficher 42 à l'afficheur !"
 part t2 TxLb 16 160
 label t2 0 "Utilise les trois nombres et"
 part t3 TxLb 16 177

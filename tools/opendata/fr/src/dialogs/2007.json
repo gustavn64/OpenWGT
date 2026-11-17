@@ -90,7 +90,7 @@
   {
    "id": 106,
    "class": "static",
-   "text": "Nombre de départ :",
+   "text": "Nombre de départ :",
    "rect": [
     4,
     93,
@@ -150,7 +150,7 @@
   {
    "id": 111,
    "class": "static",
-   "text": "Options :",
+   "text": "Options :",
    "rect": [
     4,
     106,

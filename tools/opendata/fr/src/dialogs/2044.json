@@ -78,7 +78,7 @@
   {
    "id": 105,
    "class": "static",
-   "text": "Plage de nombres :",
+   "text": "Plage de nombres :",
    "rect": [
     4,
     89,
@@ -90,7 +90,7 @@
   {
    "id": 106,
    "class": "static",
-   "text": "À :",
+   "text": "À :",
    "rect": [
     4,
     120,
@@ -102,7 +102,7 @@
   {
    "id": 107,
    "class": "static",
-   "text": "De :",
+   "text": "De :",
    "rect": [
     4,
     103,
@@ -138,7 +138,7 @@
   {
    "id": 110,
    "class": "static",
-   "text": "Durée du tracé :",
+   "text": "Durée du tracé :",
    "rect": [
     105,
     89,
@@ -198,7 +198,7 @@
   {
    "id": 111,
    "class": "button",
-   "text": "Liste :1",
+   "text": "Liste :1",
    "rect": [
     105,
     102,
@@ -210,7 +210,7 @@
   {
    "id": 112,
    "class": "button",
-   "text": "Au choix :1",
+   "text": "Au choix :1",
    "rect": [
     105,
     118,

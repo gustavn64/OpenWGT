@@ -1,1 +1,1 @@
-La Porte INV a une entrée et une sortie, et la sortie dit toujours le contraire de l'entrée : OUI à l'entrée donne NON à la sortie, NON donne OUI. Tout nombre autre que 0 compte comme OUI.
+La Porte INV a une entrée et une sortie, et la sortie dit toujours le contraire de l'entrée : OUI à l'entrée donne NON à la sortie, NON donne OUI. Tout nombre autre que 0 compte comme OUI.

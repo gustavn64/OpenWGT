@@ -9,7 +9,7 @@
  ],
  "menu": null,
  "class": null,
- "title": "OCH-grind ",
+ "title": "OCH-grind",
  "font": [
   8,
   "MS Sans Serif"
@@ -42,7 +42,7 @@
   {
    "id": 101,
    "class": "static",
-   "text": "OCH-grind ",
+   "text": "OCH-grind",
    "rect": [
     5,
     -58,

@@ -1,1 +1,1 @@
-Le Totalisateur surveille chaque nombre qu'il reçoit. Il peut te donner leur somme, leur moyenne, le plus grand ou le plus petit : c'est toi qui choisis.
+Le Totalisateur surveille chaque nombre qu'il reçoit. Il peut te donner leur somme, leur moyenne, le plus grand ou le plus petit : c'est toi qui choisis.

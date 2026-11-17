@@ -1,2 +1,2 @@
-Astuce de construction :
-Fais un interrupteur qui réagit quand tu tapes dans tes mains : relie l'Interrupteur sonore à un Panneau d'affichage ou à une pièce sonore. Il reste à ON jusqu'à l'arrêt. Si le bruit ambiant le déclenche, baisse la sensibilité.
+Astuce de construction :
+Fais un interrupteur qui réagit quand tu tapes dans tes mains : relie l'Interrupteur sonore à un Panneau d'affichage ou à une pièce sonore. Il reste à ON jusqu'à l'arrêt. Si le bruit ambiant le déclenche, baisse la sensibilité.

@@ -9,7 +9,7 @@
  ],
  "menu": null,
  "class": null,
- "title": "Porte logique OU",
+ "title": "Porte OU",
  "font": [
   8,
   "MS Sans Serif"
@@ -42,7 +42,7 @@
   {
    "id": 101,
    "class": "static",
-   "text": "Porte logique OU",
+   "text": "Porte OU",
    "rect": [
     4,
     -58,

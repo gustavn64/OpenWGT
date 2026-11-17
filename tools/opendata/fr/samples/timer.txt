@@ -30,7 +30,7 @@ wire cmp 2 s 0
 part lamp bulb 360 150
 wire s 1 lamp 0
 part msg TxBx 420 197
-text msg "Temps écoulé!\nFais STOP puis GO\npour recommencer."
+text msg "Temps écoulé !\nFais STOP puis GO\npour recommencer."
 wire s 2 msg 0
 part bell MsSd 360 265
 number bell 0 1

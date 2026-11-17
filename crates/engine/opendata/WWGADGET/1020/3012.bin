@@ -1,1 +1,1 @@
-Construction Tip:Use a Light Switch as a master switch: wire it, together with your signal, into an AND Logic Gate, and the signal only gets through while the switch is on. Pick On at Start if it should begin switched on.
+Construction Tip:Use a Light Switch as a master switch: wire it, together with your signal, into an AND Gate, and the signal only gets through while the switch is on. Pick On at Start if it should begin switched on.

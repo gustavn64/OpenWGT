@@ -1,2 +1,2 @@
-Astuce de construction :
+Astuce de construction :
 Règle le Pendule sur ON au centre et relie-le à un Compteur pour compter ses oscillations, ou à un Haut-parleur pour un bip régulier. Un fil plus long ou une gravité plus faible ralentit le rythme, mais le poids ne change rien.
