@@ -105,7 +105,7 @@ French, in pictures of its own:
 | AVERAGE, TOTAL, MAXIMUM, MINIMUM | MOYENNE, TOTAL, MAXIMUM, MINIMUM | MOYENNE, TOTAUX, ... |
 | RESET (the Strip Chart) | ZÉRO | REMIS A ZERO |
 | ENTER (the keypad) | ENTRÉE | |
-| Ft (the Converter) | pi | Ft |
+| M, Kg, Ft, Lb (the Converter) | m, kg, pi, lb | M, Kg, Ft, Lb |
 | IN, OUT (the settings' arrows) | E, S (entrée, sortie) | no words |
 | for Widget Workshop | pour Widget Workshop | |
 | GO/STOP, ON/OFF, AM/PM, the Stopwatch's START/STOP | kept | kept |

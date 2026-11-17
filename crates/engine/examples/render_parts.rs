@@ -118,16 +118,20 @@ fn main() {
         data: data.as_ref().map(|d| d as &dyn Source),
     };
     let overrides: Option<&dyn Source> = if data.is_some() { None } else { Some(&export) };
-    // `--lang sv`: the parts' first words from the code in that language.
-    if let Some(l) = args
+    // `--lang sv`: the parts' first words from the code in that language,
+    // and its units.
+    let lang = args
         .iter()
         .position(|a| a == "--lang")
         .and_then(|i| args.get(i + 1))
-        .and_then(|c| engine::lang::Lang::from_code(c))
-    {
+        .and_then(|c| engine::lang::Lang::from_code(c));
+    if let Some(l) = lang {
         engine::lang::set(l);
     }
-    let assets = Assets::load_with(None, packs, overrides).unwrap();
+    let mut assets = Assets::load_with(None, packs, overrides).unwrap();
+    if let Some(l) = lang {
+        assets.lang = l;
+    }
     let pal = assets.palette();
     for i in 1..=64u8 {
         let Some(tag) = engine::editor::tray::tag_of(i) else {
