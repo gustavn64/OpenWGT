@@ -12,7 +12,7 @@ around it take. None of it carries the CD's data.
 | The release | `openwgt-windows-x86_64.exe`, `openwgt-windows-arm64.exe` | CI |
 | The release | `openwgt-macos.dmg` (Apple silicon and Intel) | CI |
 | The release | `openwgt-web.zip`: the site, the front page with the game in `play/` | CI (`docs/web.md`) |
-| ghcr.io | `ghcr.io/gustavn64/openwgt`: the site served by nginx | CI (`docker/Dockerfile`) |
+| ghcr.io | `ghcr.io/gustavn64/openwgt` (`:latest`, `:X.Y.Z`, `:X.Y`): the site served by nginx, linked to this repository | CI (`docker/Dockerfile`) |
 | Nix | `nix run github:gustavn64/OpenWGT` | `flake.nix` |
 | AUR | `openwgt`, built from the release's source | `aur/PKGBUILD` |
 | winget | `gustavn64.OpenWGT` | `winget/*.yaml` |
