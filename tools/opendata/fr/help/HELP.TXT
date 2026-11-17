@@ -611,7 +611,7 @@ Chaque clic sur le bouton de la langue passe à la langue suivante : anglais (E
 Choisit une image du CD de Widget Workshop (un fichier .iso) à utiliser par OpenWGT, puis relance l'atelier avec elle. Il te propose d'abord d'enregistrer ton Eurêka. Si ton ordinateur n'a pas de sélecteur de fichiers pour cela, OpenWGT te demande plutôt de déposer l'image du CD sur sa fenêtre ; dans le navigateur web, c'est la page qui te la demande. Voir [Jouer avec ou sans le CD](#cd).
 
 ## Jouer sans le CD
-Avec un CD, relance OpenWGT avec ses propres images, sons et textes à la place, après t'avoir demandé s'il faut enregistrer ton Eurêka. Le bouton de la langue choisit alors à nouveau la langue.
+Avec un CD, relance OpenWGT avec ses propres images, sons et textes à la place, après t'avoir demandé s'il faut enregistrer ton Eurêka. Il reste sans le CD, aux démarrages suivants aussi, jusqu'à ce que **Changer de CD...** en choisisse un. Les textes sont dans la langue choisie avant avec le bouton de la langue, sinon celle de ton ordinateur, et le bouton choisit à nouveau la langue.
 
 = Jouer avec ou sans le CD {#cd}
 keywords: cd, iso, sans cd, pas de cd, OpenWGFX, OpenWSFX, OpenWDATA, données, original, langue, Uppfinnarverkstan, Eurêka
@@ -625,7 +625,7 @@ Tu n'as pas besoin du CD de Widget Workshop pour jouer. OpenWGT apporte tout ce 
 Chaque pièce garde la taille, les bornes et le rôle de l'original : les Eurêkas créés avec le Widget Workshop d'origine s'ouvrent et fonctionnent de la même façon dans OpenWGT, et inversement.
 
 ## Utiliser ton CD
-Si tu as le CD d'origine (le CD PC/Mac, sa version suédoise Uppfinnarverkstan, sa version française Eurêka, le Laboratoire du savant fou, ou le CD OS/2 Warp), OpenWGT peut utiliser à la place ses images, ses sons, ses problèmes, ses exemples et son aide, et parle la langue du CD. Choisis-le avec **Changer de CD...** dans [Options > Paramètres](#openwgt-settings). OpenWGT se souvient de ton choix. Un fichier .iso posé dans le dossier où démarre OpenWGT est aussi pris tout seul. **Jouer sans le CD**, dans la même fenêtre, revient aux images, aux sons et aux textes d'OpenWGT.
+Si tu as le CD d'origine (le CD PC/Mac, sa version suédoise Uppfinnarverkstan, sa version française Eurêka, le Laboratoire du savant fou, ou le CD OS/2 Warp), OpenWGT peut utiliser à la place ses images, ses sons, ses problèmes, ses exemples et son aide, et parle la langue du CD. Choisis-le avec **Changer de CD...** dans [Options > Paramètres](#openwgt-settings). OpenWGT se souvient de ton choix. Un fichier .iso posé dans le dossier où démarre OpenWGT est aussi pris tout seul. **Jouer sans le CD**, dans la même fenêtre, revient aux images, aux sons et aux textes d'OpenWGT jusqu'à ce que tu choisisses à nouveau un CD.
 
 = Utiliser cette aide {#using-help}
 keywords: aide, index, précédent, sommaire, F1, chercher
@@ -666,7 +666,7 @@ Ajoute une ou deux pièces à la fois, appuie sur GO, vérifie qu'elles marchent
 Toucher l'écran, c'est cliquer, et un doigt gardé immobile sur une pièce ouvre ses réglages, comme un double-clic. Dans le navigateur web, toucher une case où l'on tape fait apparaître le clavier. Tourne le téléphone sur le côté pour un atelier plus grand, et active **Plein écran** dans [Options > Paramètres](#openwgt-settings).
 
 = À propos d'OpenWGT {#about}
-keywords: à propos, remerciements, licence, AGPL, Maxis, Doridian, droits d'auteur, version
+keywords: à propos, remerciements, licence, AGPL, Maxis, Doridian, droits d'auteur, version, LGPL, OFL, polices
 
 **OpenWGT** est un moteur libre pour **Widget Workshop: A Mad Scientist's Laboratory**, le jouet d'invention publié par Maxis en 1995 (en suédois Uppfinnarverkstan, en français Eurêka, le Laboratoire du savant fou). Il refait l'atelier de zéro pour les ordinateurs d'aujourd'hui - Linux, Windows, macOS et le navigateur web - pour que les Eurêkas et les problèmes de l'original continuent de fonctionner.
 
@@ -674,7 +674,7 @@ keywords: à propos, remerciements, licence, AGPL, Maxis, Doridian, droits d'aut
 OpenWGT est un *fork*, une version dérivée, du portage de Widget Workshop réalisé par Doridian (github.com/Doridian/GadgetGenerator), qui a reconstitué le fonctionnement du jeu. Ce fork ajoute ses propres images (OpenWGFX), ses propres sons (OpenWSFX) et ses propres données (OpenWDATA : les textes, les fenêtres de réglages, les problèmes, les Eurêkas d'exemple et cette aide), pour fonctionner sans le CD d'origine, ainsi que des corrections et des nouveautés comme les liens d'Eurêka et la fenêtre Paramètres.
 
 ## Licence
-OpenWGT est un logiciel libre, sous la licence GNU Affero General Public License, version 3 ou ultérieure (AGPL-3.0-or-later). Ses propres images, sons et données sont sous la même licence. Tu peux l'utiliser, l'étudier, le partager et le modifier selon les termes de cette licence.
+OpenWGT est un logiciel libre, sous la licence GNU Affero General Public License, version 3 ou ultérieure (AGPL-3.0-or-later). Ses propres images, sons et données sont sous la même licence. Tu peux l'utiliser, l'étudier, le partager et le modifier selon les termes de cette licence. Les polices qu'il contient ont leurs propres licences : MS Sans Serif et Small Fonts, issues de Wine, sont sous la GNU Lesser General Public License, version 2.1 ou ultérieure, et Widget Sans, tirée de Liberation Sans, sous la SIL Open Font License 1.1.
 
 ## Widget Workshop
 Widget Workshop est (c) Maxis, et son nom est une marque de ses propriétaires. OpenWGT est un projet non officiel, qui n'est ni réalisé, ni approuvé, ni soutenu par Maxis ou Electronic Arts, et il ne contient aucune donnée du jeu d'origine. Pour utiliser les images et les sons de l'original, il te faut ta propre copie du CD.

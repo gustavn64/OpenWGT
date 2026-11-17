@@ -60,15 +60,22 @@ python3 -m http.server -d web 8000    # then open http://localhost:8000/
 
 On the first start the page asks for the game's CD image: the Mac/PC CD's
 `.iso` (the Swedish and French editions' too) or the OS/2 CD's
-`WW1_01A.ISO`. **Play without the CD** (the query `?open`) skips it: the game runs on the port's own packs,
-OpenWGFX, OpenWSFX and OpenWDATA, built into the module. **Start** reads
-the image into memory and opens the editor. Later starts skip the form
-and open the editor on the image it kept. Options ▸ Settings ▸ **Change
-CD...** (after "Save changes?") reloads the page into the form, which
-shows the kept image: **Start** goes on with it, picking another file
-replaces it. If the kept image no longer reads or opens, the form asks
-for one again. The page never fetches or sends the CD's data: the image
-comes from the player.
+`WW1_01A.ISO`. **Play without the CD** (the query `?open`) skips it: the
+game runs on the port's own packs, OpenWGFX, OpenWSFX and OpenWDATA,
+built into the module. **Start** reads the image into memory and opens
+the editor. Later starts skip the form and open the editor on the image
+it kept. Options ▸ Settings ▸ **Change CD...** (after "Save changes?")
+reloads the page into the form, which shows the kept image: **Start**
+goes on with it, picking another file replaces it. If the kept image no
+longer reads or opens, the form asks for one again. The page never
+fetches or sends the CD's data: the image comes from the player.
+
+Playing without the CD lasts: after the form's **Play without the CD**
+or Options ▸ Settings ▸ **Play without the CD**, later visits go on
+without it too, the stored image kept but unused, until a CD is started
+from the form (Change CD... brings the form back). The packs then come
+in the language picked before, else the browser's; the CD's language
+isn't kept for them.
 
 The form and the page's other words (the hint to turn a phone, the
 status line, a touch screen's text box) are in the browser's language
@@ -100,12 +107,20 @@ Settings ▸ **Full screen** does the same in the browser.
 
 ## Storage
 
-`web.js` keeps everything in the browser's IndexedDB (database
+`web.js` keeps the files in the browser's IndexedDB (database
 `openwgt`): the CD image as the `Blob` the file input gave
 (IndexedDB keeps it without reading it into memory), and the port's own
 files, mounted at `/storage` (`platform::storage::WEB_STORAGE`): the
 widgets the player saves, `WIDGET.INI` (the solved puzzles) and
 `settings.ini`. The editor's file dialogs start and stay there.
+
+Three small marks are kept outside it: `localStorage["openwgt-lang"]`, the
+language the start form's list (or Settings ▸ Language) picked for
+playing without the CD; `localStorage["openwgt-no-cd"]`, set when the
+player chose to play without the CD, so that later visits do so too
+until a CD is started from the form; and
+`sessionStorage["openwgt-change-cd"]`, which Change CD... sets for the
+reload into the start form, and the form clears.
 
 Widgets also come and go as files of the player's (`editor::download`):
 

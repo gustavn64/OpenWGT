@@ -11,6 +11,7 @@ cask "openwgt" do
 
   app "OpenWGT.app"
 
-  # Signed ad hoc only: Gatekeeper asks once.
-  caveats "OpenWGT is signed ad hoc; the first start needs a right click, Open."
+  # Signed ad hoc only: Gatekeeper blocks the first start.
+  caveats "OpenWGT is signed ad hoc, so macOS blocks its first start; then " \
+          "System Settings > Privacy & Security > Open Anyway lets it run."
 end

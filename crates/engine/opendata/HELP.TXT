@@ -611,7 +611,7 @@ Each click on the language button picks the next language: English, Swedish (sve
 Picks a Widget Workshop CD image (an .iso file) for OpenWGT to use, then starts the workshop again with it. It asks to save your widget first. Where your computer has no file chooser for it, OpenWGT asks you to drop the CD image on its window instead; in the web browser, the page asks for it. See [Playing with or without the CD](#cd).
 
 ## Play without the CD
-With a CD, starts OpenWGT again on its own pictures, sounds and texts instead, after asking whether to save your widget. Then the language button chooses the language again.
+With a CD, starts OpenWGT again on its own pictures, sounds and texts instead, after asking whether to save your widget. It stays without the CD, the next times it starts too, until **Change CD...** picks one. The texts come in the language the language button chose before, else your computer's, and the button chooses it again.
 
 = Playing With or Without the CD {#cd}
 keywords: CD, iso, no CD, without CD, OpenWGFX, OpenWSFX, OpenWDATA, data, original, language, Uppfinnarverkstan, Eurêka
@@ -625,7 +625,7 @@ You don't need the Widget Workshop CD to play. OpenWGT comes with everything it 
 Every part keeps the original's size, knots and job, so widgets made with the original Widget Workshop open and work the same in OpenWGT, and the other way round.
 
 ## Using your CD
-If you have the original CD (the PC/Mac CD, its Swedish edition Uppfinnarverkstan, its French edition Eurêka, le Laboratoire du savant fou, or the OS/2 Warp CD), OpenWGT can use its pictures, sounds, puzzles, samples and help instead, and speaks the CD's language. Choose it with **Change CD...** in [Options > Settings](#openwgt-settings). OpenWGT remembers your choice. An .iso file in the folder OpenWGT starts in is also picked up by itself. **Play without the CD**, in the same window, goes back to OpenWGT's own.
+If you have the original CD (the PC/Mac CD, its Swedish edition Uppfinnarverkstan, its French edition Eurêka, le Laboratoire du savant fou, or the OS/2 Warp CD), OpenWGT can use its pictures, sounds, puzzles, samples and help instead, and speaks the CD's language. Choose it with **Change CD...** in [Options > Settings](#openwgt-settings). OpenWGT remembers your choice. An .iso file in the folder OpenWGT starts in is also picked up by itself. **Play without the CD**, in the same window, goes back to OpenWGT's own until you choose a CD again.
 
 = Using This Help {#using-help}
 keywords: help, index, back, contents, F1, search
@@ -666,7 +666,7 @@ Add one or two parts at a time, press GO, check that they work, then add more. W
 A tap is a click, and a finger held still on a part opens its settings, as a double click does. In the web browser, tapping a box you type in brings up the keyboard. Turn the phone sideways for a bigger workshop, and switch on **Full screen** in [Options > Settings](#openwgt-settings).
 
 = About OpenWGT {#about}
-keywords: about, credits, license, licence, AGPL, Maxis, Doridian, copyright, version
+keywords: about, credits, license, licence, AGPL, Maxis, Doridian, copyright, version, LGPL, OFL, fonts
 
 **OpenWGT** is an open-source engine for **Widget Workshop: A Mad Scientist's Laboratory**, the invention toy Maxis published in 1995 (in Swedish Uppfinnarverkstan, in French Eurêka, le Laboratoire du savant fou). It recreates the workshop from scratch for today's computers - Linux, Windows, macOS and the web browser - so that the widgets and puzzles of the original keep working.
 
@@ -674,7 +674,7 @@ keywords: about, credits, license, licence, AGPL, Maxis, Doridian, copyright, ve
 OpenWGT is a fork of Doridian's port of Widget Workshop (github.com/Doridian/GadgetGenerator), which recreated the game's workings. This fork adds its own pictures (OpenWGFX), sounds (OpenWSFX) and data (OpenWDATA: the texts, settings windows, puzzles, sample widgets and this help), so that it runs without the original CD, along with fixes and new features such as widget links and the Settings window.
 
 ## Licence
-OpenWGT is free software under the GNU Affero General Public License, version 3 or later (AGPL-3.0-or-later). Its own pictures, sounds and data are under the same licence. You may use, study, share and change it under the terms of that licence.
+OpenWGT is free software under the GNU Affero General Public License, version 3 or later (AGPL-3.0-or-later). Its own pictures, sounds and data are under the same licence. You may use, study, share and change it under the terms of that licence. The fonts it carries have licences of their own: MS Sans Serif and Small Fonts, from Wine, are under the GNU Lesser General Public License, version 2.1 or later, and Widget Sans, made from Liberation Sans, under the SIL Open Font License 1.1.
 
 ## Widget Workshop
 Widget Workshop is (c) Maxis, and its name is a trademark of its owners. OpenWGT is an unofficial project, not made, endorsed or supported by Maxis or Electronic Arts, and it contains none of the original game's data. To use the original's pictures and sounds, you need your own copy of the CD.

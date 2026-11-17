@@ -42,6 +42,11 @@ cargo run --release -p engine --example recipe -- tools/opendata crates/engine/o
 cargo run --release -p engine --example recipe -- --parts   # every part's knots
 ```
 
+`build.py --verify EXPORT` compares the built resources with a CD's
+(`openwgt --export=EXPORT CD.iso`): every format but the texts must come
+out byte for byte the same, which is what keeps saved widgets, the
+parts' wiring and the dialogs working as the game expects.
+
 ## English
 
 The parts are called by their names in the tray (strings 2501–2564), in
@@ -100,7 +105,7 @@ joint jonction, knot borne, input/output entrée/sortie, control box boîte
 de contrôle, settings réglages, YES/NO OUI/NON, TRUE/FALSE VRAI/FAUX,
 AND/OR/XOR/NOT ET/OU/XOU/INV (Porte ET, ...); GO/STOP and ON/OFF stay,
 as in the edition. Also: the tray's folder dossier (with its pages,
-page), joint jonction, the tools Pointeur, Ciseaux and Main, Preset/Custom
+page), the tools Pointeur, Ciseaux and Main, Preset/Custom
 Liste/Au choix, save enregistrer (never sauvegarder), clipboard
 Presse-papiers, stand-alone widget Eurêka indépendant, the scientist Doc,
 the CD le CD (Changer de CD..., Jouer sans le CD, CD de Widget Workshop),
@@ -117,11 +122,6 @@ worksheet's labels can't show œ, so the pack writes *oe* throughout
 
 The French edition's dialogs have layouts of their own; the pack keeps
 OpenWDATA's (shared by every language), with labels that fit them.
-
-`build.py --verify EXPORT` compares the built resources with a CD's
-(`openwgt --export=EXPORT CD.iso`): every format but the texts must come
-out byte for byte the same, which is what keeps saved widgets, the
-parts' wiring and the dialogs working as the game expects.
 
 ## Rules
 
