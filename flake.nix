@@ -2,9 +2,16 @@
   description = "OpenWGT: an open engine for Maxis' Widget Workshop, with its own graphics, sounds and data";
 
   inputs.nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
+  # The package built in two steps, the dependencies on their own: a
+  # change to OpenWGT's own code builds only its four crates again.
+  inputs.crane.url = "github:ipetkov/crane";
 
   outputs =
-    { self, nixpkgs }:
+    {
+      self,
+      nixpkgs,
+      crane,
+    }:
     let
       systems = [
         "x86_64-linux"
@@ -26,35 +33,81 @@
           libxi
           libxrandr
         ];
+
+      # The package and its checks, from what the build reads: the
+      # workspace's crates (the packs inside them) and its lints.
+      builds = forAll (
+        pkgs:
+        let
+          craneLib = crane.mkLib pkgs;
+          src = pkgs.lib.fileset.toSource {
+            root = ./.;
+            fileset = pkgs.lib.fileset.unions [
+              ./Cargo.toml
+              ./Cargo.lock
+              ./clippy.toml
+              ./rustfmt.toml
+              ./crates
+            ];
+          };
+          common = {
+            inherit src;
+            inherit (craneLib.crateNameFromCargoToml { cargoToml = ./crates/widget/Cargo.toml; }) pname version;
+            strictDeps = true;
+            nativeBuildInputs = [ pkgs.pkg-config ];
+            buildInputs = [ pkgs.alsa-lib ];
+          };
+          # Every crate the workspace depends on, built once: cached until
+          # Cargo.lock changes.
+          cargoArtifacts = craneLib.buildDepsOnly common;
+        in
+        {
+          package = craneLib.buildPackage (
+            common
+            // {
+              inherit cargoArtifacts;
+              cargoExtraArgs = "--locked -p openwgt";
+              # (the tests are a check of their own)
+              doCheck = false;
+              nativeBuildInputs = common.nativeBuildInputs ++ [ pkgs.makeWrapper ];
+              postFixup = ''
+                wrapProgram $out/bin/openwgt \
+                  --prefix LD_LIBRARY_PATH : ${pkgs.lib.makeLibraryPath (runtimeLibs pkgs)}
+              '';
+              meta = {
+                description = "An open engine for Widget Workshop, with its own graphics, sounds and data";
+                homepage = "https://gustavn.se/openwgt/";
+                license = pkgs.lib.licenses.agpl3Plus;
+                mainProgram = "openwgt";
+              };
+            }
+          );
+          # The tests that need the CD skip themselves without it.
+          tests = craneLib.cargoTest (
+            common
+            // {
+              inherit cargoArtifacts;
+              cargoTestExtraArgs = "--workspace";
+            }
+          );
+          clippy = craneLib.cargoClippy (
+            common
+            // {
+              inherit cargoArtifacts;
+              cargoClippyExtraArgs = "--workspace --all-targets -- -D warnings";
+            }
+          );
+        }
+      );
     in
     {
       packages = forAll (pkgs: {
-        default = pkgs.rustPlatform.buildRustPackage {
-          pname = "openwgt";
-          version = "0.1.0";
-          src = self;
-          cargoLock.lockFile = ./Cargo.lock;
-          cargoBuildFlags = [
-            "-p"
-            "openwgt"
-          ];
-          # The tests that need the CD skip themselves without it.
-          cargoTestFlags = [ "--workspace" ];
-          nativeBuildInputs = with pkgs; [
-            pkg-config
-            makeWrapper
-          ];
-          buildInputs = [ pkgs.alsa-lib ];
-          postFixup = ''
-            wrapProgram $out/bin/openwgt \
-              --prefix LD_LIBRARY_PATH : ${pkgs.lib.makeLibraryPath (runtimeLibs pkgs)}
-          '';
-          meta = {
-            description = "An open engine for Widget Workshop, with its own graphics, sounds and data";
-            license = pkgs.lib.licenses.agpl3Plus;
-            mainProgram = "openwgt";
-          };
-        };
+        default = builds.${pkgs.stdenv.hostPlatform.system}.package;
+      });
+
+      # nix flake check: the build, the tests and clippy.
+      checks = forAll (pkgs: {
+        inherit (builds.${pkgs.stdenv.hostPlatform.system}) package tests clippy;
       });
 
       devShells = forAll (pkgs: {
