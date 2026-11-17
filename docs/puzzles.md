@@ -232,14 +232,15 @@ moves the parts. Run in Windows 95, the Swedish game shows puzzle 1 ("Vit
 färg") with its question hidden behind the tray, and 9 and 19 with their
 first lines cut off.
 
-**The port corrects this on purpose.** When the puzzle file is the
-Swedish flat one, a puzzle's widget is moved down as it's loaded (and on
-Revert) until no part or wire that starts left of the tray's right edge
-(x 503) lies under the toolbars (y < 93; their bounds, so a label's
-padding counts): `editor::puzzle::below_toolbars` gives the distance. The
-English and French CDs' puzzle files, which are resource forks, and the
-packs' are left as they are, though a few of the English puzzles reach
-under the toolbars too.
+**The port corrects this on purpose**, for every puzzle file: a few of
+the English and French CDs' puzzles reach under the toolbars too (3 and
+11 among them), as their games show them. A puzzle's widget is moved
+down as it's loaded (and on Revert) until no part or wire that starts
+left of the tray's right edge (x 503) lies under the toolbars (y < 93;
+their bounds, so a label's padding counts):
+`editor::puzzle::below_toolbars` gives the distance, 0 for a puzzle
+already clear of them, which stays where its file puts it. The Swedish
+edition's, by puzzle:
 
 | puzzle | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12 | 13 |
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|

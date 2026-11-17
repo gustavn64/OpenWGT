@@ -22,10 +22,11 @@ const TOOLBARS: IRect = IRect::new(0, 0, 503, 93);
 /// between the toolbars' bottom and the highest of those that start left
 /// of the tray's right edge.
 ///
-/// The Swedish edition's puzzles are laid out higher than the English
-/// ones, and its game moves nothing, so most of their instructions start
-/// under the toolbars (docs/puzzles.md 1.8). The port moves them down by
-/// this much, on purpose, so they can be read.
+/// Some puzzles reach under the toolbars, where the original leaves them
+/// (its game moves nothing): a few of the English and French CDs', and
+/// most of the Swedish edition's, laid out higher (docs/puzzles.md 1.8).
+/// The port moves every puzzle down by this much, on purpose, so that
+/// their instructions can be read.
 #[must_use]
 pub fn below_toolbars(doc: &Document) -> i32 {
     let gadgets = doc.gadgets.iter().map(|g| g.core.rect());
@@ -109,11 +110,9 @@ impl Editor {
 
     /// The puzzle's widget, or alert 5 (no file) / 7 (not a widget).
     ///
-    /// The Swedish edition's puzzle file (the flat one,
-    /// `formats::pzl::ResFork::parse_flat`) has its widgets moved down
-    /// clear of the toolbars ([`below_toolbars`]), which its own game
-    /// doesn't do. Other puzzle files, the English and French CDs' and the
-    /// packs', are as they are.
+    /// Every puzzle's widget comes down clear of the toolbars
+    /// ([`below_toolbars`]), which the original doesn't do: one that
+    /// doesn't reach under them stays where its file puts it.
     fn puzzle_doc(&mut self, number: i16) -> Option<Document> {
         let Some(file) = puzzle::open(&self.assets) else {
             self.alert(5);
@@ -127,15 +126,8 @@ impl Editor {
         match &mut doc {
             None => self.alert(7),
             Some(doc) => {
-                if self
-                    .assets
-                    .puzzles
-                    .as_deref()
-                    .is_some_and(|f| formats::pzl::ResFork::parse_flat(f).is_some())
-                {
-                    let dy = below_toolbars(doc);
-                    worksheet::offset_all(doc, (0, dy));
-                }
+                let dy = below_toolbars(doc);
+                worksheet::offset_all(doc, (0, dy));
             }
         }
         doc
@@ -532,20 +524,28 @@ mod tests {
         }
     }
 
-    /// The English CD's puzzles are where the file puts them, though some
-    /// reach under the toolbars too: only the Swedish file is moved.
+    /// The English CD's puzzles come down clear of the toolbars too, but
+    /// only those that reach under them (11 does); the others stay where
+    /// the file puts them.
     #[test]
-    fn other_puzzles_stay_where_the_file_puts_them() {
+    fn english_puzzles_come_down_only_as_far_as_needed() {
         let Some(mut e) = editor() else { return };
         let file = crate::puzzle::open(&e.assets).unwrap();
+        let mut moved = 0;
         for p in &file.puzzles {
             let doc = Document::load(&e.assets, &p.widget).unwrap();
             assert!(e.load_puzzle(p.id));
+            assert_eq!(below_toolbars(&e.doc), 0, "puzzle {}", p.id);
             let at = |d: &Document| -> Vec<(i32, i32)> { d.gadgets.iter().map(|g| (g.core.h, g.core.v)).collect() };
-            assert_eq!(at(&e.doc), at(&doc), "puzzle {}", p.id);
+            if below_toolbars(&doc) == 0 {
+                assert_eq!(at(&e.doc), at(&doc), "puzzle {}", p.id);
+            } else {
+                moved += 1;
+            }
         }
-        assert!(e.load_puzzle(11));
-        assert!(below_toolbars(&e.doc) > 0);
+        assert!(moved > 0);
+        let eleven = Document::load(&e.assets, &file.puzzles.iter().find(|p| p.id == 11).unwrap().widget).unwrap();
+        assert!(below_toolbars(&eleven) > 0);
     }
 
     #[test]
