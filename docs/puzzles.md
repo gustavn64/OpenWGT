@@ -212,6 +212,54 @@ puzzle uses −1/unlimited). "Free parts" are the gadgets whose lock byte is
 
 All checkers are set to "Win". None uses "Lose".
 
+### 1.8 The Swedish edition's puzzles
+
+Uppfinnarverkstan's `WIDGET.PZL` is a flat file (`formats::pzl::ResFork::parse_flat`)
+with the same `Puzl` and `Done` resources: each a FORM like the English
+ones, with the same chunks, but laid out by the translators. Most puzzles
+sit higher and further left than their English counterparts, by a
+different amount in each: puzzle 1 by (−46, −41), 9 by (−13, −40), 19 by
+(−131, −35); 6 and 13 are where the English ones are, 11 is 14 pixels
+lower and to the right. So in many of them the instruction labels start at
+y 16–40, under the toolbars (93 pixels high).
+
+That's how the edition shows them. Its `WIDGET.EXE` places the toolbars
+where the English one does (the view's `OnCreate`, English `0x4340f0`,
+Swedish `0x43302c`: the main toolbar at (0, 0), the tray at (54, 0)),
+and loads a puzzle the same way (`0x416f1a` / `0x41697c`, then the FORM
+reader `0x42503e` / `0x42457e`, instruction for instruction). Nothing
+moves the parts. Run in Windows 95, the Swedish game shows puzzle 1 ("Vit
+färg") with its question hidden behind the tray, and 9 and 19 with their
+first lines cut off.
+
+**The port corrects this on purpose.** When the puzzle file is the
+Swedish flat one, a puzzle's widget is moved down as it's loaded (and on
+Revert) until no part or wire that starts left of the tray's right edge
+(x 503) lies under the toolbars (y < 93; their bounds, so a label's
+padding counts): `editor::puzzle::below_toolbars` gives the distance. The
+English and French CDs' puzzle files, which are resource forks, and the
+packs' are left as they are, though a few of the English puzzles reach
+under the toolbars too.
+
+| puzzle | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12 | 13 |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| moved down | 72 | 69 | 77 | 37 | 79 | 41 | 79 | 61 | 51 | 69 | 79 | 62 | 69 |
+
+| puzzle | 14 | 15 | 16 | 17 | 18 | 19 | 20 | 21 | 22 | 23 | 24 | 25 |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| moved down | 76 | 67 | 79 | 72 | 79 | 73 | 62 | 55 | 60 | 68 | 79 | 53 |
+
+Many Swedish puzzles are as tall as the English ones or taller (up to 465
+pixels from their highest to their lowest part), and in the original's
+640×433 the worksheet below the toolbars is 321 pixels high, so no shift
+keeps every part of them both clear of the toolbars and on screen there.
+The port keeps them clear of the toolbars. At its default size, 800×600,
+every Swedish puzzle is whole on screen. In 640×433 only 8 and 19 are
+(before the shift 12 of the 25 were, under the toolbars apart), and the
+others lose their lowest parts to the bottom edge, as 16 of the English
+puzzles do at that size; in 6, 11, 12, 18, 21 and 25 that includes some
+of the instructions.
+
 ---
 
 ## 2. How the game uses it
