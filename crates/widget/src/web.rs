@@ -17,6 +17,7 @@ use std::ffi::OsString;
 use std::path::Path;
 use std::sync::Arc;
 
+use engine::lang::{tr, trf};
 use platform::data::{CdImage, MemoryFiles};
 use wasm_bindgen::prelude::*;
 use wasm_bindgen_futures::JsFuture;
@@ -39,6 +40,9 @@ extern "C" {
     /// Reloads the page to play without a CD in the language `code`.
     #[wasm_bindgen(js_name = changeLang)]
     pub(crate) fn change_lang(code: &str);
+    /// Puts the page's own words (and its `lang`) in the language `code`.
+    #[wasm_bindgen(js_name = pageLanguage)]
+    fn page_language(code: &str);
     /// `blob`'s bytes from `start` to `end`, a `Uint8Array`.
     #[wasm_bindgen(js_name = readBlob)]
     fn read_blob(blob: &web_sys::Blob, start: f64, end: f64) -> js_sys::Promise;
@@ -98,9 +102,9 @@ async fn cd_image() -> Result<Box<dyn engine::assets::Source>, String> {
     let mut error = String::new();
     loop {
         let blob: web_sys::Blob = wait(choose_cd(&error)).await?.dyn_into().map_err(|e| js_error(&e))?;
-        platform::web::show_status("Reading the CD image…", false);
+        platform::web::show_status(tr("Reading the CD image…"), false);
         error = match read(&blob).await.map(|image| CdImage::open(Box::new(image))) {
-            Err(e) => format!("The CD image didn't read: {e}."),
+            Err(e) => trf("The CD image didn't read: {}.", &[e.as_str()]),
             Ok(Ok(cd)) => {
                 let volume = cd.volume.clone();
                 let cd = crate::cd::image(cd);
@@ -108,9 +112,9 @@ async fn cd_image() -> Result<Box<dyn engine::assets::Source>, String> {
                     platform::web::log(&format!("the CD image: {volume}"));
                     return Ok(cd);
                 }
-                "That CD image isn't Widget Workshop's: it has no WWGADGET.DLL.".to_owned()
+                tr("That CD image isn't Widget Workshop's: it has no WWGADGET.DLL.").to_owned()
             }
-            Ok(Err(e)) => format!("That file doesn't open as a CD image: {e}."),
+            Ok(Err(e)) => trf("That file doesn't open as a CD image: {}.", &[e.as_str()]),
         };
         platform::web::show_status("", false);
         wait(forget_cd()).await?;
@@ -189,6 +193,11 @@ fn query_args() -> Vec<OsString> {
 }
 
 async fn run() -> Result<(), String> {
+    // The status line's words in the browser's language (the start
+    // form's are too) until the game's is known.
+    if let Some(lang) = sys_locale::get_locale().and_then(|l| engine::lang::Lang::from_code(&l)) {
+        engine::lang::set(lang);
+    }
     // `?open`: no CD, the port's own packs alone.
     let open = query_args().iter().any(|a| a == "--open");
     let cd = if open { None } else { Some(cd_image().await?) };
@@ -239,5 +248,6 @@ async fn run() -> Result<(), String> {
     if cd.is_none() {
         assets.lang = lang;
     }
+    page_language(assets.lang.code());
     crate::start(&args, assets).map_err(|e| e.to_string())
 }
