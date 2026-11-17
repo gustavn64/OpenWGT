@@ -156,7 +156,10 @@ jobs:
             openwgt-windows-arm64.exe
 
   macos:
-    runs-on: macos-26
+    # Intel: GitHub's Apple silicon runners are often queued for long (the
+    # job may not get one at all); this one builds both halves of the
+    # universal app just as well.
+    runs-on: macos-26-intel
     env:
       MACOSX_DEPLOYMENT_TARGET: '11.0'
     steps:
