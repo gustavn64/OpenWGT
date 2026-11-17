@@ -65,7 +65,7 @@ The task brief calls the worksheet "CWidgetDoc"; the MFC `CWidgetDoc`
 | +0x39 | i16 | selected wire's segment index |
 | +0x3b | ptr | selected (hovered) gadget |
 | +0x3f | ptr | selected (hovered) joint |
-| +0x43, +0x47 | u32 | zeroed in ctor, unused in my area |
+| +0x43, +0x47 | u32 | zeroed in ctor, unused by the worksheet code |
 | +0x4b | u32 | run clock: Mac ticks since the first tick of this run |
 | +0x4f | u32 | run clock: tick time of the first tick (0 = not started) |
 | +0x53 | u16 | `fver` of the last loaded file/undo snapshot |
@@ -506,7 +506,7 @@ source knot, then the joints in list order, then the destination knot.
 
 ### 4.5 Placing a gadget from the tray (`CWPlaceGadgetTool`)
 
-The tray is another agent's area; the hand-off is:
+The tray belongs to another part of the code (the editor layout); the hand-off is:
 
 1. L-button down on a tray slot (0x42e880): if its count is 0, nothing.
    Else: select the Pointer tool, deselect, redraw, **undo snapshot**,
@@ -938,7 +938,7 @@ no joints, locked = 0. Version ≥ 3: as written above.
 | Save | 0xE103 | 0x4337d9 → 0x415a3b | no path or puzzle loaded → Save As. Else Mac check (5.5, Cancel aborts); if a puzzle is loaded and Shift isn't held: unlock every gadget and wire (0x426511) and reset tray counts; serialize; write (0x416269, CFile create); on success puzzle reset, +0x102 = 1, `ClearDirty`. |
 | Save As | 0xE104 | 0x4337ea → 0x415c1f | Mac check; default name = puzzle name / path / "untitled.wgt"; dialog "Saved widgets (*.wgt)" / "Save Widget as"; unlock as above; serialize, write, set path, title. |
 | Revert | 0x8004 | 0x4337fb → 0x415ece | only if dirty; confirm 8001 "Revert to last saved version?" or 8002 "Revert to original puzzle?"; reload the file, the .EXE it was imported from, or the puzzle. |
-| Load Puzzle | 0x8003 | 0x4332b6 → 0x416f1a | save prompt; puzzle chooser; clear; load (puzzle agent's area). |
+| Load Puzzle | 0x8003 | 0x4332b6 → 0x416f1a | save prompt; puzzle chooser; clear; load (the puzzle code, [puzzles.md](puzzles.md)). |
 | close / exit | — | `CWidgetDoc::SaveModified` 0x4337a9 → 0x417027 | if dirty: "Save changes to %s?"; Yes → **stop running**, Save; Cancel → don't close. |
 
 "Save changes to %s?" is skipped while a puzzle is loaded (New/Open/Import/
@@ -1056,7 +1056,7 @@ the original ran from the CD, where `FUNWIDGE` was a subfolder of the
 folder it started in. Not drawn: the Create New Folder, List and Details
 buttons.
 
-## 9. Drawing (what my area paints)
+## 9. Drawing (what the worksheet paints)
 
 All drawing goes into the view's 8-bit offscreen DIB (view+0x135c), whose
 colour table is the 1003/101 palette; the view blits it on WM_PAINT.
@@ -1120,7 +1120,7 @@ save-under, +0x0c restore-under, +0x10 draw):
 
 ## 10. Sounds triggered here
 
-`Sound(id)` = `0x4402cc(id, 0)` (sound system is another agent's area).
+`Sound(id)` = `0x4402cc(id, 0)` (the sound system is another part of the code).
 
 | id | when |
 |---|---|
@@ -1148,7 +1148,7 @@ save-under, +0x0c restore-under, +0x10 draw):
   dialog change callback (default 0x41eb78); +0x152 = run time of the last
   invalidation (slot 0x0c stores `ws+0x4b` there; 0x41e762(g, n) = "n
   ticks have passed since").
-- Gadget **+0x14 is v (y) and +0x16 is h (x)** in every function I read
+- Gadget **+0x14 is v (y) and +0x16 is h (x)** in every function examined
   (hit test, knot positions, load/save, frames).
 - vtable **slot 0x18 is the hit test** `bool HitTest(Point)` (base
   0x41dac5), not "move to". Moving is done by 0x41e21c (with invalidation)
@@ -1433,15 +1433,15 @@ save-under, +0x0c restore-under, +0x10 draw):
 ## 13. Open questions / uncertain points
 
 - **Edit-mode repaint draws every gadget twice** (two identical loops in
-  0x42397d). I read the decompile and it really is the same loop twice;
+  0x42397d). The decompile does have the same loop twice;
   harmless for pure drawing, but a gadget whose draw has side effects would
   see two calls. A port can draw once unless a gadget turns out to depend
   on it.
 - The **tray-pane / control-panel identity** (view+0x6e0/HWND+0x6fc vs
   view+0x34/HWND+0x50) is inferred from: run hides +0x6fc, the place tool
   cancels over +0x6fc, the tool radio buttons and tray counts live in
-  `DAT_004a2864`, GO/STOP/Light/Sound in `DAT_004a2868`. The layout agent
-  should confirm.
+  `DAT_004a2864`, GO/STOP/Light/Sound in `DAT_004a2868`. Unconfirmed
+  against the editor layout's code.
 - The `CWorksheetDragTool` / `CWPlaceGadgetTool` / `CWInputTool` vtable
   assignment (0x4964c0 / 0x496528 / 0x4964f4) is by behaviour and object
   sizes; the RTTI descriptors aren't directly tied to the vtables.
@@ -1449,14 +1449,14 @@ save-under, +0x0c restore-under, +0x10 draw):
   classes, the other two clearly gadget and segment) plus the `cKnot` RTTI
   name sitting next to the joint code.
 - The tray-count adjust keys (numpad +/−) and L (lock) look like
-  puzzle-designer features left enabled; I documented what the code does.
+  puzzle-designer features left enabled; what the code does is documented.
 - 0x41a686's radio-group handling for notification codes (0x300 =
   EN_CHANGE, 3 = ?) and the combo-box resource format (0x41abc2) were only
   skimmed; the dialog controls themselves belong with the gadget/dialog
   docs.
-- After `Squeeze`, gadget positions use `__ftol` (0x480ec4). I assumed
-  truncation toward zero (Borland's `__ftol` semantics); not verified by
-  stepping.
+- After `Squeeze`, gadget positions use `__ftol` (0x480ec4), taken to
+  truncate toward zero (Borland's `__ftol` semantics); unconfirmed, not
+  verified by stepping.
 - Clear Work Area, Remove All Connections/Joints and the settings dialog's
   OK don't set the dirty flag (no call to 0x416142). This looks like an
   original bug; a faithful port reproduces it, a friendly one may not.

@@ -41,8 +41,8 @@ Conventions used below:
 Common to every part here: the dialog id, the 1022 combo strings and the
 Doc text all use the id at `+0x28`. The Doc text is `WWGADGET 1020/<+0x28>`,
 and the "Construction Tip" is `1020/<+0x28 + 2000>`. `WWGADGET 1021/<+0x28>`
-is four u16s `{+0x28, 501 (502 for Spkr), +0x28, +0x28+2000}`. I could not
-tell what the second u16 means.
+is four u16s `{+0x28, 501 (502 for Spkr), +0x28, +0x28+2000}`. What the
+second u16 means is unknown.
 
 The settings block fields are named by object offset:
 

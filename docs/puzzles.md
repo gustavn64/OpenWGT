@@ -685,7 +685,7 @@ used to build the PZL.
 - `0x4101dc` (INI path) is reached only through the static-init pointer
   at `0x4a20b6`. Ghidra has no function there, and the disassembly is from
   objdump.
-- I did not confirm what the `+0x1340` "keys enabled" flag on the main
+- Unconfirmed: what the `+0x1340` "keys enabled" flag on the main
   window means. It is set to 1 in `0x42ce2d`.
 - The meaning of `0x432c92`'s gray-out condition (`DAT_00493de0`, main
   window `+0x1348`) is not settled. It is not used by puzzles.
