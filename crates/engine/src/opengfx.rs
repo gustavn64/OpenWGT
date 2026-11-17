@@ -50,18 +50,25 @@ pub fn builtin() -> Embedded {
 
 include!(concat!(env!("OUT_DIR"), "/opengfx_files.rs"));
 include!(concat!(env!("OUT_DIR"), "/opengfx-sv_files.rs"));
+include!(concat!(env!("OUT_DIR"), "/opengfx-fr_files.rs"));
 
 /// The built-in pack for `lang`: the English pictures, under the
 /// language's own where it has them (its pictures with words,
-/// `crates/engine/opengfx-sv`).
+/// `crates/engine/opengfx-sv`, `opengfx-fr`).
 #[must_use]
 pub fn builtin_for(lang: crate::lang::Lang) -> Box<dyn Source> {
-    match lang {
-        crate::lang::Lang::Sv if !BUILTIN_SV.is_empty() => Box::new(Overlay {
-            top: Box::new(Embedded(BUILTIN_SV)),
+    let top = match lang {
+        crate::lang::Lang::Sv => BUILTIN_SV,
+        crate::lang::Lang::Fr => BUILTIN_FR,
+        crate::lang::Lang::En => &[],
+    };
+    if top.is_empty() {
+        Box::new(builtin())
+    } else {
+        Box::new(Overlay {
+            top: Box::new(Embedded(top)),
             base: Box::new(builtin()),
-        }),
-        _ => Box::new(builtin()),
+        })
     }
 }
 

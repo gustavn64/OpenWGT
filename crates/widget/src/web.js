@@ -97,7 +97,7 @@ function size(n) {
 // image stored (Settings > Change CD...).
 const CHANGE = "widget-workshop-change-cd";
 
-// The start form's words in Swedish, for a browser in Swedish.
+// The start form's words in Swedish and French, for a browser in either.
 const SV = {
   "t-cd": "Spelets cd-avbild (.iso)",
   "t-kept": "Sparad sedan förra gången:",
@@ -113,14 +113,31 @@ const SV = {
   "t-open-note": "Utan skivan använder spelet OpenWGT:s egna bilder, ljud, texter och pussel, på",
   "t-cd-lang": "Med skivan talar det skivans språk.",
 };
+const FR = {
+  "t-cd": "L'image du CD du jeu (.iso)",
+  "t-kept": "Gardée depuis la dernière fois :",
+  "t-kept2": ". Choisis-en une autre pour la remplacer.",
+  "t-note":
+    "Widget Workshop: A Mad Scientist's Laboratory (le CD Mac/PC) ou Eurêka, le Laboratoire du " +
+    "savant fou. L'image reste dans ce navigateur et n'est envoyée nulle part, tout comme les " +
+    "Eurêkas que tu sauvegardes. Les Eurêkas glissés sur le jeu s'ouvrent, et Fichier ▸ Enregistrer " +
+    "pour téléchargement et Télécharger un Eurêka te les rendent. Fichier ▸ Copier le lien vers " +
+    "l'Eurêka crée un lien qui ouvre l'Eurêka pour tous ceux qui ont le CD.",
+  open: "Jouer sans le CD",
+  start: "Démarrer",
+  "t-open-note": "Sans le CD, le jeu utilise les images, sons, textes et problèmes d'OpenWGT, en",
+  "t-cd-lang": "Avec le CD, il parle la langue du CD.",
+};
+const WORDS = { sv: SV, fr: FR };
 
 // The form in the browser's language, and its language list, which
 // "Play without the CD" follows (`?open&lang=`): the browser's language
 // first, else the one picked last time.
 function formLanguage($) {
-  const sv = (navigator.language || "").toLowerCase().startsWith("sv");
-  if (sv) {
-    for (const [id, text] of Object.entries(SV)) {
+  const browser = (navigator.language || "").toLowerCase().slice(0, 2);
+  const words = WORDS[browser];
+  if (words) {
+    for (const [id, text] of Object.entries(words)) {
       const el = $(id);
       if (el) el.textContent = text;
     }
@@ -134,7 +151,7 @@ function formLanguage($) {
   } catch (e) {
     console.error("storage:", e);
   }
-  lang.value = picked || (sv ? "sv" : "en");
+  lang.value = picked || (words ? browser : "en");
   const follow = () => {
     open.href = `?open&lang=${lang.value}`;
     try {

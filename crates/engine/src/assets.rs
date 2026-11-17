@@ -107,8 +107,9 @@ pub const RUNTIME_FILE: &str = "WIDGET.SLF";
 /// Where the sample widgets are, in the game's folder: the Win95 CD's,
 /// the OS/2 CD's.
 pub const SAMPLE_DIRS: [&str; 2] = ["FUNWIDGE", "WIDGETS"];
-/// The Windows 3.1 bitmap fonts the CD carries for its own setup.
-pub const FONT_DIR: &str = "WIN31/SVGA";
+/// Where the CD carries the Windows 3.1 bitmap fonts, for its own setup:
+/// the Mac/PC CD's, the French CD's.
+pub const FONT_DIRS: [&str; 2] = ["WIN31/SVGA", "SVGA"];
 
 /// The port's own fonts, behind the CD's: Wine's free MS Sans Serif and
 /// Small Fonts (LGPL 2.1 or later, the same metrics as Windows'), and
@@ -344,7 +345,7 @@ impl Assets {
             self.lang = lang;
         }
         for fon in ["SSERIFE.FON", "SMALLE.FON"].into_iter().filter(|_| cd_fonts) {
-            for d in [FONT_DIR, dir, ""] {
+            for d in FONT_DIRS.into_iter().chain([dir, ""]) {
                 if let Some(b) = cd.read(&join(d, fon)) {
                     self.fonts.extend(fnt::Font::parse_fon(&b).unwrap_or_default());
                     break;

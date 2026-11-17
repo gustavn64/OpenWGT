@@ -92,9 +92,12 @@ pub struct SettingsBox {
     pub scale: Scale,
     pub current: f64,
     pub enhanced: bool,
-    /// The language played in, and whether a CD decides it (it can't be
-    /// changed here then).
+    /// The language chosen, the one played in, and whether a CD decides
+    /// it (it can't be changed here then). The language button goes round
+    /// the languages; closing the window starts the game again in the one
+    /// chosen, if it's another.
     pub lang: Lang,
+    pub played: Lang,
     pub lang_fixed: bool,
     /// Whether the window is full screen.
     pub full_screen: bool,
@@ -142,6 +145,7 @@ impl SettingsBox {
             current,
             enhanced,
             lang,
+            played: lang,
             lang_fixed,
             full_screen,
             window,
@@ -260,6 +264,7 @@ impl SettingsBox {
             return Outcome::None;
         }
         match p {
+            Part::Close | Part::CloseBox if self.lang != self.played => Outcome::Language(self.lang),
             Part::Close | Part::CloseBox => Outcome::Close,
             Part::Auto => {
                 self.scale = match self.scale {
@@ -281,7 +286,7 @@ impl SettingsBox {
                 let all = Lang::ALL;
                 let i = all.iter().position(|&l| l == self.lang).unwrap_or(0);
                 self.lang = all[(i + 1) % all.len()];
-                Outcome::Language(self.lang)
+                Outcome::None
             }
             Part::FullScreen => {
                 self.full_screen = !self.full_screen;
@@ -482,6 +487,7 @@ mod tests {
             current: 2.0,
             enhanced: true,
             lang: Lang::En,
+            played: Lang::En,
             lang_fixed: false,
             full_screen: false,
             window: IRect::default(),
@@ -496,10 +502,17 @@ mod tests {
         assert_eq!(b.key(0x46), Outcome::FullScreen(false));
         b.scale = Scale::Fixed(1.0);
         assert_eq!(b.key(0x6d), Outcome::None, "− is greyed at 1×");
-        assert_eq!(b.key(0x4c), Outcome::Language(Lang::Sv));
-        assert_eq!(b.key(0x4c), Outcome::Language(Lang::En));
+        // The language goes round; closing plays the one chosen.
+        assert_eq!(b.key(0x4c), Outcome::None);
+        assert_eq!(b.lang, Lang::Sv);
+        assert_eq!(b.key(0x4c), Outcome::None);
+        assert_eq!(b.lang, Lang::Fr);
+        assert_eq!(b.key(0x1b), Outcome::Language(Lang::Fr));
+        b.lang = Lang::En;
+        assert_eq!(b.key(0x1b), Outcome::Close, "back to the one played");
         b.lang_fixed = true;
         assert_eq!(b.key(0x4c), Outcome::None, "a CD's language stays");
+        assert_eq!(b.lang, Lang::En);
         assert_eq!(b.key(0x43), Outcome::ChangeCd);
         assert_eq!(b.key(0x1b), Outcome::Close);
     }

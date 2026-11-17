@@ -31,6 +31,10 @@ fn main() {
     for pack in ["opengfx-sv", "opendata-sv"] {
         embed(pack, "BUILTIN_SV");
     }
+    // The French ones, the same.
+    for pack in ["opengfx-fr", "opendata-fr"] {
+        embed(pack, "BUILTIN_FR");
+    }
 }
 
 /// Writes `$OUT_DIR/<pack>_files.rs`: the constant `name`, the files of

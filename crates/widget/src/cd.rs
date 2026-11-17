@@ -39,11 +39,11 @@ pub fn has_game(cd: &dyn Source) -> bool {
     engine::assets::game_dir(cd).is_some()
 }
 
-/// Whether `cd` has the original fonts ([`engine::assets::FONT_DIR`]):
-/// the Mac/PC CD.
+/// Whether `cd` has the original fonts ([`engine::assets::FONT_DIRS`]):
+/// the Mac/PC CD, the French CD.
 #[cfg(not(target_arch = "wasm32"))]
 pub fn has_fonts(cd: &dyn Source) -> bool {
-    !cd.list(engine::assets::FONT_DIR).is_empty()
+    engine::assets::FONT_DIRS.iter().any(|d| !cd.list(d).is_empty())
 }
 
 /// The CD at `path`: an image file or a folder.

@@ -5,7 +5,7 @@
 //! editor (the original's main menu is left out), with a new widget or
 //! the one given.
 //!
-//! `openwgt [--open] [--lang=en|sv] [--opengfx[=DIR]] [--opensfx[=DIR]]
+//! `openwgt [--open] [--lang=en|sv|fr] [--opengfx[=DIR]] [--opensfx[=DIR]]
 //! [--opendata[=DIR]] [--overrides=DIR] [--export=DIR] [--no-audio]
 //! [--window-size=WxH] [--fullscreen|--windowed] [--ui-scale=N|auto] [--help]
 //! [CD] [WIDGET.WGT|LINK]` ([`USAGE`]), where `CD` is the game's CD: an
@@ -64,7 +64,7 @@ use crate::sound::Sound;
 const LINK_PAGE: &str = "https://gustavn.se/openwgt/play/";
 
 const USAGE: &str =
-    "usage: openwgt [--open] [--lang=en|sv] [--opengfx[=DIR]] [--opensfx[=DIR]] [--opendata[=DIR]] [--overrides=DIR] [--export=DIR] [--no-audio] [--window-size=WxH] \
+    "usage: openwgt [--open] [--lang=en|sv|fr] [--opengfx[=DIR]] [--opensfx[=DIR]] [--opendata[=DIR]] [--overrides=DIR] [--export=DIR] [--no-audio] [--window-size=WxH] \
 [--fullscreen|--windowed] [--ui-scale=N|auto] [--help] [CD] [WIDGET.WGT|LINK]
 
   CD               the game's CD: an ISO image or a folder with its files
@@ -79,7 +79,7 @@ const USAGE: &str =
                    puzzles, samples) instead of the CD's
   --open           no CD at all: the three packs alone (also what it does
                    when no CD is given or found)
-  --lang=en|sv     the language of the port's own packs (default: the
+  --lang=en|sv|fr  the language of the port's own packs (default: the
                    system's); with a CD the CD's language is used
   --opengfx=DIR, --opensfx=DIR, --opendata=DIR
                    the same from a folder of that pack's layout
@@ -206,7 +206,7 @@ fn args(mut it: impl Iterator<Item = std::ffi::OsString>) -> Args {
                 let v = value().unwrap_or_default();
                 a.lang = engine::lang::Lang::from_code(&v);
                 if a.lang.is_none() {
-                    fail(&format!("--lang={v}: not a language of the port's (en, sv)"));
+                    fail(&format!("--lang={v}: not a language of the port's (en, sv, fr)"));
                 }
             }
             "--export" => a.export = value().map(PathBuf::from),
@@ -554,7 +554,7 @@ impl App for Workshop {
 }
 
 /// The CD to read when none is given: of the `.iso`s here, the first with
-/// the original fonts ([`engine::assets::FONT_DIR`]: the Mac/PC CD, which
+/// the original fonts ([`engine::assets::FONT_DIRS`]: the Mac/PC CD, which
 /// has the help too), else the first with the game, else the first that
 /// opens, else `orig`.
 #[cfg(not(target_arch = "wasm32"))]
