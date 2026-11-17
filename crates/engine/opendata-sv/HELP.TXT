@@ -611,7 +611,7 @@ Varje klick på språkknappen väljer nästa språk: engelska (English), svenska
 Väljer en skivavbildning av Widget Workshop (en .iso-fil) som OpenWGT ska använda och startar sedan verkstaden igen med den. Den frågar först om du vill spara uppfinningen. Om datorn inte har något sätt att välja filen ber OpenWGT dig att släppa skivavbildningen på fönstret i stället; i webbläsaren frågar sidan efter den. Se [Med eller utan skivan](#cd).
 
 ## Spela utan skivan
-Med en skiva startar OpenWGT om med sina egna bilder, ljud och texter i stället, efter att ha frågat om du vill spara uppfinningen. Sedan väljer språkknappen språket igen.
+Med en skiva startar OpenWGT om med sina egna bilder, ljud och texter i stället, efter att ha frågat om du vill spara uppfinningen. Det fortsätter utan skivan, även nästa gång det startar, tills **Byt skiva...** väljer en. Texterna kommer på det språk som språkknappen valde förut, annars datorns, och knappen väljer språket igen.
 
 = Med eller utan skivan {#cd}
 keywords: cd, skiva, iso, ingen skiva, utan skivan, OpenWGFX, OpenWSFX, OpenWDATA, data, original, språk, Uppfinnarverkstan, Eurêka
@@ -625,7 +625,7 @@ Du behöver inte Widget Workshop-skivan för att spela. OpenWGT har allt den beh
 Varje del har kvar originalets storlek, kontakter och uppgift, så uppfinningar som är gjorda med det ursprungliga Widget Workshop öppnas och fungerar likadant i OpenWGT, och tvärtom.
 
 ## Använda din skiva
-Om du har originalskivan (pc/Mac-skivan, den svenska utgåvan Uppfinnarverkstan, den franska utgåvan Eurêka, le Laboratoire du savant fou, eller skivan för OS/2 Warp) kan OpenWGT använda dess bilder, ljud, pussel, exempel och hjälp i stället, och talar skivans språk. Välj den med **Byt skiva...** i [Alternativ > Inställningar](#openwgt-settings). OpenWGT kommer ihåg ditt val. En .iso-fil i mappen som OpenWGT startar i hittas också av sig själv. **Spela utan skivan**, i samma fönster, går tillbaka till OpenWGT:s egna.
+Om du har originalskivan (pc/Mac-skivan, den svenska utgåvan Uppfinnarverkstan, den franska utgåvan Eurêka, le Laboratoire du savant fou, eller skivan för OS/2 Warp) kan OpenWGT använda dess bilder, ljud, pussel, exempel och hjälp i stället, och talar skivans språk. Välj den med **Byt skiva...** i [Alternativ > Inställningar](#openwgt-settings). OpenWGT kommer ihåg ditt val. En .iso-fil i mappen som OpenWGT startar i hittas också av sig själv. **Spela utan skivan**, i samma fönster, går tillbaka till OpenWGT:s egna tills du väljer en skiva igen.
 
 = Så använder du hjälpen {#using-help}
 keywords: hjälp, register, tillbaka, innehåll, F1, sök

@@ -107,7 +107,9 @@ Alt+Enter do (on a phone, where there are no such keys).
 Its **Change CD...** button, after "Save changes?", picks another CD
 image and starts the game again on it (in the browser, the page's start
 form comes back); **Play without the CD** starts it again on the port's
-own packs.
+own packs, and it stays without a CD, on later starts too, until Change
+CD... picks one (the browser keeps the stored image meanwhile). The
+packs then come in the language picked before, else the system's.
 
 On a touch screen a tap is a click, a long press a double click, and a
 tap on a text field opens the device's own text box (in the browser).
