@@ -63,6 +63,11 @@ assets = [
     ["res/openwgt.desktop", "usr/share/applications/", "644"],
     ["res/icon.png", "usr/share/icons/hicolor/512x512/apps/openwgt.png", "644"],
     ["../../README.md", "usr/share/doc/openwgt/README.md", "644"],
+    # The bundled fonts' licences (LGPL-2.1+, OFL-1.1): they're in the
+    # program.
+    ["../engine/fonts/README.md", "usr/share/doc/openwgt/fonts/README.md", "644"],
+    ["../engine/fonts/LICENSE-LGPL-2.1.txt", "usr/share/doc/openwgt/fonts/LICENSE-LGPL-2.1.txt", "644"],
+    ["../engine/fonts/LICENSE-OFL-1.1.txt", "usr/share/doc/openwgt/fonts/LICENSE-OFL-1.1.txt", "644"],
 ]
 
 [package.metadata.generate-rpm]
@@ -74,6 +79,9 @@ assets = [
     { source = "res/icon.png", dest = "/usr/share/icons/hicolor/512x512/apps/openwgt.png", mode = "644" },
     { source = "../../README.md", dest = "/usr/share/doc/openwgt/README.md", mode = "644", doc = true },
     { source = "../../LICENSE", dest = "/usr/share/licenses/openwgt/LICENSE", mode = "644", doc = true },
+    { source = "../engine/fonts/README.md", dest = "/usr/share/licenses/openwgt/fonts/README.md", mode = "644", doc = true },
+    { source = "../engine/fonts/LICENSE-LGPL-2.1.txt", dest = "/usr/share/licenses/openwgt/fonts/LICENSE-LGPL-2.1.txt", mode = "644", doc = true },
+    { source = "../engine/fonts/LICENSE-OFL-1.1.txt", dest = "/usr/share/licenses/openwgt/fonts/LICENSE-OFL-1.1.txt", mode = "644", doc = true },
 ]
 
 [package.metadata.generate-rpm.requires]

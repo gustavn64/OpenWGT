@@ -6,7 +6,7 @@
   <summary xml:lang="sv">En öppen motor för Maxis Widget Workshop</summary>
   <summary xml:lang="fr">Un moteur libre pour Widget Workshop de Maxis</summary>
   <metadata_license>CC0-1.0</metadata_license>
-  <project_license>AGPL-3.0-or-later</project_license>
+  <project_license>AGPL-3.0-or-later AND LGPL-2.1-or-later AND OFL-1.1</project_license>
   <developer id="se.gustavn">
     <name>gustavn64</name>
   </developer>
