@@ -2,6 +2,8 @@
 Type=Application
 Name=OpenWGT
 Comment=An open engine for Widget Workshop
+Comment[sv]=En öppen motor för Widget Workshop (Uppfinnarverkstan)
+Comment[fr]=Un moteur libre pour Widget Workshop (Eurêka, le Laboratoire du savant fou)
 Exec=openwgt %f
 Icon=openwgt
 Categories=Game;Education;Science;
