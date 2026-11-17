@@ -284,11 +284,6 @@ struct Workshop {
 }
 
 impl Workshop {
-    /// Settings ▸ Change CD..., the widget saved or let go: natively the
-    /// player picks another CD image (or drops it on the window where
-    /// there's no file dialog, `pick`) and the game starts again on it;
-    /// in the browser the page reloads into its start form.
-    #[cfg_attr(target_arch = "wasm32", allow(clippy::unused_self))]
     /// Settings ▸ Language (or Play without the CD): kept in the settings
     /// file, and the game started again in it without a CD, even with one
     /// remembered or here (the page reloaded in the browser).
@@ -317,7 +312,11 @@ impl Workshop {
         }
     }
 
-    // In the browser the page does it all.
+    /// Settings ▸ Change CD..., the widget saved or let go: natively the
+    /// player picks another CD image (or drops it on the window where
+    /// there's no file dialog, `pick`) and the game starts again on it;
+    /// in the browser the page reloads into its start form.
+    /// (In the browser the page does it all.)
     #[cfg_attr(target_arch = "wasm32", allow(clippy::unused_self))]
     fn change_cd(&mut self) {
         #[cfg(target_arch = "wasm32")]
