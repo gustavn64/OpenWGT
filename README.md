@@ -31,7 +31,7 @@ own copy of the CD it can use the original's instead.
 | System | File |
 |---|---|
 | Windows | `openwgt-windows-x86_64.exe` (`-arm64.exe` on Arm): just run it |
-| macOS | `openwgt-macos.dmg`, for Apple silicon and Intel: drag `OpenWGT.app` to Applications; the first start needs a right click, Open (it's signed ad hoc only) |
+| macOS | `openwgt-macos.dmg`, for Apple silicon and Intel: drag `OpenWGT.app` to Applications. It's signed ad hoc only, so macOS blocks the first start; then System Settings ▸ Privacy & Security ▸ Open Anyway lets it run |
 | Linux, any | `openwgt-x86_64.AppImage` (`-aarch64` on Arm): make it executable and run it |
 | Debian, Ubuntu | `openwgt-x86_64.deb`: `sudo apt install ./openwgt-x86_64.deb` |
 | Fedora | `openwgt-x86_64.rpm`: `sudo dnf install ./openwgt-x86_64.rpm` |
