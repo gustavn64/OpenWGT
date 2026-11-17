@@ -1,4 +1,5 @@
-//! Windows Help 3.1 `.HLP` files, as far as `WIDGET.HLP` uses them.
+//! Windows Help 3.1 `.HLP` files, as far as the editions' `WIDGET.HLP`s
+//! use them (English, French and Swedish).
 //!
 //! A help file is a small file system: a header points at a B+ tree
 //! directory of internal files. The ones read here:
@@ -6,7 +7,8 @@
 //! - `|SYSTEM`: version, title, copyright, contents topic, startup macros
 //!   and secondary-window definitions.
 //! - `|TOPIC`: every topic's text, in 4 KiB blocks. Each block is a 12-byte
-//!   header followed by LZ77 data that unpacks to up to 16 KiB. Inside is a
+//!   header followed by LZ77 data that unpacks to up to 16 KiB, or by the
+//!   data as it is (the Swedish file). Inside is a
 //!   linked list of `TOPICLINK` records that may run across block ends:
 //!   topic headers (type 2) and paragraphs of text (type `0x20`).
 //! - `|Phrases`: the phrase table the text and titles are compressed with.
@@ -19,6 +21,11 @@
 //! `WIDGET.HLP` they're the six screenshots, plain 8-bit BMPs that topics
 //! show through Doc-To-Help's `D2HTools` embedded window (`{ewc}`), not
 //! the help compiler's own `|bm` pictures, so those aren't decoded here.
+//!
+//! What isn't read is passed over where the format allows: a picture of
+//! another kind, a table or another record type (all carry their length).
+//! A text command not known has no length to skip by, so the rest of that
+//! record's text is kept as plain text, without its formatting.
 //!
 //! The text model keeps the bytes the help compiler stored (Windows-1252, or
 //! the Symbol font's own code points for runs in that face), so the engine
@@ -791,12 +798,16 @@ fn expand_phrases(d: &[u8], phrases: &[Vec<u8>]) -> Result<Vec<u8>, Error> {
 }
 
 /// `|TOPIC`'s blocks, unpacked, with positions (`TOPICPOS`) counting the
-/// 12-byte block header: position `p` is byte `p % span` of block
-/// `p / span`.
+/// 12-byte block header: position `p` is byte `p % 0x4000` of block
+/// `p / 0x4000`. From `WinHelp` 3.1 on that holds whether the blocks are
+/// packed or not: an unpacked 4 KiB block still spans 0x4000 positions
+/// (`WIDGET.HLP` of the Swedish edition, Uppfinnarverkstan, is unpacked).
 struct TopicBlocks {
     blocks: Vec<Vec<u8>>,
-    span: usize,
 }
+
+/// The positions one `|TOPIC` block spans.
+const SPAN: usize = 0x4000;
 
 impl TopicBlocks {
     fn new(d: &[u8], flags: u16) -> Result<Self, Error> {
@@ -819,21 +830,18 @@ impl TopicBlocks {
                 Ok(block)
             })
             .collect::<Result<_, Error>>()?;
-        Ok(TopicBlocks {
-            blocks,
-            span: if compressed { 0x4000 } else { size },
-        })
+        Ok(TopicBlocks { blocks })
     }
 
-    fn block_of(&self, pos: usize) -> usize {
-        pos / self.span
+    fn block_of(pos: usize) -> usize {
+        pos / SPAN
     }
 
     /// `n` bytes from `pos`, continuing past a block's end after the next
     /// block's header.
     fn read(&self, pos: usize, n: usize) -> Result<Vec<u8>, Error> {
         let mut out = Vec::with_capacity(n);
-        let (mut block, mut at) = (pos / self.span, pos % self.span);
+        let (mut block, mut at) = (pos / SPAN, pos % SPAN);
         while out.len() < n {
             let b = self.blocks.get(block).ok_or(Error::Truncated)?;
             let take = (n - out.len()).min(b.len().saturating_sub(at));
@@ -863,7 +871,7 @@ fn parse_topics(d: &[u8], flags: u16, phrases: &[Vec<u8>]) -> Result<Vec<Topic>,
     let mut guard = 0;
     while pos != -1 {
         let at = usize::try_from(pos).map_err(|_| Error::Corrupt("topic link"))?;
-        if blocks.block_of(at) >= blocks.blocks.len() {
+        if TopicBlocks::block_of(at) >= blocks.blocks.len() {
             break;
         }
         guard += 1;
@@ -887,7 +895,7 @@ fn parse_topics(d: &[u8], flags: u16, phrases: &[Vec<u8>]) -> Result<Vec<Topic>,
             raw2.to_vec()
         };
 
-        let block = blocks.block_of(at);
+        let block = TopicBlocks::block_of(at);
         if block != offset_block {
             (offset_block, chars) = (block, 0);
         }
@@ -932,8 +940,15 @@ fn parse_topics(d: &[u8], flags: u16, phrases: &[Vec<u8>]) -> Result<Vec<Topic>,
                     topic.scroll.extend(paragraphs);
                 }
             }
-            0x23 => return Err(Error::Unsupported("tables".into())),
-            _ => return Err(Error::Unsupported(format!("topic record type {kind:#x}"))),
+            // A table: not read, but its characters still count toward the
+            // topic offsets that follow.
+            0x23 => {
+                let mut c = Cur::new(data1);
+                c.comp_long()?;
+                chars += u32::from(c.comp_ushort()?);
+            }
+            // Records are self-delimiting, so others can be passed over.
+            _ => {}
         }
         pos = next;
     }
@@ -994,13 +1009,15 @@ fn parse_format(c: &mut Cur) -> Result<ParaFormat, Error> {
     Ok(format)
 }
 
-/// Reads a picture command's data (after the 0x86..0x88 byte).
-fn parse_picture(c: &mut Cur) -> Result<Picture, Error> {
+/// Reads a picture command's data (after the 0x86..0x88 byte). `None` for
+/// the kinds not read (the help compiler's own `|bm` pictures): their data
+/// is skipped and nothing is shown.
+fn parse_picture(c: &mut Cur) -> Result<Option<Picture>, Error> {
     let kind = c.u8()?;
     let size = usize::try_from(c.comp_long()?).map_err(|_| Error::Corrupt("picture size"))?;
     let data = c.bytes(size)?;
     if kind != 5 {
-        return Err(Error::Unsupported(format!("picture type {kind:#x}")));
+        return Ok(None);
     }
     let mut p = Cur::new(data);
     p.i16()?;
@@ -1008,13 +1025,66 @@ fn parse_picture(c: &mut Cur) -> Result<Picture, Error> {
     let height = p.i16()?;
     let spec = ansi(p.cstr());
     let mut parts = spec.splitn(3, ',').map(|s| s.trim().to_string());
-    Ok(Picture::Window {
+    Ok(Some(Picture::Window {
         dll: parts.next().unwrap_or_default(),
         class: parts.next().unwrap_or_default(),
         data: parts.next().unwrap_or_default(),
         width,
         height,
-    })
+    }))
+}
+
+/// Reads the data of a jump or popup that names a window or another file
+/// (commands 0xEA, 0xEB, 0xEE and 0xEF, after their length): a type byte,
+/// the context hash, then by type: 0 nothing more; 1 a window number (into
+/// `|SYSTEM`'s windows); 4 a file name; 6 a window name and a file name.
+///
+/// A target in this file becomes a plain [`LinkAction::Jump`] or
+/// [`LinkAction::Popup`]: the window only says where `WinHelp` shows the
+/// topic. One in another file becomes the macro `WinHelp` would run for it,
+/// `JumpHash`/`PopupHash`, as no other file is at hand to follow it into.
+/// `None` for a type not known.
+fn parse_far_jump(d: &[u8], popup: bool) -> Result<Option<LinkAction>, Error> {
+    let mut c = Cur::new(d);
+    let kind = c.u8()?;
+    let hash = c.u32()?;
+    let file = match kind {
+        0 | 1 => None,
+        4 => Some(ansi(c.cstr())),
+        6 => {
+            let window = ansi(c.cstr());
+            Some(format!("{}>{window}", ansi(c.cstr())))
+        }
+        _ => return Ok(None),
+    };
+    Ok(Some(match (file, popup) {
+        (None, false) => LinkAction::Jump(hash),
+        (None, true) => LinkAction::Popup(hash),
+        (Some(file), popup) => LinkAction::Macro(format!(
+            "{}Hash(\"{file}\", {hash})",
+            if popup { "Popup" } else { "Jump" }
+        )),
+    }))
+}
+
+/// Appends text to the last run if it has the same font and link, else as
+/// a run of its own.
+fn push_text(items: &mut Vec<Inline>, bytes: &[u8], font: u16, link: Option<&Link>) {
+    if bytes.is_empty() {
+        return;
+    }
+    if let Some(Inline::Text { text, font: f, link: l }) = items.last_mut()
+        && *f == font
+        && l.as_ref() == link
+    {
+        text.extend_from_slice(bytes);
+        return;
+    }
+    items.push(Inline::Text {
+        text: bytes.to_vec(),
+        font,
+        link: link.cloned(),
+    });
 }
 
 /// Reads a text record: its character count (for topic offsets) and its
@@ -1030,26 +1100,8 @@ fn parse_paragraphs(data1: &[u8], data2: &[u8]) -> Result<(u16, Vec<Paragraph>),
     let mut paragraphs = Vec::new();
     let mut items: Vec<Inline> = Vec::new();
     let (mut font, mut link) = (0u16, None::<Link>);
-    // Appends to the last run if it has the same font and link.
-    let push_text = |items: &mut Vec<Inline>, bytes: &[u8], font: u16, link: &Option<Link>| {
-        if bytes.is_empty() {
-            return;
-        }
-        if let Some(Inline::Text { text, font: f, link: l }) = items.last_mut()
-            && *f == font
-            && l == link
-        {
-            text.extend_from_slice(bytes);
-            return;
-        }
-        items.push(Inline::Text {
-            text: bytes.to_vec(),
-            font,
-            link: link.clone(),
-        });
-    };
     loop {
-        push_text(&mut items, text.cstr(), font, &link);
+        push_text(&mut items, text.cstr(), font, link.as_ref());
         let cmd = c.u8()?;
         match cmd {
             0xff => break,
@@ -1072,15 +1124,17 @@ fn parse_paragraphs(data1: &[u8], data2: &[u8]) -> Result<(u16, Vec<Paragraph>),
                     0x87 => Placement::Left,
                     _ => Placement::Right,
                 };
-                items.push(Inline::Picture {
-                    picture: parse_picture(&mut c)?,
-                    placement,
-                    link: link.clone(),
-                });
+                if let Some(picture) = parse_picture(&mut c)? {
+                    items.push(Inline::Picture {
+                        picture,
+                        placement,
+                        link: link.clone(),
+                    });
+                }
             }
             0x89 => link = None,
-            0x8b => push_text(&mut items, &[0xa0], font, &link),
-            0x8c => push_text(&mut items, b"-", font, &link),
+            0x8b => push_text(&mut items, &[0xa0], font, link.as_ref()),
+            0x8c => push_text(&mut items, b"-", font, link.as_ref()),
             0xc8 | 0xcc => {
                 let n = usize::from(c.u16()?);
                 let mut m = Cur::new(c.bytes(n)?);
@@ -1100,7 +1154,28 @@ fn parse_paragraphs(data1: &[u8], data2: &[u8]) -> Result<(u16, Vec<Paragraph>),
                     visible: cmd & 4 == 0,
                 });
             }
-            _ => return Err(Error::Unsupported(format!("text command {cmd:#x}"))),
+            0xea | 0xeb | 0xee | 0xef => {
+                let n = usize::from(c.u16()?);
+                link = parse_far_jump(c.bytes(n)?, cmd & 1 == 0)?.map(|action| Link {
+                    action,
+                    visible: cmd & 4 == 0,
+                });
+            }
+            // Any other command: the rest of data1 can't be read without
+            // knowing its length, so keep the text that's left, as `WinHelp`
+            // would at least show it, rather than lose the whole file.
+            _ => {
+                while !text.done() {
+                    let piece = text.cstr();
+                    if !piece.is_empty() {
+                        if matches!(items.last(), Some(Inline::Text { .. })) {
+                            push_text(&mut items, b" ", font, None);
+                        }
+                        push_text(&mut items, piece, font, None);
+                    }
+                }
+                break;
+            }
         }
     }
     if !items.is_empty() {
@@ -1249,5 +1324,83 @@ mod tests {
         assert_eq!(h.keywords.len(), 11);
         assert_eq!(h.keywords[0].word, "Help Contents");
         assert_eq!(h.keywords[0].topics, [0]);
+    }
+
+    #[test]
+    fn far_jumps() {
+        let hash = [0x78, 0x56, 0x34, 0x12];
+        let with = |kind: u8, rest: &[u8]| [&[kind][..], &hash, rest].concat();
+        let jump = |d: &[u8], popup| parse_far_jump(d, popup).unwrap();
+        assert_eq!(jump(&with(0, &[]), false), Some(LinkAction::Jump(0x1234_5678)));
+        // Into window 1: shown like any jump.
+        assert_eq!(jump(&with(1, &[1]), true), Some(LinkAction::Popup(0x1234_5678)));
+        assert_eq!(
+            jump(&with(4, b"OTHER.HLP\0"), false),
+            Some(LinkAction::Macro("JumpHash(\"OTHER.HLP\", 305419896)".into()))
+        );
+        assert_eq!(
+            jump(&with(6, b"proc\0OTHER.HLP\0"), true),
+            Some(LinkAction::Macro("PopupHash(\"OTHER.HLP>proc\", 305419896)".into()))
+        );
+        assert_eq!(jump(&with(9, &[]), false), None);
+    }
+
+    #[test]
+    fn unknown_command_keeps_the_text() {
+        // Size (unused), 12 characters, 4 unknown bytes, no format bits;
+        // then a paragraph end and a command not known (0x99) whose length
+        // can't be told.
+        let data1 = [
+            0x00, 0x80, 24, 0x00, 0x80, 0x00, 0x00, 0x00, 0x00, 0x82, 0x99, 0x12, 0x34,
+        ];
+        let (length, paragraphs) = parse_paragraphs(&data1, b"One\0Two\0Three\0").unwrap();
+        assert_eq!(length, 12);
+        let text: Vec<String> = paragraphs.iter().map(Paragraph::plain_text).collect();
+        assert_eq!(text, ["One", "Two Three"]);
+    }
+
+    /// The Swedish edition's (Uppfinnarverkstan) `WIDGET.HLP`, from the CD
+    /// folder `WIDGET_SV_CD` names (skipped without it).
+    #[test]
+    fn reads_the_swedish_file() {
+        let Some(file) = std::env::var_os("WIDGET_SV_CD")
+            .and_then(|d| std::fs::read(std::path::Path::new(&d).join("WIDGET.HLP")).ok())
+        else {
+            eprintln!("no WIDGET_SV_CD: skipped");
+            return;
+        };
+        let h = HelpFile::parse(&file).unwrap();
+        assert_eq!(h.topics.len(), 28);
+        assert_eq!(h.contents_topic().unwrap().title, "Innehåll");
+        assert_eq!(h.windows[0].caption.as_deref(), Some("Uppfinnarverkstan Hjälp"));
+        assert_eq!(h.topics[27].title, "Windows NT");
+        // Its |TOPIC isn't packed, yet the topic offsets work out: every
+        // context and browse link lands on a topic start.
+        for &(_, off) in &h.contexts {
+            assert_eq!(h.topic_at(off).unwrap().offset, off);
+        }
+        for t in &h.topics {
+            for off in t.browse_prev.into_iter().chain(t.browse_next) {
+                assert_eq!(h.topic_at(off).unwrap().offset, off);
+            }
+        }
+        // Its jumps are 0xEB ones into the main window; each leads to a topic.
+        let links: Vec<&Link> = h
+            .topics
+            .iter()
+            .flat_map(|t| t.non_scroll.iter().chain(&t.scroll))
+            .flat_map(|p| &p.items)
+            .filter_map(|i| match i {
+                Inline::Text { link: Some(l), .. } => Some(l),
+                _ => None,
+            })
+            .collect();
+        assert_eq!(links.len(), 27);
+        for l in links {
+            let LinkAction::Jump(hash) = l.action else {
+                panic!("{l:?}")
+            };
+            assert!(h.topic_for_hash(hash).is_some(), "{hash:#x}");
+        }
     }
 }
