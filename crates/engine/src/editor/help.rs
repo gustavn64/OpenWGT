@@ -2070,7 +2070,8 @@ impl IndexDialog {
         );
         // The tab control: one tab, "Index", raised above its page.
         let page = self.page();
-        let tab_w = ui::width(font, "Index") + 16;
+        let tab_text = tr("I&ndex");
+        let tab_w = ui::width(font, &tab_text.replace('&', "")) + 16;
         let tab = IRect::new(page.x0, page.y0 - 20, page.x0 + tab_w, page.y0 + 1);
         s.fill(tab, ui::FACE);
         s.fill(IRect::new(page.x0, page.y0, page.x1, page.y1), ui::FACE);
@@ -2082,7 +2083,7 @@ impl IndexDialog {
         s.fill(IRect::new(tab.x1 - 1, tab.y0 + 2, tab.x1, page.y0), ui::DARK);
         s.fill(IRect::new(tab.x1 - 2, tab.y0 + 1, tab.x1 - 1, page.y0), ui::SHADOW);
         s.fill(IRect::new(tab.x0 + 1, page.y0, tab.x1 - 2, page.y0 + 2), ui::FACE);
-        ui::label(s, font, tab.x0 + 8, tab.y0 + 4, "I&ndex", ui::BLACK);
+        ui::label(s, font, tab.x0 + 8, tab.y0 + 4, tab_text, ui::BLACK);
         let e = self.edit();
         ui::label(
             s,
