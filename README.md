@@ -96,12 +96,15 @@ window, fullscreen and UI scaling.
 
 Options ▸ Settings, the port's own, changes the UI scale on the spot
 (Automatic, or 1× to 4× in quarters), the language without a CD (with
-one, the CD's decides), and
-switches the port's enhancements of the original on or off, all of them
-at once. They're off until the player turns them on (`original=false` in
-the settings file). The enhancements: the parts tray shows a whole folder
-at once, its pages one under the other, without the page arrows; and the
-toolbars, dialogs and message boxes are dragged whole, not as an outline.
+one, the CD's decides), and switches the port's enhancements of the
+original on or off, all of them at once. They're off until the player
+turns them on (`original=false` in the settings file, `settings.ini` in
+`~/.config/openwgt`, `%APPDATA%\OpenWGT` or
+`~/Library/Preferences/OpenWGT`, as `crates/platform/src/storage.rs`
+says; in the browser, the same file in its storage). The enhancements:
+the parts tray shows a whole folder at once, its pages one under the
+other, without the page arrows; and the toolbars, dialogs and message
+boxes are dragged whole, not as an outline.
 **Full screen** switches the window to full screen and back, as F11 and
 Alt+Enter do (on a phone, where there are no such keys).
 Its **Change CD...** button, after "Save changes?", picks another CD
@@ -192,14 +195,22 @@ it), else the one picked in Options ▸ Settings, else the system's. Swedish Ope
 
 ## Tools
 
-- `tools/gh`, `tools/ghidra/`: headless Ghidra setup and CLI for the decompilation.
+- `tools/gh`, `tools/ghidra/`: headless Ghidra setup and CLI for the decompilation
+  (`tools/ghidra/setup.sh` wants the Mac/PC CD's files in `orig/`).
+- `ghidra/pzl_dump.py`: lists what a puzzle file (`WIDGET.PZL`) holds.
 - `tools/build-web.sh`: builds the browser version into `web/`.
 - `tools/make-icon.py`: draws the port's icon.
+- `tools/make-sans-font.py`: renders Widget Sans, the bundled stand-in for
+  the gadgets' Arial, from Liberation Sans (`crates/engine/fonts`).
 - `tools/opengfx/`: draws OpenWGFX, the port's own graphics.
 - `tools/opensfx/`: synthesizes OpenWSFX, the port's own sounds.
 - `tools/opendata/`: builds OpenWDATA, the port's own data.
 - `tools/compare/`: plays the same scripts into the original (in a Windows
-  95 virtual machine) and the port, and compares the screens.
+  95 virtual machine) and the port, and compares the screens. The virtual
+  machine is a local setup, not in the repository: `run_vm.py` imports
+  `vm.py` from `~/WidgetWorkshop-vm`, which drives a QEMU Windows 95 guest
+  with the game installed through QEMU's monitor socket (screenshots,
+  keys, mouse), and loads its snapshot `ww-editor`, the editor open.
 
 ## Docs
 
