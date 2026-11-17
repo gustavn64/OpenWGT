@@ -208,6 +208,17 @@ enum Drag {
     Help,
 }
 
+/// The editor's seven pointers (groups 5007..5013).
+fn cursors(assets: &Assets) -> Vec<Option<CursorPic>> {
+    (0..7)
+        .map(|i| {
+            let group = assets.get(Module::Exe, RT_GROUP_CURSOR, 5007 + i)?;
+            let id = formats::cursor::group_first(group)?;
+            CursorPic::parse(assets.get(Module::Exe, RT_CURSOR, u32::from(id))?)
+        })
+        .collect()
+}
+
 /// The outline of a window dragged to `r` (`0x430172`): four 2-pixel
 /// inverted strips.
 fn outline(r: IRect) -> Vec<IRect> {
@@ -263,8 +274,6 @@ enum Next {
     /// Settings ▸ Change CD...: the host picks another CD and starts
     /// over.
     ChangeCd,
-    /// Settings ▸ Language: the host starts over in it.
-    ChangeLang(crate::lang::Lang),
     /// Settings ▸ Play without the CD: the host starts over without one,
     /// and keeps to that until another CD is picked.
     PlayWithoutCd,
@@ -375,7 +384,7 @@ pub struct Editor {
     new_enhanced: Option<bool>,
     /// Change CD... was pressed, and the widget saved or let go.
     change_cd: bool,
-    /// Another language was chosen, and the widget saved or let go.
+    /// Another language was chosen, for the host to switch to.
     change_lang: Option<crate::lang::Lang>,
     /// Play without the CD was pressed, and the widget saved or let go.
     play_without_cd: bool,
@@ -388,14 +397,7 @@ impl Editor {
         crate::lang::set(assets.lang);
         let pictures = Pictures::default();
         let tray = Tray::new(&assets, &pictures);
-        let menu = Menu::load(&assets);
-        let cursors = (0..7)
-            .map(|i| {
-                let group = assets.get(Module::Exe, RT_GROUP_CURSOR, 5007 + i)?;
-                let id = formats::cursor::group_first(group)?;
-                CursorPic::parse(assets.get(Module::Exe, RT_CURSOR, u32::from(id))?)
-            })
-            .collect();
+        let cursors = cursors(&assets);
         let mut e = Editor {
             assets,
             doc,
@@ -431,7 +433,7 @@ impl Editor {
             alt_alone: false,
             undo: None,
             dirty: false,
-            menu,
+            menu: Menu::default(),
             prompt: None,
             dialog: None,
             about: None,
@@ -467,7 +469,7 @@ impl Editor {
         };
         let limits = e.doc.tray_limits.clone();
         e.tray.apply_limits(&limits);
-        e.menu.add_settings();
+        e.menu = e.load_menu();
         e.update_menu();
         e
     }
@@ -960,12 +962,7 @@ impl Editor {
     /// Open and Load Puzzle drop a puzzle's changes without asking; Exit
     /// asks (`0x417027`).
     fn confirm_save(&mut self, next: Next) {
-        if self.dirty
-            && (matches!(
-                next,
-                Next::Exit | Next::ChangeCd | Next::ChangeLang(_) | Next::PlayWithoutCd
-            ) || !self.puzzle.active)
-        {
+        if self.dirty && (matches!(next, Next::Exit | Next::ChangeCd | Next::PlayWithoutCd) || !self.puzzle.active) {
             // MFC's own words (`AFX_IDP_ASK_TO_SAVE`, string 0xf103).
             let name = self.display_name();
             let text = self
@@ -994,7 +991,6 @@ impl Editor {
             Next::Exit => self.finished = true,
             Next::Dropped => self.open_dropped(),
             Next::ChangeCd => self.change_cd = true,
-            Next::ChangeLang(l) => self.change_lang = Some(l),
             Next::PlayWithoutCd => self.play_without_cd = true,
         }
     }
@@ -2035,10 +2031,66 @@ impl Editor {
         std::mem::take(&mut self.change_cd)
     }
 
-    /// The language the player chose in the Settings window, once, after
-    /// "Save changes?": the host starts over in it.
+    /// The language the player chose in the Settings window (without a
+    /// CD), once: the host builds the port's own packs in it and hands
+    /// them over at once ([`Editor::set_assets`]).
     pub fn take_change_lang(&mut self) -> Option<crate::lang::Lang> {
         self.change_lang.take()
+    }
+
+    /// The game's resources replaced by `assets`, everything else kept:
+    /// Settings ▸ Language, without a CD, the host having built the port's
+    /// own packs in the language chosen ([`Editor::take_change_lang`]).
+    /// The port's words, the menu, the tray, the help and the Settings
+    /// window come in the new language at once. The widget stays the
+    /// player's, its words too, with its name, its modified flag and its
+    /// undo step, only read again with the new resources; a puzzle comes
+    /// again from the new puzzle file, its words being the game's (Undo
+    /// brings back the one left). A running widget stops first.
+    pub fn set_assets(&mut self, assets: Assets) {
+        self.stop();
+        self.doc.tray_limits = self.tray.limits();
+        let saved = self.doc.save();
+        crate::lang::set(assets.lang);
+        self.assets = assets;
+        self.pictures = Pictures::default();
+        self.cursors = cursors(&self.assets);
+        self.menu = self.load_menu();
+        self.tray.set_assets(&self.assets, &self.pictures);
+        self.sel = Sel::None;
+        let puzzle = self
+            .puzzle
+            .active
+            .then(|| self.puzzle_doc(self.puzzle.number))
+            .flatten();
+        if let Some(doc) = puzzle {
+            self.undo = Some(saved);
+            self.put_puzzle(doc);
+        } else if let Ok(doc) = Document::load(&self.assets, &saved) {
+            self.doc = doc;
+        }
+        if let Some(h) = self.help.take() {
+            let area = self.worksheet();
+            match self.assets.help.as_deref().and_then(help::load) {
+                Some(file) => self.help = Some(h.reopened(&self.assets, file, area)),
+                None => self.help_at = Some(h.placement()),
+            }
+        }
+        self.settings = self.settings.take().map(|b| b.relaid(&self.assets));
+        self.update_menu();
+    }
+
+    /// The menu bar from the resources, with the port's own items.
+    fn load_menu(&self) -> Menu {
+        let mut menu = Menu::load(&self.assets);
+        if self.download.is_some() {
+            menu.add_downloads();
+        }
+        if self.links.is_some() {
+            menu.add_links();
+        }
+        menu.add_settings();
+        menu
     }
 
     /// Whether the player chose to play without the CD (Settings ▸ Play
@@ -2118,10 +2170,7 @@ impl Editor {
                 self.set_enhanced(on);
                 self.new_enhanced = Some(on);
             }
-            settings::Outcome::Language(l) => {
-                self.settings = None;
-                self.confirm_save(Next::ChangeLang(l));
-            }
+            settings::Outcome::Language(l) => self.change_lang = Some(l),
             settings::Outcome::ChangeCd => {
                 self.settings = None;
                 self.confirm_save(Next::ChangeCd);
@@ -2755,5 +2804,7 @@ fn floating(doc: &Document, dragged: Option<usize>, w: usize) -> Option<usize> {
 
 #[cfg(test)]
 mod file_tests;
+#[cfg(test)]
+mod lang_tests;
 #[cfg(test)]
 mod tests;

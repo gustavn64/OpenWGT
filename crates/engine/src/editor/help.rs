@@ -980,6 +980,27 @@ impl Help {
         h
     }
 
+    /// The window on another `file` (the game switched to another
+    /// language), where this one is, maximized or not, with the keyboard
+    /// or not. The help files go topic for topic (OpenWDATA's are written
+    /// line for line alike): the same topic is shown, with the same way
+    /// Back, if `file` has as many; else its contents.
+    #[must_use]
+    pub fn reopened(&self, assets: &Assets, file: HelpFile, area: IRect) -> Help {
+        let same = file.topics.len() == self.file.topics.len();
+        let mut h = Help::new(assets, file, area, Some(self.placement()));
+        if let Some(r) = self.restore {
+            h.restore = Some(r);
+            h.window = self.window;
+        }
+        h.active = self.active;
+        if same {
+            h.topic = self.topic;
+            h.history.clone_from(&self.history);
+        }
+        h
+    }
+
     /// The caption.
     #[must_use]
     pub fn title(&self) -> &str {

@@ -113,7 +113,7 @@ impl Editor {
     /// Every puzzle's widget comes down clear of the toolbars
     /// ([`below_toolbars`]), which the original doesn't do: one that
     /// doesn't reach under them stays where its file puts it.
-    fn puzzle_doc(&mut self, number: i16) -> Option<Document> {
+    pub(super) fn puzzle_doc(&mut self, number: i16) -> Option<Document> {
         let Some(file) = puzzle::open(&self.assets) else {
             self.alert(5);
             return None;
@@ -156,7 +156,7 @@ impl Editor {
         }
     }
 
-    fn put_puzzle(&mut self, doc: Document) {
+    pub(super) fn put_puzzle(&mut self, doc: Document) {
         self.stop();
         self.sel = Sel::None;
         self.doc = doc;

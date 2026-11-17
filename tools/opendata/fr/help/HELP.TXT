@@ -588,7 +588,7 @@ keywords: clavier, touches, raccourcis, raccourcis clavier, accélérateurs
 = La fenêtre Paramètres {#openwgt-settings}
 keywords: paramètres, options, échelle, zoom, taille, améliorations, plein écran, langue, anglais, suédois, français, changer de cd, sans le cd, préférences
 
-**Options > Paramètres...** ouvre la fenêtre Paramètres propre à OpenWGT. L'échelle, les améliorations et le plein écran changent tout de suite, la langue quand tu fermes la fenêtre, et OpenWGT garde le tout pour la prochaine fois.
+**Options > Paramètres...** ouvre la fenêtre Paramètres propre à OpenWGT. L'échelle, les améliorations, le plein écran et la langue changent tout de suite, et OpenWGT garde le tout pour la prochaine fois.
 
 ## Échelle
 La taille à laquelle tout est dessiné. **Automatique** suit le réglage de ton écran ; sur un écran tactile, les barres d'outils deviennent aussi larges que l'écran. Décoche-la et utilise **-** et **+** pour choisir une taille de 1x à 4x, par quarts.
@@ -605,7 +605,7 @@ Les améliorations sont désactivées au départ, pour que tout soit exactement 
 OpenWGT occupe tout l'écran, ou revient dans une fenêtre. **F11** et **Alt+Entrée** font la même chose.
 
 ## Langue
-Chaque clic sur le bouton de la langue passe à la langue suivante : anglais (English), suédois (svenska) ou français. Quand tu fermes la fenêtre, OpenWGT te demande s'il faut enregistrer ton Eurêka et redémarre dans cette langue. Avec un CD, le bouton est grisé : c'est le CD qui décide de la langue.
+Chaque clic sur le bouton de la langue fait passer tout de suite OpenWGT à la langue suivante : anglais (English), suédois (svenska) ou français. Ton Eurêka reste tel quel sur la zone de travail ; un problème est rechargé dans la nouvelle langue (Édition > Annuler te rend ce que tu avais fait). Avec un CD, le bouton est grisé : c'est le CD qui décide de la langue.
 
 ## Changer de CD...
 Choisit une image du CD de Widget Workshop (un fichier .iso) à utiliser par OpenWGT, puis relance l'atelier avec elle. Il te propose d'abord d'enregistrer ton Eurêka. Si ton ordinateur n'a pas de sélecteur de fichiers pour cela, OpenWGT te demande plutôt de déposer l'image du CD sur sa fenêtre ; dans le navigateur web, c'est la page qui te la demande. Voir [Jouer avec ou sans le CD](#cd).

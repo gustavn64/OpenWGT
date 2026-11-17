@@ -82,7 +82,10 @@ status line, a touch screen's text box) are in the browser's language
 if the port speaks it, English otherwise, and once the game starts in
 the game's; the form's list picks the language **Play without the CD**
 starts in (`?open&lang=`), remembered in the browser's `localStorage`.
-Settings ▸ Language reloads the page the same way.
+Settings ▸ Language switches the game at once, without reloading the
+page: the address becomes `?open&lang=` (its other options and its
+hash kept, `history.replaceState`), so that a reload or a bookmark plays
+in that language too, and the choice is remembered the same way.
 
 A browser won't let a page play sound before a click or key press: the
 `AudioContext` is resumed on every click or key press

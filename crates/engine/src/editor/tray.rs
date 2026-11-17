@@ -99,6 +99,17 @@ pub fn picture(i: u8) -> (u32, u16) {
     }
 }
 
+/// Every folder's pages, laid out by the parts' pictures' sizes.
+fn folders(assets: &Assets, pictures: &Pictures) -> Vec<Vec<Vec<Slot>>> {
+    let size = |i: u8| {
+        let (sheet, n) = picture(i);
+        pictures
+            .rect(assets, Module::Gadget, sheet, n)
+            .map_or((0, 0), |r| (i32::from(r.width()), i32::from(r.height())))
+    };
+    FOLDERS.iter().map(|l| layout(l, size)).collect()
+}
+
 /// The tools (the radio group at `+0x620`; `0x432683`).
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Default)]
 pub enum Tool {
@@ -273,12 +284,6 @@ impl Tray {
     /// the first folder and its first page.
     #[must_use]
     pub fn new(assets: &Assets, pictures: &Pictures) -> Tray {
-        let size = |i: u8| {
-            let (sheet, n) = picture(i);
-            pictures
-                .rect(assets, Module::Gadget, sheet, n)
-                .map_or((0, 0), |r| (i32::from(r.width()), i32::from(r.height())))
-        };
         let mut t = Tray {
             bar: Bar {
                 pos: (54, 0),
@@ -288,7 +293,7 @@ impl Tray {
                 visible: true,
                 capture: None,
             },
-            folders: FOLDERS.iter().map(|l| layout(l, size)).collect(),
+            folders: folders(assets, pictures),
             pages: vec![0; 7],
             folder: 0,
             counts: [-1; 65],
@@ -303,6 +308,23 @@ impl Tray {
         t.bar.select(id::TAB0);
         t.update_arrows();
         t
+    }
+
+    /// The tray on other resources (another language): the pages laid
+    /// out by their pictures and the help line in their words; the tool,
+    /// the folder, its page and the counts stay.
+    pub fn set_assets(&mut self, assets: &Assets, pictures: &Pictures) {
+        self.folders = folders(assets, pictures);
+        for (page, pages) in self.pages.iter_mut().zip(&self.folders) {
+            *page = (*page).min(pages.len().saturating_sub(1));
+        }
+        self.slides.clear();
+        self.help = u32::try_from(self.help_id)
+            .ok()
+            .and_then(|s| assets.string(s))
+            .unwrap_or_default();
+        self.update_arrows();
+        self.animate(self.slide_start);
     }
 
     #[must_use]

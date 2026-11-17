@@ -588,7 +588,7 @@ keywords: keyboard, keys, shortcuts, hotkeys, accelerators
 = The Settings Window {#openwgt-settings}
 keywords: settings, options, UI scale, scale, zoom, size, enhancements, full screen, language, English, Swedish, French, change CD, without the CD, preferences
 
-**Options > Settings...** opens OpenWGT's own Settings window. The UI scale, the enhancements and full screen change at once, the language when you close the window, and OpenWGT remembers them all for next time.
+**Options > Settings...** opens OpenWGT's own Settings window. The UI scale, the enhancements, full screen and the language change at once, and OpenWGT remembers them all for next time.
 
 ## UI scale
 How big everything is drawn. **Automatic** follows your screen's own setting; on a touch screen the toolbars become as wide as the screen. Untick it and use **-** and **+** to pick a size from 1x to 4x, in quarter steps.
@@ -605,7 +605,7 @@ The enhancements are off at first, so that everything is exactly like the origin
 Fills the whole screen with OpenWGT, or goes back to a window. **F11** and **Alt+Enter** do the same.
 
 ## Language
-Each click on the language button picks the next language: English, Swedish (svenska) or French (français). When you close the window, OpenWGT asks whether to save your widget and starts again in that language. With a CD the button is greyed: the CD decides the language.
+Each click on the language button switches OpenWGT to the next language at once: English, Swedish (svenska) or French (français). Your widget stays on the worksheet as it is; a puzzle is loaded again in the new language (Edit > Undo brings back what you had done). With a CD the button is greyed: the CD decides the language.
 
 ## Change CD...
 Picks a Widget Workshop CD image (an .iso file) for OpenWGT to use, then starts the workshop again with it. It asks to save your widget first. Where your computer has no file chooser for it, OpenWGT asks you to drop the CD image on its window instead; in the web browser, the page asks for it. See [Playing with or without the CD](#cd).

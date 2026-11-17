@@ -588,7 +588,7 @@ keywords: tangentbord, tangenter, kortkommandon, snabbtangenter
 = Fönstret Inställningar {#openwgt-settings}
 keywords: inställningar, alternativ, skalning, skala, zooma, storlek, förbättringar, helskärm, språk, engelska, svenska, franska, byt skiva, utan skivan
 
-**Alternativ > Inställningar...** öppnar OpenWGT:s eget inställningsfönster. Skalan, förbättringarna och helskärmen ändras direkt, språket när du stänger fönstret, och OpenWGT kommer ihåg alltihop till nästa gång.
+**Alternativ > Inställningar...** öppnar OpenWGT:s eget inställningsfönster. Skalan, förbättringarna, helskärmen och språket ändras direkt, och OpenWGT kommer ihåg alltihop till nästa gång.
 
 ## Skala
 Hur stort allt ritas. **Automatiskt** följer skärmens egen inställning; på en pekskärm blir verktygsfälten lika breda som skärmen. Kryssa ur rutan och använd **-** och **+** för att välja en storlek från 1x till 4x, i steg om en fjärdedel.
@@ -605,7 +605,7 @@ Förbättringarna är avstängda från början, så att allt är precis som i or
 Låter OpenWGT fylla hela skärmen, eller går tillbaka till ett fönster. **F11** och **Alt+Enter** gör samma sak.
 
 ## Språk
-Varje klick på språkknappen väljer nästa språk: engelska (English), svenska eller franska (français). När du stänger fönstret frågar OpenWGT om du vill spara uppfinningen och startar sedan om på det språket. Med en skiva är knappen grå: då bestämmer skivan språket.
+Varje klick på språkknappen byter OpenWGT direkt till nästa språk: engelska (English), svenska eller franska (français). Uppfinningen blir kvar på arbetsytan som den är; ett pussel laddas om på det nya språket (Redigera > Ångra ger tillbaka det du hade gjort). Med en skiva är knappen grå: då bestämmer skivan språket.
 
 ## Byt skiva...
 Väljer en skivavbildning av Widget Workshop (en .iso-fil) som OpenWGT ska använda och startar sedan verkstaden igen med den. Den frågar först om du vill spara uppfinningen. Om datorn inte har något sätt att välja filen ber OpenWGT dig att släppa skivavbildningen på fönstret i stället; i webbläsaren frågar sidan efter den. Se [Med eller utan skivan](#cd).

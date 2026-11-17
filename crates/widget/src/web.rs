@@ -37,7 +37,9 @@ extern "C" {
     /// Reloads the page into the start form, the stored image kept.
     #[wasm_bindgen(js_name = changeCd)]
     pub(crate) fn change_cd();
-    /// Reloads the page to play without a CD in the language `code`.
+    /// The game switched to the language `code` (without a CD): kept for
+    /// later visits, the page's address (`?open&lang=`) and its own words
+    /// follow, without a reload.
     #[wasm_bindgen(js_name = changeLang)]
     pub(crate) fn change_lang(code: &str);
     /// Reloads the page without the CD, and keeps to that.
@@ -228,7 +230,7 @@ async fn run() -> Result<(), String> {
         Arc::new(MemoryFiles::new(files, Some(persist))),
     );
     platform::web::show_status("", false);
-    let args = crate::args(query_args().into_iter());
+    let mut args = crate::args(query_args().into_iter());
     watch_links();
     for (given, what) in [
         (args.cd.is_some(), "a CD"),
@@ -239,23 +241,23 @@ async fn run() -> Result<(), String> {
             eprintln!("{what} means nothing in the browser");
         }
     }
-    // `?opengfx`, `?opensfx`: the built-in packs (a folder means nothing
-    // here).
+    args.cd = None;
+    args.overrides = None;
+    // `?open`: the three built-in packs; `?opengfx`, `?opensfx`,
+    // `?opendata` one of them with the CD (a folder means nothing here).
+    if open {
+        args.without_cd();
+    }
+    for p in [&mut args.opengfx, &mut args.opensfx, &mut args.opendata]
+        .into_iter()
+        .flatten()
+    {
+        *p = crate::Pack::Builtin;
+    }
     // `?lang=sv`: the packs' language (the page's choice), else the
     // browser's; a CD's own wins.
     let lang = crate::language(&args, cd.as_deref());
-    let graphics = (open || args.opengfx.is_some()).then(|| engine::opengfx::builtin_for(lang));
-    let sounds = (open || args.opensfx.is_some()).then(engine::opensfx::builtin);
-    let data = (open || args.opendata.is_some()).then(|| engine::opendata::builtin_for(lang));
-    let packs = engine::assets::Packs {
-        graphics: graphics.as_deref(),
-        sounds: sounds.as_ref().map(|g| g as &dyn engine::assets::Source),
-        data: data.as_ref().map(|g| g as &dyn engine::assets::Source),
-    };
-    let mut assets = crate::load(Path::new("CD"), cd.as_deref(), packs, None);
-    if cd.is_none() {
-        assets.lang = lang;
-    }
+    let assets = crate::assets_for(&args, cd.as_deref(), lang).map_err(|e| format!("CD: {e}"))?;
     page_language(assets.lang.code());
     crate::start(&args, assets).map_err(|e| e.to_string())
 }

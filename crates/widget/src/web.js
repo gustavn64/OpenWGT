@@ -215,15 +215,28 @@ function formLanguage($) {
   follow();
 }
 
-// Reloads the page to play without the CD in the language `code`
-// (Settings ▸ Language), kept for the start form's list too.
+// The game switched to the language `code` without the CD (Settings ▸
+// Language), with no reload: it's kept for the start form's list and
+// later visits, the address becomes `?open&lang=code` (the query's other
+// options and the hash, a widget link, kept) so that a reload or a
+// bookmark plays in it, and the page's own words follow.
 export function changeLang(code) {
-  try {
-    localStorage.setItem("openwgt-lang", code);
-  } catch (e) {
-    console.error("storage:", e);
-  }
-  location.search = `?open&lang=${code}`;
+  storage(() => localStorage.setItem("openwgt-lang", code));
+  const key = (p) => {
+    const k = p.split("=")[0];
+    try {
+      return decodeURIComponent(k);
+    } catch (e) {
+      return k;
+    }
+  };
+  const rest = location.search
+    .slice(1)
+    .split("&")
+    .filter((p) => p !== "" && key(p) !== "open" && key(p) !== "lang");
+  const search = ["open", `lang=${code}`, ...rest].join("&");
+  history.replaceState(history.state, "", `?${search}${location.hash}`);
+  pageLanguage(code);
 }
 
 // Settings ▸ Play without the CD: the page again without it, and so on
