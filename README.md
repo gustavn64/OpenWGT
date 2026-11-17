@@ -6,38 +6,67 @@ non-matching decompilation of the game, with its own graphics
 (OpenWGFX), sounds (OpenWSFX) and data (OpenWDATA), as OpenTTD has
 OpenGFX, OpenSFX and OpenMSX, so it runs without the original CD.
 
-**Play it in your browser:** <https://gustavn.se/openwgt>
-([docs/web.md](docs/web.md)), or download it for Linux, Windows or macOS
-from the [releases](https://github.com/gustavn64/OpenWGT/releases)
-([Packages](#packages)).
-
 OpenWGT is a fork of Doridian's port,
 [Doridian/GadgetGenerator](https://github.com/Doridian/GadgetGenerator),
 under the same licence (AGPL-3.0-or-later). This fork adds the port's
 own graphics, sounds and data ([below](#without-the-cd-openwgfx-openwsfx-openwdata)),
-fixes, a Nix flake and tools that compare it with the original running
-in an emulator (`tools/compare/`).
-
-The port opens straight into the editor (the original's intro and main
-menu are left out): the parts tray, wiring, the worksheets, undo and the
-parts' own settings dialogs; the logic, number, science, sound and time,
-input and display parts; puzzle mode; widgets loaded and saved in the
-original's `.WGT` format; recording and WAV import; and the help viewer
-for `WIDGET.HLP`. It's a non-matching decompilation of the Win95 build's
-`WIDGET.EXE`: the code behaves like the original, but doesn't compile to
-the same bytes. The stack is winit, wgpu and cpal, with a resizable
-window, fullscreen and UI scaling.
+Swedish, touch screens, fixes, a Nix flake and tools that compare it with
+the original running in an emulator (`tools/compare/`).
 
 This repository contains **none of the game's pictures, sounds, texts
 or code**. It runs without the game's CD on its own pictures, sounds and
 data; with your own copy of the CD it can use the original's instead.
 
+## Play
+
+**In the browser:** <https://gustavn.se/openwgt>, nothing to install
+(on a phone or tablet too).
+
+**Download** it from the
+[latest release](https://github.com/gustavn64/OpenWGT/releases/latest):
+
+| System | File |
+|---|---|
+| Windows | `openwgt-windows-x86_64.exe` (`-arm64.exe` on Arm): just run it |
+| macOS | `openwgt-macos.dmg`, for Apple silicon and Intel: drag `OpenWGT.app` to Applications; the first start needs a right click, Open (it's signed ad hoc only) |
+| Linux, any | `openwgt-x86_64.AppImage` (`-aarch64` on Arm): make it executable and run it |
+| Debian, Ubuntu | `openwgt-x86_64.deb`: `sudo apt install ./openwgt-x86_64.deb` |
+| Fedora, openSUSE | `openwgt-x86_64.rpm`: `sudo dnf install ./openwgt-x86_64.rpm` |
+| Linux, by hand | `openwgt-linux-x86_64.tar.gz`: the bare program |
+
+The Linux builds want glibc 2.35 or newer (Ubuntu 22.04 and later).
+
+**Host the browser version yourself** with Docker; the image serves the
+site, with no game data in it:
+
+```sh
+docker run -p 8080:80 ghcr.io/gustavn64/openwgt
+```
+
+and open <http://localhost:8080/>. Without Docker, the release's
+`openwgt-web.zip` is the same site for any static web server
+([docs/web.md](docs/web.md)).
+
+**With Nix:** `nix run github:gustavn64/OpenWGT`.
+
+The AUR, winget, Homebrew and Flathub packages, and how a release reaches
+them: [packaging/README.md](packaging/README.md).
+
 ## The original CD
 
-Not needed, but the port can use it. It reads the **Mac/PC CD** (volume `WIDGETS`), as an `.iso` or as
-a folder with its files. The Internet
-Archive has the `.iso`:
-[widget-workshop](https://archive.org/details/widget-workshop).
+Not needed: started without one, OpenWGT plays on its own pictures,
+sounds and data. With your own copy it uses the original's instead.
+Options ▸ Settings ▸ Change CD... picks a CD image (an `.iso`, or a folder
+with the CD's files); in the browser, the start page does. The port
+remembers it (`cd-path.txt` in `~/.local/share/openwgt`,
+`%APPDATA%\OpenWGT`, `~/Library/Application Support/OpenWGT`); an `.iso`
+or an `orig` folder in the working directory is found on its own. On
+Linux the file dialog is the desktop's (xdg-desktop-portal, else zenity;
+with neither, drop the CD image on the game's window).
+
+It reads the **Mac/PC CD** (volume `WIDGETS`). The Internet Archive has
+the `.iso`: [widget-workshop](https://archive.org/details/widget-workshop).
+The Swedish edition, **Uppfinnarverkstan**, works too ([Languages](#languages)).
 
 It also reads the much smaller **OS/2 Warp CD** (`WW1_01A.ISO`, game folder
 `WIDGET/`): its modules are OS/2 executables whose dialogs, menu, strings
@@ -49,36 +78,40 @@ The OS/2 CD has no Windows fonts, so the port bundles free stand-ins
 Sans, rendered from Liberation Sans, for the gadgets' Arial. When the
 Mac/PC CD's own fonts (`WIN31/SVGA`) are there, they win.
 
-## Packages
+## What's in it
 
-Every push to master builds the port for every platform
-(`.github/workflows/build.yml`); a `v*` tag publishes them on its release:
+The port opens straight into the editor (the original's intro and main
+menu are left out): the parts tray, wiring, the worksheets, undo and the
+parts' own settings dialogs; the logic, number, science, sound and time,
+input and display parts; puzzle mode; widgets loaded and saved in the
+original's `.WGT` format; recording and WAV import; and the help viewer
+for `WIDGET.HLP`. It's a non-matching decompilation of the Win95 build's
+`WIDGET.EXE`: the code behaves like the original, but doesn't compile to
+the same bytes. The stack is winit, wgpu and cpal, with a resizable
+window, fullscreen and UI scaling.
 
-- `openwgt-x86_64.AppImage`, `openwgt-aarch64.AppImage`, the same as
-  `.deb` and `.rpm` packages, and the bare program in
-  `openwgt-linux-x86_64.tar.gz` / `-aarch64` (built on Ubuntu 22.04: glibc
-  2.35 or newer)
-- `openwgt-windows-x86_64.exe`, `openwgt-windows-arm64.exe` (the C runtime
-  linked in)
-- `openwgt-macos.dmg`: `OpenWGT.app`, for Apple silicon and
-  Intel (signed ad hoc only: the first start needs a right click, Open)
-- `openwgt-web.zip`: the browser version's site, also as a container
-  image serving it: `docker run -p 8080:80 ghcr.io/gustavn64/openwgt`
+Options ▸ Settings, the port's own, changes the UI scale on the spot
+(Automatic, or 1× to 4× in quarters), the language without a CD, and
+switches the port's enhancements of the original on or off, all of them
+at once. They're off until the player turns them on (`original=false` in
+the settings file). The enhancements: the parts tray shows a whole folder
+at once, its pages one under the other, without the page arrows; and the
+toolbars, dialogs and message boxes are dragged whole, not as an outline.
+**Full screen** switches the window to full screen and back, as F11 and
+Alt+Enter do (on a phone, where there are no such keys).
+Its **Change CD...** button, after "Save changes?", picks another CD
+image and starts the game again on it (in the browser, the page's start
+form comes back).
 
-The AUR, winget, Homebrew and Flathub packages and how a release reaches
-them: [packaging/README.md](packaging/README.md).
+On a touch screen a tap is a click, a long press a double click, and a
+tap on a text field opens the device's own text box (in the browser).
 
-None of them carries game data. Started without a CD (from its icon), it
-uses an `.iso` or `orig` in the working directory, else the CD picked
-before; with none, it runs on its own pictures, sounds and data. Settings
-▸ Change CD... picks a CD image with the system's file dialog (on Linux
-the desktop's, xdg-desktop-portal, else zenity; with neither, the CD image
-is dropped on the game's window) and keeps its path in the data directory
-(`cd-path.txt` in `~/.local/share/openwgt`, `%APPDATA%\OpenWGT`,
-`~/Library/Application Support/OpenWGT`). The icon is the port's own
-(`tools/make-icon.py`).
+Widgets travel as links too ([docs/web.md](docs/web.md#widget-links)):
+File ▸ Copy Link to Widget puts one on the clipboard, which opens the
+widget in the browser version for anyone with the CD, and File ▸ Open Widget Link
+(Ctrl+V) opens the one on the clipboard, natively too.
 
-## Running
+## Building it
 
 ```sh
 cargo run --release -p openwgt                       # the .iso here, else orig/, else no CD
@@ -87,38 +120,23 @@ cargo run --release -p openwgt -- CD.iso 'https://gustavn.se/openwgt/play/#w=…
 cargo run --release -p openwgt -- --help
 ```
 
+On Linux the sound needs ALSA's headers to build (`libasound2-dev`).
 With Nix: `nix develop` gives a shell with the Rust tools, the libraries
 the window and the sound load, and the Python tools' packages; `nix run
 . -- CD.iso` builds and starts it (`flake.nix`).
 
 Options: `--open`, `--opengfx`, `--opensfx` and `--opendata`
-([below](#without-the-cd-openwgfx-openwsfx-openwdata)), `--no-audio`,
-`--window-size=WxH`, `--fullscreen`, `--windowed`,
+([below](#without-the-cd-openwgfx-openwsfx-openwdata)), `--lang=en|sv`,
+`--no-audio`, `--window-size=WxH`, `--fullscreen`, `--windowed`,
 `--ui-scale=N|auto` (remembered in the settings file), `--overrides=DIR`
 (resources that replace or add to the CD's) and `--export=DIR` (writes
-every resource there in that layout and quits). On Linux the sound needs
-ALSA's headers to build (`libasound2-dev`).
+every resource there in that layout and quits).
 
-Options ▸ Settings, the port's own, changes the UI scale on the spot
-(Automatic, or 1× to 4× in quarters) and switches the port's
-enhancements of the original on or off, all of them at once. They're
-off until the player turns them on (`original=false` in the settings
-file). The
-enhancements: the parts tray shows a whole folder at once, its pages one
-under the other, without the page arrows; and the toolbars, dialogs and
-message boxes are dragged whole, not as an outline.
-**Full screen** switches the window to full screen and back, as F11 and
-Alt+Enter do (on a phone, where there are no such keys).
-Its **Change CD...** button, after "Save changes?", picks another CD
-image and starts the game again on it (in the browser, the page's start
-form comes back).
-
-Widgets travel as links too ([docs/web.md](docs/web.md#widget-links)):
-File ▸ Copy Link to Widget puts one on the clipboard, which opens the
-widget in the browser build for anyone with the CD, and File ▸ Open
-Widget Link (Ctrl+V) opens the one on the clipboard, natively too.
-
-The browser build: `tools/build-web.sh`, [docs/web.md](docs/web.md).
+The browser version: `tools/build-web.sh`, [docs/web.md](docs/web.md).
+Every push to master builds every package
+(`.github/workflows/build.yml`); a `v*` tag publishes them on its release
+and the container image on ghcr.io ([packaging/README.md](packaging/README.md)).
+The icon is the port's own (`tools/make-icon.py`).
 
 ## Without the CD: OpenWGFX, OpenWSFX, OpenWDATA
 
