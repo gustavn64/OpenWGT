@@ -52,7 +52,8 @@ Shared physics tables (`WIDGET.EXE` .data):
 | `0x49ab88` | `CANNON_SPEED_FT_S[5]` | 0: 36360.13333333333 (24 791 mph), 1: 1466.6666666666665 (1000 mph), 2: 822.8 (561 mph), 3: 132.0 (90 mph), 4: 0.0 ("None") |
 
 Units are feet and seconds throughout. `HEIGHTS_FT` is immediately
-followed by `GRAVITY_FT_S2` (0x4903bc + 6·8 = 0x4903ec).
+followed by `GRAVITY_FT_S2` (0x4903bc + 6·8 = 0x4903ec). The Swedish and French
+editions have metric tables in their place ([The editions](#the-editions)).
 
 ## Gadget ids 1000–1019 and 2000–2046
 
@@ -930,6 +931,55 @@ there is no sample to test a loader against.
    1010 point list** (`0x3f2`) into a `{u16 count; Point*}` struct
    (`0x4114da` indexes it). Type 1021 is read directly by the dialog code
    (`0x41acb9`, `FUN_0041082a(.., 0x3fd, ..)` for the Doc button).
+
+## The editions
+
+The Swedish edition (Uppfinnarverkstan) and the French one (Eurêka, le
+Laboratoire du savant fou) reckon in meters, kilometers and kilograms.
+Their `WIDGET.EXE` is the English build's code (compared instruction by
+instruction against it, the science parts' code is the same, but for the
+constants below); only the tables and constants changed, and the combo
+lists' and dialogs' texts with them. Addresses are each edition's own.
+
+| what | English (`0x…`) | Swedish | French |
+|---|---|---|---|
+| preset heights | `0x4903bc` ft: 29029, 4190, 1472, 984, 20, 6 | `0x4903cc` m: 8848, 1280, 448, 300, 6, 1.8 | `0x4903d8` m: the feet × 0.3048 (8848.0392 … 1.8288) |
+| gravity | `0x4903ec` ft/s²: 901.18, 75.9566, 32.185, 5.47145 | `0x4903fc` m/s²: 274.68, 23.1516, 9.81, 1.6677 (28, 2.36, 1, 0.17 × 9.81) | `0x490408`, the same |
+| cannon speeds | `0x49ab88` ft/s (24 791, 1000, 561, 90 mph) | `0x49ac70` m/s (27 200, 1100, 600, 100 km/h) | `0x49abd4` m/s (39 889, 1609, 903, 145 km/h) |
+| cannon's Speed factor | `0x44fe15` 0.68181… (ft/s to mph) | `0x44ed3d` 3.6 (m/s to km/h) | `0x44f209` 3.6 |
+| planet table | `0x49ac42` | `0x49ad2a` | `0x49ac8e` |
+| planet captions | `0x49aed6` "MERCURY" … | `0x49afbe` "MERKURIUS", "VENUS", "TELLUS", "MARS", "JUPITER", "SATURNUS", "URANUS", "NEPTUNUS", "PLUTO" | `0x49af22` "Mercure", "Vénus", "Terre", "Mars", "Jupiter", "Saturne", "Uranus", "Neptune", "Pluton" |
+| Heart's weights (io.md) | `0x498ed2` lb | `0x498fba` kg (0.3 … 22 …) | `0x498f1e` kg (0.28 … 19.64 …; its dialog says g) |
+| Mouse Distance Measurer's pixel (io.md) | `0x44b4c4` 1/72 inch | `0x44a408` 1/28.35 cm | `0x44a8b8` 1/28 cm |
+
+The planets in the editions (day, year, distance in million km, orbit
+speed in thousand km/h, diameter in km, density, gravity, mass):
+
+| | Swedish | French |
+|---|---|---|
+| Mercury | 59, 87.97, 58, 172, 4880, 5.42, 0.38, 0.33 | 59, 87.97, 58, 170, 4851, 5.5, 0.38, 0.327 |
+| Venus | 243, 224.7, 108, 126, **842**, 5.26, 0.9, 4.87 | 243, 224, 107, 124, 12037, 5.24, 0.9, 4.812 |
+| Earth | 24, 365.26, 149, 107.24, 12755, 5.52, 1, 5.98 | 24, 365.26, 149, 106, 12682, 5.52, 1, 5.943 |
+| Mars | 24.62, 687, 228, 86.86, 7113, 3.94, 0.38, 0.642 | 24.62, 687, 227, 86, 7072, 3.94, 0.38, 0.632 |
+| Jupiter | 9.83, 4332, 778, 47.01, 142825, 1.3, 2.53, 1920 | 9.83, 4332, 773, 46, 142000, 1.3, 2.87, 1889.28 |
+| Saturn | 10.23, 10760, 1429, 34.78, 120022, 0.7, 1.07, 569 | 10.23, 10760, 1419, 34, 119328, 0.7, 1.32, 565 |
+| Uranus | 10.82, 30685, 2870, 24.48, 50853, 1.3, 0.9, 86.9 | 10.82, 30685, 2853, 24, 50560, 1.3, 0.93, 86.789 |
+| Neptune | 15.8, 60190, 4504, 19.58, 48600, 1.8, 1.1, 103.9 | 15.8, 60191, 4470, 19, 48320, 1.8, 1.23, 102.238 |
+| Pluto | 159.32, 90800, 5913, 17.06, 2414, 0.7, 0.07, 0.0132 | 159.32, 90475, 5856, 17, 2400, 0.7, 0.03, 0.059 |
+
+The Swedish Venus, 842 km across, is the edition's slip (about 12 100);
+the mass is in 10¹² gigatons in both (the Swedish list says so, the French
+says 10¹³). The Converter (`0x443c3b`) is the same in all three, °C/°F,
+m/ft, kg/lb both ways; its picture (WWGADGET 1026, frames 10–15) reads
+C°, m, kg, F°, Ft, Lb in the Swedish edition and as in English in the
+French. The editions' presets' texts round their own way ("1 277 meter
+(Vesuvius)" for the Swedish 1280, "1,83 meter" for 1.8): nothing reads
+them, as the parts take a preset by its place in the list (the game never
+asks a list for its text, `CB_GETLBTEXT`).
+
+The port takes the units from the game's language (`Assets::lang`, the
+CD's or the data pack's): `engine::gadgets::science::Physics`,
+`inputs::hearts`, `inputs::mouse_unit`.
 
 ## Open questions
 

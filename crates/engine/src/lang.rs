@@ -129,6 +129,7 @@ pub fn trf(en: &'static str, args: &[&str]) -> String {
 }
 
 /// The Swedish of the port's own words.
+#[allow(clippy::too_many_lines)]
 fn sv(en: &str) -> Option<&'static str> {
     Some(match en {
         // Message boxes (Windows' buttons).
@@ -225,6 +226,17 @@ fn sv(en: &str) -> Option<&'static str> {
         "Can`t open file" => "Kan inte öppna filen",
         "Bad file format" => "Felaktigt filformat",
         "Can't import non-8 bit sound" => "Kan bara importera 8-bitars ljud",
+        // The planets' captions (the Solar System; the Swedish edition's,
+        // with the pack's Jorden for its Tellus).
+        "MERCURY" => "MERKURIUS",
+        "VENUS" => "VENUS",
+        "EARTH" => "JORDEN",
+        "MARS" => "MARS",
+        "JUPITER" => "JUPITER",
+        "SATURN" => "SATURNUS",
+        "URANUS" => "URANUS",
+        "NEPTUNE" => "NEPTUNUS",
+        "PLUTO" => "PLUTO",
         _ => return None,
     })
 }
@@ -232,6 +244,7 @@ fn sv(en: &str) -> Option<&'static str> {
 /// The French of the port's own words: the French edition's (Eurêka, le
 /// Laboratoire du savant fou) where its code has them, Windows' French for
 /// what Windows said, the port's own for the rest. The game says "tu".
+#[allow(clippy::too_many_lines)]
 fn fr(en: &str) -> Option<&'static str> {
     Some(match en {
         // Message boxes (Windows' buttons).
@@ -332,6 +345,17 @@ fn fr(en: &str) -> Option<&'static str> {
         "Can`t open file" => "Impossible d'ouvrir le fichier",
         "Bad file format" => "Mauvais format de fichier",
         "Can't import non-8 bit sound" => "Impossible d'importer un son qui ne soit pas 8 bits",
+        // The planets' captions (the Solar System; as the French edition
+        // writes them, not in capitals).
+        "MERCURY" => "Mercure",
+        "VENUS" => "Vénus",
+        "EARTH" => "Terre",
+        "MARS" => "Mars",
+        "JUPITER" => "Jupiter",
+        "SATURN" => "Saturne",
+        "URANUS" => "Uranus",
+        "NEPTUNE" => "Neptune",
+        "PLUTO" => "Pluton",
         _ => return None,
     })
 }
