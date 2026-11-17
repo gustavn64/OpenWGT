@@ -3,12 +3,17 @@ OpenWGT — an open engine for Widget Workshop
 A free and open way to keep building widgets on today's computers. These are the people and pieces that bring it to the screen:
 
 
-The port:
+OpenWGT:
+
+gustavn64
+gustavn.se/openwgt
+
+The port it builds on:
 
 Doridian
-github.com/Doridian/WidgetWorkshop
+github.com/Doridian/GadgetGenerator
 
-This fork, OpenWGT, adds its own free packs, all made for the project:
+OpenWGT adds its own free packs, all made for the project:
 
 OpenWGFX
 the pictures

@@ -3,12 +3,17 @@ OpenWGT – en öppen motor för Widget Workshop
 Ett fritt och öppet sätt att fortsätta bygga uppfinningar på dagens datorer. Här är människorna och delarna som får det att synas på skärmen:
 
 
-Porten:
+OpenWGT:
+
+gustavn64
+gustavn.se/openwgt
+
+Porten det bygger på:
 
 Doridian
-github.com/Doridian/WidgetWorkshop
+github.com/Doridian/GadgetGenerator
 
-Den här grenen, OpenWGT, lägger till egna fria paket, alla gjorda för projektet:
+OpenWGT lägger till egna fria paket, alla gjorda för projektet:
 
 OpenWGFX
 bilderna

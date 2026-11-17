@@ -79,7 +79,13 @@ impl About {
             s.text(font, sc.x0 + (sc.width() - w) / 2, y, &crate::text::encode(line), color);
         };
         if off < 200 {
-            let v = assets.string(100).unwrap_or_default();
+            // The CD's own version (string 100); the port's with its own
+            // packs, whose About box is OpenWGT's.
+            let v = if assets.from_cd() {
+                assets.string(100).unwrap_or_default()
+            } else {
+                format!("Version {}", env!("CARGO_PKG_VERSION"))
+            };
             centred(s, sc.y0 + 66 - off, &v);
         }
         let y0 = sc.y0 + TITLE_H - off;
