@@ -10,7 +10,7 @@ SCRIPTS="$ROOT/tools/ghidra/scripts"
 SRC="$ROOT/orig/WIN95/WIDGET"
 
 if [[ ! -f "$SRC/WIDGET.EXE" ]]; then
-	echo "$SRC/WIDGET.EXE missing; run tools/extract_cd.py first" >&2
+	echo "$SRC/WIDGET.EXE missing: put the Mac/PC CD's files in orig/ (mkdir orig && bsdtar -xf CD.iso -C orig)" >&2
 	exit 1
 fi
 if [[ -e "$PROJ/WidgetWorkshop.gpr" ]]; then

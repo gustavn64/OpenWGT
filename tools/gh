@@ -8,12 +8,14 @@
   tools/gh strings [-x] [regex]       defined strings (-x: list referencing functions)
   tools/gh cstrings [-x] [regex]      NUL-terminated strings anywhere, defined or not
   tools/gh funcs [-u] [regex]         functions: addr, size, name (-u: user-named only)
-  tools/gh apply [file]               symbols/<program>.txt -> Ghidra DB
+  tools/gh apply [file]               names from a symbol file (default symbols/<program>.txt) -> Ghidra DB
   tools/gh rename <addr|name> <new> [func|data]   rename in DB and symbol file
-  tools/gh export [file]              Ghidra DB user names -> symbols/<program>.txt
+  tools/gh export [file]              Ghidra DB user names -> a symbol file (default as for apply)
   tools/gh dumpall <dir>              every function's C into <dir>/<4K page>.c, plus index.txt
   tools/gh batch < cmds               several commands (one per line) in one JVM
 
+symbols/ isn't in the repository (make it, or name a file, before export): the
+functions and data found so far are written up in docs/, by address.
 Addresses are flat hex (401000, 0x401000, FUN_00401000) or symbol names; regexes are case-insensitive. Every call is serialized with flock
 on ghidra/.gh.lock, so parallel callers are safe (they queue). Use `batch` to
 amortize JVM startup.

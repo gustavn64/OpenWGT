@@ -2,8 +2,7 @@
 //! descriptor and the directories' records. The CD is a single MODE1
 //! data track; an image is either its 2048-byte sectors (`.iso`) or the
 //! raw 2352-byte ones (a `.bin`), which [`Layout`] tells apart. The
-//! callers read the sectors; this only parses them (`tools/extract_cd.py`
-//! does the same in Python).
+//! callers read the sectors; this only parses them.
 
 use std::fmt;
 

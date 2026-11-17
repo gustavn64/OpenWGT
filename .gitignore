@@ -26,9 +26,10 @@
 /dist/
 /web/
 
-# Ghidra project (contains the original binaries). Share knowledge through
-# exported symbol files in the repo instead.
-/ghidra/
+# Ghidra project (contains the original binaries). What it shows is written
+# up in docs/ instead. pzl_dump.py, beside it, is the project's own.
+/ghidra/*
+!/ghidra/pzl_dump.py
 
 # Python
 __pycache__/
