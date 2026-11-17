@@ -47,7 +47,7 @@ openwgt-web/play/          the game: the build's index.html, widget.js,
 ```
 
 Any static host serves it as it is. The project's own,
-<https://gustavn.se/openwgt/>, takes each release's zip from the site's
+<https://gustavn.se/openwgt>, takes each release's zip from the site's
 own repository; this one knows nothing of it.
 
 ## Serving and running

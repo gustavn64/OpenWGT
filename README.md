@@ -6,7 +6,7 @@ non-matching decompilation of the game, with its own graphics
 (OpenWGFX), sounds (OpenWSFX) and data (OpenWDATA), as OpenTTD has
 OpenGFX, OpenSFX and OpenMSX, so it runs without the original CD.
 
-**Play it in your browser:** <https://gustavn.se/openwgt/>
+**Play it in your browser:** <https://gustavn.se/openwgt>
 ([docs/web.md](docs/web.md)), or download it for Linux, Windows or macOS
 from the [releases](https://github.com/gustavn64/OpenWGT/releases)
 ([Packages](#packages)).

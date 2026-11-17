@@ -21,7 +21,7 @@
     </p>
   </description>
   <launchable type="desktop-id">se.gustavn.openwgt.desktop</launchable>
-  <url type="homepage">https://gustavn.se/openwgt/</url>
+  <url type="homepage">https://gustavn.se/openwgt</url>
   <url type="vcs-browser">https://github.com/gustavn64/OpenWGT</url>
   <content_rating type="oars-1.1"/>
   <releases>

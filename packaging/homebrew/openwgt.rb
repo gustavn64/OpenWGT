@@ -7,7 +7,7 @@ cask "openwgt" do
   url "https://github.com/gustavn64/OpenWGT/releases/download/v#{version}/openwgt-macos.dmg"
   name "OpenWGT"
   desc "Open engine for Maxis' Widget Workshop"
-  homepage "https://gustavn.se/openwgt/"
+  homepage "https://gustavn.se/openwgt"
 
   app "OpenWGT.app"
 

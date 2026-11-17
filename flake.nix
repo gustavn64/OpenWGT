@@ -76,7 +76,7 @@
               '';
               meta = {
                 description = "An open engine for Widget Workshop, with its own graphics, sounds and data";
-                homepage = "https://gustavn.se/openwgt/";
+                homepage = "https://gustavn.se/openwgt";
                 license = pkgs.lib.licenses.agpl3Plus;
                 mainProgram = "openwgt";
               };

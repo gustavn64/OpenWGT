@@ -67,7 +67,7 @@ assets = [
 
 [package.metadata.generate-rpm]
 summary = "An open engine for Maxis' Widget Workshop"
-url = "https://gustavn.se/openwgt/"
+url = "https://gustavn.se/openwgt"
 assets = [
     { source = "target/release/openwgt", dest = "/usr/bin/openwgt", mode = "755" },
     { source = "res/openwgt.desktop", dest = "/usr/share/applications/openwgt.desktop", mode = "644" },

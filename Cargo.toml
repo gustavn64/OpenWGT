@@ -6,7 +6,7 @@ members = ["crates/formats", "crates/platform", "crates/engine", "crates/widget"
 edition = "2024"
 license = "AGPL-3.0-or-later"
 publish = false
-homepage = "https://gustavn.se/openwgt/"
+homepage = "https://gustavn.se/openwgt"
 repository = "https://github.com/gustavn64/OpenWGT"
 
 [workspace.lints.rust]
