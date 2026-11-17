@@ -12,7 +12,7 @@ from the [releases](https://github.com/gustavn64/OpenWGT/releases)
 ([Packages](#packages)).
 
 OpenWGT is a fork of Doridian's port,
-[Doridian/WidgetWorkshop](https://github.com/Doridian/WidgetWorkshop),
+[Doridian/GadgetGenerator](https://github.com/Doridian/GadgetGenerator),
 under the same licence (AGPL-3.0-or-later). This fork adds the port's
 own graphics, sounds and data ([below](#without-the-cd-openwgfx-openwsfx-openwdata)),
 fixes, a Nix flake and tools that compare it with the original running

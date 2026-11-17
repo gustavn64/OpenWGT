@@ -659,7 +659,7 @@ keywords: om, tack, licens, AGPL, Maxis, Doridian, upphovsrätt, version
 **OpenWGT** är en motor med öppen källkod för **Widget Workshop: A Mad Scientist's Laboratory**, uppfinnarleksaken som Maxis gav ut 1995. Den bygger upp verkstaden från grunden för dagens datorer - Linux, Windows, macOS och webbläsaren - så att originalets uppfinningar och pussel fortsätter att fungera.
 
 ## Tack
-OpenWGT är en gren av Doridians port av Widget Workshop (github.com/Doridian/WidgetWorkshop), som återskapade hur spelet fungerar. Den här grenen lägger till egna bilder (OpenWGFX), ljud (OpenWSFX) och data (OpenWDATA: texterna, inställningsfönstren, pusslen, exempeluppfinningarna och den här hjälpen), så att den går utan originalskivan, tillsammans med rättelser och nya funktioner som länkar till uppfinningar och fönstret Inställningar.
+OpenWGT är en förgrening av Doridians port av Widget Workshop (github.com/Doridian/GadgetGenerator), som återskapade hur spelet fungerar. Den här förgreningen lägger till egna bilder (OpenWGFX), ljud (OpenWSFX) och data (OpenWDATA: texterna, inställningsfönstren, pusslen, exempeluppfinningarna och den här hjälpen), så att den går utan originalskivan, tillsammans med rättelser och nya funktioner som länkar till uppfinningar och fönstret Inställningar.
 
 ## Licens
 OpenWGT är fri programvara under GNU Affero General Public License, version 3 eller senare (AGPL-3.0-or-later). Dess egna bilder, ljud och data har samma licens. Du får använda, studera, dela och ändra den enligt villkoren i licensen.
