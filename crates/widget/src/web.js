@@ -97,6 +97,27 @@ function size(n) {
 // image stored (Settings > Change CD...).
 const CHANGE = "openwgt-change-cd";
 
+// The mark that the player chose to play without the CD (Settings ▸ Play
+// without the CD, or the start form's link), kept until a CD is started.
+const NO_CD = "openwgt-no-cd";
+
+function storage(f) {
+  try {
+    return f();
+  } catch (e) {
+    console.error("storage:", e);
+    return null;
+  }
+}
+
+// A plain visit after playing without the CD goes on without it, in the
+// language picked last: the address becomes `?open&lang=`, before the
+// game reads it.
+if (location.search === "" && storage(() => localStorage.getItem(NO_CD)) !== null) {
+  const lang = storage(() => localStorage.getItem("openwgt-lang"));
+  history.replaceState(null, "", `?open${lang ? `&lang=${lang}` : ""}${location.hash}`);
+}
+
 // The start form's words in Swedish and French, for a browser in either.
 // French puts a no-break space ( ) before ":".
 const SV = {
@@ -176,6 +197,7 @@ function formLanguage($) {
     console.error("storage:", e);
   }
   lang.value = picked || (words ? browser : "en");
+  open.onclick = () => storage(() => localStorage.setItem(NO_CD, "1"));
   const follow = () => {
     open.href = `?open&lang=${lang.value}`;
     try {
@@ -199,15 +221,20 @@ export function changeLang(code) {
   location.search = `?open&lang=${code}`;
 }
 
+// Settings ▸ Play without the CD: the page again without it, and so on
+// later visits until a CD is started; the stored image is kept.
+export function playWithoutCd() {
+  storage(() => localStorage.setItem(NO_CD, "1"));
+  const lang = storage(() => localStorage.getItem("openwgt-lang"));
+  location.search = `?open${lang ? `&lang=${lang}` : ""}`;
+}
+
 // Reloads the page into the start form, the stored image kept: Start
 // without picking another goes on with it.
 export function changeCd() {
-  try {
-    sessionStorage.setItem(CHANGE, "1");
-  } catch (e) {
-    console.error("storage:", e);
-  }
-  location.reload();
+  storage(() => sessionStorage.setItem(CHANGE, "1"));
+  storage(() => localStorage.removeItem(NO_CD));
+  location.search = "";
 }
 
 // Resolves to the CD image: the stored one at once, else (or after
@@ -246,6 +273,7 @@ export async function chooseCd(error) {
   return new Promise((resolve) => {
     $("start").onclick = async () => {
       $("start").disabled = true;
+      storage(() => localStorage.removeItem(NO_CD));
       let blob = stored && stored.blob;
       const file = cd.files[0];
       const note = [];

@@ -40,6 +40,9 @@ extern "C" {
     /// Reloads the page to play without a CD in the language `code`.
     #[wasm_bindgen(js_name = changeLang)]
     pub(crate) fn change_lang(code: &str);
+    /// Reloads the page without the CD, and keeps to that.
+    #[wasm_bindgen(js_name = playWithoutCd)]
+    pub(crate) fn play_without_cd();
     /// Puts the page's own words (and its `lang`) in the language `code`.
     #[wasm_bindgen(js_name = pageLanguage)]
     fn page_language(code: &str);
@@ -59,7 +62,12 @@ extern "C" {
 
 /// The module's start: shows a panic on the page and starts [`run`].
 pub(crate) fn main() {
-    std::panic::set_hook(Box::new(|info| platform::web::show_error(&info.to_string())));
+    std::panic::set_hook(Box::new(|info| {
+        // `exit`'s: the reason is on the page already.
+        if info.payload().downcast_ref::<&str>() != Some(&crate::STOPPED) {
+            platform::web::show_error(&info.to_string());
+        }
+    }));
     wasm_bindgen_futures::spawn_local(async {
         if let Err(e) = run().await {
             platform::web::show_error(&e);

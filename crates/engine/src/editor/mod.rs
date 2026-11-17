@@ -265,6 +265,9 @@ enum Next {
     ChangeCd,
     /// Settings ▸ Language: the host starts over in it.
     ChangeLang(crate::lang::Lang),
+    /// Settings ▸ Play without the CD: the host starts over without one,
+    /// and keeps to that until another CD is picked.
+    PlayWithoutCd,
 }
 
 /// The editor, drawn into an 8-bit surface.
@@ -374,6 +377,8 @@ pub struct Editor {
     change_cd: bool,
     /// Another language was chosen, and the widget saved or let go.
     change_lang: Option<crate::lang::Lang>,
+    /// Play without the CD was pressed, and the widget saved or let go.
+    play_without_cd: bool,
 }
 
 impl Editor {
@@ -458,6 +463,7 @@ impl Editor {
             new_enhanced: None,
             change_cd: false,
             change_lang: None,
+            play_without_cd: false,
         };
         let limits = e.doc.tray_limits.clone();
         e.tray.apply_limits(&limits);
@@ -954,7 +960,12 @@ impl Editor {
     /// Open and Load Puzzle drop a puzzle's changes without asking; Exit
     /// asks (`0x417027`).
     fn confirm_save(&mut self, next: Next) {
-        if self.dirty && (matches!(next, Next::Exit | Next::ChangeCd | Next::ChangeLang(_)) || !self.puzzle.active) {
+        if self.dirty
+            && (matches!(
+                next,
+                Next::Exit | Next::ChangeCd | Next::ChangeLang(_) | Next::PlayWithoutCd
+            ) || !self.puzzle.active)
+        {
             // MFC's own words (`AFX_IDP_ASK_TO_SAVE`, string 0xf103).
             let name = self.display_name();
             let text = self
@@ -984,6 +995,7 @@ impl Editor {
             Next::Dropped => self.open_dropped(),
             Next::ChangeCd => self.change_cd = true,
             Next::ChangeLang(l) => self.change_lang = Some(l),
+            Next::PlayWithoutCd => self.play_without_cd = true,
         }
     }
 
@@ -2029,6 +2041,13 @@ impl Editor {
         self.change_lang.take()
     }
 
+    /// Whether the player chose to play without the CD (Settings ▸ Play
+    /// without the CD), once, after "Save changes?": the host starts over
+    /// on the port's own packs and keeps to that.
+    pub fn take_play_without_cd(&mut self) -> bool {
+        std::mem::take(&mut self.play_without_cd)
+    }
+
     /// The window is full screen or not (the Settings window shows it).
     pub fn set_full_screen(&mut self, on: bool) {
         self.full_screen = on;
@@ -2106,6 +2125,10 @@ impl Editor {
             settings::Outcome::ChangeCd => {
                 self.settings = None;
                 self.confirm_save(Next::ChangeCd);
+            }
+            settings::Outcome::PlayWithoutCd => {
+                self.settings = None;
+                self.confirm_save(Next::PlayWithoutCd);
             }
             settings::Outcome::Close => self.settings = None,
         }

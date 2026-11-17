@@ -5,7 +5,8 @@
 //! ([`super::Editor::take_ui_scale`], [`super::Editor::take_enhanced`]).
 //! Change CD... asks the host for another CD image
 //! ([`super::Editor::take_change_cd`]); Play without the CD starts the
-//! game again on the port's own packs, in the language played.
+//! game again on the port's own packs, and keeps to them
+//! ([`super::Editor::take_play_without_cd`]).
 
 use crate::assets::Assets;
 use crate::gfx::{IRect, Surface};
@@ -52,9 +53,11 @@ pub enum Outcome {
     None,
     Scale(Scale),
     Enhanced(bool),
-    /// Another language, or Play without the CD: the game starts again
-    /// in it without a CD.
+    /// Another language: the game starts again in it (without a CD).
     Language(Lang),
+    /// Play without the CD: the game starts again on the port's own
+    /// packs, and keeps to them until another CD is picked.
+    PlayWithoutCd,
     /// Full screen on or off.
     FullScreen(bool),
     /// Change CD...: the window closes and the host picks another.
@@ -305,7 +308,7 @@ impl SettingsBox {
                 Outcome::FullScreen(self.full_screen)
             }
             Part::ChangeCd => Outcome::ChangeCd,
-            Part::NoCd => Outcome::Language(self.played),
+            Part::NoCd => Outcome::PlayWithoutCd,
         }
     }
 
@@ -540,11 +543,7 @@ mod tests {
         b.lang_fixed = true;
         assert_eq!(b.key(0x4c), Outcome::None, "a CD's language stays");
         assert_eq!(b.lang, Lang::En);
-        assert_eq!(
-            b.key(0x57),
-            Outcome::Language(Lang::En),
-            "the packs, in the CD's language"
-        );
+        assert_eq!(b.key(0x57), Outcome::PlayWithoutCd);
         assert_eq!(b.key(0x43), Outcome::ChangeCd);
         assert_eq!(b.key(0x1b), Outcome::Close);
     }

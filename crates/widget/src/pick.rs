@@ -24,8 +24,12 @@ use formats::fnt::Font;
 use platform::{Cursor, Frame};
 
 /// The CD there is without asking: `default` if it's there, else the one
-/// picked before.
+/// picked before; none after Settings ▸ Play without the CD, until
+/// another is picked.
 pub fn found(default: &Path) -> Option<PathBuf> {
+    if without().is_some_and(|w| w.exists()) {
+        return None;
+    }
     if default.exists() {
         return Some(default.to_path_buf());
     }
@@ -40,8 +44,33 @@ fn kept() -> Option<PathBuf> {
     platform::storage::data_dir().map(|d| d.join("cd-path.txt"))
 }
 
-/// Keeps `picked` for next time.
+/// The mark that the player chose to play without the CD.
+fn without() -> Option<PathBuf> {
+    platform::storage::data_dir().map(|d| d.join("no-cd"))
+}
+
+/// Settings ▸ Play without the CD: from now on the game starts without
+/// one, a CD here or picked before, until another is picked.
+pub fn play_without() {
+    if let Some(kept) = kept() {
+        let _ = std::fs::remove_file(kept);
+    }
+    if let Some(mark) = without() {
+        let saved = mark
+            .parent()
+            .map_or(Ok(()), std::fs::create_dir_all)
+            .and_then(|()| std::fs::write(&mark, ""));
+        if let Err(e) = saved {
+            eprintln!("{}: {e}", mark.display());
+        }
+    }
+}
+
+/// Keeps `picked` for next time (and plays with a CD again).
 fn keep(picked: &Path) {
+    if let Some(mark) = without() {
+        let _ = std::fs::remove_file(mark);
+    }
     if let Some(kept) = kept() {
         let saved = kept
             .parent()

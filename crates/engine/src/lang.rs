@@ -58,12 +58,19 @@ impl Lang {
     pub fn of_resources(r: &formats::pe::Resources) -> Option<Lang> {
         r.language
             .map(Lang::from_langid)
-            .or_else(|| match r.string(0xf221)?.trim().to_lowercase().as_str() {
-                "cancel" => Some(Lang::En),
-                "avbryt" => Some(Lang::Sv),
-                "annuler" => Some(Lang::Fr),
-                _ => None,
-            })
+            .or_else(|| Lang::of_cancel(&r.string(0xf221)?))
+    }
+
+    /// The language whose word for Cancel `word` is (MFC's string
+    /// `0xf221`, a CD's or a data pack's).
+    #[must_use]
+    pub fn of_cancel(word: &str) -> Option<Lang> {
+        match word.trim().to_lowercase().as_str() {
+            "cancel" => Some(Lang::En),
+            "avbryt" => Some(Lang::Sv),
+            "annuler" => Some(Lang::Fr),
+            _ => None,
+        }
     }
 
     /// The language of a Windows `LANGID` (its primary language, the low
