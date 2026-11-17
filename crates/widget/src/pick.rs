@@ -19,6 +19,7 @@ use std::io::IsTerminal;
 use std::path::{Path, PathBuf};
 
 use engine::gfx::{IRect, Surface};
+use engine::lang::{tr, trf};
 use formats::fnt::Font;
 use platform::{Cursor, Frame};
 
@@ -57,13 +58,16 @@ fn keep(picked: &Path) {
 pub fn choose() -> Option<PathBuf> {
     let picked = loop {
         let path = rfd::FileDialog::new()
-            .set_title("Choose the Widget Workshop CD image")
-            .add_filter("CD image", &["iso", "ISO"])
-            .add_filter("All files", &["*"])
+            .set_title(tr("Choose the Widget Workshop CD image"))
+            .add_filter(tr("CD image"), &["iso", "ISO"])
+            .add_filter(tr("All files"), &["*"])
             .pick_file()?;
         match check(&path) {
             Ok(()) => break path,
-            Err(e) => error_box(&format!("That isn't Widget Workshop's CD image ({e}). Choose another.")),
+            Err(e) => error_box(&trf(
+                "That isn't Widget Workshop's CD image ({}). Choose another.",
+                &[e.as_str()],
+            )),
         }
     };
     keep(&picked);
@@ -76,7 +80,7 @@ fn check(path: &Path) -> Result<(), String> {
     if crate::cd::has_game(cd.as_ref()) {
         Ok(())
     } else {
-        Err("no WWGADGET.DLL on it".into())
+        Err(tr("no WWGADGET.DLL on it").into())
     }
 }
 
@@ -239,7 +243,10 @@ impl DropScreen {
                 let name = path
                     .file_name()
                     .map_or_else(|| path.display().to_string(), |n| n.to_string_lossy().into_owned());
-                self.set_error(format!("{name} isn't Widget Workshop's CD image ({e}). Drop another."));
+                self.set_error(trf(
+                    "{} isn't Widget Workshop's CD image ({}). Drop another.",
+                    &[name.as_str(), e.as_str()],
+                ));
                 false
             }
         }
@@ -291,22 +298,22 @@ impl DropScreen {
         add(
             &small,
             TEXT,
-            "Drop the game's CD image (.iso) on this window, or a folder with its files.",
+            tr("Drop the game's CD image (.iso) on this window, or a folder with its files."),
         );
         add(&small, TEXT, "");
         add(
             &small,
             DIM,
-            "There's no file dialog here to choose it with (no xdg-desktop-portal, no zenity).",
+            tr("There's no file dialog here to choose it with (no xdg-desktop-portal, no zenity)."),
         );
         add(
             &small,
             DIM,
-            if self.in_game {
+            tr(if self.in_game {
                 "Esc goes back to the game."
             } else {
                 "It can be given on the command line too. Closing the window quits."
-            },
+            }),
         );
         if let Some(e) = &self.error {
             add(&small, TEXT, "");
