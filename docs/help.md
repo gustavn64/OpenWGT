@@ -167,6 +167,40 @@ totals about 13.5 KB, roughly 2,200 words, in about 120 paragraphs.
 - The context strings themselves aren't in the file, only their hashes, so
   name → hash isn't needed (and isn't implemented).
 
+### 2.6 The Swedish edition's file
+
+Uppfinnarverkstan's `WIDGET.HLP` (34,816 bytes, in the CD's top folder) is
+a different book from the English and French ones, written for the
+edition: HC 3.1 again (`|SYSTEM` 1.21) but with flags 0, so `|TOPIC`
+isn't packed, and with no `|Phrases`, keywords or pictures.
+
+- **Unpacked blocks**: each 4 KiB block is its 12-byte header and the
+  records as they are, yet a `TOPICPOS` still counts 0x4000 positions per
+  block (a record crossing the end of block 0 at 0x1000 continues at
+  0x400C, and the next link says 0x408C). Only WinHelp 3.0 files have
+  blocks that span their own size.
+- **28 topics**: contents ("Innehåll", 16 jumps in four groups), what the
+  game is, system requirements, installing and starting (separate topics
+  for Windows 3.1 and 95), the four menus, keyboard shortcuts,
+  "Tankenötter", and questions and answers. One browse sequence runs
+  through topics 1–27.
+- **Jumps**: all 27 are command `0xEB` (a jump that names a window or a
+  file), not `0xE3`. Its data is a `u16` length, then a type byte, the
+  context hash, and by type: 0 nothing; 1 a window number (`|SYSTEM`'s
+  windows); 4 a file name; 6 a window name and a file name. `0xEA` is the
+  popup, `0xEE`/`0xEF` the invisible ones. Here every one is type 1 into
+  window 0, `main`, so it's an ordinary jump.
+- **Windows**: `main` has the caption "Uppfinnarverkstan Hjälp", white
+  topics and a light yellow (255, 255, 128) non-scrolling region; the
+  viewer uses both colours. A second window, `proc` ("How to…"), is never
+  used. The `|SYSTEM` title has "Hjõlp" (0xF5 for 0xE4), so the
+  viewer takes the window's caption, as it does for every file.
+- The "Systemkrav" topic's lines "MB RAM" and "MB hårddiskutrymme" have
+  no numbers in the file itself.
+
+With no keywords the Index lists the topics' titles instead, as
+`WINHLP32`'s Find tab does before a word is typed.
+
 ---
 
 ## 3. Plan for the in-game viewer

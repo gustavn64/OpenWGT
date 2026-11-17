@@ -747,6 +747,58 @@ fn help_shows_the_os2_book() {
     e.draw();
 }
 
+/// The Swedish edition's `WIDGET.HLP` (Uppfinnarverkstan), from the CD
+/// folder `WIDGET_SV_CD` names (skipped without it or `orig`): its jumps
+/// (0xEB) lead to every topic they name, the yellow of its non-scrolling
+/// region shows, and with no keywords the Index lists the topics.
+#[test]
+fn help_shows_the_swedish_file() {
+    let Some(hlp) =
+        std::env::var_os("WIDGET_SV_CD").and_then(|d| std::fs::read(std::path::Path::new(&d).join("WIDGET.HLP")).ok())
+    else {
+        eprintln!("no WIDGET_SV_CD: skipped");
+        return;
+    };
+    let root = std::path::Path::new(env!("CARGO_MANIFEST_DIR")).join("../../orig");
+    let Ok(mut assets) = Assets::load(Some(&Dir(root)), None) else {
+        return;
+    };
+    assets.help = Some(hlp);
+    let mut e = Editor::new(assets, Document::new(), 900, 800);
+    e.command(cmd::CONTENTS);
+    assert_eq!(help_title(&e).as_deref(), Some("Innehåll"));
+    assert_eq!(e.help.as_ref().unwrap().title(), "Uppfinnarverkstan Hjälp");
+    e.draw();
+    let titles: Vec<String> = e
+        .help
+        .as_ref()
+        .unwrap()
+        .hotspots(&e.assets)
+        .into_iter()
+        .map(|(_, t)| t)
+        .collect();
+    assert_eq!(titles.len(), 16);
+    for t in &titles {
+        click_hotspot(&mut e, t);
+        assert_eq!(help_title(&e).as_ref(), Some(t));
+        let (pane, ends) = e.help.as_ref().unwrap().pane_and_extents(&e.assets);
+        assert!(ends.iter().all(|&x| x <= pane - 8), "{t}: {pane}: {ends:?}");
+        e.draw();
+        click_help_button(&mut e, help::B_BACK);
+    }
+    click_hotspot(&mut e, "Menyer");
+    click_hotspot(&mut e, "Arkiv-menyn");
+    assert_eq!(help_title(&e).as_deref(), Some("Arkiv-menyn"));
+    click_help_button(&mut e, help::B_NEXT);
+    assert_eq!(help_title(&e).as_deref(), Some("Redigera-menyn"));
+    click_help_button(&mut e, help::B_INDEX);
+    for k in *b"SYST" {
+        e.key_down(u16::from(k));
+    }
+    e.key_down(VK_RETURN);
+    assert_eq!(help_title(&e).as_deref(), Some("Systemkrav"));
+}
+
 /// The keypad's bounds are its body (frame 15), so its keys take clicks.
 #[test]
 fn keypad_takes_clicks() {

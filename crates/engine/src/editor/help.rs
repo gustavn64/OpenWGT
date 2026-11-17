@@ -911,6 +911,10 @@ pub struct Help {
     index: Option<IndexDialog>,
     palette: [[u8; 3]; 256],
     green: u8,
+    /// The main window's colours (`|SYSTEM`'s window record), the topic's
+    /// and the non-scrolling region's: white unless the file sets them.
+    background: u8,
+    nsr_background: u8,
     pictures: Pictures,
     view: RefCell<Option<Rc<View>>>,
 }
@@ -922,10 +926,16 @@ impl Help {
     #[must_use]
     pub fn new(assets: &Assets, file: HelpFile, area: IRect, at: Option<IRect>) -> Help {
         let palette = assets.palette();
-        let title = file
+        let main = file
             .windows
             .iter()
-            .find(|w| w.name.as_deref().is_some_and(|n| n.eq_ignore_ascii_case("main")))
+            .find(|w| w.name.as_deref().is_some_and(|n| n.eq_ignore_ascii_case("main")));
+        let colour = |c: Option<formats::bmp::Rgb>| c.map_or(ui::WHITE, |c| nearest(&palette, [c.r, c.g, c.b]));
+        let (background, nsr_background) = (
+            colour(main.and_then(|w| w.background)),
+            colour(main.and_then(|w| w.non_scroll_background)),
+        );
+        let title = main
             .and_then(|w| w.caption.as_deref())
             .map(str::trim)
             .filter(|c| !c.is_empty())
@@ -960,6 +970,8 @@ impl Help {
             mouse: (-1, -1),
             index: None,
             green: nearest(&palette, [0, 0x80, 0]),
+            background,
+            nsr_background,
             palette,
             pictures: Pictures::default(),
             view: RefCell::new(None),
@@ -1669,7 +1681,7 @@ impl Help {
         }
         // The non-scrolling region and its line.
         if !r.nsr.is_empty() {
-            s.fill(r.nsr, ui::WHITE);
+            s.fill(r.nsr, self.nsr_background);
             let c = s.clip();
             s.set_clip(r.nsr.intersect(c));
             v.nsr.draw(s, &self.cx(assets), r.nsr.x0, r.nsr.y0);
@@ -1677,7 +1689,7 @@ impl Help {
             s.fill(IRect::new(r.nsr.x0, r.nsr.y1 - 1, r.nsr.x1, r.nsr.y1), ui::BLACK);
         }
         // The topic.
-        s.fill(r.pane, ui::WHITE);
+        s.fill(r.pane, self.background);
         let c = s.clip();
         s.set_clip(r.pane.intersect(c));
         let (ox, oy) = (r.pane.x0 - self.scroll.0, r.pane.y0 - self.scroll.1);
@@ -1813,12 +1825,21 @@ const IDX_SIZE: (i32, i32) = (380, 400);
 const ROW_H: i32 = 13;
 
 impl IndexDialog {
+    /// A file with no keywords (the Swedish edition's) lists its topics'
+    /// titles instead, as `WinHelp` 4's Find tab does before a word is typed.
     fn new(file: &HelpFile, over: IRect) -> IndexDialog {
-        let mut words: Vec<(String, u32)> = file
-            .keywords
-            .iter()
-            .filter_map(|k| Some((k.word.clone(), *k.topics.first()?)))
-            .collect();
+        let mut words: Vec<(String, u32)> = if file.keywords.is_empty() {
+            file.topics
+                .iter()
+                .filter(|t| !t.title.is_empty())
+                .map(|t| (t.title.clone(), t.offset))
+                .collect()
+        } else {
+            file.keywords
+                .iter()
+                .filter_map(|k| Some((k.word.clone(), *k.topics.first()?)))
+                .collect()
+        };
         words.sort_by_key(|(w, _)| w.to_ascii_lowercase());
         let (w, h) = IDX_SIZE;
         let window = IRect::sized(
