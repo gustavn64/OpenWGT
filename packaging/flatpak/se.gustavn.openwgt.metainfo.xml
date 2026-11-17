@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component type="desktop-application">
+  <id>se.gustavn.openwgt</id>
+  <name>OpenWGT</name>
+  <summary>An open engine for Maxis' Widget Workshop</summary>
+  <metadata_license>CC0-1.0</metadata_license>
+  <project_license>AGPL-3.0-or-later</project_license>
+  <developer id="se.gustavn">
+    <name>gustavn64</name>
+  </developer>
+  <description>
+    <p>
+      An open engine for Widget Workshop: A Mad Scientist's Laboratory (Maxis,
+      1995), the gadget-building toy: wire parts together on a worksheet and
+      watch them run, or solve the puzzles.
+    </p>
+    <p>
+      It comes with its own pictures, sounds, texts and puzzles, in English and
+      Swedish, so it runs without the original CD; with the CD it can use the
+      original's instead.
+    </p>
+  </description>
+  <launchable type="desktop-id">se.gustavn.openwgt.desktop</launchable>
+  <url type="homepage">https://gustavn.se/openwgt/</url>
+  <url type="vcs-browser">https://github.com/gustavn64/OpenWGT</url>
+  <content_rating type="oars-1.1"/>
+  <releases>
+    <release version="0.11.0" date="2026-11-17"/>
+  </releases>
+</component>

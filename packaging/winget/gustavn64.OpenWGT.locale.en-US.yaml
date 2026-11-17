@@ -1,0 +1,15 @@
+PackageIdentifier: gustavn64.OpenWGT
+PackageVersion: 0.11.0
+PackageLocale: en-US
+Publisher: gustavn64
+PackageName: OpenWGT
+PackageUrl: https://gustavn.se/openwgt/
+License: AGPL-3.0-or-later
+LicenseUrl: https://github.com/gustavn64/OpenWGT/blob/master/LICENSE
+ShortDescription: An open engine for Maxis' Widget Workshop, with its own graphics, sounds and data.
+Tags:
+  - game
+  - education
+  - science
+ManifestType: defaultLocale
+ManifestVersion: 1.9.0

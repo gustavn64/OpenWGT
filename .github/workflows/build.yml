@@ -1,13 +1,14 @@
 name: build
 
-# The port for Linux (x86-64, aarch64), Windows (x86-64), macOS (universal)
-# and the browser, on every push and pull request, each one file: an
-# AppImage, an .exe, the app in a .dmg. None carries the CD's data: they
-# run on the port's own packs (OpenWGFX, OpenWSFX, OpenWDATA), or on the
-# CD image the player gives at run time, natively on the command line or
-# in Change CD... (`pick`), in the browser on the page. A push
-# to master builds them all; a tag v*
-# publishes every package on the tag's release.
+# The port for Linux (x86-64, aarch64: an AppImage, a .deb, an .rpm and
+# the bare program in a .tar.gz), Windows (x86-64, arm64: an .exe each),
+# macOS (universal: the app in a .dmg) and the browser (the site in a .zip,
+# and a container image serving it), on pushes to master, tags and pull
+# requests. None carries the CD's data: they run on the port's own packs
+# (OpenWGFX, OpenWSFX, OpenWDATA), or on the CD image the player gives at
+# run time, natively on the command line or in Change CD... (`pick`), in
+# the browser on the page. A tag v* publishes every package on the tag's
+# release and the container image on ghcr.io (packaging/README.md).
 
 on:
   push:
@@ -76,10 +77,35 @@ jobs:
           # (it starts: the libraries are all there)
           { ./$out --help 2>&1 || true; } | grep "usage:"
 
+      - uses: taiki-e/install-action@v2
+        with:
+          tool: cargo-deb,cargo-generate-rpm
+
+      # The same program as the AppImage's, packaged for the distributions'
+      # own package managers (crates/widget/Cargo.toml's package.metadata),
+      # and bare, for anyone who'd rather unpack it.
+      - name: Package (.deb, .rpm, .tar.gz)
+        run: |
+          a=${{ matrix.arch }}
+          cargo deb -p openwgt --no-build --output openwgt-$a.deb
+          cargo generate-rpm -p crates/widget --output openwgt-$a.rpm
+          t=openwgt-linux-$a
+          mkdir $t
+          cp target/release/openwgt LICENSE README.md $t/
+          tar czf $t.tar.gz $t
+
       - uses: actions/upload-artifact@v7
         with:
           name: openwgt-${{ matrix.arch }}.AppImage
           path: openwgt-${{ matrix.arch }}.AppImage
+
+      - uses: actions/upload-artifact@v7
+        with:
+          name: openwgt-linux-${{ matrix.arch }}-packages
+          path: |
+            openwgt-${{ matrix.arch }}.deb
+            openwgt-${{ matrix.arch }}.rpm
+            openwgt-linux-${{ matrix.arch }}.tar.gz
 
   windows:
     runs-on: windows-latest
@@ -93,22 +119,29 @@ jobs:
       - uses: actions/checkout@v7
 
       - uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: aarch64-pc-windows-msvc
 
       - uses: Swatinem/rust-cache@v2
 
-      - name: Build
-        run: cargo build --release --locked -p openwgt
+      - name: Build (x86-64 and arm64)
+        run: |
+          cargo build --release --locked -p openwgt
+          cargo build --release --locked -p openwgt --target aarch64-pc-windows-msvc
 
       - name: Package
         run: |
           cp target/release/openwgt.exe openwgt-windows-x86_64.exe
-          # (it starts)
+          cp target/aarch64-pc-windows-msvc/release/openwgt.exe openwgt-windows-arm64.exe
+          # (it starts; the arm64 one can't on this runner)
           { ./openwgt-windows-x86_64.exe --help 2>&1 || true; } | grep "usage:"
 
       - uses: actions/upload-artifact@v7
         with:
-          name: openwgt-windows-x86_64
-          path: openwgt-windows-x86_64.exe
+          name: openwgt-windows
+          path: |
+            openwgt-windows-x86_64.exe
+            openwgt-windows-arm64.exe
 
   macos:
     runs-on: macos-26
@@ -207,9 +240,47 @@ jobs:
           name: openwgt-web
           path: openwgt-web.zip
 
+  # The site served by nginx, for anyone to host the browser version
+  # (packaging/docker): built on every push, pushed to ghcr.io on a tag.
+  docker:
+    needs: web
+    runs-on: ubuntu-26.04
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/download-artifact@v8
+        with:
+          name: openwgt-web
+
+      - run: unzip -q openwgt-web.zip
+
+      - uses: docker/setup-qemu-action@v3
+
+      - uses: docker/setup-buildx-action@v3
+
+      - if: startsWith(github.ref, 'refs/tags/v')
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ github.token }}
+
+      - uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: packaging/docker/Dockerfile
+          platforms: linux/amd64,linux/arm64
+          push: ${{ startsWith(github.ref, 'refs/tags/v') }}
+          tags: |
+            ghcr.io/${{ github.repository_owner }}/openwgt:${{ github.ref_name }}
+            ghcr.io/${{ github.repository_owner }}/openwgt:latest
+
   release:
     if: startsWith(github.ref, 'refs/tags/v')
-    needs: [linux, windows, macos, web]
+    needs: [linux, windows, macos, web, docker]
     runs-on: ubuntu-26.04
     permissions:
       contents: write

@@ -5,6 +5,8 @@ description = "OpenWGT: an open engine for Maxis' Widget Workshop"
 edition.workspace = true
 license.workspace = true
 publish.workspace = true
+homepage.workspace = true
+repository.workspace = true
 
 [dependencies]
 engine = { path = "../engine" }
@@ -42,3 +44,37 @@ winresource = "0.1"
 
 [lints]
 workspace = true
+
+# The Linux packages (cargo-deb, cargo-generate-rpm; the CI's linux job):
+# the program, its desktop entry and icon, the licence and the README.
+[package.metadata.deb]
+maintainer = "gustavn64 <180873811+gustavn64@users.noreply.github.com>"
+copyright = "Doridian and the OpenWGT authors"
+license-file = ["../../LICENSE", "0"]
+section = "games"
+priority = "optional"
+extended-description = """\
+An open engine for Widget Workshop: A Mad Scientist's Laboratory (Maxis, \
+1995), with its own graphics, sounds and data, so it runs without the \
+original CD; with the CD it can use the original's instead."""
+depends = "$auto"
+assets = [
+    ["target/release/openwgt", "usr/bin/", "755"],
+    ["res/openwgt.desktop", "usr/share/applications/", "644"],
+    ["res/icon.png", "usr/share/icons/hicolor/512x512/apps/openwgt.png", "644"],
+    ["../../README.md", "usr/share/doc/openwgt/README.md", "644"],
+]
+
+[package.metadata.generate-rpm]
+summary = "An open engine for Maxis' Widget Workshop"
+url = "https://gustavn.se/openwgt/"
+assets = [
+    { source = "target/release/openwgt", dest = "/usr/bin/openwgt", mode = "755" },
+    { source = "res/openwgt.desktop", dest = "/usr/share/applications/openwgt.desktop", mode = "644" },
+    { source = "res/icon.png", dest = "/usr/share/icons/hicolor/512x512/apps/openwgt.png", mode = "644" },
+    { source = "../../README.md", dest = "/usr/share/doc/openwgt/README.md", mode = "644", doc = true },
+    { source = "../../LICENSE", dest = "/usr/share/licenses/openwgt/LICENSE", mode = "644", doc = true },
+]
+
+[package.metadata.generate-rpm.requires]
+alsa-lib = "*"

@@ -51,15 +51,22 @@ Mac/PC CD's own fonts (`WIN31/SVGA`) are there, they win.
 
 ## Packages
 
-Every push builds the port as one file per platform
+Every push to master builds the port for every platform
 (`.github/workflows/build.yml`); a `v*` tag publishes them on its release:
 
-- `openwgt-x86_64.AppImage`, `openwgt-aarch64.AppImage` (built on
-  Ubuntu 22.04: glibc 2.35 or newer)
-- `openwgt-windows-x86_64.exe` (the C runtime linked in)
+- `openwgt-x86_64.AppImage`, `openwgt-aarch64.AppImage`, the same as
+  `.deb` and `.rpm` packages, and the bare program in
+  `openwgt-linux-x86_64.tar.gz` / `-aarch64` (built on Ubuntu 22.04: glibc
+  2.35 or newer)
+- `openwgt-windows-x86_64.exe`, `openwgt-windows-arm64.exe` (the C runtime
+  linked in)
 - `openwgt-macos.dmg`: `OpenWGT.app`, for Apple silicon and
   Intel (signed ad hoc only: the first start needs a right click, Open)
-- `openwgt-web.zip`: the browser build
+- `openwgt-web.zip`: the browser version's site, also as a container
+  image serving it: `docker run -p 8080:80 ghcr.io/gustavn64/openwgt`
+
+The AUR, winget, Homebrew and Flathub packages and how a release reaches
+them: [packaging/README.md](packaging/README.md).
 
 None of them carries game data. Started without a CD (from its icon), it
 uses an `.iso` or `orig` in the working directory, else the CD picked
