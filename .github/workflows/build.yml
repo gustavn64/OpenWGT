@@ -15,10 +15,10 @@ on:
     branches: ['master']
     tags: ['v*']
     # A push that changes only words for people (the docs, the READMEs,
-    # the packaging notes) builds nothing; a tag always builds.
+    # the packaging notes) builds nothing; a tag always builds. A pull
+    # request always builds, so its checks always report.
     paths-ignore: ['**/*.md', 'docs/**', 'LICENSE']
   pull_request:
-    paths-ignore: ['**/*.md', 'docs/**', 'LICENSE']
   workflow_dispatch:
 
 permissions:
@@ -90,19 +90,20 @@ jobs:
 
       # cargo-deb and cargo-generate-rpm have no aarch64 Linux binaries to
       # download, so install-action builds them there (a minute): the
-      # built ones are kept between runs. A new key builds newer ones.
+      # built ones are kept between runs, keyed by their versions (pinned
+      # here: a newer version is a change to this file, and builds anew).
       - id: tools
         uses: actions/cache@v6
         with:
           path: |
             ~/.cargo/bin/cargo-deb
             ~/.cargo/bin/cargo-generate-rpm
-          key: packaging-tools-v1-${{ runner.os }}-${{ runner.arch }}
+          key: packaging-tools-${{ runner.os }}-${{ runner.arch }}-cargo-deb@3.8.0-cargo-generate-rpm@0.21.1
 
       - if: steps.tools.outputs.cache-hit != 'true'
         uses: taiki-e/install-action@v2
         with:
-          tool: cargo-deb,cargo-generate-rpm
+          tool: cargo-deb@3.8.0,cargo-generate-rpm@0.21.1
 
       # The same program as the AppImage's, packaged for the distributions'
       # own package managers (crates/widget/Cargo.toml's package.metadata),
@@ -110,8 +111,15 @@ jobs:
       - name: Package (.deb, .rpm, .tar.gz)
         run: |
           a=${{ matrix.arch }}
-          cargo deb -p openwgt --no-build --output openwgt-$a.deb
-          cargo generate-rpm -p crates/widget --output openwgt-$a.rpm
+          # the release's version, from its tag, as the macOS app has it
+          v=$(sed -n 's/^version = "\(.*\)"$/\1/p' crates/widget/Cargo.toml)
+          case "$GITHUB_REF" in refs/tags/v*) v=${GITHUB_REF_NAME#v} ;; esac
+          # a pre-release (v1.2.0-rc.1) as both formats spell one, sorting
+          # before the release: rpm forbids '-' in a version, and dpkg
+          # would take what follows it for the Debian revision
+          v=${v//-/\~}
+          cargo deb -p openwgt --no-build --deb-version "$v" --output openwgt-$a.deb
+          cargo generate-rpm -p crates/widget --set-metadata "version = \"$v\"" --output openwgt-$a.rpm
           t=openwgt-linux-$a
           mkdir $t
           cp target/release/openwgt LICENSE README.md $t/
@@ -284,9 +292,9 @@ jobs:
         with:
           name: openwgt-web
 
-      - run: unzip -q openwgt-web.zip
-
-      - uses: docker/setup-qemu-action@v4
+      # The build's context is the site alone (the Dockerfile only copies
+      # it, so arm64 needs no emulation).
+      - run: unzip -q openwgt-web.zip -d context
 
       - uses: docker/setup-buildx-action@v4
 
@@ -297,6 +305,11 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ github.token }}
 
+      # The image is named after the repository (ghcr.io/owner/repo), in
+      # the lower case ghcr.io wants.
+      - id: image
+        run: echo "name=ghcr.io/${GITHUB_REPOSITORY,,}" >> "$GITHUB_OUTPUT"
+
       # A release v1.2.3 is :1.2.3, :1.2 and :latest; the labels tie the
       # package to this repository (its page shows the description and the
       # README, and the workflow may push to it).
@@ -305,12 +318,10 @@ jobs:
         env:
           DOCKER_METADATA_ANNOTATIONS_LEVELS: manifest,index
         with:
-          images: ghcr.io/${{ github.repository_owner }}/openwgt
-          # (and a push to master builds, without pushing, as "edge")
+          images: ${{ steps.image.outputs.name }}
           tags: |
             type=semver,pattern={{version}}
             type=semver,pattern={{major}}.{{minor}}
-            type=edge,branch=master
           labels: |
             org.opencontainers.image.title=OpenWGT
             org.opencontainers.image.description=OpenWGT in the browser: an open engine for Widget Workshop, served by nginx. No game data: bring the CD image or play without it.
@@ -324,7 +335,7 @@ jobs:
         env:
           DOCKER_BUILD_RECORD_UPLOAD: false
         with:
-          context: .
+          context: context
           file: packaging/docker/Dockerfile
           platforms: linux/amd64,linux/arm64
           push: ${{ startsWith(github.ref, 'refs/tags/v') }}
@@ -334,7 +345,9 @@ jobs:
 
   release:
     if: startsWith(github.ref, 'refs/tags/v')
-    needs: [linux, windows, macos, web, docker]
+    # (not the container image's job: a failure pushing it doesn't hold
+    # back the packages)
+    needs: [linux, windows, macos, web]
     runs-on: ubuntu-26.04
     permissions:
       contents: write

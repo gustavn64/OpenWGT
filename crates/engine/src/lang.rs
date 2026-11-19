@@ -247,9 +247,6 @@ fn sv(en: &str) -> Option<&'static str> {
             "Här finns ingen fildialog att välja den med (varken xdg-desktop-portal eller zenity)."
         }
         "Esc goes back to the game." => "Esc går tillbaka till spelet.",
-        "It can be given on the command line too. Closing the window quits." => {
-            "Den kan också anges på kommandoraden. Stäng fönstret för att avsluta."
-        }
         "OpenWGT didn't start again: {}" => "OpenWGT kunde inte starta om: {}",
         "OpenWGT stopped: {}" => "OpenWGT stannade: {}",
         // The browser's start (the widget crate's `web`).
@@ -342,7 +339,7 @@ fn fr(en: &str) -> Option<&'static str> {
         "&Index" => "&Index",
         "I&ndex" => "I&ndex",
         "&Back" => "&Précédent",
-        "&Print" => "&Imprimer",
+        "&Print" => "Imp&rimer",
         "Windows Help" => "Aide de Windows",
         "Help Topics: {}" => "Rubriques d'aide\u{a0}: {}",
         "&1  Type the first few letters of the word you're looking for." => {
@@ -400,9 +397,6 @@ fn fr(en: &str) -> Option<&'static str> {
             "Il n'y a pas ici de fenêtre pour la choisir (ni xdg-desktop-portal, ni zenity)."
         }
         "Esc goes back to the game." => "Échap ramène au jeu.",
-        "It can be given on the command line too. Closing the window quits." => {
-            "On peut aussi la donner sur la ligne de commande. Fermer la fenêtre quitte le jeu."
-        }
         "OpenWGT didn't start again: {}" => "OpenWGT n'a pas pu redémarrer\u{a0}: {}",
         "OpenWGT stopped: {}" => "OpenWGT s'est arrêté\u{a0}: {}",
         // The browser's start (the widget crate's `web`).

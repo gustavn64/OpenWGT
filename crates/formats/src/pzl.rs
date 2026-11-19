@@ -198,14 +198,15 @@ pub struct Puzzle {
 
 impl Puzzle {
     /// The title as the Load Puzzle list shows it: `0x42ced8` turns the Mac
-    /// apostrophe (`0xD5`) into `'`; other bytes are shown as Windows text
-    /// (only ASCII occurs in the English file; the Swedish edition's names
-    /// are Windows text, its å, ä and ö Latin-1's).
+    /// apostrophe (`0xD5`) into `'`; other bytes are shown as Windows text,
+    /// Windows-1252 (only ASCII occurs in the English file; the Swedish
+    /// edition's names are Windows text, the port's French ones may have
+    /// œ or ’).
     #[must_use]
     pub fn title(&self) -> String {
         self.name
             .iter()
-            .map(|&b| if b == 0xd5 { '\'' } else { char::from(b) })
+            .map(|&b| if b == 0xd5 { '\'' } else { crate::cp1252::char_of(b) })
             .collect()
     }
 }

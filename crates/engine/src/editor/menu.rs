@@ -149,10 +149,7 @@ impl Menu {
             .get(Module::Exe, RT_MENU, 3)
             .and_then(|d| parse_menu(d).ok())
             .unwrap_or_default();
-        let accels = assets
-            .get(Module::Exe, RT_ACCELERATOR, 2)
-            .map(parse_accels)
-            .unwrap_or_default();
+        let accels = assets.get(Module::Exe, RT_ACCELERATOR, 2).map_or_default(parse_accels);
         let mut m = Menu {
             items,
             accels,

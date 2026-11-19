@@ -23,8 +23,7 @@ impl Source for Image {
     fn list(&self, path: &str) -> Vec<String> {
         self.0
             .list(path)
-            .map(|l| l.into_iter().map(|(name, _)| name).collect())
-            .unwrap_or_default()
+            .map_or_default(|l| l.into_iter().map(|(name, _)| name).collect())
     }
 }
 

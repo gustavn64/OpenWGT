@@ -28,9 +28,11 @@ const CHUNK: f64 = 16.0 * 1024.0 * 1024.0;
 #[wasm_bindgen(module = "/src/web.js")]
 extern "C" {
     /// Shows the start form and resolves to the CD image (a `Blob`) once
-    /// the player starts with one; a new one is stored first.
+    /// the player starts with one; a new one is stored first. Its
+    /// Enhancements box starts as `enhanced` and calls `on_enhanced` with
+    /// each change.
     #[wasm_bindgen(js_name = chooseCd)]
-    fn choose_cd(error: &str) -> js_sys::Promise;
+    fn choose_cd(error: &str, enhanced: bool, on_enhanced: &js_sys::Function) -> js_sys::Promise;
     /// Forgets the stored CD image.
     #[wasm_bindgen(js_name = forgetCd)]
     fn forget_cd() -> js_sys::Promise;
@@ -109,9 +111,22 @@ async fn read(blob: &web_sys::Blob) -> Result<Vec<u8>, String> {
 /// asking, read and opened; asks again while the image doesn't read,
 /// open or isn't the game's.
 async fn cd_image() -> Result<Box<dyn engine::assets::Source>, String> {
+    // The form's Enhancements box keeps its switch in the settings file
+    // as the Settings window does, in the storage mounted before.
+    let settings = platform::settings::settings_file();
+    let enhanced = crate::enhanced(settings.as_deref());
+    let on_enhanced = Closure::<dyn Fn(bool)>::new(move |on| {
+        if let Some(p) = &settings {
+            crate::save_enhanced(p, on);
+        }
+    });
+    let on_enhanced: js_sys::Function = on_enhanced.into_js_value().unchecked_into();
     let mut error = String::new();
     loop {
-        let blob: web_sys::Blob = wait(choose_cd(&error)).await?.dyn_into().map_err(|e| js_error(&e))?;
+        let blob: web_sys::Blob = wait(choose_cd(&error, enhanced, &on_enhanced))
+            .await?
+            .dyn_into()
+            .map_err(|e| js_error(&e))?;
         platform::web::show_status(tr("Reading the CD image…"), false);
         error = match read(&blob).await.map(|image| CdImage::open(Box::new(image))) {
             Err(e) => trf("The CD image didn't read: {}.", &[e.as_str()]),
@@ -210,7 +225,6 @@ async fn run() -> Result<(), String> {
     }
     // `?open`: no CD, the port's own packs alone.
     let open = query_args().iter().any(|a| a == "--open");
-    let cd = if open { None } else { Some(cd_image().await?) };
     let files: js_sys::Array = wait(stored_files()).await?.unchecked_into();
     let files = files
         .iter()
@@ -229,6 +243,7 @@ async fn run() -> Result<(), String> {
         platform::storage::WEB_STORAGE,
         Arc::new(MemoryFiles::new(files, Some(persist))),
     );
+    let cd = if open { None } else { Some(cd_image().await?) };
     platform::web::show_status("", false);
     let mut args = crate::args(query_args().into_iter());
     watch_links();

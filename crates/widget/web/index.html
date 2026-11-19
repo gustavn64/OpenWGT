@@ -40,6 +40,7 @@
   #setup p { margin: .5em 0; }
   #setup label { display: block; margin: .8em 0 .3em; font-weight: 700; }
   #setup input[type=file] { max-width: 100%; }
+  #setup label.check { font-weight: 400; display: flex; align-items: baseline; gap: 6px; margin-top: 1.2em; }
   #setup .note { color: #333; font-size: .92em; }
   #setup .stored { margin: .3em 0; }
   #setup-error { color: #a00000; font-weight: 700; }
@@ -76,7 +77,11 @@
         browser's storage and isn't sent anywhere; so do the widgets you save. Widget files dragged
         onto the game open, and File ▸ Save to Download and Download a Widget give them back. File ▸
         Copy Link to Widget makes a link that opens the widget for anyone with the CD.</p>
-      <div class="buttons"><a class="button" id="open" href="?open">Play without the CD</a>
+      <label class="check"><input type="checkbox" id="enhanced" checked><span id="t-enhanced">Enhancements</span></label>
+      <p class="note" id="t-enhanced-note">A few changes that make it easier to use than the original: the parts tray shows a
+        whole folder at once, and windows move whole when dragged. Untick it to have everything exactly
+        like the original; Options ▸ Settings switches it later too.</p>
+      <div class="buttons"><a class="button" id="play-open" href="?open">Play without the CD</a>
         <button id="start" type="submit" disabled>Start</button></div>
       <p class="note"><span id="t-open-note">Without the CD the game runs on OpenWGT's own pictures, sounds,
         texts and puzzles, in</span> <select id="lang" aria-label="Language">
@@ -89,6 +94,9 @@
 <div id="status" style="display:none"></div>
 <script type="module">
   import init from "./widget.js";
+  // Keeps the page's options and the widget link in its address.
+  const q = location.search;
+  document.getElementById("play-open").href = (q && q !== "?" ? q + "&open" : "?open") + location.hash;
   init().catch((e) => {
     const s = document.getElementById("status");
     s.textContent = String(e);

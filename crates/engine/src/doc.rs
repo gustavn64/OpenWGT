@@ -238,8 +238,15 @@ impl Document {
     ) -> R {
         // A part wired to itself reads its own outputs through the
         // placeholder, as the original reads its own fields: they're
-        // taken before it runs (`Outputs`).
-        let own_wire = self.wires.iter().any(|w| w.from == i && w.to == i);
+        // taken before it runs (`Outputs`). Only such a wire reaches the
+        // placeholder: an output takes no `Io`, so nothing follows wires
+        // through it. The part's own knots name its wires.
+        let own_wire = self.gadgets[i]
+            .core
+            .knots
+            .iter()
+            .filter_map(|k| k.wire)
+            .any(|w| self.wires.get(w).is_some_and(|w| w.from == i && w.to == i));
         let behavior: Box<dyn crate::gadget::Behavior> = if own_wire {
             Box::new(Outputs::of(&self.gadgets[i]))
         } else {
@@ -354,34 +361,34 @@ impl Outputs {
         Outputs { knots }
     }
 
-    fn knot(&self, k: usize) -> OutputKnot {
-        self.knots.get(k).cloned().unwrap_or_default()
+    fn knot(&self, k: usize) -> Option<&OutputKnot> {
+        self.knots.get(k)
     }
 }
 
 impl crate::gadget::Behavior for Outputs {
     fn has_bool(&self, _core: &Core, k: usize) -> bool {
-        self.knot(k).bool.is_some()
+        self.knot(k).is_some_and(|o| o.bool.is_some())
     }
 
     fn bool_out(&self, _core: &Core, k: usize) -> bool {
-        self.knot(k).bool.unwrap_or(false)
+        self.knot(k).and_then(|o| o.bool).unwrap_or(false)
     }
 
     fn has_number(&self, _core: &Core, k: usize) -> bool {
-        self.knot(k).number.is_some()
+        self.knot(k).is_some_and(|o| o.number.is_some())
     }
 
     fn number_out(&self, _core: &Core, k: usize) -> f64 {
-        self.knot(k).number.unwrap_or(0.0)
+        self.knot(k).and_then(|o| o.number).unwrap_or(0.0)
     }
 
     fn has_object(&self, _core: &Core, k: usize) -> bool {
-        self.knot(k).gives_object
+        self.knot(k).is_some_and(|o| o.gives_object)
     }
 
     fn object_out(&self, _core: &Core, k: usize) -> Option<crate::gadget::Object> {
-        self.knot(k).object
+        self.knot(k).and_then(|o| o.object.clone())
     }
 
     fn as_any(&self) -> &dyn std::any::Any {
@@ -514,7 +521,7 @@ mod tests {
         }
         let files: Vec<(&'static str, &'static [u8])> =
             vec![("WWGADGET/1014/1036.bin", Box::leak(knots.into_boxed_slice()))];
-        let tables = crate::opengfx::Embedded(Box::leak(files.into_boxed_slice()));
+        let tables = crate::assets::Embedded::new(Box::leak(files.into_boxed_slice()));
         let assets = Assets::load(None, Some(&tables)).unwrap();
         let mut doc = Document::new();
         doc.gadgets.push(new_gadget(&assets, Tag(*b"Mplx"), 1, 0, 0));

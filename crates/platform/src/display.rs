@@ -326,10 +326,10 @@ impl Display {
     }
 
     /// Draws `frame` at UI scale `ui_scale`: the GPU gets only the rows,
-    /// palette and placement that changed since the last frame. With
-    /// nothing changed nothing new is shown (the window keeps the last
-    /// picture), unless `again` (the window system asked for it).
-    pub fn draw(&mut self, frame: &Frame<'_>, ui_scale: f64, again: bool) -> Result<(), Error> {
+    /// palette and placement that changed since the last frame, and shows
+    /// it all again (a window system, or a browser behind a phone's
+    /// keyboard, may have lost what it showed).
+    pub fn draw(&mut self, frame: &Frame<'_>, ui_scale: f64) -> Result<(), Error> {
         let size = PhysicalSize::new(self.config.width, self.config.height);
         let view = View::new(size, frame.width, frame.height, ui_scale);
         // An overlay whose pixels don't fill it isn't shown.
@@ -358,9 +358,6 @@ impl Display {
             ),
             _ => (Some(0..frame.height as usize), true, true),
         };
-        if rows.is_none() && !palette && !placed && overlay.is_none() && !again {
-            return Ok(());
-        }
         let output = match self.surface.get_current_texture() {
             wgpu::CurrentSurfaceTexture::Success(t) | wgpu::CurrentSurfaceTexture::Suboptimal(t) => t,
             wgpu::CurrentSurfaceTexture::Outdated | wgpu::CurrentSurfaceTexture::Lost => {

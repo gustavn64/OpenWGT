@@ -384,8 +384,8 @@ impl Dialog {
         } else {
             text.replace(['\r', '\n'], " ")
         };
-        while t.len() > field.max {
-            t.pop();
+        if let Some((at, _)) = t.char_indices().nth(field.max) {
+            t.truncate(at);
         }
         if t.ends_with('\r') {
             t.pop();
@@ -653,9 +653,9 @@ impl Dialog {
 
     /// Fills the controls from `s` (the base slot 0x48, `0x41ea4d`).
     fn fill(&mut self, s: &Settings) {
-        for g in 0..self.groups().min(4) {
+        for (g, &r) in s.radios.iter().enumerate().take(self.groups()) {
             let members = self.group(g);
-            let v = usize::from(s.radios[g]);
+            let v = usize::from(r);
             for (k, &i) in members.iter().enumerate() {
                 self.controls[i].checked = k == v.min(members.len().saturating_sub(1));
             }
@@ -693,9 +693,10 @@ impl Dialog {
     /// Reads the controls into `s` (`0x41e851`); `font` wraps a multi-line
     /// field as it shows.
     fn read(&self, s: &mut Settings, font: Option<&formats::fnt::Font>) {
-        for g in 0..self.groups().min(4) {
+        let groups = self.groups();
+        for (g, r) in s.radios.iter_mut().enumerate().take(groups) {
             if let Some(k) = self.group(g).iter().position(|&i| self.controls[i].checked) {
-                s.radios[g] = u8::try_from(k).unwrap_or(0);
+                *r = u8::try_from(k).unwrap_or(0);
             }
         }
         let combos: Vec<usize> = self.of_kind(|c| matches!(c, Ctl::Combo { .. })).collect();
@@ -1599,6 +1600,9 @@ mod tests {
         assert_eq!((field.text.as_str(), field.multiline, field.max), ("", false, 59));
         d.set_focused_text("Two\nlines");
         assert_eq!(d.focused_text().unwrap().text, "Two lines");
+        // Capped in characters, not in UTF-8's bytes.
+        d.set_focused_text(&"é".repeat(70));
+        assert_eq!(d.focused_text().unwrap().text.chars().count(), 59);
         let edit = d.controls[1].rect;
         let at = |q: (i32, i32)| (q.0 + d.client.x0, q.1 + d.client.y0);
         assert!(d.over_text(at((edit.x0 + 1, edit.y0 + 1))));

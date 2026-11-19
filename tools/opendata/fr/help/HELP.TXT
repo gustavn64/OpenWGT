@@ -599,7 +599,7 @@ Quelques changements qui rendent OpenWGT un peu plus facile à utiliser que l'or
 - la fenêtre à outils montre un dossier entier d'un coup, ses pages l'une sous l'autre, sans flèches ;
 - les barres d'outils, les fenêtres de réglages et les boîtes de message se déplacent en entier quand tu les fais glisser, et pas seulement leur contour.
 
-Les améliorations sont désactivées au départ, pour que tout soit exactement comme dans l'original. Coche **Améliorations** pour les activer.
+Les améliorations sont activées au départ. Décoche **Améliorations** pour que tout soit exactement comme dans l'original.
 
 ## Plein écran
 OpenWGT occupe tout l'écran, ou revient dans une fenêtre. **F11** et **Alt+Entrée** font la même chose.

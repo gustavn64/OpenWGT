@@ -57,6 +57,9 @@ impl Run {
         while left > 0 {
             let step = left.min(FRAME_MS);
             self.editor.update(step, (12, 0, 0));
+            // No sound plays here: dropped, as the host takes them, so
+            // they don't pile up.
+            drop(self.editor.take_sounds());
             // The host's part of Settings ▸ Language.
             if let Some(lang) = self.editor.take_change_lang() {
                 let assets = load(&self.args, Some(lang));

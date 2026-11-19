@@ -106,6 +106,9 @@ const CHANGE = "openwgt-change-cd";
 // without the CD, or the start form's link), kept until a CD is started.
 const NO_CD = "openwgt-no-cd";
 
+// The language picked last: the start form's list or Settings ▸ Language.
+const LANG = "openwgt-lang";
+
 function storage(f) {
   try {
     return f();
@@ -115,12 +118,26 @@ function storage(f) {
   }
 }
 
-// A plain visit after playing without the CD goes on without it, in the
-// language picked last: the address becomes `?open&lang=`, before the
-// game reads it.
-if (location.search === "" && storage(() => localStorage.getItem(NO_CD)) !== null) {
-  const lang = storage(() => localStorage.getItem("openwgt-lang"));
-  history.replaceState(null, "", `?open${lang ? `&lang=${lang}` : ""}${location.hash}`);
+// The page's query without `open` and `lang=`: the player's other
+// options, which the reloads here keep, as they keep the widget link.
+function options() {
+  return location.search.replace(/[?&](open|lang=[^&]*)(?=&|$)/g, "").replace(/^&/, "?");
+}
+
+// The page's query to play without the CD, in `lang` if given, the
+// player's other options kept.
+function withoutCd(lang) {
+  const q = options();
+  return `${q && q !== "?" ? q + "&open" : "?open"}${lang ? `&lang=${lang}` : ""}`;
+}
+
+// A visit after playing without the CD goes on without it, in the
+// language it names, else the one picked last: the address gets `open`
+// and `lang=` before the game reads it.
+if (storage(() => localStorage.getItem(NO_CD)) !== null && !/[?&]open(&|$)/.test(location.search)) {
+  const asked = /[?&]lang=([^&]*)/.exec(location.search);
+  const lang = asked ? asked[1] : storage(() => localStorage.getItem(LANG));
+  history.replaceState(null, "", `${withoutCd(lang)}${location.hash}`);
 }
 
 // The start form's words in Swedish and French, for a browser in either.
@@ -136,10 +153,15 @@ const SV = {
     "som dras till spelet öppnas, och Arkiv ▸ Spara för nedladdning och Ladda ner en uppfinning ger " +
     "dig dem igen. Arkiv ▸ Kopiera länk till uppfinningen gör en länk som öppnar uppfinningen för " +
     "alla som har skivan.",
-  open: "Spela utan skivan",
+  "play-open": "Spela utan skivan",
   start: "Starta",
   "t-open-note": "Utan skivan använder spelet OpenWGT:s egna bilder, ljud, texter och pussel, på",
   "t-cd-lang": "Med skivan talar det skivans språk.",
+  "t-enhanced": "Förbättringar",
+  "t-enhanced-note":
+    "Några ändringar som gör spelet lättare att använda än originalet: lådan visar en hel flik på en " +
+    "gång, och fönstren flyttas hela när de dras. Kryssa ur rutan för att få allt precis som i " +
+    "originalet; Alternativ ▸ Inställningar slår också på och av det senare.",
 };
 const FR = {
   "t-cd": "L'image du CD du jeu (.iso)",
@@ -152,10 +174,16 @@ const FR = {
     "enregistres. Les Eurêkas glissés sur le jeu s'ouvrent, et Fichier ▸ Enregistrer pour " +
     "téléchargement et Télécharger un Eurêka te les rendent. Fichier ▸ Copier le lien vers " +
     "l'Eurêka crée un lien qui ouvre l'Eurêka pour tous ceux qui ont le CD.",
-  open: "Jouer sans le CD",
+  "play-open": "Jouer sans le CD",
   start: "Démarrer",
   "t-open-note": "Sans le CD, le jeu utilise les images, sons, textes et problèmes d'OpenWGT, en",
   "t-cd-lang": "Avec le CD, il parle la langue du CD.",
+  "t-enhanced": "Améliorations",
+  "t-enhanced-note":
+    "Quelques changements qui rendent le jeu plus facile à utiliser que l'original : la fenêtre à " +
+    "outils montre un dossier entier d'un coup, et les fenêtres se déplacent en entier quand tu les " +
+    "fais glisser. Décoche la case pour que tout soit exactement comme dans l'original ; " +
+    "Options ▸ Paramètres le change aussi plus tard.",
 };
 const WORDS = { sv: SV, fr: FR };
 
@@ -193,23 +221,15 @@ function formLanguage($) {
   }
   pageLanguage(words ? browser : "en");
   const lang = $("lang");
-  const open = $("open");
+  const open = $("play-open");
   if (!lang || !open) return;
-  let picked = null;
-  try {
-    picked = localStorage.getItem("openwgt-lang");
-  } catch (e) {
-    console.error("storage:", e);
-  }
+  const picked = storage(() => localStorage.getItem(LANG));
   lang.value = picked || (words ? browser : "en");
   open.onclick = () => storage(() => localStorage.setItem(NO_CD, "1"));
   const follow = () => {
-    open.href = `?open&lang=${lang.value}`;
-    try {
-      localStorage.setItem("openwgt-lang", lang.value);
-    } catch (e) {
-      console.error("storage:", e);
-    }
+    // The page's own options and widget link stay, the language changed.
+    open.href = `${withoutCd(lang.value)}${location.hash}`;
+    storage(() => localStorage.setItem(LANG, lang.value));
   };
   lang.onchange = follow;
   follow();
@@ -221,21 +241,8 @@ function formLanguage($) {
 // options and the hash, a widget link, kept) so that a reload or a
 // bookmark plays in it, and the page's own words follow.
 export function changeLang(code) {
-  storage(() => localStorage.setItem("openwgt-lang", code));
-  const key = (p) => {
-    const k = p.split("=")[0];
-    try {
-      return decodeURIComponent(k);
-    } catch (e) {
-      return k;
-    }
-  };
-  const rest = location.search
-    .slice(1)
-    .split("&")
-    .filter((p) => p !== "" && key(p) !== "open" && key(p) !== "lang");
-  const search = ["open", `lang=${code}`, ...rest].join("&");
-  history.replaceState(history.state, "", `?${search}${location.hash}`);
+  storage(() => localStorage.setItem(LANG, code));
+  history.replaceState(history.state, "", `${withoutCd(code)}${location.hash}`);
   pageLanguage(code);
 }
 
@@ -243,24 +250,26 @@ export function changeLang(code) {
 // later visits until a CD is started; the stored image is kept.
 export function playWithoutCd() {
   storage(() => localStorage.setItem(NO_CD, "1"));
-  const lang = storage(() => localStorage.getItem("openwgt-lang"));
-  location.search = `?open${lang ? `&lang=${lang}` : ""}`;
+  location.search = withoutCd(storage(() => localStorage.getItem(LANG)));
 }
 
 // Reloads the page into the start form, the stored image kept: Start
-// without picking another goes on with it.
+// without picking another goes on with it. The player's options and the
+// widget link stay; playing without the CD doesn't.
 export function changeCd() {
   storage(() => sessionStorage.setItem(CHANGE, "1"));
   storage(() => localStorage.removeItem(NO_CD));
-  location.search = "";
+  location.search = options();
 }
 
 // Resolves to the CD image: the stored one at once, else (or after
 // changeCd) once the player presses Start in the start form (#setup)
 // with one. A newly picked image is stored first. `error` says why the
-// last one didn't do. The game's sound starts with the first click or
+// last one didn't do. The form's Enhancements box starts as `enhanced`
+// and calls `onEnhanced` with each change, at once: Play without the CD
+// leaves the page. The game's sound starts with the first click or
 // key either way (platform::audio::resume).
-export async function chooseCd(error) {
+export async function chooseCd(error, enhanced, onEnhanced) {
   const $ = (id) => document.getElementById(id);
   formLanguage($);
   let stored = null;
@@ -278,6 +287,8 @@ export async function chooseCd(error) {
   }
   if (stored && !change && !error) return stored.blob;
   $("setup").hidden = false;
+  $("enhanced").checked = enhanced;
+  $("enhanced").onchange = () => onEnhanced($("enhanced").checked);
   $("setup-error").textContent = error || "";
   $("setup-error").hidden = !error;
   $("cd-stored").hidden = !stored;

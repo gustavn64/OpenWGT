@@ -99,10 +99,11 @@ Options ▸ Settings, the port's own, changes the UI scale on the spot
 one, the CD's decides; the widget on the worksheet stays, a puzzle is
 loaded again in the new language), and switches the port's
 enhancements of the original on or off, all of them at once. They're
-off until the player turns them on (`original=false` in the settings
+on until the player turns them off (`original=true` in the settings
 file, `settings.ini` in `~/.config/openwgt`, `%APPDATA%\OpenWGT` or
 `~/Library/Preferences/OpenWGT`, as `crates/platform/src/storage.rs`
-says; in the browser, the same file in its storage). The enhancements:
+says; in the browser, the same file in its storage, and the start form
+has the same Enhancements box). The enhancements:
 the parts tray shows a whole folder at once, its pages one under the
 other, without the page arrows; and the toolbars, dialogs and message
 boxes are dragged whole, not as an outline.

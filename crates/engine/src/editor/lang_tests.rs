@@ -130,6 +130,19 @@ fn a_puzzle_comes_again_in_the_new_language() {
 }
 
 #[test]
+fn a_changed_puzzle_stays_the_players_as_the_language_changes() {
+    let mut e = Editor::new(packs(Lang::En), Document::new(), 800, 600);
+    assert!(e.load_puzzle(3));
+    // The player's work: the puzzle's parts moved.
+    worksheet::offset_all(&mut e.doc, (16, 0));
+    let work = saved(&mut e);
+    e.command(cmd::SETTINGS);
+    assert_eq!(next_language(&mut e, b'L'), Lang::Sv);
+    assert_eq!(e.puzzle(), Some(3));
+    assert_eq!(saved(&mut e), work, "the work kept, not the puzzle's file");
+}
+
+#[test]
 fn the_help_follows_the_language() {
     let mut e = Editor::new(packs(Lang::En), Document::new(), 800, 600);
     e.command(cmd::CONTENTS);

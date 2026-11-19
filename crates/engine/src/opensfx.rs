@@ -20,14 +20,13 @@
 
 use std::collections::BTreeMap;
 
-use crate::assets::{Module, Source, rt};
-use crate::opengfx::Embedded;
+use crate::assets::{Embedded, Module, Source, rt};
 
 /// The pack built into the port: the files of `crates/engine/opensfx`
 /// (`build.rs`).
 #[must_use]
 pub fn builtin() -> Embedded {
-    Embedded(BUILTIN)
+    Embedded::new(BUILTIN)
 }
 
 include!(concat!(env!("OUT_DIR"), "/opensfx_files.rs"));
@@ -84,7 +83,7 @@ mod tests {
             ("sounds/201.wav", b"not a wave"),
             ("sounds/notes.txt", b"hi"),
         ];
-        let l = load(&Embedded(Box::leak(files.into_boxed_slice())));
+        let l = load(&Embedded::new(Box::leak(files.into_boxed_slice())));
         assert_eq!(l.resources.keys().map(|k| k.2).collect::<Vec<_>>(), [200]);
         assert_eq!(l.problems.len(), 1);
     }

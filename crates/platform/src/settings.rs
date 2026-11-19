@@ -24,8 +24,8 @@
 //! The enhancements' switches ([`EnhanceSettings`]) are the player's,
 //! written by hand or by the game's Settings window
 //! ([`EnhanceSettings::save`]), which has the one for all of them,
-//! `original` (off unless the file says `original=false`: the game plays
-//! as the original until the player turns them on):
+//! `original` (on unless the file says `original=true`: the game plays
+//! as the original once the player turns them off):
 //!
 //! ```text
 //! original=false
@@ -181,7 +181,7 @@ const WINDOW_KEYS: [&str; 6] = [
 /// resolves them (`game::enhance::Config::resolve`).
 #[derive(Debug, Clone, PartialEq, Eq, Default)]
 pub struct EnhanceSettings {
-    /// `None` if the file doesn't say: the enhancements are off.
+    /// `None` if the file doesn't say: the enhancements are on.
     pub original: Option<bool>,
     pub overrides: Vec<(String, bool)>,
     /// Lines with an `enhance.` key whose value isn't a switch.

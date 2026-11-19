@@ -20,8 +20,7 @@
 
 use std::collections::BTreeMap;
 
-use crate::assets::{Module, PUZZLE_FILE, Source};
-use crate::opengfx::Embedded;
+use crate::assets::{Embedded, Module, PUZZLE_FILE, Source};
 
 /// The help file in the pack.
 pub const HELP_FILE: &str = "HELP.TXT";
@@ -32,7 +31,7 @@ pub const SAMPLE_DIR: &str = "samples";
 /// (`build.rs`).
 #[must_use]
 pub fn builtin() -> Embedded {
-    Embedded(BUILTIN)
+    Embedded::new(BUILTIN)
 }
 
 include!(concat!(env!("OUT_DIR"), "/opendata_files.rs"));
@@ -50,7 +49,7 @@ pub fn builtin_for(lang: crate::lang::Lang) -> Embedded {
         crate::lang::Lang::En => BUILTIN,
     };
     if pack.iter().any(|(path, _)| path.starts_with("WIDGET/")) {
-        Embedded(pack)
+        Embedded::new(pack)
     } else {
         builtin()
     }
@@ -101,7 +100,8 @@ mod tests {
         for lang in crate::lang::Lang::ALL {
             let pack = builtin_for(lang);
             if lang != crate::lang::Lang::En {
-                assert!(!std::ptr::eq(pack.0, BUILTIN), "{lang:?} falls back to English");
+                let help = |p: &Embedded| p.read("HELP.TXT");
+                assert_ne!(help(&pack), help(&builtin()), "{lang:?} falls back to English");
             }
             let l = load(&pack);
             assert!(l.resources.len() > 300, "{lang:?}: {} resources", l.resources.len());

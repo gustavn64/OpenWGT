@@ -234,6 +234,9 @@ pub struct Assets {
     /// the data pack's as the host chose it. The port's own words follow
     /// it (`crate::lang`).
     pub lang: crate::lang::Lang,
+    /// Whether a data pack from a folder says the language (its own words
+    /// being in it): the Settings window can't change it then.
+    pub lang_from_pack: bool,
     /// What the packs had that couldn't be used, for the host to tell.
     pub pack_problems: Vec<String>,
     /// The bitmap fonts: the overrides', the CD's, then
@@ -245,6 +248,9 @@ pub struct Assets {
     /// The puzzle file (`WIDGET.PZL`, `formats::pzl`), if found: the
     /// overrides', else the CD's.
     pub puzzles: Option<Vec<u8>>,
+    /// Whether [`Assets::puzzles`] is the data pack's (OpenWDATA's own
+    /// puzzles, solved flags of their own: `puzzle::done_key`).
+    pub puzzles_from_pack: bool,
     /// The help file (`WIDGET.HLP`, `formats::hlp`, or the OS/2 CD's
     /// `WIDGET.INF`, `formats::inf`), if found: the overrides', else the
     /// CD's. Parsed when Help opens.
@@ -314,8 +320,13 @@ impl Assets {
             let mut loaded = crate::opendata::load(d);
             a.own.append(&mut loaded.resources);
             a.pack_problems.append(&mut loaded.problems);
-            a.samples = loaded.samples;
-            a.puzzles = loaded.puzzles.or(a.puzzles);
+            if !loaded.samples.is_empty() {
+                a.samples = loaded.samples;
+            }
+            if loaded.puzzles.is_some() {
+                a.puzzles = loaded.puzzles;
+                a.puzzles_from_pack = true;
+            }
             a.help = loaded.help.or(a.help);
         }
         if let Some(o) = overrides {
@@ -392,6 +403,7 @@ impl Assets {
     fn load_overrides(&mut self, o: &dyn Source) {
         if let Some(b) = o.read(PUZZLE_FILE) {
             self.puzzles = Some(b);
+            self.puzzles_from_pack = false;
         }
         if let Some(b) = o.read(HELP_FILE).or_else(|| o.read(INF_FILE)) {
             self.help = Some(b);
@@ -422,7 +434,7 @@ impl Assets {
     /// ascending.
     #[must_use]
     pub fn ids(&self, m: Module, typ: u32) -> Vec<u32> {
-        let mut ids: Vec<u32> = self.modules.get(&m).map(|r| r.ids(typ).collect()).unwrap_or_default();
+        let mut ids: Vec<u32> = self.modules.get(&m).map_or_default(|r| r.ids(typ).collect());
         for extra in [&self.overrides, &self.own] {
             ids.extend(extra.range((m, typ, 0)..=(m, typ, u32::MAX)).map(|((_, _, id), _)| *id));
         }
@@ -553,18 +565,69 @@ impl Source for Dir {
     fn list(&self, path: &str) -> Vec<String> {
         self.find(path)
             .and_then(|p| std::fs::read_dir(p).ok())
-            .map(|rd| {
+            .map_or_default(|rd| {
                 rd.flatten()
                     .map(|e| e.file_name().to_string_lossy().into_owned())
                     .collect()
             })
-            .unwrap_or_default()
+    }
+}
+
+/// Files built into the program (the port's own packs), as a [`Source`]:
+/// looked up without regard to case, as [`Dir`] does.
+pub struct Embedded {
+    /// By lowercased path: the stored path and the bytes.
+    files: BTreeMap<String, (&'static str, &'static [u8])>,
+}
+
+impl Embedded {
+    #[must_use]
+    pub fn new(files: &'static [(&'static str, &'static [u8])]) -> Embedded {
+        Embedded {
+            files: files.iter().map(|&(p, b)| (p.to_ascii_lowercase(), (p, b))).collect(),
+        }
+    }
+}
+
+impl Source for Embedded {
+    fn read(&self, path: &str) -> Option<Vec<u8>> {
+        self.files.get(&path.to_ascii_lowercase()).map(|(_, b)| b.to_vec())
+    }
+
+    fn list(&self, path: &str) -> Vec<String> {
+        let prefix = if path.is_empty() {
+            String::new()
+        } else {
+            format!("{}/", path.trim_end_matches('/').to_ascii_lowercase())
+        };
+        let mut names: Vec<String> = self
+            .files
+            .range(prefix.clone()..)
+            .take_while(|(k, _)| k.starts_with(&prefix))
+            .filter_map(|(k, (p, _))| {
+                let name = k[prefix.len()..].split('/').next()?;
+                // Back in the stored case.
+                Some(p[prefix.len()..prefix.len() + name.len()].to_owned())
+            })
+            .collect();
+        // Sorted by the lowercased path: a folder's files are together.
+        names.dedup_by(|a, b| a.eq_ignore_ascii_case(b));
+        names
     }
 }
 
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn embedded_files_ignore_case() {
+        let e = Embedded::new(&[("Sounds/200.wav", b"a"), ("sounds/201.WAV", b"b"), ("sheets.txt", b"c")]);
+        assert_eq!(e.read("SOUNDS/200.WAV").as_deref(), Some(&b"a"[..]));
+        assert_eq!(e.read("sounds/202.wav"), None);
+        assert_eq!(e.list("sounds"), ["200.wav", "201.WAV"]);
+        assert_eq!(e.list(""), ["sheets.txt", "Sounds"]);
+    }
 
     #[test]
     fn bundled_fonts_have_the_games_faces() {
@@ -598,8 +661,7 @@ mod tests {
         fn list(&self, path: &str) -> Vec<String> {
             self.read(path)
                 .and_then(|d| formats::iso::records(&d).ok())
-                .map(|r| r.into_iter().map(|r| r.name).collect())
-                .unwrap_or_default()
+                .map_or_default(|r| r.into_iter().map(|r| r.name).collect())
         }
     }
 

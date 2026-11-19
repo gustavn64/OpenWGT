@@ -66,16 +66,20 @@ built into the module. **Start** reads the image into memory and opens
 the editor. Later starts skip the form and open the editor on the image
 it kept. Options ▸ Settings ▸ **Change CD...** (after "Save changes?")
 reloads the page into the form, which shows the kept image: **Start**
-goes on with it, picking another file replaces it. If the kept image no
-longer reads or opens, the form asks for one again. The page never
-fetches or sends the CD's data: the image comes from the player.
+goes on with it, picking another file replaces it. The form's
+**Enhancements** box is the Settings window's (on unless turned off),
+kept in the browser's `settings.ini` the moment it's ticked or unticked,
+so it holds for Play without the CD too. If the kept image no longer
+reads or opens, the form asks for one again. The page never fetches or
+sends the CD's data: the image comes from the player.
 
 Playing without the CD lasts: after the form's **Play without the CD**
 or Options ▸ Settings ▸ **Play without the CD**, later visits go on
 without it too, the stored image kept but unused, until a CD is started
 from the form (Change CD... brings the form back). The packs then come
 in the language picked before, else the browser's; the CD's language
-isn't kept for them.
+isn't kept for them. The page's other options and its widget link stay
+through these reloads.
 
 The form and the page's other words (the hint to turn a phone, the
 status line, a touch screen's text box) are in the browser's language
@@ -94,12 +98,13 @@ A browser won't let a page play sound before a click or key press: the
 ## Phones and tablets
 
 The first finger down is the mouse, its left button held; a finger held
-still for 0.4 s is a double click (a part's settings), except while the
-widget runs, where it's a held button. While the game wants typing (a
-text field has the focus, the help's Index is open, or a running widget
-has a Keypress) a hidden text field on the page has the focus after a
-touch, which brings up the device's keyboard; what's typed into it
-becomes the game's key presses.
+still for 0.65 s is a double click (a part's settings), except while the
+widget runs, where it's a held button. A tapped text field (a dialog's,
+or the file name) is edited in the browser's own text box over the game,
+with the device's keyboard, its letters and corrections; OK hands the
+text back. While a running widget has a Keypress, a hidden text field on
+the page has the focus after a touch, which brings up the keyboard;
+what's typed into it becomes the game's key presses.
 
 The page fills what's visible of the screen (`100dvh`), and the keyboard
 shrinks it instead of covering it (`interactive-widget=resizes-content`),

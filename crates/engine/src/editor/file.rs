@@ -91,10 +91,7 @@ impl Editor {
         let mut name = default.to_owned();
         if files::has_folder(p) {
             self.file_dir = p.parent().map(Path::to_path_buf);
-            name = p
-                .file_name()
-                .map(|n| n.to_string_lossy().into_owned())
-                .unwrap_or_default();
+            name = p.file_name().map_or_default(|n| n.to_string_lossy().into_owned());
         }
         let dir = self.start_dir();
         self.show_file_dialog(spec, &dir, &name, then);

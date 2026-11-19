@@ -46,9 +46,11 @@ impl fmt::Display for Error {
 
 impl std::error::Error for Error {}
 
-/// Whether `data` is a help text (its first line is `title:`).
+/// Whether `data` is a help text (its first line is `title:`, after a
+/// byte order mark and blanks, as [`parse`] reads it).
 #[must_use]
 pub fn is_helptext(data: &[u8]) -> bool {
+    let data = data.strip_prefix(b"\xef\xbb\xbf").unwrap_or(data);
     data.trim_ascii_start().starts_with(b"title:")
 }
 
@@ -71,27 +73,6 @@ fn fonts() -> Vec<Font> {
     vec![f(20, 0), f(20, 1), f(20, 2), f(28, 1), f(22, 1)]
 }
 
-/// `s` in Windows-1252, with what it hasn't as `?`.
-fn ansi(s: &str) -> Vec<u8> {
-    s.chars()
-        .map(|c| match u32::from(c) {
-            c @ (0..0x80 | 0xa0..0x100) => u8::try_from(c).unwrap_or(b'?'),
-            _ => CP1252_HIGH
-                .iter()
-                .position(|&h| h == c)
-                .and_then(|i| u8::try_from(0x80 + i).ok())
-                .unwrap_or(b'?'),
-        })
-        .collect()
-}
-
-/// Windows-1252's 0x80 to 0x9f (`'\0'` where it has none): the help's
-/// typography and the letters French needs (œ).
-const CP1252_HIGH: [char; 32] = [
-    '€', '\0', '‚', 'ƒ', '„', '…', '†', '‡', 'ˆ', '‰', 'Š', '‹', 'Œ', '\0', 'Ž', '\0', //
-    '\0', '‘', '’', '“', '”', '•', '–', '—', '˜', '™', 'š', '›', 'œ', '\0', 'ž', 'Ÿ',
-];
-
 fn slug(title: &str) -> String {
     title.to_lowercase().split_whitespace().collect::<Vec<_>>().join("-")
 }
@@ -113,7 +94,7 @@ fn inline(text: &str, base: u16, ids: &BTreeMap<String, u32>) -> Result<Vec<Inli
     let push = |out: &mut Vec<Inline>, s: &str, font: u16, link: Option<Link>| {
         if !s.is_empty() {
             out.push(Inline::Text {
-                text: ansi(s),
+                text: crate::cp1252::encode(s),
                 font,
                 link,
             });
@@ -220,11 +201,11 @@ fn read_topics<'a>(lines: impl Iterator<Item = &'a str>) -> Result<Vec<Raw>, Err
 /// If it doesn't start with `title:`, has no topics, or links to a topic
 /// that isn't there.
 pub fn parse(text: &str) -> Result<HelpFile, Error> {
-    let mut lines = text.lines();
+    let mut lines = text.trim_start_matches('\u{feff}').lines();
     let title = lines
         .by_ref()
         .find(|l| !l.trim().is_empty())
-        .and_then(|l| l.strip_prefix("title:"))
+        .and_then(|l| l.trim_start().strip_prefix("title:"))
         .ok_or(Error::NotHelpText)?
         .trim()
         .to_owned();
@@ -296,7 +277,7 @@ pub fn parse(text: &str) -> Result<HelpFile, Error> {
                     ..ParaFormat::default()
                 },
                 items: vec![Inline::Text {
-                    text: ansi(&t.title),
+                    text: crate::cp1252::encode(&t.title),
                     font: TITLE,
                     link: None,
                 }],
@@ -327,12 +308,6 @@ pub fn parse(text: &str) -> Result<HelpFile, Error> {
 mod tests {
     use super::*;
 
-    #[test]
-    fn writes_windows_text() {
-        assert_eq!(ansi("cœur « é » – …"), b"c\x9cur \xab \xe9 \xbb \x96 \x85");
-        assert_eq!(ansi("Œ€ア"), b"\x8c\x80?");
-    }
-
     const DOC: &str = "title: Test Help\n\n= Contents\nSee [wires](#wires) and **bold** *it*.\n\n= Wires {#wires}\nkeywords: knot, cable\n\n## Making one\n- drag from a knot\n- let go on another\n";
 
     #[test]
@@ -354,6 +329,11 @@ mod tests {
             }
         )));
         assert_eq!(h.topic_for_hash(2).unwrap().title, "Wires");
+        // A byte order mark or an indented title: still one, both ways.
+        for doc in [format!("\u{feff}{DOC}"), format!("\n  {DOC}")] {
+            assert!(is_helptext(doc.as_bytes()));
+            assert_eq!(parse(&doc).unwrap().title, "Test Help");
+        }
         let w = &h.topics[1];
         assert_eq!(w.scroll.len(), 3);
         assert!(w.scroll[1].plain_text().starts_with('\u{95}') || w.scroll[1].plain_text().starts_with('•'));

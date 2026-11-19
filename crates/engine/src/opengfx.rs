@@ -30,7 +30,7 @@ use std::collections::{BTreeMap, HashMap};
 
 use formats::hr::{self, Image, Rect};
 
-use crate::assets::{Module, Source, rt};
+use crate::assets::{Embedded, Module, Source, rt};
 
 /// The frames' rectangles.
 pub const SHEETS_FILE: &str = "sheets.txt";
@@ -45,7 +45,7 @@ const FIRST_CURSOR: u16 = 31000;
 /// (`build.rs`).
 #[must_use]
 pub fn builtin() -> Embedded {
-    Embedded(BUILTIN)
+    Embedded::new(BUILTIN)
 }
 
 include!(concat!(env!("OUT_DIR"), "/opengfx_files.rs"));
@@ -66,7 +66,7 @@ pub fn builtin_for(lang: crate::lang::Lang) -> Box<dyn Source> {
         Box::new(builtin())
     } else {
         Box::new(Overlay {
-            top: Box::new(Embedded(top)),
+            top: Box::new(Embedded::new(top)),
             base: Box::new(builtin()),
         })
     }
@@ -95,40 +95,6 @@ impl Source for Overlay {
                 names.push(n);
             }
         }
-        names
-    }
-}
-
-/// Files built into the program, as a [`Source`].
-pub struct Embedded(pub &'static [(&'static str, &'static [u8])]);
-
-impl Source for Embedded {
-    fn read(&self, path: &str) -> Option<Vec<u8>> {
-        self.0
-            .iter()
-            .find(|(p, _)| p.eq_ignore_ascii_case(path))
-            .map(|(_, b)| b.to_vec())
-    }
-
-    fn list(&self, path: &str) -> Vec<String> {
-        let prefix = if path.is_empty() {
-            String::new()
-        } else {
-            format!("{}/", path.trim_end_matches('/').to_ascii_lowercase())
-        };
-        let mut names: Vec<String> = self
-            .0
-            .iter()
-            .filter_map(|(p, _)| {
-                let rest = p.to_ascii_lowercase().strip_prefix(&prefix)?.to_owned();
-                let name = rest.split('/').next()?;
-                // Back in the stored case.
-                let start = prefix.len();
-                Some(p[start..start + name.len()].to_owned())
-            })
-            .collect();
-        names.sort();
-        names.dedup();
         names
     }
 }
@@ -305,7 +271,7 @@ mod tests {
             ("gadgets/5/2.png", Box::leak(b.into_boxed_slice())),
             ("gadgets/6/1.png", Box::leak(png(4, 4, [0; 4]).into_boxed_slice())),
         ];
-        let pack = Embedded(Box::leak(files.into_boxed_slice()));
+        let pack = Embedded::new(Box::leak(files.into_boxed_slice()));
         assert_eq!(pack.list("gadgets"), ["5", "6"]);
         let l = load(&pack, &pal);
         assert_eq!(l.sheets, 1);

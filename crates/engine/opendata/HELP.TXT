@@ -599,7 +599,7 @@ A few changes that make OpenWGT a little easier to use than the original:
 - the parts tray shows a whole folder at once, its pages one under the other, without page arrows;
 - the toolbars, settings windows and message boxes move whole when you drag them, not as an outline.
 
-The enhancements are off at first, so that everything is exactly like the original. Tick **Enhancements** to switch them on.
+The enhancements are on at first. Untick **Enhancements** to make everything exactly like the original.
 
 ## Full screen
 Fills the whole screen with OpenWGT, or goes back to a window. **F11** and **Alt+Enter** do the same.

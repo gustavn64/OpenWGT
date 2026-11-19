@@ -34,8 +34,7 @@ use crate::sim::Io;
 pub(super) fn points(assets: &Assets, id: u32) -> Vec<Point> {
     assets
         .get(Module::Gadget, rt::POINTS, id)
-        .map(formats::tables::points)
-        .unwrap_or_default()
+        .map_or_default(formats::tables::points)
 }
 
 /// Point `i` of list `id` as (`h`, `v`), or `default` if there's none.
@@ -49,8 +48,7 @@ pub(super) fn point_or(assets: &Assets, id: u32, i: usize, default: (i32, i32)) 
 pub(super) fn rects(assets: &Assets, id: u32) -> Vec<Rect> {
     assets
         .get(Module::Gadget, rt::RECTS, id)
-        .map(formats::tables::rects)
-        .unwrap_or_default()
+        .map_or_default(formats::tables::rects)
 }
 
 /// `PtInRect` (`0x411e03`), Mac semantics: `top <= v < bottom && left <=

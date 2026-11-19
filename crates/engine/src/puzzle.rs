@@ -19,6 +19,10 @@ use crate::assets::Assets;
 pub const SECTION: &str = "Widget Workshop";
 /// The key of the solved flags (`0x42d82d`, `0x42d915`).
 pub const DONE_KEY: &str = "Done";
+/// The key of the solved flags of the port's own puzzle file (OpenWDATA):
+/// its puzzles are other ones under the same numbers, so they keep their
+/// own flags.
+pub const OPEN_DONE_KEY: &str = "OpenDone";
 /// The document's name while a puzzle is loaded (`0x42d5b3`, whatever
 /// the number).
 pub const DOC_NAME: &str = "puzzle";
@@ -59,12 +63,23 @@ pub fn open(assets: &Assets) -> Option<Puzzles> {
     Puzzles::parse(assets.puzzles.as_deref()?).ok()
 }
 
+/// The profile key of the solved flags of `assets`' puzzle file:
+/// [`OPEN_DONE_KEY`] for OpenWDATA's, else the game's [`DONE_KEY`].
+#[must_use]
+pub fn done_key(assets: &Assets) -> &'static str {
+    if assets.puzzles_from_pack {
+        OPEN_DONE_KEY
+    } else {
+        DONE_KEY
+    }
+}
+
 /// The solved flags (`0x42d82d`): the `Done` resource's, with the
 /// profile's added. `done[n - 1]` is puzzle `n`.
 #[must_use]
-pub fn read_solved(file: &Puzzles, profile: &dyn Profile) -> Vec<bool> {
+pub fn read_solved(file: &Puzzles, profile: &dyn Profile, key: &str) -> Vec<bool> {
     let mut done = file.done.clone();
-    if let Some(s) = profile.get(DONE_KEY) {
+    if let Some(s) = profile.get(key) {
         pzl::parse_done_ini(&s, &mut done);
     }
     done
@@ -73,21 +88,21 @@ pub fn read_solved(file: &Puzzles, profile: &dyn Profile) -> Vec<bool> {
 /// Writes the solved flags (`0x42d915`): into the profile. The puzzle
 /// file's `Done` resource stays as it is: the port treats the file as
 /// read-only, as the original does on a CD.
-pub fn write_solved(done: &[bool], profile: &mut dyn Profile) {
+pub fn write_solved(done: &[bool], profile: &mut dyn Profile, key: &str) {
     if let Some(s) = pzl::format_done_ini(done) {
-        profile.set(DONE_KEY, &s);
+        profile.set(key, &s);
     }
 }
 
 /// `cPuzzle::MarkSolved` (`0x42d4b1`): nothing unless a puzzle is loaded
 /// and its file can be read; else its flag set and written back. Returns
 /// whether it marked one.
-pub fn mark_solved(current: Current, file: Option<&Puzzles>, profile: &mut dyn Profile) -> bool {
+pub fn mark_solved(current: Current, file: Option<&Puzzles>, profile: &mut dyn Profile, key: &str) -> bool {
     if !current.active {
         return false;
     }
     let Some(file) = file else { return false };
-    let mut done = read_solved(file, profile);
+    let mut done = read_solved(file, profile, key);
     // The original stores at `flag[number - 1]` whatever the resource's
     // size; a number past it would write past the buffer. Dropped here.
     let Some(flag) = usize::try_from(current.number)
@@ -98,15 +113,15 @@ pub fn mark_solved(current: Current, file: Option<&Puzzles>, profile: &mut dyn P
         return false;
     };
     *flag = true;
-    write_solved(&done, profile);
+    write_solved(&done, profile, key);
     true
 }
 
 /// "Reset Completed Puzzles" (`0x42d01e`, button 0x69): every flag
 /// cleared in both stores (here: the profile).
-pub fn reset_solved(file: &Puzzles, profile: &mut dyn Profile) {
+pub fn reset_solved(file: &Puzzles, profile: &mut dyn Profile, key: &str) {
     let done = vec![false; file.done.len()];
-    write_solved(&done, profile);
+    write_solved(&done, profile, key);
 }
 
 #[cfg(test)]
@@ -124,7 +139,7 @@ mod tests {
     fn solved_flags_go_to_the_profile() {
         let f = file(25);
         let mut p = MemoryProfile::default();
-        assert_eq!(read_solved(&f, &p), vec![false; 25]);
+        assert_eq!(read_solved(&f, &p, DONE_KEY), vec![false; 25]);
         // Not active: nothing.
         assert!(!mark_solved(
             Current {
@@ -132,7 +147,8 @@ mod tests {
                 active: false
             },
             Some(&f),
-            &mut p
+            &mut p,
+            DONE_KEY
         ));
         assert_eq!(p.get("Done"), None);
         assert!(mark_solved(
@@ -141,7 +157,8 @@ mod tests {
                 active: true
             },
             Some(&f),
-            &mut p
+            &mut p,
+            DONE_KEY
         ));
         assert_eq!(p.get("Done").as_deref(), Some("0800000"));
         assert!(mark_solved(
@@ -150,10 +167,11 @@ mod tests {
                 active: true
             },
             Some(&f),
-            &mut p
+            &mut p,
+            DONE_KEY
         ));
         assert_eq!(p.get("DONE").as_deref(), Some("1800000"));
-        let d = read_solved(&f, &p);
+        let d = read_solved(&f, &p, DONE_KEY);
         assert!(d[0] && d[7] && d.iter().filter(|&&x| x).count() == 2);
         // No file, or a number out of range: nothing.
         assert!(!mark_solved(
@@ -162,7 +180,8 @@ mod tests {
                 active: true
             },
             None,
-            &mut p
+            &mut p,
+            DONE_KEY
         ));
         assert!(!mark_solved(
             Current {
@@ -170,7 +189,8 @@ mod tests {
                 active: true
             },
             Some(&f),
-            &mut p
+            &mut p,
+            DONE_KEY
         ));
         assert!(!mark_solved(
             Current {
@@ -178,15 +198,28 @@ mod tests {
                 active: true
             },
             Some(&f),
-            &mut p
+            &mut p,
+            DONE_KEY
         ));
         // The file's own flags count too (ORed), and reset clears the
         // profile's.
         let mut f2 = file(25);
         f2.done[24] = true;
-        assert!(read_solved(&f2, &p)[24]);
-        reset_solved(&f2, &mut p);
+        assert!(read_solved(&f2, &p, DONE_KEY)[24]);
+        reset_solved(&f2, &mut p, DONE_KEY);
         assert_eq!(p.get("Done").as_deref(), Some("0000000"));
-        assert_eq!(read_solved(&f, &p), vec![false; 25]);
+        assert_eq!(read_solved(&f, &p, DONE_KEY), vec![false; 25]);
+        // The port's own puzzles keep theirs apart.
+        assert!(mark_solved(
+            Current {
+                number: 3,
+                active: true
+            },
+            Some(&f),
+            &mut p,
+            OPEN_DONE_KEY
+        ));
+        assert!(read_solved(&f, &p, OPEN_DONE_KEY)[2]);
+        assert!(!read_solved(&f, &p, DONE_KEY)[2]);
     }
 }

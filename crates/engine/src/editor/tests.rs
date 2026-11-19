@@ -1158,6 +1158,8 @@ fn sound_off_is_heard() {
     use crate::sim::SoundCmd;
     let Some(mut e) = editor() else { return };
     let _ = e.take_sounds();
+    // A click queued earlier in the frame is dropped, not cut off.
+    e.toolbar_command(id::POINTER, true);
     e.main_bar.get_mut(id::SOUND).unwrap().on = false;
     e.toolbar_command(id::SOUND, false);
     let v = e.take_sounds();

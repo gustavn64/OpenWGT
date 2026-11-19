@@ -129,8 +129,7 @@ impl DirEntry {
     pub fn file_name(&self) -> String {
         self.path
             .file_name()
-            .map(|n| n.to_string_lossy().into_owned())
-            .unwrap_or_default()
+            .map_or_default(|n| n.to_string_lossy().into_owned())
     }
 
     /// Whether it's a file (not following a symbolic link, as

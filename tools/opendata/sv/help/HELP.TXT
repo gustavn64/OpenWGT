@@ -599,7 +599,7 @@ Några ändringar som gör OpenWGT lite lättare att använda än originalet:
 - verktygslådan visar en hel flik på en gång, med sidorna under varandra och utan pilar;
 - verktygsfälten, inställningsfönstren och meddelanderutorna flyttas hela när du drar dem, inte som en kontur.
 
-Förbättringarna är avstängda från början, så att allt är precis som i originalet. Kryssa i **Förbättringar** för att slå på dem.
+Förbättringarna är påslagna från början. Kryssa ur **Förbättringar** för att få allt precis som i originalet.
 
 ## Helskärm
 Låter OpenWGT fylla hela skärmen, eller går tillbaka till ett fönster. **F11** och **Alt+Enter** gör samma sak.

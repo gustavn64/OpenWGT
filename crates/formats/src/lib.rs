@@ -2,6 +2,7 @@
 //! the file's bytes.
 
 pub mod bmp;
+pub mod cp1252;
 pub mod cursor;
 pub mod dialog;
 pub mod fnt;

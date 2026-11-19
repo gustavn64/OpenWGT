@@ -102,16 +102,27 @@ pub struct SettingsBox {
     pub scale: Scale,
     pub current: f64,
     pub enhanced: bool,
-    /// The language played in, and whether a CD decides it (it can't be
-    /// changed here then). The language button goes round the languages,
-    /// each press switching to the next.
+    /// The language played in, and what decides it: only the player's
+    /// choice can be changed here. The language button goes round the
+    /// languages, each press switching to the next.
     pub lang: Lang,
-    pub lang_fixed: bool,
+    pub lang_from: LangFrom,
     /// Whether the window is full screen.
     pub full_screen: bool,
     window: IRect,
     /// The part the mouse holds down.
     pressed: Option<Part>,
+}
+
+/// What decides the language the game plays in.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum LangFrom {
+    /// The player, in this window: the port's own packs, built in.
+    Player,
+    /// The CD's own.
+    Cd,
+    /// A data pack from a folder, its words being in it (no CD).
+    Pack,
 }
 
 /// `s` one step bigger (`up`) or smaller, in whole steps from 1 to 4.
@@ -140,7 +151,13 @@ impl SettingsBox {
         full_screen: bool,
     ) -> SettingsBox {
         let lang = assets.lang;
-        let lang_fixed = assets.from_cd();
+        let lang_from = if assets.from_cd() {
+            LangFrom::Cd
+        } else if assets.lang_from_pack {
+            LangFrom::Pack
+        } else {
+            LangFrom::Player
+        };
         let h = Self::height(assets);
         let window = IRect::sized(
             area.x0 + (area.width() - W) / 2,
@@ -153,7 +170,7 @@ impl SettingsBox {
             current,
             enhanced,
             lang,
-            lang_fixed,
+            lang_from,
             full_screen,
             window,
             pressed: None,
@@ -281,9 +298,9 @@ impl SettingsBox {
         match p {
             Part::Smaller => self.shown() > MIN_SCALE,
             Part::Bigger => self.shown() < MAX_SCALE,
-            Part::Language => !self.lang_fixed,
+            Part::Language => self.lang_from == LangFrom::Player,
             // Only with a CD: without one the game is on the packs.
-            Part::NoCd => self.lang_fixed,
+            Part::NoCd => self.lang_from == LangFrom::Cd,
             _ => true,
         }
     }
@@ -317,10 +334,9 @@ impl SettingsBox {
                 self.lang = all[(i + 1) % all.len()];
                 Outcome::Language(self.lang)
             }
-            Part::FullScreen => {
-                self.full_screen = !self.full_screen;
-                Outcome::FullScreen(self.full_screen)
-            }
+            // The check box follows the window, as the host says
+            // (`Editor::set_full_screen`): a browser may refuse.
+            Part::FullScreen => Outcome::FullScreen(!self.full_screen),
             Part::ChangeCd => Outcome::ChangeCd,
             Part::NoCd => Outcome::PlayWithoutCd,
         }
@@ -434,7 +450,7 @@ impl SettingsBox {
             ui::label(s, font, l.enhanced.x0 + 17, y, &line, ui::BLACK);
             y += i32::from(font.height);
         }
-        let language = if self.lang_fixed {
+        let language = if self.lang_from == LangFrom::Cd {
             trf("Language: the CD's ({})", &[self.lang.name()])
         } else {
             format!("{} {}", tr("&Language:"), self.lang.name())
@@ -446,7 +462,7 @@ impl SettingsBox {
             &language,
             pressed(Part::Language),
             false,
-            !self.lang_fixed,
+            self.enabled(Part::Language),
         );
         check(
             s,
@@ -529,7 +545,7 @@ mod tests {
             current: 2.0,
             enhanced: true,
             lang: Lang::En,
-            lang_fixed: false,
+            lang_from: LangFrom::Player,
             full_screen: false,
             window: IRect::default(),
             pressed: None,
@@ -540,6 +556,8 @@ mod tests {
         assert_eq!(b.key(0x41), Outcome::Scale(Scale::Fixed(2.0)));
         assert_eq!(b.key(0x45), Outcome::Enhanced(false));
         assert_eq!(b.key(0x46), Outcome::FullScreen(true));
+        assert!(!b.full_screen, "only the host's word checks it");
+        b.full_screen = true;
         assert_eq!(b.key(0x46), Outcome::FullScreen(false));
         b.scale = Scale::Fixed(1.0);
         assert_eq!(b.key(0x6d), Outcome::None, "− is greyed at 1×");
@@ -552,7 +570,11 @@ mod tests {
         assert_eq!(b.key(0x4c), Outcome::Language(Lang::En));
         assert_eq!(b.key(0x1b), Outcome::Close);
         assert_eq!(b.key(0x57), Outcome::None, "no CD to leave");
-        b.lang_fixed = true;
+        b.lang_from = LangFrom::Pack;
+        assert_eq!(b.key(0x4c), Outcome::None, "a data folder's language stays");
+        assert_eq!(b.key(0x57), Outcome::None, "no CD to leave");
+        assert_eq!(b.lang, Lang::En);
+        b.lang_from = LangFrom::Cd;
         assert_eq!(b.key(0x4c), Outcome::None, "a CD's language stays");
         assert_eq!(b.lang, Lang::En);
         assert_eq!(b.key(0x57), Outcome::PlayWithoutCd);

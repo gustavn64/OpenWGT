@@ -46,7 +46,7 @@ mod sound;
 #[cfg(target_arch = "wasm32")]
 mod web;
 
-use std::path::PathBuf;
+use std::path::{Path, PathBuf};
 
 use web_time::Duration;
 
@@ -113,10 +113,11 @@ struct Args {
     /// `--lang`: the language of the port's own packs (with a CD, the
     /// CD's wins).
     lang: Option<engine::lang::Lang>,
-    /// No CD given or found: the packs were switched on for it, not by
-    /// the player (so Change CD... starts again without them).
+    /// The options to start again with on another CD (Change CD...):
+    /// the ones the player gave, taken before a missing CD switches the
+    /// packs on.
     #[cfg_attr(target_arch = "wasm32", allow(dead_code))]
-    auto_open: bool,
+    restart: Vec<std::ffi::OsString>,
     no_audio: bool,
     window: WindowOptions,
 }
@@ -141,6 +142,16 @@ enum Pack {
     Builtin,
     /// `--opengfx=DIR`: a folder of the pack's layout.
     Dir(PathBuf),
+}
+
+impl Pack {
+    /// The pack's files: the folder's, or `builtin`'s.
+    fn source(&self, builtin: impl FnOnce() -> Box<dyn Source>) -> Box<dyn Source> {
+        match self {
+            Pack::Dir(d) => folder(d),
+            Pack::Builtin => builtin(),
+        }
+    }
 }
 
 /// The browser build's way to stop: a panic with this message, which the
@@ -195,7 +206,7 @@ fn args(mut it: impl Iterator<Item = std::ffi::OsString>) -> Args {
         opendata: None,
         open: false,
         lang: None,
-        auto_open: false,
+        restart: Vec::new(),
         no_audio: false,
         window: WindowOptions {
             settings_file: platform::settings::settings_file(),
@@ -373,7 +384,7 @@ impl Workshop {
         #[cfg(not(target_arch = "wasm32"))]
         if !pick::has_dialog() {
             let s = &self.editor.surface;
-            let mut screen = pick::DropScreen::new(true, self.theme.dark());
+            let mut screen = pick::DropScreen::new(self.theme.dark());
             screen.resize(
                 u32::try_from(s.width).unwrap_or(0),
                 u32::try_from(s.height).unwrap_or(0),
@@ -430,9 +441,8 @@ impl App for Workshop {
         }
         if let Some(on) = self.editor.take_enhanced()
             && let Some(path) = &self.settings_file
-            && let Err(e) = platform::settings::EnhanceSettings::save(path, Some(!on), &[], &[])
         {
-            eprintln!("{}: {e}", path.display());
+            save_enhanced(path, on);
         }
         let cmds = self.editor.take_sounds();
         self.sound.play(cmds);
@@ -640,6 +650,7 @@ fn main() {
         }
     }));
     let mut args = args(std::env::args_os().skip(1));
+    args.restart = restart_options(&args);
     // The CD: the one given, else one here or picked before. With none
     // (or `--open`) the game runs on the port's own packs alone.
     let cd_path = if args.open {
@@ -648,7 +659,6 @@ fn main() {
         args.cd.clone().or_else(|| pick::found(&default_cd()))
     };
     if cd_path.is_none() {
-        args.auto_open = !args.open;
         args.without_cd();
     }
     let cd = cd_path.as_ref().and_then(|p| match cd::open(p) {
@@ -675,8 +685,10 @@ fn main() {
     }
 }
 
-/// The options of `args` to start again with on another CD: the window's
-/// are in the settings file by then.
+/// The options of `args` as the player gave them, to start again with on
+/// another CD or without one: not `--open` (a CD was chosen), and the
+/// window's are in the settings file by then. `--lang` stays for playing
+/// without the CD (a CD speaks its own).
 #[cfg(not(target_arch = "wasm32"))]
 fn restart_options(args: &Args) -> Vec<std::ffi::OsString> {
     let mut o = Vec::new();
@@ -684,14 +696,6 @@ fn restart_options(args: &Args) -> Vec<std::ffi::OsString> {
         let mut a = std::ffi::OsString::from("--overrides=");
         a.push(d);
         o.push(a);
-    }
-    if args.no_audio {
-        o.push("--no-audio".into());
-    }
-    // Another CD was chosen: not `--open`, nor the packs that stood in for
-    // having none.
-    if args.auto_open {
-        return o;
     }
     for (flag, pack) in [
         ("--opengfx", &args.opengfx),
@@ -706,6 +710,12 @@ fn restart_options(args: &Args) -> Vec<std::ffi::OsString> {
             }
             o.push(a);
         }
+    }
+    if let Some(l) = args.lang {
+        o.push(format!("--lang={}", l.code()).into());
+    }
+    if args.no_audio {
+        o.push("--no-audio".into());
     }
     o
 }
@@ -745,7 +755,7 @@ fn folder(d: &std::path::Path) -> Box<dyn Source> {
 /// instead): nothing.
 #[cfg(target_arch = "wasm32")]
 fn folder(_: &std::path::Path) -> Box<dyn Source> {
-    Box::new(engine::opengfx::Embedded(&[]))
+    Box::new(engine::assets::Embedded::new(&[]))
 }
 
 /// The game's resources as `args` ask for them: `cd`'s, if there's one,
@@ -754,18 +764,18 @@ fn folder(_: &std::path::Path) -> Box<dyn Source> {
 /// the game plays in `lang`, unless a data pack from a folder says its
 /// own. Built so at the start and for Settings ▸ Language.
 fn assets_for(args: &Args, cd: Option<&dyn Source>, lang: engine::lang::Lang) -> Result<Assets, String> {
-    let graphics = args.opengfx.as_ref().map(|g| match g {
-        Pack::Dir(d) => folder(d),
-        Pack::Builtin => engine::opengfx::builtin_for(lang),
-    });
-    let sounds = args.opensfx.as_ref().map(|g| match g {
-        Pack::Dir(d) => folder(d),
-        Pack::Builtin => Box::new(engine::opensfx::builtin()),
-    });
-    let data = args.opendata.as_ref().map(|g| match g {
-        Pack::Dir(d) => folder(d),
-        Pack::Builtin => Box::new(engine::opendata::builtin_for(lang)),
-    });
+    let graphics = args
+        .opengfx
+        .as_ref()
+        .map(|p| p.source(|| engine::opengfx::builtin_for(lang)));
+    let sounds = args
+        .opensfx
+        .as_ref()
+        .map(|p| p.source(|| Box::new(engine::opensfx::builtin())));
+    let data = args
+        .opendata
+        .as_ref()
+        .map(|p| p.source(|| Box::new(engine::opendata::builtin_for(lang))));
     let overrides = args.overrides.as_deref().map(folder);
     let packs = engine::assets::Packs {
         graphics: graphics.as_deref(),
@@ -779,11 +789,18 @@ fn assets_for(args: &Args, cd: Option<&dyn Source>, lang: engine::lang::Lang) ->
     if cd.is_none() {
         // A data pack from a folder says its own language (its word for
         // Cancel): the parts reckon in it, whatever the system's.
+        // The pictures' words follow it too: built again in it.
         let own = matches!(args.opendata, Some(Pack::Dir(_)))
             .then(|| assets.string(0xf221))
             .flatten()
             .and_then(|w| engine::lang::Lang::of_cancel(&w));
-        assets.lang = own.unwrap_or(lang);
+        if let Some(own) = own
+            && own != lang
+        {
+            return assets_for(args, cd, own);
+        }
+        assets.lang = lang;
+        assets.lang_from_pack = own.is_some();
     }
     Ok(assets)
 }
@@ -794,6 +811,19 @@ fn assets_for(args: &Args, cd: Option<&dyn Source>, lang: engine::lang::Lang) ->
 ///
 /// # Errors
 /// If the window or the GPU can't be set up.
+/// Whether the port's enhancements are on: yes, unless the player turned
+/// them off (`original=true` in the settings file at `settings`).
+fn enhanced(settings: Option<&Path>) -> bool {
+    settings.is_none_or(|p| platform::settings::EnhanceSettings::load(p).original != Some(true))
+}
+
+/// Keeps the enhancements' switch in the settings file at `path`.
+fn save_enhanced(path: &Path, on: bool) {
+    if let Err(e) = platform::settings::EnhanceSettings::save(path, Some(!on), &[], &[]) {
+        eprintln!("{}: {e}", path.display());
+    }
+}
+
 fn start(args: &Args, assets: Assets) -> Result<(), platform::Error> {
     let mut doc = Document::new();
     let mut path = None;
@@ -844,13 +874,8 @@ fn start(args: &Args, assets: Assets) -> Result<(), platform::Error> {
     };
     let theme = platform::theme::SystemTheme::new();
     editor.set_system_dark(theme.dark());
-    // The port's enhancements only if the player turned them on
-    // (`original=false` in the settings file): as the original otherwise.
     let settings_file = args.window.settings_file.clone();
-    let enhanced = settings_file
-        .as_deref()
-        .is_some_and(|p| platform::settings::EnhanceSettings::load(p).original == Some(false));
-    editor.set_enhanced(enhanced);
+    editor.set_enhanced(enhanced(settings_file.as_deref()));
     let app = Workshop {
         editor,
         sound: Sound::new(audio),
@@ -859,11 +884,37 @@ fn start(args: &Args, assets: Assets) -> Result<(), platform::Error> {
         settings_file,
         args: args.clone(),
         #[cfg(not(target_arch = "wasm32"))]
-        options: restart_options(args),
+        options: args.restart.clone(),
         done: false,
         carry: Duration::ZERO,
         #[cfg(not(target_arch = "wasm32"))]
         asking: None,
     };
     platform::run("OpenWGT", args.window.clone(), app)
+}
+
+#[cfg(all(test, not(target_arch = "wasm32")))]
+mod tests {
+    use super::*;
+
+    fn restart(given: &[&str]) -> Vec<String> {
+        let a = args(given.iter().map(std::ffi::OsString::from));
+        restart_options(&a)
+            .into_iter()
+            .map(|o| o.to_string_lossy().into_owned())
+            .collect()
+    }
+
+    #[test]
+    fn change_cd_keeps_the_players_options() {
+        // `--open` gives way to the CD chosen; what was given stays.
+        assert_eq!(restart(&["--open"]), Vec::<String>::new());
+        assert_eq!(
+            restart(&["--open", "--no-audio", "--opengfx=gfx", "--overrides=o"]),
+            ["--overrides=o", "--opengfx=gfx", "--no-audio"]
+        );
+        assert_eq!(restart(&["--opensfx", "x.iso"]), ["--opensfx"]);
+        // Play without the CD speaks the language asked for.
+        assert_eq!(restart(&["--lang=fr", "x.iso"]), ["--lang=fr"]);
+    }
 }

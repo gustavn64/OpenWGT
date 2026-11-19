@@ -109,10 +109,10 @@ pub fn wheel_notches(rest: &mut (f64, f64), delta: MouseScrollDelta) -> (i32, i3
 
 /// How often the game is updated and redrawn.
 const FRAME: Duration = Duration::from_nanos(1_000_000_000 / 60);
-/// The least time between two steps natively ([`Runner::step`]): a frame,
-/// less 2 ms for a timer that wakes a little early.
+/// How early natively a step may come before it's due
+/// ([`Runner::step_native`]): a timer wakes a little early.
 #[cfg(not(target_arch = "wasm32"))]
-const NATIVE_STEP: Duration = Duration::from_nanos(1_000_000_000 / 60 - 2_000_000);
+const NATIVE_SLACK: Duration = Duration::from_millis(2);
 /// In the browser every display frame steps, unless it comes sooner than
 /// this after the last (a display much faster than 60 Hz): frames come
 /// unevenly, and one a little early skipped is a visible jerk.
@@ -413,7 +413,8 @@ pub fn desktop(client: (u32, u32), scale: f64) -> (u32, u32) {
 /// pixel `scale` window pixels big on a display with `scale_factor`: the
 /// browser and macOS take a pointer picture in logical units (CSS pixels,
 /// points) and enlarge it by the scale factor themselves, the others take
-/// it in the display's own pixels.
+/// it in the display's own pixels (Wayland too: winit gives the compositor
+/// its buffer scale, or a viewport of the picture's size over it).
 #[allow(clippy::cast_possible_truncation, clippy::cast_sign_loss)]
 fn cursor_scale(scale: f64, scale_factor: f64) -> u32 {
     let logical = cfg!(any(target_arch = "wasm32", target_os = "macos"));
@@ -491,6 +492,11 @@ struct Runner<A> {
     options: WindowOptions,
     window: Option<(Arc<Window>, display::Display)>,
     last: Instant,
+    /// Natively: when the next step is due, a frame after the last was
+    /// due, so that steps keep to 60 a second however the events wake the
+    /// loop.
+    #[cfg_attr(target_arch = "wasm32", allow(dead_code))]
+    due: Instant,
     /// In the browser: when a frame was asked for that hasn't come yet.
     #[cfg_attr(not(target_arch = "wasm32"), allow(dead_code))]
     frame_asked: Option<Instant>,
@@ -533,6 +539,7 @@ struct Runner<A> {
 impl<A: App> Runner<A> {
     /// The game's step, if `min` has passed since the last: whether it
     /// took one.
+    #[cfg(target_arch = "wasm32")]
     fn step(&mut self, min: Duration) -> bool {
         let now = Instant::now();
         if now < self.last + min {
@@ -540,6 +547,25 @@ impl<A: App> Runner<A> {
         }
         self.app.update(now - self.last);
         self.last = now;
+        true
+    }
+
+    /// Natively the game's step, if it's due (or nearly, [`NATIVE_SLACK`]):
+    /// whether it took one. The next is due a frame after this one was,
+    /// or, after a stall, a frame from now.
+    #[cfg(not(target_arch = "wasm32"))]
+    fn step_native(&mut self) -> bool {
+        let now = Instant::now();
+        if now + NATIVE_SLACK < self.due {
+            return false;
+        }
+        self.app.update(now - self.last);
+        self.last = now;
+        self.due = if now > self.due + FRAME {
+            now + FRAME
+        } else {
+            self.due + FRAME
+        };
         true
     }
 
@@ -841,22 +867,28 @@ impl<A: App> ApplicationHandler for Runner<A> {
         #[cfg(target_arch = "wasm32")]
         {
             let now = Instant::now();
-            if self.frame_asked.is_none_or(|t| now >= t + 4 * FRAME)
-                && let Some((w, _)) = &self.window
-            {
-                w.request_redraw();
+            if self.frame_asked.is_none_or(|t| now >= t + 4 * FRAME) && self.window.is_some() {
+                // No frame for a while: the tab is hidden or the canvas off
+                // the screen, where the browser stops them. The game goes on
+                // unseen, as often as the browser wakes the page.
+                if self.frame_asked.is_some() {
+                    self.step(BROWSER_STEP);
+                }
+                if let Some((w, _)) = &self.window {
+                    w.request_redraw();
+                }
                 self.frame_asked = Some(now);
             }
             event_loop.set_control_flow(ControlFlow::WaitUntil(now + 4 * FRAME));
         }
         #[cfg(not(target_arch = "wasm32"))]
         {
-            if self.step(NATIVE_STEP)
+            if self.step_native()
                 && let Some((w, _)) = &self.window
             {
                 w.request_redraw();
             }
-            event_loop.set_control_flow(ControlFlow::WaitUntil(self.last + FRAME));
+            event_loop.set_control_flow(ControlFlow::WaitUntil(self.due));
         }
         if self.app.finished() {
             Self::exit(event_loop);
@@ -912,8 +944,7 @@ impl<A: App> Runner<A> {
             .options
             .settings_file
             .as_deref()
-            .map(WindowSettings::load)
-            .unwrap_or_default();
+            .map_or_default(WindowSettings::load);
         self.ui = self.options.ui_scale.or(saved.ui_scale).unwrap_or_default();
         // By default the desktop is 800×600: at a fixed UI scale that many
         // pixels times the scale, else that many points.
@@ -1009,10 +1040,7 @@ impl<A: App> Runner<A> {
             WindowEvent::DroppedFile(path) if self.app.dropped_path(&path) => {}
             WindowEvent::DroppedFile(path) => match std::fs::read(&path) {
                 Ok(data) => self.app.dropped(DroppedFile {
-                    name: path
-                        .file_name()
-                        .map(|n| n.to_string_lossy().into_owned())
-                        .unwrap_or_default(),
+                    name: path.file_name().map_or_default(|n| n.to_string_lossy().into_owned()),
                     path: Some(path),
                     data,
                 }),
@@ -1039,7 +1067,7 @@ impl<A: App> Runner<A> {
                     // Every frame is shown again, changed or not: a window
                     // system, or the browser behind a phone's keyboard, may
                     // have lost what it showed. Only what changed is sent.
-                    if let Err(e) = d.draw(&frame, self.scale, true) {
+                    if let Err(e) = d.draw(&frame, self.scale) {
                         self.fail(event_loop, e);
                     }
                 }
@@ -1072,6 +1100,7 @@ pub fn run<A: App + 'static>(title: &str, options: WindowOptions, app: A) -> Res
         options,
         window: None,
         last: Instant::now(),
+        due: Instant::now(),
         frame_asked: None,
         mouse: (0, 0),
         finger: None,

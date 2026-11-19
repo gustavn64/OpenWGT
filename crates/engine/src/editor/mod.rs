@@ -299,9 +299,9 @@ pub struct Editor {
     /// The Light and Sound buttons (`DAT_00493ddc`, `DAT_00493ddd`).
     pub light: bool,
     pub sound: bool,
-    /// How many of the queued sounds still play though the sound was just
-    /// switched off: its click and its own sound ([`Editor::take_sounds`]).
-    heard_after_off: usize,
+    /// What still plays though the sound was just switched off: what stops
+    /// all, its click and its own sound ([`Editor::take_sounds`]).
+    heard_after_off: Vec<SoundCmd>,
     /// The Light button pressed away from the system's dark mode; none
     /// while it follows it ([`Editor::set_system_dark`]).
     light_chosen: Option<bool>,
@@ -417,7 +417,7 @@ impl Editor {
             finished: false,
             light: true,
             sound: true,
-            heard_after_off: 0,
+            heard_after_off: Vec::new(),
             light_chosen: None,
             system_dark: false,
             main_bar: toolbar::main_toolbar(),
@@ -635,16 +635,12 @@ impl Editor {
     pub fn take_sounds(&mut self) -> Vec<SoundCmd> {
         let mut v = std::mem::take(&mut self.env.sounds);
         if !self.sound {
-            // Those queued as the sound went off (its click and sound)
-            // play; the rest is silent.
-            let heard = std::mem::take(&mut self.heard_after_off);
-            let mut i = 0;
-            v.retain(|c| {
-                i += 1;
-                i <= heard || !matches!(c, SoundCmd::Play { .. })
-            });
+            v.retain(|c| !matches!(c, SoundCmd::Play { .. }));
         }
-        v
+        // The sound switching off is heard first.
+        let mut heard = std::mem::take(&mut self.heard_after_off);
+        heard.append(&mut v);
+        heard
     }
 
     // ---- running ----------------------------------------------------
@@ -1757,19 +1753,20 @@ impl Editor {
                 self.light_chosen = (on == self.dark_off()).then_some(on);
             }
             id::SOUND => {
-                if !on {
-                    // What plays stops; the click and the switching-off
-                    // sound are still heard.
-                    self.env.sounds.push(SoundCmd::StopAll);
-                }
-                self.ui_sound(snd::CLICK);
                 if on {
+                    self.ui_sound(snd::CLICK);
                     self.sound = true;
                     self.ui_sound(snd::SOUND_ON);
                 } else {
+                    // What plays stops, and what's queued is dropped (it
+                    // would stop at once); the click and the switching-off
+                    // sound are still heard.
+                    self.env.sounds.clear();
+                    self.env.sounds.push(SoundCmd::StopAll);
+                    self.ui_sound(snd::CLICK);
                     self.ui_sound(snd::SOUND_OFF);
                     self.sound = false;
-                    self.heard_after_off = self.env.sounds.len();
+                    self.heard_after_off = std::mem::take(&mut self.env.sounds);
                 }
             }
             id::POINTER | id::CUT | id::MOVE => self.ui_sound(snd::CLICK),
@@ -2044,13 +2041,20 @@ impl Editor {
     /// The port's words, the menu, the tray, the help and the Settings
     /// window come in the new language at once. The widget stays the
     /// player's, its words too, with its name, its modified flag and its
-    /// undo step, only read again with the new resources; a puzzle comes
-    /// again from the new puzzle file, its words being the game's (Undo
-    /// brings back the one left). A running widget stops first.
+    /// undo step, only read again with the new resources; a puzzle the
+    /// player hasn't changed comes again from the new puzzle file, its
+    /// words being the game's (Undo brings back the one left), and one
+    /// they have stays theirs like any widget. A running widget stops
+    /// first.
     pub fn set_assets(&mut self, assets: Assets) {
         self.stop();
         self.doc.tray_limits = self.tray.limits();
         let saved = self.doc.save();
+        let untouched = self.puzzle.active
+            && self.puzzle_doc(self.puzzle.number).is_some_and(|mut d| {
+                d.tray_limits.clone_from(&self.doc.tray_limits);
+                d.save() == saved
+            });
         crate::lang::set(assets.lang);
         self.assets = assets;
         self.pictures = Pictures::default();
@@ -2058,11 +2062,7 @@ impl Editor {
         self.menu = self.load_menu();
         self.tray.set_assets(&self.assets, &self.pictures);
         self.sel = Sel::None;
-        let puzzle = self
-            .puzzle
-            .active
-            .then(|| self.puzzle_doc(self.puzzle.number))
-            .flatten();
+        let puzzle = untouched.then(|| self.puzzle_doc(self.puzzle.number)).flatten();
         if let Some(doc) = puzzle {
             self.undo = Some(saved);
             self.put_puzzle(doc);

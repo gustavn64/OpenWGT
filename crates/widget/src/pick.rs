@@ -33,6 +33,12 @@ pub fn found(default: &Path) -> Option<PathBuf> {
     if default.exists() {
         return Some(default.to_path_buf());
     }
+    picked_before()
+}
+
+/// The CD image picked before, if it's still there; kept through Play
+/// without the CD, so that Change CD... starts beside it.
+fn picked_before() -> Option<PathBuf> {
     kept()
         .and_then(|k| std::fs::read_to_string(k).ok())
         .map(|s| PathBuf::from(s.trim_end_matches(['\r', '\n'])))
@@ -50,11 +56,10 @@ fn without() -> Option<PathBuf> {
 }
 
 /// Settings ▸ Play without the CD: from now on the game starts without
-/// one, a CD here or picked before, until another is picked.
+/// one, a CD here or picked before, until another is picked. The one
+/// picked before is still remembered for Change CD...'s file dialog, as
+/// the browser keeps its image.
 pub fn play_without() {
-    if let Some(kept) = kept() {
-        let _ = std::fs::remove_file(kept);
-    }
     if let Some(mark) = without() {
         let saved = mark
             .parent()
@@ -82,11 +87,22 @@ fn keep(picked: &Path) {
     }
 }
 
-/// The CD image the player picks in the system's file dialog, kept for
-/// next time. `None` if the player cancels.
+/// The CD image the player picks in the system's file dialog, which
+/// starts beside the one picked before; kept for next time. `None` if
+/// the player cancels.
 pub fn choose() -> Option<PathBuf> {
+    let before = picked_before();
     let picked = loop {
-        let path = rfd::FileDialog::new()
+        let mut dialog = rfd::FileDialog::new();
+        if let Some(b) = &before {
+            if let Some(dir) = b.parent() {
+                dialog = dialog.set_directory(dir);
+            }
+            if let Some(name) = b.file_name() {
+                dialog = dialog.set_file_name(name.to_string_lossy());
+            }
+        }
+        let path = dialog
             .set_title(tr("Choose the Widget Workshop CD image"))
             .add_filter(tr("CD image"), &["iso", "ISO"])
             .add_filter(tr("All files"), &["*"])
@@ -214,19 +230,18 @@ const ERROR: u8 = 3;
 /// Asks for the CD image to be dropped on the window, where there's no
 /// file dialog: the port's own picture of it, its text in the bundled
 /// fonts (`engine::assets::bundled_fonts`), with why the last one dropped
-/// isn't the game's.
+/// isn't the game's. Shown for Change CD..., in the game's window: Esc
+/// goes back to the game.
 pub struct DropScreen {
     surface: Surface,
     palette: [[u8; 3]; 256],
     fonts: Vec<Font>,
-    /// Change CD..., in the game's window: Esc goes back to the game.
-    in_game: bool,
     error: Option<String>,
 }
 
 impl DropScreen {
     #[must_use]
-    pub fn new(in_game: bool, dark: bool) -> DropScreen {
+    pub fn new(dark: bool) -> DropScreen {
         let mut palette = [[0; 3]; 256];
         let colours = if dark {
             [
@@ -248,7 +263,6 @@ impl DropScreen {
             surface: Surface::new(1, 1),
             palette,
             fonts: engine::assets::bundled_fonts(),
-            in_game,
             error: None,
         };
         s.draw();
@@ -335,15 +349,7 @@ impl DropScreen {
             DIM,
             tr("There's no file dialog here to choose it with (no xdg-desktop-portal, no zenity)."),
         );
-        add(
-            &small,
-            DIM,
-            tr(if self.in_game {
-                "Esc goes back to the game."
-            } else {
-                "It can be given on the command line too. Closing the window quits."
-            }),
-        );
+        add(&small, DIM, tr("Esc goes back to the game."));
         if let Some(e) = &self.error {
             add(&small, TEXT, "");
             add(&small, ERROR, e);
@@ -399,7 +405,7 @@ mod tests {
 
     #[test]
     fn wraps_at_spaces() {
-        let s = DropScreen::new(false, false);
+        let s = DropScreen::new(false);
         let font = s.font(16).unwrap();
         let one = wrap(&font, "Drop the game's CD image", 10_000);
         assert_eq!(one, vec![b"Drop the game's CD image".to_vec()]);

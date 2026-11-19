@@ -89,8 +89,7 @@ pub fn root(pvd: &[u8]) -> Result<Extent, Error> {
 #[must_use]
 pub fn volume_name(pvd: &[u8]) -> String {
     pvd.get(40..72)
-        .map(|n| String::from_utf8_lossy(n).trim_matches([' ', '\0']).to_owned())
-        .unwrap_or_default()
+        .map_or_default(|n| String::from_utf8_lossy(n).trim_matches([' ', '\0']).to_owned())
 }
 
 fn extent(record: &[u8]) -> Extent {

@@ -647,11 +647,8 @@ impl FileDialog {
         };
         // A pattern lists what it takes.
         if text.contains(['*', '?']) {
-            let pattern = p
-                .file_name()
-                .map(|n| n.to_string_lossy().into_owned())
-                .unwrap_or_default();
-            let dir = p.parent().map(Path::to_path_buf).unwrap_or_default();
+            let pattern = p.file_name().map_or_default(|n| n.to_string_lossy().into_owned());
+            let dir = p.parent().map_or_default(Path::to_path_buf);
             if !fs.is_dir(&dir) {
                 return self.tell(&trf(
                     "{}\nPath not found.\nPlease verify the correct path was given.",
@@ -669,7 +666,7 @@ impl FileDialog {
             self.go(assets, fs, &p);
             return Outcome::Open;
         }
-        let dir = p.parent().map(Path::to_path_buf).unwrap_or_default();
+        let dir = p.parent().map_or_default(Path::to_path_buf);
         if !fs.is_dir(&dir) {
             return self.tell(&trf(
                 "{}\nPath not found.\nPlease verify the correct path was given.",

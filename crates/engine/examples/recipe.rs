@@ -75,10 +75,7 @@ fn tag(s: &str) -> Tag {
 
 /// Windows-1252 bytes of `s`, line breaks as `\r\n`.
 fn ansi(s: &str) -> Vec<u8> {
-    s.replace('\n', "\r\n")
-        .chars()
-        .map(|c| u8::try_from(u32::from(c)).unwrap_or(b'?'))
-        .collect()
+    engine::text::encode(&s.replace('\n', "\r\n"))
 }
 
 /// The widget of `recipe`, and its title.
@@ -158,14 +155,12 @@ fn build(assets: &Assets, recipe: &str, file: &Path) -> (Document, Option<String
 
 /// Recipes in `dir`, in name order.
 fn recipes(dir: &Path) -> Vec<PathBuf> {
-    let mut v: Vec<PathBuf> = std::fs::read_dir(dir)
-        .map(|rd| {
-            rd.flatten()
-                .map(|e| e.path())
-                .filter(|p| p.extension().is_some_and(|x| x == "txt"))
-                .collect()
-        })
-        .unwrap_or_default();
+    let mut v: Vec<PathBuf> = std::fs::read_dir(dir).map_or_default(|rd| {
+        rd.flatten()
+            .map(|e| e.path())
+            .filter(|p| p.extension().is_some_and(|x| x == "txt"))
+            .collect()
+    });
     v.sort();
     v
 }
@@ -174,6 +169,10 @@ fn main() {
     let mut args: Vec<String> = std::env::args().skip(1).collect();
     let data: Box<dyn Source> = match args.iter().position(|a| a == "--data") {
         Some(i) => {
+            if i + 1 >= args.len() {
+                eprintln!("--data needs a data pack's folder: --data DIR");
+                std::process::exit(2);
+            }
             let dir = args.remove(i + 1);
             args.remove(i);
             Box::new(Dir(PathBuf::from(dir)))
@@ -185,7 +184,14 @@ fn main() {
         sounds: None,
         data: Some(data.as_ref()),
     };
-    let assets = Assets::load_with(None, packs, None).unwrap();
+    let mut assets = Assets::load_with(None, packs, None).unwrap();
+    // The data pack's language (its word for Cancel), as the game takes
+    // it: new parts' words (a Label's, a Message Box's) come in it.
+    assets.lang = assets
+        .string(0xf221)
+        .and_then(|w| engine::lang::Lang::of_cancel(&w))
+        .unwrap_or_default();
+    engine::lang::set(assets.lang);
     if args.first().map(String::as_str) == Some("--parts") {
         for class in engine::gadgets::CLASSES {
             let name = String::from_utf8_lossy(&class.tag.0).into_owned();

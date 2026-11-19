@@ -361,8 +361,7 @@ impl DrawCx<'_> {
     pub fn points(&self, id: u32) -> Vec<formats::tables::Point> {
         self.assets
             .get(crate::assets::Module::Gadget, crate::assets::rt::POINTS, id)
-            .map(formats::tables::points)
-            .unwrap_or_default()
+            .map_or_default(formats::tables::points)
     }
 
     /// The palette index nearest `rgb`, as Windows maps a pen or text
@@ -548,8 +547,7 @@ impl Behavior for Unknown {
 pub fn knots(assets: &Assets, sheet: u32) -> Vec<Knot> {
     assets
         .get(crate::assets::Module::Gadget, crate::assets::rt::KNOTS, sheet)
-        .map(formats::tables::knots)
-        .unwrap_or_default()
+        .map_or_default(formats::tables::knots)
         .into_iter()
         .map(|def| Knot { def, wire: None })
         .collect()

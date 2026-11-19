@@ -105,7 +105,7 @@ pub(crate) fn watch_drops() {
 
 /// The files dropped and read since last time.
 pub(crate) fn take_drops() -> Vec<DroppedFile> {
-    DROPS.with_borrow_mut(|d| d.as_mut().map(std::mem::take).unwrap_or_default())
+    DROPS.with_borrow_mut(|d| d.as_mut().map_or_default(std::mem::take))
 }
 
 /// Hands `data` to the player as a download named `name` (an `<a

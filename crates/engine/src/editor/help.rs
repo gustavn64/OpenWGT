@@ -1623,8 +1623,7 @@ impl Help {
                             LinkAction::Jump(h) | LinkAction::Popup(h) => self.file.topic_for_hash(*h),
                             LinkAction::Macro(_) => None,
                         })
-                        .map(|t| t.title.clone())
-                        .unwrap_or_default(),
+                        .map_or_default(|t| t.title.clone()),
                 )
             })
             .filter(|(rect, _)| !rect.intersect(r.pane).is_empty())

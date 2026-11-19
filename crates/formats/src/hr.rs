@@ -307,6 +307,8 @@ fn encode_frame(img: &Image, out: &mut Vec<u8>) {
             row.extend_from_slice(&px[x..x + n]);
             x += n;
         }
+        // Capped: a longer row's length doesn't fit, but no reader uses
+        // it (the blitter and `decode_into` skip the two bytes).
         let len = u16::try_from(row.len() + 2).unwrap_or(0xfff).min(0xfff);
         out.extend_from_slice(&(0xf000 | len).to_be_bytes());
         out.extend_from_slice(&row);
