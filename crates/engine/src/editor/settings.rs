@@ -523,7 +523,6 @@ mod tests {
     #[test]
     fn keys_and_switches() {
         // The underlined letters are the English labels'.
-        let _lang = crate::lang::hold();
         crate::lang::set(Lang::En);
         let mut b = SettingsBox {
             scale: Scale::Auto,

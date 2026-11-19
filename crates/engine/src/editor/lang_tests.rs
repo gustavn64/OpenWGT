@@ -51,7 +51,6 @@ fn next_language(e: &mut Editor, letter: u8) -> Lang {
 
 #[test]
 fn the_widget_stays_as_the_language_changes() {
-    let _lang = crate::lang::hold();
     let mut e = Editor::new(packs(Lang::En), Document::new(), 800, 600);
     let id = e.doc.new_id();
     let label = doc::new_gadget(&e.assets, Tag(*b"TxLb"), id, 120, 200);
@@ -108,7 +107,6 @@ fn the_widget_stays_as_the_language_changes() {
 
 #[test]
 fn a_puzzle_comes_again_in_the_new_language() {
-    let _lang = crate::lang::hold();
     let mut e = Editor::new(packs(Lang::En), Document::new(), 800, 600);
     assert!(e.load_puzzle(3));
     let english = saved(&mut e);
@@ -133,7 +131,6 @@ fn a_puzzle_comes_again_in_the_new_language() {
 
 #[test]
 fn the_help_follows_the_language() {
-    let _lang = crate::lang::hold();
     let mut e = Editor::new(packs(Lang::En), Document::new(), 800, 600);
     e.command(cmd::CONTENTS);
     let english = e.help.as_ref().expect("the help opens").topic().title.clone();

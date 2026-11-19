@@ -500,7 +500,6 @@ mod tests {
             return;
         };
         // The Swedish game makes the port speak Swedish.
-        let _lang = crate::lang::hold();
         let assets = Assets::load(Some(&Dir(dir.into())), None).unwrap();
         let mut e = Editor::new(assets, Document::new(), 640, 433);
         assert!(e.load_puzzle(1));

@@ -85,32 +85,44 @@ impl Lang {
     }
 }
 
+#[cfg(not(test))]
 static CURRENT: AtomicU8 = AtomicU8::new(0);
+
+// In tests the language is each test's own (each runs on a thread of
+// its own, starting in English), so that one switching it can't change
+// another's words halfway.
+#[cfg(test)]
+thread_local! {
+    static CURRENT: AtomicU8 = const { AtomicU8::new(0) };
+}
+
+fn store(n: u8) {
+    #[cfg(not(test))]
+    CURRENT.store(n, Ordering::Relaxed);
+    #[cfg(test)]
+    CURRENT.with(|c| c.store(n, Ordering::Relaxed));
+}
+
+fn load() -> u8 {
+    #[cfg(not(test))]
+    return CURRENT.load(Ordering::Relaxed);
+    #[cfg(test)]
+    CURRENT.with(|c| c.load(Ordering::Relaxed))
+}
 
 /// Makes `lang` the language of the port's own words from now on.
 pub fn set(lang: Lang) {
-    CURRENT.store(
-        match lang {
-            Lang::En => 0,
-            Lang::Sv => 1,
-            Lang::Fr => 2,
-        },
-        Ordering::Relaxed,
-    );
-}
-
-/// For tests that change the language or depend on it (it's one for the
-/// whole process, and tests run at once): held, no other such test runs.
-#[cfg(test)]
-pub(crate) fn hold() -> std::sync::MutexGuard<'static, ()> {
-    static LOCK: std::sync::Mutex<()> = std::sync::Mutex::new(());
-    LOCK.lock().unwrap_or_else(std::sync::PoisonError::into_inner)
+    store(match lang {
+        Lang::En => 0,
+        Lang::Sv => 1,
+        Lang::Fr => 2,
+    });
 }
 
 /// The current language.
 #[must_use]
 pub fn current() -> Lang {
-    match CURRENT.load(Ordering::Relaxed) {
+    match load() {
         1 => Lang::Sv,
         2 => Lang::Fr,
         _ => Lang::En,
