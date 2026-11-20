@@ -157,6 +157,7 @@ impl Editor {
 
     pub(super) fn put_puzzle(&mut self, doc: Document) {
         self.stop();
+        self.debug.forget();
         self.sel = Sel::None;
         self.doc = doc;
         self.tray.reset_counts();

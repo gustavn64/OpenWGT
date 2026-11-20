@@ -896,6 +896,7 @@ impl Editor {
     /// the Pointer, no undo (`0x416348`).
     fn install(&mut self, doc: Document, path: Option<String>) {
         self.stop();
+        self.debug.forget();
         self.doc = doc;
         self.undo = None;
         self.tray.reset_counts();

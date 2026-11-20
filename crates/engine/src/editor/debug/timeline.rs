@@ -153,6 +153,15 @@ pub struct Timeline {
 }
 
 impl Timeline {
+    /// Forgets the run recorded (another widget).
+    pub fn forget(&mut self) {
+        self.start = None;
+        self.frames = Vec::new();
+        self.end = 0;
+        self.pending.clear();
+        self.full = false;
+    }
+
     /// Whether the tick at `t` replays what was recorded.
     fn plays(&self, t: u32) -> bool {
         self.start.is_some() && t < self.end && (t as usize) < self.frames.len()

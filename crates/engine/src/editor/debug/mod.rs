@@ -209,9 +209,13 @@ impl Debugger {
         self.names.get(&id).map(String::as_str)
     }
 
-    /// Forgets the names (another widget).
-    fn forget(&mut self) {
+    /// Forgets what was of the widget (another one comes): the names, the
+    /// probes, watches and breakpoints, the run recorded.
+    pub(super) fn forget(&mut self) {
         self.names.clear();
         self.ended = None;
+        self.observed = probes::Observed::default();
+        self.timeline.forget();
+        self.time = graph::Time::default();
     }
 }

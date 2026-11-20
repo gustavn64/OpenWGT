@@ -328,3 +328,16 @@ fn seek_speed() {
         );
     }
 }
+
+#[test]
+fn another_widget_forgets_the_record_and_the_probes() {
+    let mut e = tools();
+    add(&mut e, *b"swit", 150, 280);
+    e.graph(&select::parse("Switch").unwrap()).unwrap();
+    e.run();
+    e.step(20).unwrap();
+    e.stop();
+    e.new_widget();
+    assert_eq!(e.debug.observed.probes, []);
+    assert!(e.seek(10).is_err());
+}
