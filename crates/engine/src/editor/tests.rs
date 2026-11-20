@@ -512,20 +512,30 @@ fn recorder_imports_wave_files() {
 }
 
 #[test]
+fn typing_takes_the_layouts_letters() {
+    let Some(mut e) = editor() else { return };
+    let g = add(&mut e, *b"TxLb", 100, 200);
+    e.open_settings(g);
+    click_control(&mut e, 109);
+    // A Swedish keyboard's letters, AltGr's `@`; what Windows-1252 lacks
+    // is left out. The key presses themselves type nothing.
+    e.key_down(u16::from(b'A'));
+    e.text_input("åäö@é€жx");
+    click_control(&mut e, 1);
+    assert_eq!(crate::text::decode(e.doc.gadgets[g].core.settings.label(0)), "åäö@é€x");
+}
+
+#[test]
 fn label_ok_measures_the_new_text() {
     let Some(mut e) = editor() else { return };
     let g = add(&mut e, *b"TxLb", 100, 200);
     let before = e.doc.gadgets[g].core.bounds;
     e.open_settings(g);
     click_control(&mut e, 106);
-    for _ in 0..10 {
-        e.key_down(u16::from(b'W'));
-    }
+    e.text_input(&"w".repeat(10));
     // Clear Text, then the text again; then OK.
     click_control(&mut e, 109);
-    for _ in 0..20 {
-        e.key_down(u16::from(b'W'));
-    }
+    e.text_input(&"w".repeat(20));
     click_control(&mut e, 1);
     assert!(e.dialog.is_none());
     let after = e.doc.gadgets[g].core.bounds;
@@ -653,9 +663,7 @@ fn help_index_shows_the_topic() {
     assert!(e.help.as_ref().unwrap().index_open());
     e.draw();
     // Typing finds the keyword; Enter is Display.
-    for k in *b"THE TO" {
-        e.key_down(u16::from(k));
-    }
+    e.text_input("the to");
     e.key_down(VK_RETURN);
     let h = e.help.as_ref().unwrap();
     assert!(!h.index_open());

@@ -1519,12 +1519,19 @@ impl Help {
         self.scroll_to(assets, x, y - dy.signum() * 3 * LINE);
     }
 
+    /// Text typed while the window has the keyboard: the Index's search.
+    pub fn text_input(&mut self, typed: &str) {
+        if let Some(d) = &mut self.index {
+            d.text_input(typed);
+        }
+    }
+
     /// A key while the window has the keyboard. `alt` with a letter is a
     /// button's mnemonic, as is the letter alone (the button bar takes
     /// them without Alt).
     pub fn key(&mut self, assets: &Assets, vk: u16, shift: bool) -> Outcome {
         if let Some(d) = &mut self.index {
-            match d.key(vk, shift) {
+            match d.key(vk) {
                 IndexOutcome::Open => {}
                 IndexOutcome::Cancel => self.index = None,
                 IndexOutcome::Display(off) => {
@@ -2055,7 +2062,7 @@ impl IndexDialog {
         }
     }
 
-    fn key(&mut self, vk: u16, shift: bool) -> IndexOutcome {
+    fn key(&mut self, vk: u16) -> IndexOutcome {
         let sel = self.sel.unwrap_or(0);
         let rows = self.rows();
         match vk {
@@ -2069,14 +2076,14 @@ impl IndexDialog {
                 self.typed.pop();
                 self.typed_changed();
             }
-            _ => {
-                if let Some(c) = super::prompt::typed(vk, shift) {
-                    self.typed.push(c);
-                    self.typed_changed();
-                }
-            }
+            _ => {}
         }
         IndexOutcome::Open
+    }
+
+    fn text_input(&mut self, typed: &str) {
+        self.typed.push_str(typed);
+        self.typed_changed();
     }
 
     fn draw(&self, s: &mut Surface, assets: &Assets, title: &str) {

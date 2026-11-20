@@ -2241,6 +2241,43 @@ impl Editor {
 
     // ---- keys -------------------------------------------------------
 
+    /// Text typed in the keyboard's layout, after its key's
+    /// [`Editor::key_down`]: into the text field that has the keyboard,
+    /// as Windows' `WM_CHAR` went to the original's edit controls.
+    /// Characters Windows-1252 lacks (the game's font, the file) are left
+    /// out.
+    pub fn text_input(&mut self, typed: &str) {
+        let typed: String = typed
+            .chars()
+            .filter(|&c| c == '?' || crate::text::encode(c.encode_utf8(&mut [0; 4])) != b"?")
+            .collect();
+        if typed.is_empty()
+            || self.recording.is_some()
+            || self.about.is_some()
+            || self.prompt.is_some()
+            || self.settings.is_some()
+        {
+            return;
+        }
+        if self.file_dialog.is_some() {
+            self.file_text(&typed);
+            return;
+        }
+        if let Some(d) = &mut self.dialog {
+            d.text_input(&typed);
+            return;
+        }
+        if self.puzzle_dialog.is_some() {
+            return;
+        }
+        if let Some(h) = &mut self.help
+            && h.active
+            && !self.menu.is_open()
+        {
+            h.text_input(&typed);
+        }
+    }
+
     pub fn key_down(&mut self, vk: u16) {
         if !self.env.keys_held.contains(&vk) {
             self.env.keys_held.push(vk);
@@ -2282,7 +2319,7 @@ impl Editor {
             return;
         }
         if let Some(mut d) = self.dialog.take() {
-            let r = d.key(vk, self.shift);
+            let r = d.key(vk);
             self.dialog_result(d, r);
             return;
         }
