@@ -512,6 +512,59 @@ fn recorder_imports_wave_files() {
 }
 
 #[test]
+fn fields_select_copy_cut_and_paste() {
+    let Some(mut e) = editor() else { return };
+    let copied = std::rc::Rc::new(std::cell::RefCell::new(Vec::<String>::new()));
+    let sink = std::rc::Rc::clone(&copied);
+    e.set_links(Links {
+        base: "https://example.org/widget.html".to_owned(),
+        copy: Box::new(move |t| {
+            sink.borrow_mut().push(t.to_owned());
+            true
+        }),
+        paste: Box::new(|| {}),
+    });
+    let ctrl = |e: &mut Editor, vk: u16| {
+        e.key_down(VK_CONTROL);
+        e.key_down(vk);
+        e.key_up(vk);
+        e.key_up(VK_CONTROL);
+    };
+    let g = add(&mut e, *b"TxLb", 100, 200);
+    e.open_settings(g);
+    click_control(&mut e, 109);
+    e.text_input("hello world");
+    // Shift+Left five times selects "world"; Ctrl+C copies it; typing
+    // replaces it.
+    e.key_down(VK_SHIFT);
+    for _ in 0..5 {
+        e.key_down(0x25);
+    }
+    e.key_up(VK_SHIFT);
+    ctrl(&mut e, u16::from(b'C'));
+    assert_eq!(copied.borrow().last().map(String::as_str), Some("world"));
+    e.text_input("there");
+    // Home, Ctrl+Right, Delete: the word's space goes.
+    e.key_down(0x24);
+    e.key_down(VK_CONTROL);
+    e.key_down(0x27);
+    e.key_up(VK_CONTROL);
+    e.key_down(0x25);
+    e.key_down(VK_DELETE);
+    // Ctrl+A, Ctrl+X: all of it to the clipboard, the field empty.
+    ctrl(&mut e, u16::from(b'A'));
+    ctrl(&mut e, u16::from(b'X'));
+    assert_eq!(copied.borrow().last().map(String::as_str), Some("hellothere"));
+    // Ctrl+V asks for the clipboard; its text comes into the field, not
+    // as a link, without what Windows-1252 lacks.
+    ctrl(&mut e, u16::from(b'V'));
+    e.paste_link("ab ß жc");
+    assert!(e.prompt.is_none());
+    click_control(&mut e, 1);
+    assert_eq!(crate::text::decode(e.doc.gadgets[g].core.settings.label(0)), "ab ß c");
+}
+
+#[test]
 fn typing_takes_the_layouts_letters() {
     let Some(mut e) = editor() else { return };
     let g = add(&mut e, *b"TxLb", 100, 200);
