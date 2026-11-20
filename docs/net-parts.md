@@ -103,6 +103,20 @@ the browser, open the page twice, e.g. `http://localhost:8000/?open` and
 `cargo test -p openwgt -- --ignored` runs an end-to-end test of two and
 three editors through a relay (`OPENWGT_RELAY`, default the local one).
 
+A Sender in the browser, end to end, headless: build the page
+(`tools/build-web.sh --out DIR`) and serve it, write a widget link (a
+number wired to a Sender) and run `tools/opennet/browser-sender.mjs`,
+which listens on the relay, opens the link in Chromium, presses GO and
+waits for the number:
+
+```sh
+SENDER_CHANNEL=web-test-1 SENDER_PAGE='http://127.0.0.1:8123/?open' SENDER_LINK=link.txt \
+  cargo test -p engine -- --ignored browser_sender_link
+python3 -m http.server -d DIR 8123 &
+TMPDIR=~/.cache/chr nix shell nixpkgs#nodejs nixpkgs#chromium -c node tools/opennet/browser-sender.mjs \
+  wss://gustavn.se/openwgt/relay web-test-1 "$(cat link.txt)" chromium 42
+```
+
 ## Examples: is it a prime?
 
 `examples/net/` has four widgets that answer whether a number is a prime,

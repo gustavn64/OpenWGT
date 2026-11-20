@@ -316,3 +316,31 @@ fn the_editor_keeps_the_parts_talking() {
     e.update(16, (0, 0, 0));
     assert!(fake.dropped(0));
 }
+
+/// A widget link for the browser test of a Sender
+/// (tools/opennet/browser-sender.mjs, docs/net-parts.md):
+/// a Mini Number of 42 wired to a Sender on `$SENDER_CHANNEL`, for the page
+/// `$SENDER_PAGE`; written to `$SENDER_LINK`.
+#[test]
+#[ignore = "writes a link for the browser test"]
+fn browser_sender_link() {
+    let (Ok(channel), Ok(page), Ok(out)) = (
+        std::env::var("SENDER_CHANNEL"),
+        std::env::var("SENDER_PAGE"),
+        std::env::var("SENDER_LINK"),
+    ) else {
+        return;
+    };
+    let e = editor(Lang::En);
+    let mut doc = Document::new();
+    let mut c = doc::new_gadget(&e.assets, crate::gadget::Tag(*b"MiCo"), doc.new_id(), 300, 300);
+    c.core.settings.set_label(0, b"42");
+    c.behavior.settings_changed(&mut c.core);
+    let mut s = doc::new_gadget(&e.assets, SENDER, doc.new_id(), 450, 300);
+    s.core.settings.set_label(0, channel.as_bytes());
+    s.behavior.settings_changed(&mut s.core);
+    doc.gadgets.push(s);
+    doc.gadgets.push(c);
+    doc.connect(1, 0, 0, 0, Vec::new(), 0).unwrap();
+    std::fs::write(out, crate::link::encode(&page, Some("SEND42.WGT"), &doc.save())).unwrap();
+}
