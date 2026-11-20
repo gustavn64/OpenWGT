@@ -135,6 +135,11 @@
             libarchive
             qemu
           ];
+          # QuickJS (scripts in JavaScript) in the browser build: a clang
+          # that targets wasm32 (unwrapped: the wrapper adds the host's
+          # flags) and an archiver that indexes wasm objects.
+          CC_wasm32_unknown_unknown = "${pkgs.llvmPackages.clang-unwrapped}/bin/clang";
+          AR_wasm32_unknown_unknown = "${pkgs.llvmPackages.llvm}/bin/llvm-ar";
           LD_LIBRARY_PATH = pkgs.lib.makeLibraryPath (runtimeLibs pkgs);
           # tools/opengfx finds DejaVu and Liberation with fc-match.
           FONTCONFIG_FILE = pkgs.makeFontsConf {

@@ -641,6 +641,12 @@ fn default_cd() -> PathBuf {
 
 #[cfg(not(target_arch = "wasm32"))]
 fn main() {
+    // Scripting spike (phase 0).
+    #[cfg(feature = "js-spike")]
+    if std::env::args().nth(1).as_deref() == Some("--js-spike") {
+        print!("{}", script_js_spike::run_all());
+        return;
+    }
     // A panic's message in a box too when started from the icon.
     let report = std::panic::take_hook();
     std::panic::set_hook(Box::new(move |info| {
