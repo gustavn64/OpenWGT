@@ -1798,6 +1798,7 @@ impl Editor {
         self.ui_sound(snd::TAKEN);
         let id = self.doc.new_id();
         let mut gadget = doc::new_gadget(&self.assets, tag, id, -2000, -2000);
+        crate::net::parts::name_new(&mut gadget.core);
         gadget.behavior.layout(&mut gadget.core, &self.assets);
         let b = gadget.core.bounds;
         let mut hot = (i32::from(b.width()) / 2, i32::from(b.height()) / 2);
@@ -2806,5 +2807,7 @@ fn floating(doc: &Document, dragged: Option<usize>, w: usize) -> Option<usize> {
 mod file_tests;
 #[cfg(test)]
 mod lang_tests;
+#[cfg(test)]
+mod net_tests;
 #[cfg(test)]
 mod tests;

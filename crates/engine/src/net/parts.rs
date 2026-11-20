@@ -61,6 +61,15 @@ pub fn channel(core: &Core) -> String {
     clean_channel(&core.settings.label_str(0))
 }
 
+/// A part just taken from the tray: a network part gets a channel name
+/// of its own at once ([`super::random_channel`]); others are left as
+/// they are.
+pub fn name_new(core: &mut Core) {
+    if role(core.tag).is_some() {
+        core.settings.set_label(0, super::random_channel().as_bytes());
+    }
+}
+
 /// Keeps the channel name as the relay takes it, in the settings too, so
 /// that the dialog and a saved widget show what is used.
 fn keep_channel_clean(core: &mut Core) {

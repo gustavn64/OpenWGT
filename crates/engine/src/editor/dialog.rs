@@ -251,6 +251,8 @@ enum Handler {
     ResetRange,
     Record,
     Import,
+    /// The network parts' "Random": a new channel name.
+    Random,
 }
 
 /// The handler of push button `n` (counting OK and Cancel) of class `tag`.
@@ -262,6 +264,7 @@ fn handler(tag: Tag, n: usize) -> Option<Handler> {
         // The init's (`0x45a057`) and the fill's (`0x45a72e`).
         (b"Tape", 2) => Handler::Record,
         (b"Tape", 3) => Handler::Import,
+        (b"NSnd" | b"NRcv", 2) => Handler::Random,
         _ => return None,
     })
 }
@@ -939,6 +942,7 @@ impl Dialog {
             }
             Some(Handler::Record) => return Result::Record,
             Some(Handler::Import) => return Result::Import,
+            Some(Handler::Random) => self.set_edit(0, &crate::net::random_channel()),
             None => {}
         }
         Result::Open

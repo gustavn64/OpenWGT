@@ -42,6 +42,10 @@ pub const FOLDERS: [&[i8]; 7] = [
     &[52, 1, 2, 3, -2, 17, 27],
 ];
 
+/// The tray indexes there are counts for: the game's 64 (index 0 unused)
+/// and the network parts' (`crate::net::TRAY`).
+pub const SLOTS: usize = 65 + crate::net::TRAY.len();
+
 /// The slot area in the tray (`+0xb5c`): 350×40 at (67, 51).
 pub const AREA: IRect = IRect::new(67, 51, 417, 91);
 const AREA_W: i32 = 350;
@@ -74,10 +78,12 @@ const LOWER_X: i32 = 61;
 /// A row of the face the frame's sides are repeated from.
 const SIDE_ROW: i32 = 60;
 
-/// The tag of tray index `i` (`0x435c60`).
+/// The tag of tray index `i` (`0x435c60`), or the network parts'.
 #[must_use]
 pub fn tag_of(i: u8) -> Option<Tag> {
-    TAGS.get(usize::from(i).checked_sub(1)?).map(|t| Tag(**t))
+    TAGS.get(usize::from(i).checked_sub(1)?)
+        .map(|t| Tag(**t))
+        .or_else(|| crate::net::tray_tag(i))
 }
 
 /// The tray index of `tag` (`0x435c93`).
@@ -86,28 +92,48 @@ pub fn index_of(tag: Tag) -> Option<u8> {
     TAGS.iter()
         .position(|t| **t == tag.0)
         .and_then(|i| u8::try_from(i + 1).ok())
+        .or_else(|| crate::net::tray_index(tag))
 }
 
 /// Tray index `i`'s picture: sheet 898 frame `i` for 1..30, else sheet 899
-/// frame `i − 30` (`0x432229`).
+/// frame `i − 30` (`0x432229`); the network parts' their own.
 #[must_use]
 pub fn picture(i: u8) -> (u32, u16) {
-    if i <= 30 {
+    if let Some(p) = crate::net::tray_picture(i) {
+        p
+    } else if i <= 30 {
         (898, u16::from(i))
     } else {
         (899, u16::from(i) - 30)
     }
 }
 
-/// Every folder's pages, laid out by the parts' pictures' sizes.
-fn folders(assets: &Assets, pictures: &Pictures) -> Vec<Vec<Vec<Slot>>> {
-    let size = |i: u8| {
-        let (sheet, n) = picture(i);
-        pictures
-            .rect(assets, Module::Gadget, sheet, n)
-            .map_or((0, 0), |r| (i32::from(r.width()), i32::from(r.height())))
-    };
-    FOLDERS.iter().map(|l| layout(l, size)).collect()
+/// Each tray index's picture's size.
+fn sizes(assets: &Assets, pictures: &Pictures) -> Vec<(i32, i32)> {
+    (0..SLOTS)
+        .map(|i| {
+            let (sheet, n) = picture(u8::try_from(i).unwrap_or(0));
+            pictures
+                .rect(assets, Module::Gadget, sheet, n)
+                .map_or((0, 0), |r| (i32::from(r.width()), i32::from(r.height())))
+        })
+        .collect()
+}
+
+/// Every folder's pages, laid out by the parts' pictures' sizes; with the
+/// enhancements, the network parts' page too.
+fn folders(sizes: &[(i32, i32)], enhanced: bool) -> Vec<Vec<Vec<Slot>>> {
+    let size = |i: u8| sizes.get(usize::from(i)).copied().unwrap_or((0, 0));
+    (0..)
+        .zip(FOLDERS)
+        .map(|(f, l)| {
+            let mut list = l.to_vec();
+            if enhanced {
+                list.extend_from_slice(crate::net::tray_extra(f));
+            }
+            layout(&list, size)
+        })
+        .collect()
 }
 
 /// The tools (the radio group at `+0x620`; `0x432683`).
@@ -210,7 +236,7 @@ pub struct Tray {
     pub pages: Vec<usize>,
     pub folder: usize,
     /// Each tray index's count (−1 unlimited); index 0 unused.
-    pub counts: [i16; 65],
+    pub counts: [i16; SLOTS],
     /// The help line's current string id (`+0xc0c`) and text.
     pub help_id: i32,
     pub help: String,
@@ -221,6 +247,8 @@ pub struct Tray {
     slide_start: u64,
     /// The port's whole-folder tray.
     pub enhanced: bool,
+    /// Each tray index's picture's size, for the layout.
+    sizes: Vec<(i32, i32)>,
 }
 
 /// The tray's buttons (`0x431281`): the tools, the tabs and, unless
@@ -284,6 +312,7 @@ impl Tray {
     /// the first folder and its first page.
     #[must_use]
     pub fn new(assets: &Assets, pictures: &Pictures) -> Tray {
+        let sizes = sizes(assets, pictures);
         let mut t = Tray {
             bar: Bar {
                 pos: (54, 0),
@@ -293,16 +322,17 @@ impl Tray {
                 visible: true,
                 capture: None,
             },
-            folders: folders(assets, pictures),
+            folders: folders(&sizes, false),
             pages: vec![0; 7],
             folder: 0,
-            counts: [-1; 65],
+            counts: [-1; SLOTS],
             help_id: 0,
             help: String::new(),
             saved_tool: None,
             slides: Vec::new(),
             slide_start: 0,
             enhanced: false,
+            sizes,
         };
         t.bar.select(id::POINTER);
         t.bar.select(id::TAB0);
@@ -314,10 +344,8 @@ impl Tray {
     /// out by their pictures and the help line in their words; the tool,
     /// the folder, its page and the counts stay.
     pub fn set_assets(&mut self, assets: &Assets, pictures: &Pictures) {
-        self.folders = folders(assets, pictures);
-        for (page, pages) in self.pages.iter_mut().zip(&self.folders) {
-            *page = (*page).min(pages.len().saturating_sub(1));
-        }
+        self.sizes = sizes(assets, pictures);
+        self.lay_out();
         self.slides.clear();
         self.help = u32::try_from(self.help_id)
             .ok()
@@ -325,6 +353,14 @@ impl Tray {
             .unwrap_or_default();
         self.update_arrows();
         self.animate(self.slide_start);
+    }
+
+    /// The folders laid out again, the pages kept where they still are.
+    fn lay_out(&mut self) {
+        self.folders = folders(&self.sizes, self.enhanced);
+        for (page, pages) in self.pages.iter_mut().zip(&self.folders) {
+            *page = (*page).min(pages.len().saturating_sub(1));
+        }
     }
 
     #[must_use]
@@ -361,13 +397,14 @@ impl Tray {
     }
 
     /// Turns the port's enhanced tray on or off: its buttons, its size,
-    /// the current folder's first page.
+    /// the current folder's first page, and the network parts.
     pub fn set_enhanced(&mut self, on: bool) {
         if on == self.enhanced {
             return;
         }
         let (tool, tab) = (self.tool(), self.bar.selected(2));
         self.enhanced = on;
+        self.lay_out();
         self.bar.elements = elements(on);
         self.bar.capture = None;
         self.select_tool(tool);
@@ -591,7 +628,7 @@ impl Tray {
 
     /// Every count unlimited (`0x4329e0`).
     pub fn reset_counts(&mut self) {
-        self.counts = [-1; 65];
+        self.counts = [-1; SLOTS];
     }
 
     /// Applies a document's limits (`numG`, `0x432b3c`); unknown tags are
@@ -866,13 +903,14 @@ mod tests {
             }]]],
             pages: vec![0],
             folder: 0,
-            counts: [-1; 65],
+            counts: [-1; SLOTS],
             help_id: 0,
             help: String::new(),
             saved_tool: None,
             slides: Vec::new(),
             slide_start: 0,
             enhanced: false,
+            sizes: Vec::new(),
         };
         assert!(t.take(5));
         assert_eq!(t.counts[5], -1);

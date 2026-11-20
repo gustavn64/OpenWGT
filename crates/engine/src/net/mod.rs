@@ -64,6 +64,43 @@ impl Status {
     }
 }
 
+/// The network parts in the tray: their tray indexes, after the game's 64,
+/// and tags. Their help lines are strings `2500 +` the index, as the
+/// game's.
+pub const TRAY: [(u8, crate::gadget::Tag); 2] = [(65, parts::SENDER), (66, parts::RECEIVER)];
+/// Their folder, "Super Parts", where they have a page of their own at the
+/// end (`-2` starts it) while the port's enhancements are on.
+pub const TRAY_FOLDER: usize = 6;
+const TRAY_PAGE: [i8; 3] = [-2, 65, 66];
+/// The sheet of their pictures in the tray: frame 1 the Sender's, 2 the
+/// Receiver's.
+pub const TRAY_SHEET: u32 = 1902;
+
+/// The tag of tray index `i`, if it is a network part's.
+#[must_use]
+pub fn tray_tag(i: u8) -> Option<crate::gadget::Tag> {
+    TRAY.iter().find(|(n, _)| *n == i).map(|(_, t)| *t)
+}
+
+/// The tray index of a network part's `tag`.
+#[must_use]
+pub fn tray_index(tag: crate::gadget::Tag) -> Option<u8> {
+    TRAY.iter().find(|(_, t)| *t == tag).map(|(n, _)| *n)
+}
+
+/// Tray index `i`'s picture, if it is a network part's.
+#[must_use]
+pub fn tray_picture(i: u8) -> Option<(u32, u16)> {
+    let first = TRAY[0].0;
+    tray_tag(i).map(|_| (TRAY_SHEET, u16::from(i - first) + 1))
+}
+
+/// What the network parts add to folder `f`'s list of tray indexes.
+#[must_use]
+pub fn tray_extra(f: usize) -> &'static [i8] {
+    if f == TRAY_FOLDER { &TRAY_PAGE } else { &[] }
+}
+
 /// The longest channel name.
 pub const CHANNEL_MAX: usize = 20;
 
@@ -182,6 +219,21 @@ mod tests {
         unique.sort();
         unique.dedup();
         assert!(unique.len() > 45, "{names:?}");
+    }
+
+    #[test]
+    fn the_tray_knows_the_parts() {
+        assert_eq!(tray_tag(65), Some(parts::SENDER));
+        assert_eq!(tray_tag(66), Some(parts::RECEIVER));
+        assert_eq!((tray_tag(64), tray_tag(67), tray_tag(0)), (None, None, None));
+        assert_eq!(tray_index(parts::SENDER), Some(65));
+        assert_eq!(tray_index(parts::RECEIVER), Some(66));
+        assert_eq!(tray_index(crate::gadget::Tag::new(b"cnst")), None);
+        assert_eq!(tray_picture(65), Some((1902, 1)));
+        assert_eq!(tray_picture(66), Some((1902, 2)));
+        assert_eq!(tray_picture(30), None);
+        assert_eq!(tray_extra(TRAY_FOLDER), [-2, 65, 66]);
+        assert!((0..TRAY_FOLDER).all(|f| tray_extra(f).is_empty()));
     }
 
     #[test]
