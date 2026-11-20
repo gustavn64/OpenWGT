@@ -103,6 +103,40 @@ the browser, open the page twice, e.g. `http://localhost:8000/?open` and
 `cargo test -p openwgt -- --ignored` runs an end-to-end test of two and
 three editors through a relay (`OPENWGT_RELAY`, default the local one).
 
+## Examples: is it a prime?
+
+`examples/net/` has four widgets that answer whether a number is a prime,
+built only from the original game's parts between a Receiver and a
+Sender. Send a number to the channel `prime-quiz-ask` (a Slider or a
+Numeric Keypad wired to a Sender, in another window); each widget answers
+on its own channel: 1 if it is a prime, 0 if it isn't (or isn't a whole
+number 2 or more), -1 while that isn't known yet.
+
+| File | Answers on | Divisors it tries | Parts (and labels) |
+|---|---|---|---|
+| `prime-1-simple.wgt` | `prime-quiz-easy` | 2, 3, 4, 5... | 50 (+ 11) |
+| `prime-2-odd.wgt` | `prime-quiz-odd` | 2, then 3, 5, 7... | 59 (+ 11) |
+| `prime-3-wheel.wgt` | `prime-quiz-quick` | 2, 3, then 6k - 1 and 6k + 1, two at a time | 88 (+ 12) |
+| `prime-4-parallel.wgt` | `prime-quiz-swift` | 2, 3, then four at a time (12k + 1, 5, 7, 11) | 126 (+ 14) |
+
+Each tries divisors d until one divides N (0) or d x d > N (1); a new N
+starts it again. The game's number parts take about 80 ticks to work a
+number out (their animation), so a chain of them tries one divisor about
+every 1.2 seconds, and the faster widgets run several chains side by
+side. After a new N they wait 3 seconds (a Stopwatch) for the chains to
+settle. Seconds to the answer:
+
+| N | 1 | 2 | 3 | 4 |
+|---|---|---|---|---|
+| 97 | 12 | 7 | 5 | 4 |
+| 7919 | 104 | 54 | 20 | 12 |
+| 104729 | 379 | 191 | 66 | 34 |
+| 999983 | 1167 | 585 | 197 | 100 |
+
+The widgets are made, checked and written by
+`crates/engine/src/editor/prime_tests.rs` (`cargo test -p engine --
+--ignored write_prime_examples` writes them again).
+
 ## Privacy
 
 What goes to the relay, and from it to the other players on the same

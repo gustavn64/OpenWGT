@@ -2851,4 +2851,6 @@ mod lang_tests;
 #[cfg(test)]
 mod net_tests;
 #[cfg(test)]
+mod prime_tests;
+#[cfg(test)]
 mod tests;
