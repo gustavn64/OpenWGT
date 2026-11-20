@@ -15,5 +15,6 @@ pub mod opendata;
 pub mod opengfx;
 pub mod opensfx;
 pub mod puzzle;
+pub mod script;
 pub mod sim;
 pub mod text;

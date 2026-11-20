@@ -263,6 +263,42 @@ impl Slider {
         };
         Ext::from(hi).sub(lo).mul(t).add(lo).to_f64()
     }
+
+    /// Moves the knob to the place whose value is nearest `value`, as
+    /// dragging it there does (for scripts, `crate::script::adapt`), and
+    /// gives that value.
+    ///
+    /// # Errors
+    /// The slider's range, the knob unmoved, when `value` is outside it.
+    pub fn drag_to(&mut self, core: &mut Core, io: &mut Io<'_>, value: f64) -> Result<f64, (f64, f64)> {
+        let (_, track_w) = SliderGeom::load(io.assets, core.sheet).track();
+        let old = self.knob;
+        let (mut lo, mut hi) = (f64::INFINITY, f64::NEG_INFINITY);
+        let mut best: Option<(i16, f64)> = None;
+        for k in 0..=track_w.max(0) {
+            self.knob = k as i16;
+            let v = self.value(core, track_w);
+            (lo, hi) = (lo.min(v), hi.max(v));
+            if best.is_none_or(|(_, b)| (v - value).abs() < (b - value).abs()) {
+                best = Some((self.knob, v));
+            }
+        }
+        self.knob = old;
+        let half = if track_w > 0 {
+            (hi - lo) / f64::from(track_w) / 2.0
+        } else {
+            0.0
+        };
+        match best {
+            Some((k, v)) if value >= lo - half && value <= hi + half => {
+                self.knob = k;
+                core.number = v;
+                io.fire(core, 0);
+                Ok(v)
+            }
+            _ => Err((lo, hi)),
+        }
+    }
 }
 
 impl Behavior for Slider {

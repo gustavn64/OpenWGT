@@ -55,7 +55,7 @@ use winit::application::ApplicationHandler;
 use winit::dpi::{LogicalSize, PhysicalPosition};
 use winit::event::{ElementState, MouseButton, MouseScrollDelta, Touch, TouchPhase, WindowEvent};
 use winit::event_loop::{ActiveEventLoop, ControlFlow, EventLoop};
-use winit::keyboard::{KeyCode, ModifiersState, PhysicalKey};
+use winit::keyboard::{Key, KeyCode, ModifiersState, PhysicalKey};
 use winit::window::{CursorIcon, Fullscreen, Window, WindowId};
 
 pub use display::Error;
@@ -212,7 +212,7 @@ pub enum Button {
 }
 
 /// Input in framebuffer coordinates, which may lie outside it.
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[derive(Debug, Clone, PartialEq, Eq)]
 pub enum Input {
     MouseMove {
         x: i32,
@@ -244,6 +244,12 @@ pub enum Input {
     /// A Windows virtual-key code (`VK_*`), as `OnKeyDown` gets it.
     KeyDown(u16),
     KeyUp(u16),
+    /// Text a key typed, in the keyboard's own layout (`å`, `@` with
+    /// `AltGr`, a dead key's `é`), after its [`Input::KeyDown`]: what
+    /// Windows' `WM_CHAR` gave the original's text fields. No control
+    /// characters, and nothing while Ctrl (without Alt) or the
+    /// Command/Windows key is held, as those keys are shortcuts.
+    Text(String),
     /// The window's close button.
     Close,
 }
@@ -525,6 +531,9 @@ struct Runner<A> {
     /// Keys whose press toggled fullscreen, whose release the game
     /// doesn't get either.
     swallowed: Vec<KeyCode>,
+    /// The code each key held down was given, which its release gets too
+    /// (a letter's code follows the layout: [`layout_letter`]).
+    held: Vec<(KeyCode, u16)>,
     /// What the settings file gets at the end: the windowed size and
     /// position, and whether the window is fullscreen.
     remembered: WindowSettings,
@@ -796,8 +805,9 @@ impl<A: App> Runner<A> {
         }
     }
 
-    /// A key, unless it toggles fullscreen.
-    fn key(&mut self, code: KeyCode, pressed: bool, repeat: bool) {
+    /// A key, unless it toggles fullscreen; `letter` is the letter it
+    /// types in the keyboard's layout. Whether the game got it.
+    fn key(&mut self, code: KeyCode, letter: Option<u16>, pressed: bool, repeat: bool) -> bool {
         if pressed && fullscreen_key(code, self.modifiers) {
             if !repeat {
                 self.toggle_fullscreen();
@@ -805,17 +815,52 @@ impl<A: App> Runner<A> {
             if !self.swallowed.contains(&code) {
                 self.swallowed.push(code);
             }
-            return;
+            return false;
         }
         if !pressed && let Some(i) = self.swallowed.iter().position(|&c| c == code) {
             self.swallowed.swap_remove(i);
+            return false;
+        }
+        let Some(vk) = keys::virtual_key(code) else {
+            return false;
+        };
+        let held = self.held.iter().position(|&(c, _)| c == code);
+        let vk = match (pressed, held) {
+            (true, Some(i)) => self.held[i].1,
+            (true, None) => {
+                let vk = letter.unwrap_or(vk);
+                self.held.push((code, vk));
+                vk
+            }
+            (false, Some(i)) => self.held.swap_remove(i).1,
+            (false, None) => vk,
+        };
+        self.app
+            .input(if pressed { Input::KeyDown(vk) } else { Input::KeyUp(vk) });
+        pressed
+    }
+
+    /// The text a key typed, unless it's a shortcut.
+    fn typed(&mut self, text: &str) {
+        let m = self.modifiers;
+        if (m.control_key() && !m.alt_key()) || m.super_key() {
             return;
         }
-        if let Some(vk) = keys::virtual_key(code) {
-            self.app
-                .input(if pressed { Input::KeyDown(vk) } else { Input::KeyUp(vk) });
+        let text: String = text.chars().filter(|c| !c.is_control()).collect();
+        if !text.is_empty() {
+            self.app.input(Input::Text(text));
         }
     }
+}
+
+/// The letter key `key` is in the keyboard's layout, as Windows'
+/// virtual-key code (`A` on an AZERTY keyboard's Q key, as Windows has
+/// it): `None` for anything but a letter A to Z.
+fn layout_letter(key: &Key) -> Option<u16> {
+    let Key::Character(s) = key else { return None };
+    let mut chars = s.chars();
+    let c = chars.next()?;
+    (chars.next().is_none() && c.is_ascii_alphabetic()).then(|| u16::from(c.to_ascii_uppercase() as u8))
 }
 
 impl<A: App> ApplicationHandler for Runner<A> {
@@ -1034,7 +1079,12 @@ impl<A: App> Runner<A> {
                     audio::resume();
                 }
                 if let PhysicalKey::Code(code) = event.physical_key {
-                    self.key(code, event.state == ElementState::Pressed, event.repeat);
+                    let letter = layout_letter(&event.logical_key);
+                    if self.key(code, letter, event.state == ElementState::Pressed, event.repeat)
+                        && let Some(text) = &event.text
+                    {
+                        self.typed(text);
+                    }
                 }
             }
             WindowEvent::DroppedFile(path) if self.app.dropped_path(&path) => {}
@@ -1115,6 +1165,7 @@ pub fn run<A: App + 'static>(title: &str, options: WindowOptions, app: A) -> Res
         modifiers: ModifiersState::empty(),
         wheel: (0.0, 0.0),
         swallowed: Vec::new(),
+        held: Vec::new(),
         remembered: WindowSettings::default(),
         shown: Shown {
             title: title.to_owned(),
@@ -1160,6 +1211,17 @@ fn run_native<A: App>(mut runner: Runner<A>) -> Result<(), Error> {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn letters_follow_the_layout() {
+        let ch = |s: &str| Key::Character(s.into());
+        assert_eq!(layout_letter(&ch("a")), Some(0x41));
+        assert_eq!(layout_letter(&ch("Q")), Some(0x51));
+        assert_eq!(layout_letter(&ch("å")), None);
+        assert_eq!(layout_letter(&ch(";")), None);
+        assert_eq!(layout_letter(&ch("ab")), None);
+        assert_eq!(layout_letter(&Key::Named(winit::keyboard::NamedKey::Enter)), None);
+    }
 
     #[test]
     fn wheel_notches_add_up() {
