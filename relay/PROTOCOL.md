@@ -5,7 +5,7 @@ FORK-ONLY, LOCAL-ONLY: nothing of this is ever pushed to GitHub (no push to any 
 ## Transport
 WebSocket to `wss://gustavn.se/openwgt/relay/<channel>` (dev: `ws://127.0.0.1:8787/openwgt/relay/<channel>`; the game takes the base URL from a constant, overridable by env `OPENWGT_RELAY` natively and `?relay=` in the browser). Text frames, one JSON object each, at most 256 bytes.
 
-Channel name: 1–8 chars of `[a-z0-9]` (the game lowercases what the player types and drops other characters; the relay rejects anything else with close code 4000). One Durable Object per channel name.
+Channel name: 1–20 chars of `[a-z0-9-]`, no `-` at either end or twice in a row (the game lowercases what the player types, turns spaces and underscores into `-`, drops other characters, collapses repeated `-` and trims them from the ends; the relay rejects anything else with close code 4000). Random names are three short words from one English list of 2048, joined with hyphens, e.g. `cat-sun-oak` (the same list in every language), easy to say over the phone; typed names may have digits too. One Durable Object per channel name.
 
 ## Client → relay
 - `{"t":"hello","role":"send"|"recv","run":false|true,"v":1}` — first message; `v` = protocol version (relay closes with 4001 if unsupported).

@@ -16,9 +16,12 @@ const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 /** A fresh channel name, so tests don't see each other. */
 function channel() {
 	const abc = "abcdefghijklmnopqrstuvwxyz0123456789";
-	let s = "";
-	for (let i = 0; i < 8; i++) s += abc[Math.floor(Math.random() * abc.length)];
-	return s;
+	const word = () => {
+		let s = "";
+		for (let i = 0; i < 5; i++) s += abc[Math.floor(Math.random() * abc.length)];
+		return s;
+	};
+	return `${word()}-${word()}-${word()}`;
 }
 
 /** Every client, so a failed test doesn't leave the run hanging. */
@@ -318,9 +321,18 @@ test("the workers.dev path works too", async () => {
 });
 
 test("bad channel names are closed with 4000", async () => {
-	for (const ch of ["", "ABC", "a-b", "toolongxx", "a/b", "%C3%A5"]) {
+	for (const ch of ["", "ABC", "a_b", "-ab", "ab-", "a--b", "abcdefghij-klmnopqrst", "a/b", "%C3%A5", "a%20b"]) {
 		const c = await Client.open(ch);
 		await c.closedWith(4000);
+	}
+});
+
+test("channel names of up to 20 with hyphens are fine", async () => {
+	for (const ch of ["a", "cat-sun-oak", "abcdefghij-klmnopqrs", "kiwi42"]) {
+		const c = await Client.open(ch);
+		c.send({ t: "hello", role: "recv", run: false, v: 1 });
+		await c.expect(peer("none"));
+		await c.close();
 	}
 });
 

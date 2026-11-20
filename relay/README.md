@@ -23,8 +23,11 @@ Where the spec leaves room, the relay does this:
 
 - **Paths.** `/openwgt/relay/<channel>` and `/relay/<channel>` (for the
   workers.dev address), on any host. Another path is a 404; a request
-  without a WebSocket upgrade a 426. A bad channel name is accepted as a
-  WebSocket and closed at once with 4000, so the game sees the code.
+  without a WebSocket upgrade a 426. A channel name is 1 to 20 of `a-z`,
+  `0-9` and `-`, with no `-` at either end or two in a row (the form the
+  game cleans names into, so one name is one channel). A bad one is
+  accepted as a WebSocket and closed at once with 4000, so the game sees
+  the code.
 - **Hello.** Messages before the hello (other than `ping`) are dropped, and
   so is a second hello. A hello with `v` other than 1 closes with 4001; one
   with a bad `role` or a `run` that isn't true/false closes with 4002 (a

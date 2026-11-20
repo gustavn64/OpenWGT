@@ -14,7 +14,8 @@ import { DurableObject } from "cloudflare:workers";
 
 /** Where the relay answers: on gustavn.se and on workers.dev. */
 const PREFIXES = ["/openwgt/relay/", "/relay/"];
-const CHANNEL = /^[a-z0-9]{1,8}$/;
+/** A channel name: 1 to 20 of a-z, 0-9 and single hyphens between them. */
+const CHANNEL = /^(?=.{1,20}$)[a-z0-9]+(-[a-z0-9]+)*$/;
 const VERSION = 1;
 const MAX_BYTES = 256;
 const MAX_CONNECTIONS = 32;
