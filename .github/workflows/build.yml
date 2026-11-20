@@ -15,9 +15,10 @@ on:
     branches: ['master']
     tags: ['v*']
     # A push that changes only words for people (the docs, the READMEs,
-    # the packaging notes) builds nothing; a tag always builds. A pull
+    # the packaging notes) or the relay (relay/, a Cloudflare Worker that
+    # is deployed by hand) builds nothing; a tag always builds. A pull
     # request always builds, so its checks always report.
-    paths-ignore: ['**/*.md', 'docs/**', 'LICENSE']
+    paths-ignore: ['**/*.md', 'docs/**', 'LICENSE', 'relay/**']
   pull_request:
   workflow_dispatch:
 
