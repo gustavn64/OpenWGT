@@ -237,6 +237,14 @@ fn sv(en: &str) -> Option<&'static str> {
         "tick {}" => "tick {}",
         "paused" => "pausad",
         "changed, unread" => "ändrad, oläst",
+        "&Console\tF8" => "&Konsol\tF8",
+        "Console" => "Konsol",
+        "Stop" => "Stoppa",
+        "runs" => "kör",
+        "waits" => "väntar",
+        "line" => "rad",
+        "Scripts stopped." => "Skripten stoppade.",
+        "A script is running; try again when it waits." => "Ett skript kör; försök igen när det väntar.",
         // Links and downloads.
         "A link to {} is on the clipboard ({} characters)." => "En länk till {} ligger i Urklipp ({} tecken).",
         "the widget" => "uppfinningen",
@@ -401,6 +409,14 @@ fn fr(en: &str) -> Option<&'static str> {
         "tick {}" => "tick {}",
         "paused" => "en pause",
         "changed, unread" => "changé, pas encore lu",
+        "&Console\tF8" => "&Console\tF8",
+        "Console" => "Console",
+        "Stop" => "Arrêter",
+        "runs" => "tourne",
+        "waits" => "attend",
+        "line" => "ligne",
+        "Scripts stopped." => "Scripts arrêtés.",
+        "A script is running; try again when it waits." => "Un script tourne ; réessayez quand il attend.",
         // Links and downloads.
         "A link to {} is on the clipboard ({} characters)." => {
             "Un lien vers {} est dans le Presse-papiers ({} caractères)."

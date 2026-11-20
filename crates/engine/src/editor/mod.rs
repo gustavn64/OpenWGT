@@ -611,6 +611,7 @@ impl Editor {
             || self.about.is_some()
             || self.menu.covers(&self.assets, p)
             || self.help.as_ref().is_some_and(|h| h.contains(p))
+            || self.debug.covers(p)
         {
             return false;
         }
@@ -706,6 +707,7 @@ impl Editor {
     /// tick, or (editing) the hover selection (`0x424778`).
     pub fn update(&mut self, ms: u64, local_time: (u32, u32, u32)) {
         self.now += ms;
+        self.debug_frame(ms);
         self.env.local_time = local_time;
         self.tray.animate(self.now);
         if let Some(h) = &mut self.help {
@@ -1498,6 +1500,9 @@ impl Editor {
             // Any button closes the About window (`0x415300`).
             return;
         }
+        if self.debug_mouse_down(x, y, button) {
+            return;
+        }
         if button != Button::Left {
             self.env.right_down = true;
             return;
@@ -1854,6 +1859,9 @@ impl Editor {
         let p = Self::to_view((x, y));
         self.env.mouse = p;
         self.env.cursor_screen = (x, y);
+        if self.debug_mouse_up(x, y, button) {
+            return;
+        }
         if button != Button::Left {
             self.env.right_down = false;
             return;
@@ -2006,7 +2014,7 @@ impl Editor {
     /// The wheel scrolls the puzzle list or the help window under the
     /// pointer; the worksheet doesn't scroll.
     pub fn wheel(&mut self, _dx: i32, dy: i32) {
-        if self.prompt.is_some() {
+        if self.prompt.is_some() || self.debug_wheel(dy) {
             return;
         }
         if self.file_dialog.is_none()
@@ -2174,7 +2182,10 @@ impl Editor {
         if let Some((f, _)) = &self.file_dialog {
             return f.focused_text();
         }
-        self.dialog.as_ref().and_then(Dialog::focused_text)
+        self.dialog
+            .as_ref()
+            .and_then(Dialog::focused_text)
+            .or_else(|| self.debug_focused_text())
     }
 
     /// Replaces the focused text field's text (edited elsewhere).
@@ -2183,6 +2194,8 @@ impl Editor {
             f.set_focused_text(text);
         } else if let Some(d) = &mut self.dialog {
             d.set_focused_text(text);
+        } else {
+            self.debug_set_focused_text(text);
         }
     }
 
@@ -2296,7 +2309,7 @@ impl Editor {
             d.text_input(&typed);
             return;
         }
-        if self.puzzle_dialog.is_some() {
+        if self.puzzle_dialog.is_some() || self.debug_text(&typed) {
             return;
         }
         if let Some(h) = &mut self.help
@@ -2353,6 +2366,8 @@ impl Editor {
             d.text_input(&text.replace(['\r', '\n', '\t'], " "));
         } else if let Some(d) = &mut self.dialog {
             d.paste(&text);
+        } else {
+            self.debug_paste(&text);
         }
     }
 
@@ -2708,6 +2723,7 @@ impl Editor {
         if let Some(h) = &self.help {
             h.draw(s, &self.assets);
         }
+        self.debug.draw_windows(s, &self.assets);
         self.menu.draw(s, &self.assets, frame.width());
         if let Some(d) = &self.dialog {
             let g = d.gadget.and_then(|g| self.doc.gadgets.get(g));

@@ -174,13 +174,14 @@ impl Editor {
             h.since = self.now;
             h.tip = None;
         }
-        false
+        self.window_drag_move(x, y)
     }
 
     /// Before drawing: the note under a pointer still for
     /// [`HOVER_MS`] over the worksheet (with nothing held or open), and the
     /// status while the widget runs; none without the tools.
     pub(in crate::editor) fn debug_prepare(&mut self) {
+        self.windows_prepare();
         let h = &mut self.debug.hover;
         if h.mouse != self.mouse {
             h.mouse = self.mouse;

@@ -1115,6 +1115,61 @@ impl Runtime for CommandRuntime {
     fn set_limits(&mut self, limits: Limits) {
         self.limits = limits;
     }
+
+    /// The command names for the first word; after it the parts (their
+    /// names, labels, kinds and ids), a part's knots after its `.`, and
+    /// the words values and conditions use.
+    fn complete(&self, line: &str, cursor: usize, host: &dyn Host) -> Vec<String> {
+        let head = line.get(..cursor.min(line.len())).unwrap_or(line);
+        let start = head.rfind(char::is_whitespace).map_or(0, |i| i + 1);
+        let word = &head[start..];
+        if start == 0 || head[..start].trim().is_empty() {
+            return api::COMMANDS
+                .iter()
+                .filter(|c| c.name.starts_with(word))
+                .map(|c| c.name.to_owned())
+                .collect();
+        }
+        complete_arg(word, host)
+    }
+}
+
+/// What a command's argument starting `word` could be.
+fn complete_arg(word: &str, host: &dyn Host) -> Vec<String> {
+    let parts = host.parts();
+    // A knot of a part: `Gate.in2`.
+    if let Some(dot) = word.rfind('.')
+        && let Ok(sel) = super::select::parse(&word[..dot])
+        && let Ok(id) = host.resolve(&sel.part)
+        && let Some(p) = parts.iter().find(|p| p.id == id)
+    {
+        let (mut ins, mut outs) = (0, 0);
+        let mut v = Vec::new();
+        for k in &p.knots {
+            let (n, what) = if k.input { (&mut ins, "in") } else { (&mut outs, "out") };
+            *n += 1;
+            let name = if *n == 1 { what.to_owned() } else { format!("{what}{n}") };
+            v.push(format!("{}.{name}", &word[..dot]));
+        }
+        return v.into_iter().filter(|c| c.starts_with(word)).collect();
+    }
+    let mut v: Vec<String> = Vec::new();
+    for p in &parts {
+        v.push(format!("#{}", p.id.0));
+        v.push(p.kind.clone());
+        for n in p.name.iter().chain(&p.label) {
+            v.push(super::value::quote(n));
+        }
+    }
+    let words = [
+        "on", "off", "nothing", "picture", "changed", "running", "stopped", "solved", "not", "and", "or", "max",
+    ];
+    v.extend(words.iter().map(|w| (*w).to_owned()));
+    let low = word.to_lowercase();
+    v.retain(|c| c.to_lowercase().starts_with(&low));
+    v.sort();
+    v.dedup();
+    v
 }
 
 #[cfg(test)]

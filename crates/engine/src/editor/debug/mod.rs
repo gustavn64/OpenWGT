@@ -8,14 +8,20 @@
 //! The tools are there only with the enhancements on and their own
 //! switch in Settings ("Debugging tools", off at first).
 
+mod console;
+#[cfg(test)]
+mod console_tests;
 mod control;
 mod host;
+mod input;
 mod overlay;
 #[cfg(test)]
 mod tests;
 #[cfg(test)]
 mod ui_tests;
+mod window;
 
+pub use console::{Line, LineKind};
 pub use control::{Speed, is_command};
 
 use std::collections::{BTreeMap, VecDeque};
@@ -61,6 +67,20 @@ pub struct Debugger {
     /// without).
     pub scripts_running: bool,
     hover: overlay::Hover,
+    /// The tools' windows, the topmost last, and where the closed ones
+    /// were.
+    windows: Vec<window::Win>,
+    closed: Vec<window::Win>,
+    /// The window with the keyboard.
+    focus: Option<window::Kind>,
+    /// A window being dragged.
+    drag: Option<window::Drag>,
+    /// The windows' colours, from the game's palette.
+    colours: Option<window::Colours>,
+    /// The console: its log and line.
+    pub console: console::Console,
+    /// The languages it runs.
+    runtimes: console::Runtimes,
 }
 
 /// How the run goes under the tools.
@@ -94,6 +114,13 @@ impl Default for Debugger {
             stop_scripts: false,
             scripts_running: false,
             hover: overlay::Hover::default(),
+            windows: Vec::new(),
+            closed: Vec::new(),
+            focus: None,
+            drag: None,
+            colours: None,
+            console: console::Console::default(),
+            runtimes: console::Runtimes::default(),
         }
     }
 }

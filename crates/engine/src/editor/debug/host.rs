@@ -662,6 +662,7 @@ impl Host for Editor {
 
     fn log(&mut self, level: Level, msg: &str) {
         self.debug.sink.log(level, msg);
+        self.console_heard(level, msg);
     }
 
     fn screenshot(&mut self) -> Shot {

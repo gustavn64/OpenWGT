@@ -5,6 +5,7 @@
 use formats::dialog::MenuItem;
 
 use super::super::{Editor, TICKS_PER_SECOND, TickEnd, menu::Menu};
+use super::window::Kind;
 use crate::lang::tr;
 
 /// The Debug menu's commands (the port's own, after the others' 0x9001…).
@@ -18,16 +19,20 @@ pub mod cmd {
     pub const SPEED_10: u16 = 0x9016;
     pub const SPEED_60: u16 = 0x9017;
     pub const STOP_SCRIPTS: u16 = 0x9018;
+    pub const CONSOLE: u16 = 0x9019;
+    /// The last the tools may use.
+    pub const LAST: u16 = 0x902f;
 }
 
 /// F6 and F7: Pause and Step 1 Tick.
 const VK_F6: u16 = 0x75;
 const VK_F7: u16 = 0x76;
+const VK_F8: u16 = 0x77;
 
 /// Whether `id` is one of the Debug menu's commands.
 #[must_use]
 pub fn is_command(id: u16) -> bool {
-    (cmd::PAUSE..=cmd::STOP_SCRIPTS).contains(&id)
+    (cmd::PAUSE..=cmd::LAST).contains(&id)
 }
 
 /// How fast the run goes: the time the widget sees is the real time
@@ -106,6 +111,7 @@ fn items() -> Vec<MenuItem> {
         item(cmd::SPEED_10, tr("Slow Motion 1/1&0")),
         item(cmd::SPEED_60, tr("Slow Motion 1/&60")),
         MenuItem::Separator,
+        item(cmd::CONSOLE, tr("&Console\tF8")),
         item(cmd::STOP_SCRIPTS, tr("Stop Sc&ripts")),
     ]
 }
@@ -186,8 +192,11 @@ impl Editor {
         if !self.running {
             self.menu.grayed.push(cmd::PAUSE);
         }
-        if !self.debug.scripts_running {
+        if !self.debug.scripts_running && self.debug.runtimes.live().is_empty() {
             self.menu.grayed.push(cmd::STOP_SCRIPTS);
+        }
+        if self.debug.window(Kind::Console).is_some() {
+            self.menu.checked.push(cmd::CONSOLE);
         }
         if self.debug.run.paused {
             self.menu.checked.push(cmd::PAUSE);
@@ -215,7 +224,11 @@ impl Editor {
             }
             cmd::STEP_TICK => self.debug_step(1),
             cmd::STEP_SECOND => self.debug_step(u32::try_from(TICKS_PER_SECOND).unwrap_or(60)),
-            cmd::STOP_SCRIPTS => self.debug.stop_scripts = true,
+            cmd::STOP_SCRIPTS => {
+                self.debug.stop_scripts = self.debug.scripts_running;
+                self.stop_console_scripts();
+            }
+            cmd::CONSOLE => self.toggle_window(Kind::Console),
             _ => {
                 if let Some(s) = Speed::ALL.into_iter().find(|s| s.command() == id) {
                     self.debug.run.speed = s;
@@ -239,17 +252,23 @@ impl Editor {
         }
     }
 
-    /// The tools' keys, F6 and F7 (alone); whether `vk` was one.
+    /// The tools' keys, F6, F7 and F8 (alone), then the console's while it
+    /// has the keyboard; whether they took `vk`.
     pub(in crate::editor) fn debug_key(&mut self, vk: u16) -> bool {
-        if !self.debugging() || self.shift || self.ctrl || self.alt {
+        if !self.debugging() {
             return false;
         }
         let id = match vk {
-            VK_F6 => cmd::PAUSE,
-            VK_F7 => cmd::STEP_TICK,
-            _ => return false,
+            _ if self.shift || self.ctrl || self.alt => None,
+            VK_F6 => Some(cmd::PAUSE),
+            VK_F7 => Some(cmd::STEP_TICK),
+            VK_F8 => Some(cmd::CONSOLE),
+            _ => None,
         };
-        self.command(id);
-        true
+        if let Some(id) = id {
+            self.command(id);
+            return true;
+        }
+        self.console_has_keys() && self.console_key(vk)
     }
 }
