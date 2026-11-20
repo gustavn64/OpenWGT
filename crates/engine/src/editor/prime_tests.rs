@@ -341,7 +341,7 @@ fn build(assets: &Assets, v: &Variant) -> Document {
         // The divisor d: the first while not running, then d + step.
         let start = b.number(first);
         let dm = b.switch(Some(run_to[i]), start, None);
-        let d = b.split((dm, 3), 3);
+        let d = b.split((dm, 3), 4);
         let step = b.number(step);
         let next = b.crunch(*b"Addr", Some(d[0]), Some(step));
         b.wire(next, (dm, 2));
@@ -359,6 +359,9 @@ fn build(assets: &Assets, v: &Variant) -> Document {
         found.push(b.gate(*b"AndG", eq, ge));
         // Past the square root: Int(N / d) < d + 2 steps.
         prime.push(b.compare(0, Some(f[1]), Some(d[2])));
+        // The divisor tried, to watch.
+        let show = b.part(*b"di10", |_| {});
+        b.wire(d[3], (show, 0));
     }
     if fixed > 0 {
         let list: Vec<String> = v.fixed.iter().map(u32::to_string).collect();

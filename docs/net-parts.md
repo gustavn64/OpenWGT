@@ -128,13 +128,14 @@ number 2 or more), -1 while that isn't known yet.
 
 | File | Answers on | Divisors it tries | Parts (and labels) |
 |---|---|---|---|
-| `prime-1-simple.wgt` | `prime-quiz-easy` | 2, 3, 4, 5... | 50 (+ 11) |
-| `prime-2-odd.wgt` | `prime-quiz-odd` | 2, then 3, 5, 7... | 59 (+ 11) |
-| `prime-3-wheel.wgt` | `prime-quiz-quick` | 2, 3, then 6k - 1 and 6k + 1, two at a time | 88 (+ 12) |
-| `prime-4-parallel.wgt` | `prime-quiz-swift` | 2, 3, then four at a time (12k + 1, 5, 7, 11) | 126 (+ 14) |
+| `prime-1-simple.wgt` | `prime-quiz-easy` | 2, 3, 4, 5... | 51 (+ 11) |
+| `prime-2-odd.wgt` | `prime-quiz-odd` | 2, then 3, 5, 7... | 60 (+ 11) |
+| `prime-3-wheel.wgt` | `prime-quiz-quick` | 2, 3, then 6k - 1 and 6k + 1, two at a time | 90 (+ 12) |
+| `prime-4-parallel.wgt` | `prime-quiz-swift` | 2, 3, then four at a time (12k + 1, 5, 7, 11) | 130 (+ 14) |
 
 Each tries divisors d until one divides N (0) or d x d > N (1); a new N
-starts it again. The game's number parts take about 80 ticks to work a
+starts it again. A Ten-Digit Display at the end of each chain shows the
+divisor it's at. The game's number parts take about 80 ticks to work a
 number out (their animation), so a chain of them tries one divisor about
 every 1.2 seconds, and the faster widgets run several chains side by
 side. After a new N they wait 3 seconds (a Stopwatch) for the chains to
