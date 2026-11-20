@@ -1,8 +1,10 @@
 # The open parts' own pictures and data
 
 The open parts are the port's own parts for everyone, with nothing but
-the game's wires in and out (`engine::openparts`): so far the
-**Oscilloscope** (`Scop`, [docs/oscilloscope.md](../../docs/oscilloscope.md)).
+the game's wires in and out (`engine::openparts`): the
+**Oscilloscope** (`Scop`, [docs/oscilloscope.md](../../docs/oscilloscope.md))
+and the **scripted part** (`Scrp`, [docs/widget-scripts.md](../../docs/widget-scripts.md)),
+whose behaviour is a script's.
 Neither the CDs nor OpenWDATA have anything for them, so they bring their
 own pictures, dialogs, texts and tables, built into the program from
 `crates/engine/openparts` (and `openparts-sv`, `openparts-fr` for their
@@ -26,10 +28,16 @@ gadgets/<sheet>/<frame>.png  the pictures (draw.py)
 | Doc texts | `WWGADGET` 1020/2902 and the tip 4902 |
 | Settings dialog | `WIDGET` 5/2902 |
 | Strings | 2567 (the tray's name, block 161) |
+| The scripted part | sheet 1905: 1 the body (128 × 84; the name plate empty at `PLATE` (17, 5), 94 × 13), 2 the same with a padlock (its script not allowed), 3 an input's knot and stalk, 4 an output's (both placed by their rectangles about the knot point, so the game draws them only at the knots its script has) |
+| Its knots | `WWGADGET` 1014/1905: inputs (4, 30), (4, 44), (4, 58), (4, 72), then outputs at (123, …) the same heights |
+| Its numbers, Doc texts | `WWGADGET` 1021/2903, 1020/2903 and the tip 4903 (no settings dialog) |
+| Its tray icon, name | sheet 1904, frame 2; string 2568 |
 
 None of these numbers is used by the English, Swedish or French CD, by
 OpenWDATA or by the network parts (1900 to 1902, 2900, 2901, 2565, 2566,
-20100). String 2567 shares block 161 with the game's own (2560 to 2564)
+20100): checked against every resource of the three CDs' exports
+(`openwgt --export`) by file name, and strings 2567 and 2568 are empty in
+each CD's block 161. String 2567 shares block 161 with the game's own (2560 to 2564)
 and the network parts' (2565, 2566): the engine merges the families'
 blocks string by string and takes a string from them only where the
 game's block has it empty. The screen is drawn empty with its grid: the
@@ -54,8 +62,8 @@ overlays get only what differs from the English.
 
 ## Adding a part
 
-A new open part takes the next numbers (gadget id 2903, sheets from
-1905, string 2568 and tray index 68, raising `port_parts::TRAY_SLOTS`),
+A new open part takes the next numbers (gadget id 2904, sheets from
+1906, string 2569 and tray index 69, raising `port_parts::TRAY_SLOTS`),
 a class in `openparts::CLASSES`, a `TrayPart` in `openparts::TRAY` with
 a frame of sheet 1904, and its place in a folder in `openparts::FAMILY`.
 Check the numbers against the CDs' resources (`openwgt --export=DIR

@@ -184,10 +184,13 @@ pub fn run_without_window(args: &crate::Args, assets: engine::assets::Assets) ->
     editor.path = path;
     editor.files = Box::new(crate::files::PlatformFiles);
     editor.env.rng = chrono::Utc::now().timestamp().rem_euclid(1 << 32).unsigned_abs();
-    editor.set_enhanced(crate::enhanced(args.window.settings_file.as_deref()));
+    // The link opens before the enhancements are on: the script is in
+    // charge, nothing asks whether the widget's own scripts may run (they
+    // don't).
     if let Some(l) = &args.link {
         editor.open_link(l);
     }
+    editor.set_enhanced(crate::enhanced(args.window.settings_file.as_deref()));
     if let Err(e) = prepare(o, &mut editor, args) {
         eprintln!("{e}");
         return 2;

@@ -1,0 +1,2 @@
+Byggtips:
+Slå på felsökningsverktygen (Inställningar), markera delen och släpp en .js-fil med din definePart i fönstret. Om skriptet går fel går delen sönder tills du trycker på STOPP; konsolen säger varför.

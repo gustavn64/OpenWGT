@@ -38,6 +38,8 @@ pub struct TrayPart {
     pub tag: Tag,
     /// Its picture in the tray: a sheet and a frame.
     pub picture: (u32, u16),
+    /// Whether the tray has it only with the debugging tools on too.
+    pub tools: bool,
 }
 
 /// A family of the port's own parts.
@@ -64,7 +66,7 @@ pub static FAMILIES: &[&Family] = &[&crate::openparts::FAMILY, &crate::net::FAMI
 
 /// The tray indexes there are counts for: the game's 64 (index 0
 /// unused) and the families' ones after them.
-pub const TRAY_SLOTS: usize = 68;
+pub const TRAY_SLOTS: usize = 69;
 
 fn tray_parts() -> impl Iterator<Item = &'static TrayPart> {
     FAMILIES.iter().flat_map(|f| f.tray)
@@ -107,15 +109,30 @@ pub fn tray_picture(i: u8) -> Option<(u32, u16)> {
 }
 
 /// What the families add to folder `f`'s list of tray indexes, in the
-/// order of [`FAMILIES`].
+/// order of [`FAMILIES`]; with `tools` (the debugging tools on), the
+/// parts that need them too.
 #[must_use]
-pub fn tray_extra(f: usize) -> Vec<i8> {
-    FAMILIES
+pub fn tray_extra(f: usize, tools: bool) -> Vec<i8> {
+    let shown = |i: i8| {
+        tools
+            || u8::try_from(i)
+                .ok()
+                .and_then(|i| tray_parts().find(|p| p.index == i))
+                .is_none_or(|p| !p.tools)
+    };
+    let list: Vec<i8> = FAMILIES
         .iter()
         .flat_map(|fam| fam.folders)
         .filter(|(folder, _)| *folder == f)
         .flat_map(|(_, list)| list.iter().copied())
-        .collect()
+        .filter(|&i| shown(i))
+        .collect();
+    // No page break left at the end.
+    let mut list = list;
+    while list.last() == Some(&-2) {
+        list.pop();
+    }
+    list
 }
 
 /// A part just taken from the tray: what its family gives a new one.
@@ -282,7 +299,7 @@ mod tests {
         assert_eq!((tray_tag(64), tray_tag(0), tray_picture(30)), (None, None, None));
         // The folders' extras name only the families' parts.
         for f in 0..7 {
-            for i in tray_extra(f) {
+            for i in tray_extra(f, true) {
                 assert!(i == -2 || tray_tag(u8::try_from(i).unwrap()).is_some(), "{f}: {i}");
             }
         }

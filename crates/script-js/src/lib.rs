@@ -24,6 +24,7 @@
 pub mod api;
 pub mod errors;
 mod ops;
+pub mod parts;
 
 use std::cell::{Cell, RefCell};
 use std::rc::Rc;
@@ -57,7 +58,7 @@ const PRELUDE: &str = include_str!("prelude.js");
 
 /// The intrinsics scripts get: ECMAScript's, without `performance`,
 /// `WeakRef` and `FinalizationRegistry`.
-type Intrinsics = (
+pub(crate) type Intrinsics = (
     intrinsic::Date,
     intrinsic::Eval,
     intrinsic::RegExpCompiler,
@@ -291,7 +292,7 @@ impl Drop for Js {
     }
 }
 
-fn eval_options(file: &str, global: bool, promise: bool) -> EvalOptions {
+pub(crate) fn eval_options(file: &str, global: bool, promise: bool) -> EvalOptions {
     let mut o = EvalOptions::default();
     o.global = global;
     o.strict = !global;
@@ -302,7 +303,7 @@ fn eval_options(file: &str, global: bool, promise: bool) -> EvalOptions {
 }
 
 /// A caught error as what it says about itself.
-fn thrown<'js>(ctx: &Ctx<'js>, e: CaughtError<'js>) -> Thrown {
+pub(crate) fn thrown<'js>(ctx: &Ctx<'js>, e: CaughtError<'js>) -> Thrown {
     match e {
         CaughtError::Exception(x) => Thrown::read(ctx, x.as_value()),
         CaughtError::Value(v) => Thrown::read(ctx, &v),

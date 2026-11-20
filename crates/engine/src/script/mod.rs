@@ -16,6 +16,7 @@
 pub mod adapt;
 pub mod api;
 pub mod cmd;
+pub mod parts;
 pub mod runtime;
 pub mod select;
 pub mod trust;

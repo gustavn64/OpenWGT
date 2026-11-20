@@ -297,6 +297,10 @@ fn sv(en: &str) -> Option<&'static str> {
         }
         "{}: not a text file." => "{}: inte en textfil.",
         "Keep" => "Behåll",
+        "There is no language here for scripted parts." => "Här finns inget språk för skriptdelar.",
+        "{} is the script of part #{} now." => "{} är skriptet för del #{} nu.",
+        "part" => "del",
+        "not allowed" => "inte tillåtet",
         "This widget comes with scripts." => "Den här uppfinningen har skript med sig.",
         "&Show" => "Vi&sa",
         "&Run" => "&Kör",
@@ -530,6 +534,10 @@ fn fr(en: &str) -> Option<&'static str> {
         }
         "{}: not a text file." => "{} : pas un fichier texte.",
         "Keep" => "Garder",
+        "There is no language here for scripted parts." => "Aucun langage ici pour les pièces scriptées.",
+        "{} is the script of part #{} now." => "{} est maintenant le script de la pièce n° {}.",
+        "part" => "pièce",
+        "not allowed" => "non permis",
         "This widget comes with scripts." => "Cet Eurêka est accompagné de scripts.",
         "&Show" => "A&fficher",
         "&Run" => "&Exécuter",

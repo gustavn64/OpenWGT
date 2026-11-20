@@ -2384,6 +2384,7 @@ name = "script-js"
 version = "0.11.0"
 dependencies = [
  "engine",
+ "formats",
  "rquickjs",
  "scoped-tls-hkt",
  "script-js-clock",

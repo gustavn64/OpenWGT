@@ -1,0 +1,1 @@
+The Scripted Part does what its script says. The script, in JavaScript, calls definePart: it names the part, its inputs and its outputs (up to four of each), and says what the outputs give each tick from what comes into the inputs. A script from someone else's widget runs only once you allow it; until then the part does nothing.

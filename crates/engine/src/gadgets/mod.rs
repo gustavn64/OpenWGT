@@ -13,8 +13,10 @@ mod science;
 pub mod sound_time;
 mod x87;
 
-#[cfg(test)]
-pub(crate) use common::bench;
+/// The test bench, for the engine's tests and (feature `testing`) other
+/// crates' parts' tests.
+#[cfg(any(test, feature = "testing"))]
+pub use common::bench;
 
 use crate::gadget::{Behavior, Tag};
 

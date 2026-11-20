@@ -8,7 +8,7 @@ its entry in `port_parts::FAMILIES`.
 
 | Family | Parts | Code | Pack |
 |---|---|---|---|
-| The open parts | Oscilloscope (`Scop`) | `crates/engine/src/openparts/` | `tools/openparts`, `crates/engine/openparts*` |
+| The open parts | Oscilloscope (`Scop`), scripted part (`Scrp`, [widget-scripts.md](widget-scripts.md)) | `crates/engine/src/openparts/` | `tools/openparts`, `crates/engine/openparts*` |
 | The network parts | Sender (`NSnd`), Receiver (`NRcv`) | `crates/engine/src/net/` | `tools/opennet`, `crates/engine/opennet*` ([net-parts.md](net-parts.md)) |
 
 The open parts need nothing but the game's wires; they don't use the
@@ -21,7 +21,8 @@ network parts, so they can go without them.
   gadget ids, sheets and knot tables are numbers none of the CDs (English,
   Swedish, French) nor OpenWDATA uses.
 - **The tray**: each part a tray index after the game's 64 (65 and 66 the
-  network parts', 67 the Oscilloscope's; `port_parts::TRAY_SLOTS` counts
+  network parts', 67 the Oscilloscope's, 68 the scripted part's, there
+  only with the debugging tools on too; `port_parts::TRAY_SLOTS` counts
   them), its help line string `2500 +` the index, as the game's, its
   picture a frame of the family's own tray sheet, and what it adds to
   which folder. The tray shows them only with the enhancements on

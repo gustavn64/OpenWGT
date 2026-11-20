@@ -64,7 +64,7 @@ mod tests {
             ]
         );
         let pictures = Pictures::default();
-        for (sheet, frames, size) in [(1903, 2, (148, 100)), (1904, 1, (50, 34))] {
+        for (sheet, frames, size) in [(1903, 2, (148, 100)), (1904, 2, (50, 34))] {
             for n in 1..=frames {
                 let r = pictures.rect(a, Module::Gadget, sheet, n).unwrap();
                 assert_eq!((r.width(), r.height()), size, "{sheet}/{n}");
@@ -88,6 +88,33 @@ mod tests {
             let text = a.text(Module::Gadget, u32::from(t)).unwrap();
             let n = text.chars().count();
             assert!((100..300).contains(&n), "{lang:?} {t}: {n}");
+        }
+        scripted(a, lang);
+    }
+
+    /// What the scripted part needs, in `lang`.
+    fn scripted(a: &Assets, lang: Lang) {
+        let name = match lang {
+            Lang::En => "Scripted Part",
+            Lang::Sv => "Skriptdel",
+            Lang::Fr => "Pièce scriptée",
+        };
+        assert_eq!(a.string(2568).as_deref(), Some(name));
+        let k = crate::gadget::knots(a, 1905);
+        assert_eq!(k.len(), 8);
+        let pictures = Pictures::default();
+        for n in 1..=4 {
+            assert!(pictures.frame(a, Module::Gadget, 1905, n).is_some(), "{n}");
+        }
+        let r = pictures.rect(a, Module::Gadget, 1905, 1).unwrap();
+        assert_eq!((r.width(), r.height()), (128, 84));
+        assert!(pictures.rect(a, Module::Gadget, 1905, 5).is_none());
+        let info = formats::tables::gadget_info(a.get(Module::Gadget, rt::INFO, 2903).unwrap()).unwrap();
+        assert_eq!((info.id, info.dialog, info.doc), (2903, 2903, 4903));
+        for t in [info.dialog, info.doc] {
+            let text = a.text(Module::Gadget, u32::from(t)).unwrap();
+            let n = text.chars().count();
+            assert!((100..500).contains(&n), "{lang:?} {t}: {n}");
         }
     }
 
@@ -115,7 +142,7 @@ mod tests {
             // An export is the CD's alone.
             assert!(
                 !a.all()
-                    .any(|(m, t, i, _)| (m, t) == (Module::Gadget, rt::PICTURES) && (i == 1903 || i == 1904))
+                    .any(|(m, t, i, _)| (m, t) == (Module::Gadget, rt::PICTURES) && (1903..=1905).contains(&i))
             );
         }
     }

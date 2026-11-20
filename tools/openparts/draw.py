@@ -4,7 +4,11 @@ crates/engine/openparts, with OpenWGFX's kit (tools/opengfx/wgfx.py):
 
     sheet 1903  the Oscilloscope, frames 1 (running or not) and 2 (frozen:
                 its HOLD lamp lit)
-    sheet 1904  the tray's icons: 1 the Oscilloscope
+    sheet 1905  the scripted part: 1 its body, 2 its body with its script
+                not allowed (a padlock), 3 an input's knot and stalk, 4 an
+                output's (placed by their rectangles about the knot, so the
+                game draws them at the knots its script has)
+    sheet 1904  the tray's icons: 1 the Oscilloscope, 2 the scripted part
 
 and sheets.txt with the frames' rectangles (the parts are new: there's no
 CD's geometry to take them from). The screen is drawn empty, with its
@@ -42,7 +46,7 @@ OUT = ROOT / "crates/engine/openparts"
 
 W, H = 148, 100
 TRAY_W, TRAY_H = 50, 34
-SCOPE, TRAY = 1903, 1904
+SCOPE, TRAY, SCRIPTED = 1903, 1904, 1905
 
 BODY = (84, 88, 96)           # the instrument's grey
 SCREEN = (16, 24, 22)         # the tube, nearly black
@@ -141,6 +145,80 @@ def scope(hold):
     return c
 
 
+# The scripted part (openparts::scripted): its size and name plate, which
+# must stay as SIZE and PLATE there.
+SW, SH = 128, 84
+PLATE = (17, 5, 94, 13)
+BODY_S = (23, 91, 131)        # the part's blue (one of the palette's)
+LCD = (10, 36, 22)
+EMBLEM = (126, 214, 150)
+LOCK = (226, 182, 60)
+# An input's and an output's knot pictures: their size and where the knot
+# is in them (the stalk reaches the body's edge at 9 or SW - 9).
+STUB_W, STUB_H, STUB_AT = 12, 9, 4
+
+
+def scripted_knots():
+    t = json.loads((HERE / "src/tables.json").read_text())["knots"][str(SCRIPTED)]
+    out = [(h, v, k == 1) for v, h, k in t]
+    assert [o for _, _, o in out] == [False] * 4 + [True] * 4, "four in, four out"
+    for x, _, o in out:
+        assert x == (SW - 5 if o else 4), "knots 4 px in from the sides"
+    return out
+
+
+def scripted(allowed):
+    """The body: no knots (the game draws those its script has, frames 3
+    and 4), the name plate empty (the game writes the name), an emblem."""
+    c = Canvas(SW, SH)
+    c.panel(9, 1, SW - 9, SH - 1, BODY_S, radius=3.5, bevel=1.5, gloss=False)
+    for sx, sy in ((13.5, 5.5), (SW - 13.5, 5.5), (13.5, SH - 5.5), (SW - 13.5, SH - 5.5)):
+        c.screw(sx, sy, 1.3)
+    px, py, pw, ph = PLATE
+    c.inset(px - 1, py - 1, px + pw + 1, py + ph + 1, LCD, radius=1.5)
+    # The emblem, between the knots' names: braces, as code has.
+    ex, ey = SW / 2, 50
+    c.rect(ex - 13, ey - 15, ex + 13, ey + 15, fill=darker(BODY_S, 0.45), radius=4)
+    c.rect(ex - 12, ey - 14, ex + 12, ey + 14, fill=darker(BODY_S, 0.25), radius=3.5)
+    col = EMBLEM if allowed else lighter(darker(BODY_S, 0.1), 0.25)
+    c.text(ex, ey - 1, "{ }", 17, col, "mono")
+    if not allowed:
+        # A padlock over it: the script isn't allowed to run.
+        lx, ly = ex, ey + 3
+        c.arc(lx, ly - 6, 5.0, 180, 360, INK, 3.2)
+        c.arc(lx, ly - 6, 5.0, 180, 360, STEEL_L, 1.6)
+        c.line([(lx - 5, ly - 6), (lx - 5, ly - 2)], INK, 3.2, round_ends=False)
+        c.line([(lx + 5, ly - 6), (lx + 5, ly - 2)], INK, 3.2, round_ends=False)
+        c.line([(lx - 5, ly - 6), (lx - 5, ly - 2)], STEEL_L, 1.6, round_ends=False)
+        c.line([(lx + 5, ly - 6), (lx + 5, ly - 2)], STEEL_L, 1.6, round_ends=False)
+        c.rect(lx - 8, ly - 3, lx + 8, ly + 9, fill=INK, radius=1.5)
+        c.gradient(lx - 7, ly - 2, lx + 7, ly + 8, [lighter(LOCK, 0.4), LOCK, darker(LOCK, 0.3)], radius=1)
+        c.circle(lx, ly + 2, 1.6, fill=INK)
+        c.line([(lx, ly + 2), (lx, ly + 6)], INK, 1.2)
+    return c
+
+
+def stub(out):
+    """A knot and its stalk to the body's edge, the knot at (STUB_AT,
+    STUB_AT) for an input (stalk to the right), mirrored for an output."""
+    c = Canvas(STUB_W, STUB_H)
+    x = STUB_W - 1 - STUB_AT if out else STUB_AT
+    c.knot(x, STUB_AT, out, "r" if out else "l", reach=STUB_W - 1 - STUB_AT)
+    return c
+
+
+def scripted_preview(body, stubs):
+    """The body with two inputs and one output, as the game draws a part
+    whose script names them (for the tray's icon and the preview)."""
+    img = body.copy()
+    ks = scripted_knots()
+    for (x, y, out) in (ks[0], ks[1], ks[4]):
+        s = stubs[1] if out else stubs[0]
+        ox = x - (STUB_W - 1 - STUB_AT) if out else x - STUB_AT
+        img.alpha_composite(s, (ox, y - STUB_AT))
+    return img
+
+
 def traces(img, t0=0.0, scale=1):
     """`img` with two traces on its screen, about as the game draws them
     (for the tray's icon and the preview only)."""
@@ -161,9 +239,9 @@ def traces(img, t0=0.0, scale=1):
     return img
 
 
-def icon(q, img):
+def icon(q, img, with_traces=True):
     """The part as the tray shows it: small, with traces on its screen."""
-    src = traces(img)
+    src = traces(img) if with_traces else img
     bbox = src.getchannel("A").getbbox()
     src = src.crop(bbox)
     scale = min(TRAY_W / src.width, TRAY_H / src.height)
@@ -177,7 +255,17 @@ def icon(q, img):
 def draw(q):
     """Every frame: {sheet: [image, ...]}."""
     body = [scope(hold).finish(q) for hold in (False, True)]
-    return {SCOPE: body, TRAY: [icon(q, body[0])]}
+    sbody = [scripted(allowed).finish(q) for allowed in (True, False)]
+    stubs = [stub(out).finish(q) for out in (False, True)]
+    sicon = icon(q, scripted_preview(sbody[0], stubs), with_traces=False)
+    return {SCOPE: body, SCRIPTED: sbody + stubs, TRAY: [icon(q, body[0]), sicon]}
+
+
+# Frames placed about a point, not at the part's corner: (top, left).
+OFFSETS = {
+    (SCRIPTED, 3): (-STUB_AT, -STUB_AT),
+    (SCRIPTED, 4): (-STUB_AT, -(STUB_W - 1 - STUB_AT)),
+}
 
 
 def write(sheets):
@@ -193,7 +281,8 @@ def write(sheets):
              "# sheet frame top left bottom right"]
     for sid, frames in sheets.items():
         for n, img in enumerate(frames, 1):
-            lines.append(f"{sid} {n} 0 0 {img.height} {img.width}")
+            top, left = OFFSETS.get((sid, n), (0, 0))
+            lines.append(f"{sid} {n} {top} {left} {top + img.height} {left + img.width}")
     (OUT / "sheets.txt").write_text("\n".join(lines) + "\n")
 
 
@@ -201,10 +290,14 @@ def preview(sheets, path):
     z, gap = 4, 6
     body = sheets[SCOPE]
     pw = 3 * (W + gap) + gap + TRAY_W + gap
-    img = Image.new("RGBA", (pw, H + 2 * gap), (192, 192, 192, 255))
+    img = Image.new("RGBA", (pw, 2 * H + 3 * gap), (192, 192, 192, 255))
     for i, f in enumerate([body[0], traces(body[0]), traces(body[1], 30)]):
         img.alpha_composite(f, (gap + i * (W + gap), gap))
     img.alpha_composite(sheets[TRAY][0], (gap + 3 * (W + gap), gap))
+    s = sheets[SCRIPTED]
+    for i, f in enumerate([s[0], s[1]]):
+        img.alpha_composite(scripted_preview(f, s[2:4]), (gap + i * (W + gap), H + 2 * gap))
+    img.alpha_composite(sheets[TRAY][1], (gap + 3 * (W + gap), H + 2 * gap))
     img.resize((img.width * z, img.height * z), Image.NEAREST).save(path)
 
 

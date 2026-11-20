@@ -1,0 +1,2 @@
+Astuce de construction :
+Active les outils de débogage (Paramètres), sélectionne la pièce et dépose dans la fenêtre un fichier .js avec ton definePart. Si le script se passe mal, la pièce se casse jusqu'à ce que tu appuies sur STOP ; la console dit pourquoi.

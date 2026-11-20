@@ -73,7 +73,7 @@ fn point(core: &Core, cx: &DrawCx<'_>, i: usize) -> (i32, i32) {
 
 /// Slot 0x10 (`0x41ed9d`): the broken picture (sheet 101), frame 1, or
 /// frame 2 where frame 1 doesn't fit, centred on the gadget.
-fn draw_broken(core: &Core, cx: &mut DrawCx<'_>) {
+pub(crate) fn draw_broken(core: &Core, cx: &mut DrawCx<'_>) {
     let gw = i32::from(core.bounds.right) - i32::from(core.bounds.left);
     let gh = i32::from(core.bounds.bottom) - i32::from(core.bounds.top);
     let size = |cx: &DrawCx<'_>, n| {

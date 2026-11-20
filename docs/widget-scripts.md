@@ -88,3 +88,54 @@ and its scripts don't run: that script is in charge. A widget's scripts
 run on with the debugging tools off (saying nothing anywhere) until
 another widget comes, which stops them; the console's own stop with the
 tools.
+
+## Scripted parts
+
+The scripted part (`Scrp`, `crates/engine/src/openparts/scripted.rs`) is
+a part whose behaviour is a script's: the last part of the numbers' and
+logic's folder while the debugging tools are on. Its script, in
+JavaScript, calls `definePart` once:
+
+```js
+definePart({
+  name: "Smoother",                          // on the part's plate
+  inputs: [{ name: "in", kind: "number" }],  // or just "in"; up to four
+  outputs: [{ name: "out", kind: "number" }],
+  settings: { window: 10 },                  // this.settings
+  start(s) { s.last = []; },                 // at GO, s a new state
+  tick(s, { in: x }, { tick }) {             // each tick, synchronously
+    s.last.push(x); if (s.last.length > this.settings.window) s.last.shift();
+    return { out: s.last.reduce((p, q) => p + q, 0) / s.last.length };
+  },
+});
+```
+
+- **Knots**: the inputs on the left and the outputs on the right of a
+  generic body (sheet 1905), at the first knots of table 1905, as many as
+  the script names. The name and the knots' names are written on it.
+- **Values**: an input is `null` (unwired, or nothing on it), `true` or
+  `false`, a number, or `{kind: "picture", sheet}` / `{kind: "sound",
+  rate, length}`. `tick` returns the outputs it changes: a number,
+  `true`/`false`, or `null` for nothing; one it leaves out keeps its value.
+- **When**: the part's tick calls its script at once, in the widget's
+  tick order, through `Env::parts` (`script::parts::PartHook`, the one
+  field the simulation has for it). Each part's script has a QuickJS
+  context of its own (`script_js::parts::JsParts`): no `Date`, the same
+  `Math.random` each run, `console.log` to the console.
+- **Limits**: each call (the script, `start`, a `tick`) has a budget of
+  about half a million operations; the parts share 16 MiB. A script that
+  runs over or throws breaks its part (the game's broken picture, and why
+  in the console) until the run stops; the game goes on.
+- **Saved** in the part's own chunk, hidden as the port's parts are: after
+  the base, `01`, the name and the inputs' and outputs' names (each a
+  length byte and UTF-8, the lists after a count byte), then the script
+  to the chunk's end. So the part has its knots before its script ever
+  runs.
+- **Giving it a script**: with the tools on, drop a `.js` file that calls
+  `definePart` onto the window: the selected scripted part takes it, else
+  a new one does. Its wires go if its knots change; Undo takes it back.
+- **Consent**: a part's script is one of the widget's scripts for the
+  question above. Until it may run the part is inert, drawn with a
+  padlock ("script not allowed"); the console's Scripts list has a row for
+  it, whose ▶ lets it run (■ stops it) for the session. The player's own
+  scripts (dropped) and the new part's own script may always run.

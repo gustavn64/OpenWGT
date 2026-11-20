@@ -916,6 +916,7 @@ impl Editor {
         self.stop();
         self.debug.forget();
         self.doc = doc;
+        self.part_scripts_forget();
         self.undo = None;
         self.tray.reset_counts();
         let limits = self.doc.tray_limits.clone();

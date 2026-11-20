@@ -42,6 +42,9 @@ pub enum Which {
     Widget(usize),
     /// The console's last script, not in the widget.
     Last,
+    /// The scripted part with this id: ▶ lets its script run, ■ stops
+    /// it (for this session).
+    Part(u32),
 }
 
 /// A row's buttons: run or stop, then remove or keep.
@@ -154,6 +157,28 @@ impl Editor {
                 running: self.script_task(&s.digest()).is_some(),
             })
             .collect();
+        let own = Digest::of(crate::script::parts::DEFAULT_CODE);
+        for (i, id, d) in self.scripted_parts() {
+            if d == own {
+                continue;
+            }
+            let name = self.doc.gadgets[i]
+                .behavior
+                .as_any()
+                .downcast_ref::<crate::openparts::scripted::Scripted>()
+                .map(|s| s.def().name.clone())
+                .unwrap_or_default();
+            let on = self.env.parts.allowed(&d);
+            let mut text = format!("{name} (#{id}) · {}", tr("part"));
+            if !on {
+                text = format!("{text} · {}", tr("not allowed"));
+            }
+            rows.push(Row {
+                which: Which::Part(id),
+                text,
+                running: on,
+            });
+        }
         rows.truncate(MAX_ROWS - 1);
         if let Some(s) = self.loose_script() {
             rows.push(Row {
@@ -167,6 +192,13 @@ impl Editor {
 
     /// A row's button pressed.
     pub(super) fn script_press(&mut self, which: Which, press: Press) {
+        if let Which::Part(id) = which {
+            if press == Press::RunStop {
+                let on = self.part_allowed(id).unwrap_or(false);
+                self.set_part_allowed(id, !on);
+            }
+            return;
+        }
         let (script, caps) = match which {
             Which::Widget(i) => match self.doc.scripts.get(i) {
                 Some(s) => (s.clone(), Caps::EMBEDDED),
@@ -176,6 +208,7 @@ impl Editor {
                 Some(s) => (s.clone(), Caps::ALL),
                 None => return,
             },
+            Which::Part(_) => return,
         };
         match press {
             Press::RunStop => {
@@ -188,6 +221,7 @@ impl Editor {
             Press::Other => match which {
                 Which::Widget(i) => self.remove_script(i),
                 Which::Last => self.keep_last_script(),
+                Which::Part(_) => {}
             },
         }
     }
@@ -249,6 +283,10 @@ impl Editor {
             return true;
         };
         let source = text.replace("\r\n", "\n");
+        if language == "JavaScript" && super::parts::defines_part(&source) {
+            self.drop_part_script(&base, &source);
+            return true;
+        }
         let lines = source.lines().count().to_string();
         let msg = trf(
             "{} loaded ({} lines): its row above runs it, or keeps it in the widget.",
@@ -272,6 +310,7 @@ pub fn buttons(font: &formats::fnt::Font, r: IRect, which: Which) -> (IRect, IRe
     let other_w = match which {
         Which::Widget(_) => h + 4,
         Which::Last => ui::width(font, tr("Keep")) + 14,
+        Which::Part(_) => 0,
     };
     let other = IRect::sized(r.x1 - other_w, r.y0 + 1, other_w, h);
     let run = IRect::sized(other.x0 - 3 - (h + 4), r.y0 + 1, h + 4, h);
@@ -283,7 +322,7 @@ pub fn draw_row(s: &mut Surface, font: &formats::fnt::Font, r: IRect, row: &Row,
     let (run, other) = buttons(font, r, row.which);
     let old = s.set_clip(IRect::new(r.x0, r.y0, run.x0 - 2, r.y1).intersect(s.clip()));
     let c = match row.which {
-        Which::Widget(_) => ui::BLACK,
+        Which::Widget(_) | Which::Part(_) => ui::BLACK,
         Which::Last => col.blue,
     };
     ui::label(s, font, r.x0 + 2, r.y0 + 2, &row.text, c);
@@ -317,5 +356,6 @@ pub fn draw_row(s: &mut Surface, font: &formats::fnt::Font, r: IRect, row: &Row,
             }
         }
         Which::Last => ui::button(s, font, other, tr("Keep"), false, false, true),
+        Which::Part(_) => {}
     }
 }

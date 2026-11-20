@@ -14,5 +14,9 @@ rquickjs = { version = "0.14", default-features = false, features = ["std", "rus
 scoped-tls-hkt = "0.1"
 script-js-clock = { path = "../script-js-clock" }
 
+[dev-dependencies]
+engine = { path = "../engine", features = ["testing"] }
+formats = { path = "../formats" }
+
 [lints]
 workspace = true

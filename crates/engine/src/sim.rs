@@ -171,6 +171,8 @@ pub struct Env {
     /// Set by a gadget to end the run (`0x430ee7`): the tick stops there
     /// and the editor leaves run mode.
     pub end_run: Option<RunEnd>,
+    /// The scripted parts' language (the port's, `script::parts`).
+    pub parts: crate::script::parts::PartHook,
 }
 
 /// How a gadget ended the run.

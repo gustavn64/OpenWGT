@@ -1,0 +1,1 @@
+Skriptdelen gör det som dess skript säger. Skriptet, i JavaScript, anropar definePart: det namnger delen, dess ingångar och utgångar (upp till fyra av varje) och säger vad utgångarna ger varje tick utifrån det som kommer in i ingångarna. Ett skript från någon annans uppfinning kör först när du tillåter det; tills dess gör delen ingenting.

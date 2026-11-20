@@ -36,11 +36,19 @@ impl Editor {
     /// The texts of everything of the widget's that needs the player's
     /// consent to run.
     pub(super) fn consent_digests(&self) -> Vec<Digest> {
-        self.doc
+        let mut v: Vec<Digest> = self
+            .doc
             .scripts
             .iter()
             .map(crate::port_parts::ext::Script::digest)
-            .collect()
+            .collect();
+        let own = Digest::of(crate::script::parts::DEFAULT_CODE);
+        for (_, _, d) in self.scripted_parts() {
+            if d != own && !v.contains(&d) {
+                v.push(d);
+            }
+        }
+        v
     }
 
     /// A widget just opened: its scripts run if the player trusts them
@@ -88,8 +96,11 @@ impl Editor {
         }
     }
 
-    /// Starts every script of the widget's, as scripts that came with it.
+    /// Starts every script of the widget's, as scripts that came with it,
+    /// and lets its scripted parts run.
     fn run_widget_scripts(&mut self) {
+        let digests = self.consent_digests();
+        self.allow_parts(&digests);
         for s in self.doc.scripts.clone() {
             self.start_script(&s, Caps::EMBEDDED);
         }

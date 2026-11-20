@@ -1,0 +1,2 @@
+Construction Tip:
+Turn the debugging tools on (Settings), select the part and drop a .js file with your definePart onto the window. If the script goes wrong, the part breaks until you press STOP; the console says why.

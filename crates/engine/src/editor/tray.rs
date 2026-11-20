@@ -121,15 +121,16 @@ fn sizes(assets: &Assets, pictures: &Pictures) -> Vec<(i32, i32)> {
 }
 
 /// Every folder's pages, laid out by the parts' pictures' sizes; with the
-/// enhancements, the port's own parts too.
-fn folders(sizes: &[(i32, i32)], enhanced: bool) -> Vec<Vec<Vec<Slot>>> {
+/// enhancements, the port's own parts too (with `tools`, those that need
+/// the debugging tools).
+fn folders(sizes: &[(i32, i32)], enhanced: bool, tools: bool) -> Vec<Vec<Vec<Slot>>> {
     let size = |i: u8| sizes.get(usize::from(i)).copied().unwrap_or((0, 0));
     (0..)
         .zip(FOLDERS)
         .map(|(f, l)| {
             let mut list = l.to_vec();
             if enhanced {
-                list.extend(crate::port_parts::tray_extra(f));
+                list.extend(crate::port_parts::tray_extra(f, tools));
             }
             layout(&list, size)
         })
@@ -247,6 +248,8 @@ pub struct Tray {
     slide_start: u64,
     /// The port's whole-folder tray.
     pub enhanced: bool,
+    /// The debugging tools are on: the parts that need them are there.
+    pub tools: bool,
     /// Each tray index's picture's size, for the layout.
     sizes: Vec<(i32, i32)>,
 }
@@ -322,7 +325,7 @@ impl Tray {
                 visible: true,
                 capture: None,
             },
-            folders: folders(&sizes, false),
+            folders: folders(&sizes, false, false),
             pages: vec![0; 7],
             folder: 0,
             counts: [-1; SLOTS],
@@ -332,6 +335,7 @@ impl Tray {
             slides: Vec::new(),
             slide_start: 0,
             enhanced: false,
+            tools: false,
             sizes,
         };
         t.bar.select(id::POINTER);
@@ -357,7 +361,7 @@ impl Tray {
 
     /// The folders laid out again, the pages kept where they still are.
     fn lay_out(&mut self) {
-        self.folders = folders(&self.sizes, self.enhanced);
+        self.folders = folders(&self.sizes, self.enhanced, self.tools);
         for (page, pages) in self.pages.iter_mut().zip(&self.folders) {
             *page = (*page).min(pages.len().saturating_sub(1));
         }
@@ -393,6 +397,15 @@ impl Tray {
             folder_slots(&self.folders[self.folder]).collect()
         } else {
             self.page().to_vec()
+        }
+    }
+
+    /// The debugging tools on or off: the parts that need them come or go.
+    pub fn set_tools(&mut self, on: bool) {
+        if on != self.tools {
+            self.tools = on;
+            self.lay_out();
+            self.update_arrows();
         }
     }
 
@@ -910,6 +923,7 @@ mod tests {
             slides: Vec::new(),
             slide_start: 0,
             enhanced: false,
+            tools: false,
             sizes: Vec::new(),
         };
         assert!(t.take(5));

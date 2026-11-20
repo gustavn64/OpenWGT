@@ -20,6 +20,9 @@ mod graph;
 mod host;
 mod input;
 mod overlay;
+mod parts;
+#[cfg(test)]
+mod parts_tests;
 #[cfg(test)]
 mod probe_tests;
 mod probes;

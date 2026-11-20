@@ -1,0 +1,1 @@
+La pièce scriptée fait ce que dit son script. Le script, en JavaScript, appelle definePart : il nomme la pièce, ses entrées et ses sorties (jusqu'à quatre de chaque) et dit ce que donnent les sorties à chaque tic selon ce qui arrive aux entrées. Un script venu de l'Eurêka de quelqu'un d'autre ne s'exécute qu'une fois que tu l'as permis ; d'ici là, la pièce ne fait rien.

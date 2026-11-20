@@ -143,6 +143,7 @@ impl Editor {
     /// The debugging tools' switch, as the host kept it.
     pub fn set_debug_tools(&mut self, on: bool) {
         self.debug.tools = on;
+        self.tray.set_tools(on);
         self.update_menu();
     }
 

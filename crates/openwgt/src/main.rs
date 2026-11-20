@@ -965,6 +965,9 @@ fn start(args: &Args, assets: Assets) -> Result<(), platform::Error> {
     // for the built-in commands).
     #[cfg(feature = "js")]
     editor.set_script_runtime(Box::new(script_js::Js::new()));
+    // Scripted parts run JavaScript too.
+    #[cfg(feature = "js")]
+    editor.set_part_runtime(Box::new(script_js::parts::JsParts::new()));
     // The link or the widget given, as one opened: whether its scripts
     // may run is asked (not with `--script`, which is in charge).
     #[cfg(not(target_arch = "wasm32"))]

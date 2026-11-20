@@ -257,7 +257,8 @@ fn format_g(x: f64, p: usize) -> String {
     }
 }
 
-#[cfg(test)]
+#[cfg(any(test, feature = "testing"))]
+#[allow(clippy::must_use_candidate, clippy::missing_panics_doc)] // a test bench
 pub mod bench {
     //! A test bench: a gadget under test with each knot wired to a source
     //! or a sink of its own.

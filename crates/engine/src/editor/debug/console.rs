@@ -624,6 +624,7 @@ impl Editor {
     /// them runs). Without the tools the console's are stopped; the
     /// widget's own run on.
     pub(in crate::editor) fn debug_frame(&mut self, ms: u64) {
+        self.part_scripts_said();
         if self.debug.runtimes.busy {
             return;
         }

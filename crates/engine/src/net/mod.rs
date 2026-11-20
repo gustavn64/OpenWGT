@@ -81,11 +81,13 @@ pub const TRAY: [TrayPart; 2] = [
         index: 65,
         tag: parts::SENDER,
         picture: (TRAY_SHEET, 1),
+        tools: false,
     },
     TrayPart {
         index: 66,
         tag: parts::RECEIVER,
         picture: (TRAY_SHEET, 2),
+        tools: false,
     },
 ];
 /// Their folder, "Super Parts", where they have a page of their own at the

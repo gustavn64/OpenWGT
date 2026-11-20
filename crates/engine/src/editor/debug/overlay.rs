@@ -187,6 +187,7 @@ impl Editor {
     /// [`HOVER_MS`] over the worksheet (with nothing held or open), and the
     /// status while the widget runs; none without the tools.
     pub(in crate::editor) fn debug_prepare(&mut self) {
+        self.sync_scripted_parts();
         self.windows_prepare();
         let h = &mut self.debug.hover;
         if h.mouse != self.mouse {
