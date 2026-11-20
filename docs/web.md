@@ -10,7 +10,7 @@ the files and the clock differ.
 
 Needs the `wasm32-unknown-unknown` target and the `wasm-bindgen` CLI in
 the version the crates pin (`wasm-bindgen = "=0.2.130"` in
-`crates/widget/Cargo.toml` and `crates/platform/Cargo.toml`; the CLI
+`crates/openwgt/Cargo.toml` and `crates/platform/Cargo.toml`; the CLI
 refuses a module from another version):
 
 ```sh
@@ -22,10 +22,10 @@ tools/build-web.sh --debug    # quicker to build, slow to run
 
 The script runs `cargo build -p openwgt --target wasm32-unknown-unknown`
 and `wasm-bindgen --target web`, and copies the page
-(`crates/widget/web/index.html`), its web manifest and the icon next to
+(`crates/openwgt/web/index.html`), its web manifest and the icon next to
 the output: `web/` holds `index.html`, `manifest.webmanifest`,
 `icon.png`, `widget.js`, `widget_bg.wasm` and `snippets/` (the storage
-code, `crates/widget/src/web.js`, and the touch keyboard's field,
+code, `crates/openwgt/src/web.js`, and the touch keyboard's field,
 `platform::web`). `web/` is ignored by git.
 
 Upgrading wasm-bindgen means changing the pin in both crates and
@@ -39,7 +39,7 @@ workflow fails if anything but the pages, the icon, the manifest, the
 glue and the module is in the build):
 
 ```text
-openwgt-web/index.html     the front page (crates/widget/web/front.html):
+openwgt-web/index.html     the front page (crates/openwgt/web/front.html):
                            playing, the CD, the downloads, the source
 openwgt-web/icon.png
 openwgt-web/play/          the game: the build's index.html, widget.js,

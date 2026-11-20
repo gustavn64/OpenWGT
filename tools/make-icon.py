@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Draws the port's icon (crates/widget/res/icon.png and icon.ico): a
+"""Draws the port's icon (crates/openwgt/res/icon.png and icon.ico): a
 bubbling flask in front of a gear, with a spark. It's the port's own, not
 the game's. Needs Pillow.
 
@@ -11,7 +11,7 @@ from pathlib import Path
 from PIL import Image, ImageDraw
 
 S = 1024  # drawn large, scaled down smooth
-OUT = Path(__file__).resolve().parent.parent / "crates/widget/res"
+OUT = Path(__file__).resolve().parent.parent / "crates/openwgt/res"
 
 
 def gear(d: ImageDraw.ImageDraw, cx: float, cy: float, r: float, teeth: int, fill, hole) -> None:

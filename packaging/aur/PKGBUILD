@@ -39,8 +39,8 @@ check() {
 package() {
     cd "OpenWGT-$pkgver"
     install -Dm755 target/release/openwgt "$pkgdir/usr/bin/openwgt"
-    install -Dm644 crates/widget/res/openwgt.desktop "$pkgdir/usr/share/applications/openwgt.desktop"
-    install -Dm644 crates/widget/res/icon.png "$pkgdir/usr/share/icons/hicolor/512x512/apps/openwgt.png"
+    install -Dm644 crates/openwgt/res/openwgt.desktop "$pkgdir/usr/share/applications/openwgt.desktop"
+    install -Dm644 crates/openwgt/res/icon.png "$pkgdir/usr/share/icons/hicolor/512x512/apps/openwgt.png"
     install -Dm644 README.md "$pkgdir/usr/share/doc/openwgt/README.md"
     # the bundled fonts' licences (they're in the program)
     install -Dm644 -t "$pkgdir/usr/share/licenses/openwgt/fonts" crates/engine/fonts/README.md crates/engine/fonts/LICENSE-*.txt

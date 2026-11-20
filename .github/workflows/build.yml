@@ -80,11 +80,11 @@ jobs:
           mkdir -p $doc
           cp LICENSE README.md $doc/
           mkdir -p $doc/fonts && cp crates/engine/fonts/README.md crates/engine/fonts/LICENSE-*.txt $doc/fonts/
-          cp crates/widget/res/icon.png openwgt.png
+          cp crates/openwgt/res/icon.png openwgt.png
           # the window, the GPU and the sound are the host's (dlopen'd, or
           # linuxdeploy's excludelist: libasound, libGL, libvulkan)
           LDAI_OUTPUT=$out ./linuxdeploy --appdir AppDir -e target/release/openwgt \
-              -d crates/widget/res/openwgt.desktop -i openwgt.png --output appimage
+              -d crates/openwgt/res/openwgt.desktop -i openwgt.png --output appimage
           # (it starts: the libraries are all there)
           { ./$out --help 2>&1 || true; } | grep "usage:"
 
@@ -106,20 +106,20 @@ jobs:
           tool: cargo-deb@3.8.0,cargo-generate-rpm@0.21.1
 
       # The same program as the AppImage's, packaged for the distributions'
-      # own package managers (crates/widget/Cargo.toml's package.metadata),
+      # own package managers (crates/openwgt/Cargo.toml's package.metadata),
       # and bare, for anyone who'd rather unpack it.
       - name: Package (.deb, .rpm, .tar.gz)
         run: |
           a=${{ matrix.arch }}
           # the release's version, from its tag, as the macOS app has it
-          v=$(sed -n 's/^version = "\(.*\)"$/\1/p' crates/widget/Cargo.toml)
+          v=$(sed -n 's/^version = "\(.*\)"$/\1/p' crates/openwgt/Cargo.toml)
           case "$GITHUB_REF" in refs/tags/v*) v=${GITHUB_REF_NAME#v} ;; esac
           # a pre-release (v1.2.0-rc.1) as both formats spell one, sorting
           # before the release: rpm forbids '-' in a version, and dpkg
           # would take what follows it for the Debian revision
           v=${v//-/\~}
           cargo deb -p openwgt --no-build --deb-version "$v" --output openwgt-$a.deb
-          cargo generate-rpm -p crates/widget --set-metadata "version = \"$v\"" --output openwgt-$a.rpm
+          cargo generate-rpm -p crates/openwgt --set-metadata "version = \"$v\"" --output openwgt-$a.rpm
           t=openwgt-linux-$a
           mkdir $t
           cp target/release/openwgt LICENSE README.md $t/
@@ -206,13 +206,13 @@ jobs:
               target/aarch64-apple-darwin/release/openwgt target/x86_64-apple-darwin/release/openwgt
           v=0.0.0
           case "$GITHUB_REF" in refs/tags/v*) v=${GITHUB_REF_NAME#v} ;; esac
-          sed "s/@VERSION@/$v/" crates/widget/res/Info.plist > "$c/Info.plist"
-          # the icon, from crates/widget/res/icon.png
+          sed "s/@VERSION@/$v/" crates/openwgt/res/Info.plist > "$c/Info.plist"
+          # the icon, from crates/openwgt/res/icon.png
           mkdir openwgt.iconset
           for n in 16 32 128 256 512; do
-              sips -z $n $n crates/widget/res/icon.png --out openwgt.iconset/icon_${n}x${n}.png > /dev/null
+              sips -z $n $n crates/openwgt/res/icon.png --out openwgt.iconset/icon_${n}x${n}.png > /dev/null
               if [ $n -le 256 ]; then
-                  sips -z $((n * 2)) $((n * 2)) crates/widget/res/icon.png --out openwgt.iconset/icon_${n}x${n}@2x.png > /dev/null
+                  sips -z $((n * 2)) $((n * 2)) crates/openwgt/res/icon.png --out openwgt.iconset/icon_${n}x${n}@2x.png > /dev/null
               fi
           done
           iconutil -c icns openwgt.iconset -o "$c/Resources/openwgt.icns"
@@ -233,7 +233,7 @@ jobs:
 
   # The browser build (docs/web.md), without the CD's data: the page plays
   # without it or asks the player for their CD image. The site: the front
-  # page (crates/widget/web/front.html) with the game in play/ under it,
+  # page (crates/openwgt/web/front.html) with the game in play/ under it,
   # as openwgt-web.zip on every release; it's hosted elsewhere.
   web:
     runs-on: ubuntu-26.04
@@ -248,7 +248,7 @@ jobs:
 
       - name: The wasm-bindgen version the crates pin
         id: bindgen
-        run: echo "version=$(sed -n 's/^wasm-bindgen = "=\(.*\)"$/\1/p' crates/widget/Cargo.toml)" >> "$GITHUB_OUTPUT"
+        run: echo "version=$(sed -n 's/^wasm-bindgen = "=\(.*\)"$/\1/p' crates/openwgt/Cargo.toml)" >> "$GITHUB_OUTPUT"
 
       - uses: taiki-e/install-action@v2
         with:
@@ -266,8 +266,8 @@ jobs:
           d=openwgt-web
           mkdir -p $d/play
           cp -r web/index.html web/widget.js web/widget_bg.wasm web/snippets web/icon.png web/manifest.webmanifest $d/play/
-          cp crates/widget/web/front.html $d/index.html
-          cp crates/widget/res/icon.png $d/
+          cp crates/openwgt/web/front.html $d/index.html
+          cp crates/openwgt/res/icon.png $d/
           cp LICENSE README.md $d/
           mkdir $d/fonts && cp crates/engine/fonts/README.md crates/engine/fonts/LICENSE-*.txt $d/fonts/
           zip -r $d.zip $d
