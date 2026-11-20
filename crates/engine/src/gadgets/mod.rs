@@ -13,6 +13,9 @@ mod science;
 pub mod sound_time;
 mod x87;
 
+#[cfg(test)]
+pub(crate) use common::bench;
+
 use crate::gadget::{Behavior, Tag};
 
 /// A gadget class.
@@ -113,8 +116,9 @@ classes! {
     b"St10" "cSticker10" 2034 1061 1061 displays::sticker;
 }
 
-/// The class tagged `tag`.
+/// The class tagged `tag`: the game's, or a network part
+/// (`crate::net::parts`).
 #[must_use]
 pub fn class(tag: Tag) -> Option<&'static Class> {
-    CLASSES.iter().find(|c| c.tag == tag)
+    CLASSES.iter().chain(crate::net::parts::CLASSES).find(|c| c.tag == tag)
 }

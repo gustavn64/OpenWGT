@@ -10,6 +10,7 @@
 //! game's data is a CD's or OpenWDATA.
 
 pub mod pack;
+pub mod parts;
 pub mod proto;
 
 /// A value on the wire: what a Sender sends and a Receiver gives.
