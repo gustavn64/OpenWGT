@@ -741,6 +741,7 @@ impl Editor {
     /// One tick of the running widget, the clock advanced after it; or the
     /// run ended by a part during it.
     pub fn tick_once(&mut self) -> TickEnd {
+        self.debug_before_tick();
         self.doc.tick(&self.assets, &mut self.env);
         if let Some(end) = self.env.end_run.take() {
             // A Win / Lose Checker ended the run: a win marks the
@@ -764,6 +765,7 @@ impl Editor {
         self.env.keys.clear();
         self.env.ticks = self.env.ticks.wrapping_add(1);
         self.env.ms += 1000 / TICKS_PER_SECOND;
+        self.debug_after_tick();
         TickEnd::Ran
     }
 

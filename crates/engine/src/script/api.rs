@@ -115,6 +115,12 @@ commands! {
     "parts" "" [] Read false "lists the parts in reading order, with their values";
     "wires" "" [] Read false "lists the wires and what's on them";
     "help" "[COMMAND]" [Text OPT] Read false "lists the commands, or tells about one";
+    "graph" "KNOT..." [Knot REQ, Rest OPT] Read false "records the values as the widget runs, and shows them in the graph (debugging tools)";
+    "watch" "KNOT..." [Knot REQ, Rest OPT] Read false "keeps the values in the watch list (debugging tools)";
+    "break" "COND" [Cond REQ] Read false "holds the run at the tick COND comes to hold; PART changed: at each change (debugging tools)";
+    "pause" "" [] Control false "holds the run (debugging tools)";
+    "resume" "" [] Control false "lets the held run go on (debugging tools)";
+    "seek" "TICK" [Int REQ] Control false "goes back or forward to TICK of the run recorded since GO, held there (debugging tools)";
 }
 
 /// The command called `name`.

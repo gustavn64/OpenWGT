@@ -5,9 +5,9 @@ use crate::doc::Document;
 use crate::gadget::{Object, Tag};
 use crate::script::adapt;
 use crate::script::{
-    Button, Clock, ErrorKind, Host, HostError, HostResult, KnotInfo, Level, MouseEv, PartId, PartInfo, PartSel,
-    PartState, PuzzleInfo, SettingKey, SettingVal, Shot, SoundEvent, StepEnd, Val, WireRef, cmd, file_name, select,
-    value,
+    Button, Clock, Cond, ErrorKind, Host, HostError, HostResult, KnotInfo, Level, MouseEv, PartId, PartInfo, PartSel,
+    PartState, PuzzleInfo, Selector, SettingKey, SettingVal, Shot, SoundEvent, StepEnd, Val, WireRef, cmd, file_name,
+    select, value,
 };
 use crate::sim::SoundCmd;
 
@@ -720,6 +720,22 @@ impl Host for Editor {
 
     fn sounds(&mut self) -> Vec<SoundEvent> {
         self.debug.sounds.drain(..).collect()
+    }
+
+    fn graph(&mut self, sel: &Selector) -> HostResult<()> {
+        self.add_probe(sel, true)
+    }
+
+    fn watch(&mut self, sel: &Selector) -> HostResult<()> {
+        self.add_watch(sel)
+    }
+
+    fn break_when(&mut self, c: &Cond) -> HostResult<()> {
+        self.add_break(c)
+    }
+
+    fn pause(&mut self, on: bool) -> HostResult<()> {
+        self.set_paused(on)
     }
 
     fn dump(&self) -> String {

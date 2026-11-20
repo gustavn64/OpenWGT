@@ -49,6 +49,8 @@ pub struct Hover {
     pub tip: Option<Tip>,
     /// The status line (with the tools, while the widget runs).
     pub status: Option<String>,
+    /// Where the probes are on the worksheet, and their colours' turns.
+    pub markers: Vec<((i32, i32), usize)>,
 }
 
 /// `v` as the note shows it: on/off, a number as the displays show it,
@@ -73,7 +75,7 @@ pub fn show(v: &Val) -> String {
 }
 
 /// A part for the note: its name or label, else its kind and id.
-fn who(p: &PartInfo) -> String {
+pub(super) fn who(p: &PartInfo) -> String {
     match p.name.as_ref().or(p.label.as_ref()) {
         Some(n) => format!("\"{n}\""),
         None => format!("{} {}", p.kind_words(), p.id),
@@ -81,7 +83,7 @@ fn who(p: &PartInfo) -> String {
 }
 
 /// Knot `k` of `p` as a selector ends: `in`, `in2`, `out`, `out3`.
-fn knot_name(p: &PartInfo, k: usize) -> String {
+pub(super) fn knot_name(p: &PartInfo, k: usize) -> String {
     let Some(knot) = p.knots.get(k) else {
         return "?".into();
     };
@@ -174,6 +176,10 @@ impl Editor {
             h.since = self.now;
             h.tip = None;
         }
+        if self.debug.popup.is_some() {
+            self.popup_hover((x, y));
+            return true;
+        }
         self.window_drag_move(x, y)
     }
 
@@ -191,6 +197,7 @@ impl Editor {
         if !self.debugging() {
             self.debug.hover.tip = None;
             self.debug.hover.status = None;
+            self.debug.hover.markers.clear();
             return;
         }
         let tip = (still && self.drag.is_none() && !self.menu.is_open() && self.over_view(self.mouse))
@@ -202,7 +209,28 @@ impl Editor {
             })
             .flatten();
         self.debug.hover.tip = tip;
+        self.debug.hover.markers = self.probe_markers();
         self.debug.hover.status = self.running.then(|| self.debug_status());
+    }
+
+    /// Where each probe's knot (or part) is.
+    fn probe_markers(&self) -> Vec<((i32, i32), usize)> {
+        let mut v = Vec::new();
+        for p in &self.debug.observed.probes {
+            let crate::script::PartSel::Id(id) = p.sel.part else {
+                continue;
+            };
+            let Some(g) = self.doc.gadgets.iter().find(|g| g.core.id == id) else {
+                continue;
+            };
+            let at = match p.sel.knot {
+                Some(crate::script::KnotSel::Index(k)) => g.core.knot_at(usize::from(k)),
+                _ => None,
+            };
+            let r = g.core.rect();
+            v.push((at.unwrap_or((r.x1 - 3, r.y0 + 3)), p.colour));
+        }
+        v
     }
 
     /// `tick 1234 · paused · ¼×`.
@@ -255,6 +283,15 @@ impl Debugger {
         let Some(font) = ui::font(assets) else { return };
         let view = IRect::new(0, 0, area.width(), area.height());
         let lh = i32::from(font.height);
+        // The probes: a square in their colour on what they record.
+        if let Some(col) = self.colours {
+            for &((x, y), c) in &self.hover.markers {
+                let r = IRect::sized(x - 4, y - 4, 9, 9);
+                s.fill(r, ui::BLACK);
+                s.fill(r.inset(1), col.series(c));
+                s.fill(IRect::sized(x - 1, y - 1, 3, 3), ui::WHITE);
+            }
+        }
         if let Some(st) = &self.hover.status {
             let r = status_rect(st, font, view);
             s.fill(r, ui::FACE);

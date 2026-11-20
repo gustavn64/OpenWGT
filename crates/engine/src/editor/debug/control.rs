@@ -20,6 +20,8 @@ pub mod cmd {
     pub const SPEED_60: u16 = 0x9017;
     pub const STOP_SCRIPTS: u16 = 0x9018;
     pub const CONSOLE: u16 = 0x9019;
+    pub const GRAPH: u16 = 0x901a;
+    pub const WATCH: u16 = 0x901b;
     /// The last the tools may use.
     pub const LAST: u16 = 0x902f;
 }
@@ -112,6 +114,8 @@ fn items() -> Vec<MenuItem> {
         item(cmd::SPEED_60, tr("Slow Motion 1/&60")),
         MenuItem::Separator,
         item(cmd::CONSOLE, tr("&Console\tF8")),
+        item(cmd::GRAPH, tr("&Graph")),
+        item(cmd::WATCH, tr("&Watch List")),
         item(cmd::STOP_SCRIPTS, tr("Stop Sc&ripts")),
     ]
 }
@@ -195,8 +199,14 @@ impl Editor {
         if !self.debug.scripts_running && self.debug.runtimes.live().is_empty() {
             self.menu.grayed.push(cmd::STOP_SCRIPTS);
         }
-        if self.debug.window(Kind::Console).is_some() {
-            self.menu.checked.push(cmd::CONSOLE);
+        for (kind, id) in [
+            (Kind::Console, cmd::CONSOLE),
+            (Kind::Graph, cmd::GRAPH),
+            (Kind::Watch, cmd::WATCH),
+        ] {
+            if self.debug.window(kind).is_some() {
+                self.menu.checked.push(id);
+            }
         }
         if self.debug.run.paused {
             self.menu.checked.push(cmd::PAUSE);
@@ -229,6 +239,8 @@ impl Editor {
                 self.stop_console_scripts();
             }
             cmd::CONSOLE => self.toggle_window(Kind::Console),
+            cmd::GRAPH => self.toggle_window(Kind::Graph),
+            cmd::WATCH => self.toggle_window(Kind::Watch),
             _ => {
                 if let Some(s) = Speed::ALL.into_iter().find(|s| s.command() == id) {
                     self.debug.run.speed = s;
@@ -249,7 +261,29 @@ impl Editor {
             if let TickEnd::Stopped { .. } = self.tick_once() {
                 break;
             }
+            if self.debug.observed.broke {
+                break;
+            }
         }
+    }
+
+    /// Before a tick: the probes' first values, at GO.
+    pub(in crate::editor) fn debug_before_tick(&mut self) {
+        if self.debugging() && self.env.ticks == 0 {
+            self.record_probes(0);
+            self.break_starts();
+        }
+    }
+
+    /// After a tick: the probes recorded, the breakpoints checked.
+    pub(in crate::editor) fn debug_after_tick(&mut self) {
+        if !self.debugging() {
+            return;
+        }
+        let t = self.env.ticks;
+        self.debug.time = super::graph::Time { cursor: t, end: t };
+        self.record_probes(t);
+        self.check_breaks();
     }
 
     /// The tools' keys, F6, F7 and F8 (alone), then the console's while it
@@ -257,6 +291,10 @@ impl Editor {
     pub(in crate::editor) fn debug_key(&mut self, vk: u16) -> bool {
         if !self.debugging() {
             return false;
+        }
+        if self.debug.popup.is_some() {
+            self.popup_key(vk);
+            return true;
         }
         let id = match vk {
             _ if self.shift || self.ctrl || self.alt => None,

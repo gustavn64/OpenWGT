@@ -4,8 +4,8 @@
 //! paths asks here first in one line.
 
 use super::super::{Button, Editor, TextField, menu, ui};
-use super::Debugger;
 use super::window::{self, Colours, Drag, Hit, Kind, Win};
+use super::{Debugger, context, watch};
 use crate::assets::Assets;
 use crate::gfx::{IRect, Surface};
 use crate::lang::tr;
@@ -82,11 +82,23 @@ impl Editor {
         if !self.debugging() || self.debug_blocked() {
             return false;
         }
+        if self.debug.popup.is_some() {
+            self.popup_click((x, y));
+            return true;
+        }
         if self.menu.is_open() || self.drag.is_some() {
             return false;
         }
         let Some(i) = self.debug.windows.iter().rposition(|w| w.rect.contains(x, y)) else {
             self.debug.focus = None;
+            // The popup: on the worksheet, while editing or held, or with
+            // Ctrl (the parts that poll the right button have it else).
+            if button == Button::Right
+                && self.over_view((x, y))
+                && (!self.running || self.debug.run.paused || self.ctrl)
+            {
+                return self.open_popup((x, y));
+            }
             return false;
         };
         // On top, and with the keyboard (the help window's gone).
@@ -129,6 +141,11 @@ impl Editor {
                 self.console_click(w.rect, p);
                 false
             }
+            Kind::Graph => self.graph_click(w.rect, p),
+            Kind::Watch => {
+                self.watch_click(w.rect, p);
+                false
+            }
         }
     }
 
@@ -150,6 +167,7 @@ impl Editor {
                     w.rect = window::keep_in(r, area, menu::BAR_H);
                 }
             }
+            Drag::Client { kind: Kind::Graph } => self.graph_drag((x, y)),
             Drag::Client { .. } => {}
         }
         true
@@ -165,6 +183,7 @@ impl Editor {
             return false;
         }
         self.window_drag_move(x, y);
+        self.graph_release();
         self.debug.drag = None;
         true
     }
@@ -181,6 +200,8 @@ impl Editor {
         };
         match w.kind {
             Kind::Console => self.console_wheel(dy),
+            Kind::Graph => self.graph_wheel(dy),
+            Kind::Watch => {}
         }
         true
     }
@@ -234,18 +255,22 @@ impl Editor {
     pub(super) fn windows_prepare(&mut self) {
         if !self.debugging() {
             self.debug.windows.clear();
+            self.debug.popup = None;
             self.debug.drag = None;
             self.debug.focus = None;
-            return;
-        }
-        if self.debug.windows.is_empty() {
             return;
         }
         if self.debug.colours.is_none() {
             self.debug.colours = Some(Colours::from(&self.assets.palette()));
         }
+        if self.debug.windows.is_empty() {
+            return;
+        }
         self.debug.console.tasks = self.console_tasks();
         self.debug.console.focused = self.console_has_keys();
+        if self.debug.window(Kind::Watch).is_some() {
+            self.watch_values();
+        }
     }
 }
 
@@ -254,6 +279,8 @@ fn first_place(kind: Kind, area: IRect) -> IRect {
     let w = area.width();
     match kind {
         Kind::Console => IRect::sized(area.x0 + 8, area.y1 - 210, (w - 16).min(440), 200),
+        Kind::Graph => IRect::sized(area.x1 - 8 - (w - 16).min(400), area.y0 + 60, (w - 16).min(400), 220),
+        Kind::Watch => IRect::sized(area.x1 - 8 - 280, area.y1 - 210, 280, 200),
     }
 }
 
@@ -273,6 +300,7 @@ impl Debugger {
     #[must_use]
     pub fn covers(&self, p: (i32, i32)) -> bool {
         self.windows.iter().any(|w| w.rect.contains(p.0, p.1))
+            || self.popup.as_ref().is_some_and(|m| m.rect.contains(p.0, p.1))
     }
 
     /// The windows, the topmost last, and the popup over them (frame
@@ -285,13 +313,20 @@ impl Debugger {
             let active = i == top && self.focus == Some(w.kind);
             let title = match w.kind {
                 Kind::Console => tr("Console"),
+                Kind::Graph => tr("Graph"),
+                Kind::Watch => tr("Watch List"),
             };
             window::draw(s, font, w.rect, title, active);
             let old = s.set_clip(window::client(w.rect).intersect(s.clip()));
             match w.kind {
                 Kind::Console => self.console.draw(s, font, w.rect, self.console.focused && active, col),
+                Kind::Graph => self.graph.draw(s, font, w.rect, col, &self.observed.probes, self.time),
+                Kind::Watch => watch::draw(s, font, w.rect, col, &self.observed),
             }
             s.set_clip(old);
+        }
+        if let Some(p) = &self.popup {
+            context::draw(s, font, p);
         }
     }
 }

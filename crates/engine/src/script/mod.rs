@@ -897,6 +897,63 @@ pub trait Host {
     /// them: a line each with the index, tag, box and knots, in the
     /// editor's coordinates.
     fn dump(&self) -> String;
+
+    // ---- the debugging tools ---------------------------------------------
+
+    /// Records what `sel` stands for as the widget runs, and shows it in
+    /// the graph.
+    ///
+    /// # Errors
+    /// No such part or knot, or no debugging tools here.
+    fn graph(&mut self, sel: &Selector) -> HostResult<()> {
+        let _ = sel;
+        Err(no_tools())
+    }
+
+    /// Keeps what `sel` stands for in the watch list.
+    ///
+    /// # Errors
+    /// No such part or knot, or no debugging tools here.
+    fn watch(&mut self, sel: &Selector) -> HostResult<()> {
+        let _ = sel;
+        Err(no_tools())
+    }
+
+    /// Holds the run (as Debug ▸ Pause) the tick `c` comes to hold.
+    ///
+    /// # Errors
+    /// A part or knot that isn't there, or no debugging tools here.
+    fn break_when(&mut self, c: &Cond) -> HostResult<()> {
+        let _ = c;
+        Err(no_tools())
+    }
+
+    /// Holds the run (`on`) or lets it go on.
+    ///
+    /// # Errors
+    /// The widget doesn't run, or no debugging tools here.
+    fn pause(&mut self, on: bool) -> HostResult<()> {
+        let _ = on;
+        Err(no_tools())
+    }
+
+    /// Goes back (or forward) to tick `tick` of the run recorded since GO.
+    ///
+    /// # Errors
+    /// Nothing recorded there, or no debugging tools here.
+    fn seek(&mut self, tick: u32) -> HostResult<()> {
+        let _ = tick;
+        Err(no_tools())
+    }
+}
+
+/// What a host without the debugging tools says to their commands.
+#[must_use]
+pub fn no_tools() -> HostError {
+    HostError::new(
+        ErrorKind::Caps,
+        "the debugging tools are off (Settings: Enhancements, Debugging tools)",
+    )
 }
 
 /// Where a host's output goes: the log and the screenshots.

@@ -238,6 +238,36 @@ fn sv(en: &str) -> Option<&'static str> {
         "paused" => "pausad",
         "changed, unread" => "ändrad, oläst",
         "&Console\tF8" => "&Konsol\tF8",
+        "&Graph" => "&Graf",
+        "&Watch List" => "&Bevakningslista",
+        "Graph" => "Graf",
+        "Watch List" => "Bevakningslista",
+        "Follow" => "Följ",
+        "ticks/pixel" => "tick/pixel",
+        "pixels/tick" => "pixlar/tick",
+        "Right-click a wire, a knot or a part, then Show Graph." => {
+            "Högerklicka på en tråd, en knut eller en del och välj Visa graf."
+        }
+        "Right-click a wire, a knot or a part to watch it, or to hold the run when it changes." => {
+            "Högerklicka på en tråd, en knut eller en del för att bevaka den, eller för att hålla körningen när den ändras."
+        }
+        "Probes" => "Mätpunkter",
+        "Watches" => "Bevakningar",
+        "Breakpoints" => "Brytpunkter",
+        "{} changes" => "{} ändringar",
+        "when" => "när",
+        "held {}" => "höll {}",
+        "probes" => "mätpunkter",
+        "watches" => "bevakningar",
+        "breakpoints" => "brytpunkter",
+        "at most {} {}" => "högst {} {}",
+        "Held at tick {}: {}" => "Hölls vid tick {}: {}",
+        "Show &Graph" => "Visa &graf",
+        "Add &Probe" => "Lägg till &mätpunkt",
+        "&Watch" => "&Bevaka",
+        "&Break When Changes" => "&Bryt när den ändras",
+        "&Name This Part..." => "&Namnge delen...",
+        "&Copy Reference" => "&Kopiera referens",
         "Console" => "Konsol",
         "Stop" => "Stoppa",
         "runs" => "kör",
@@ -410,6 +440,36 @@ fn fr(en: &str) -> Option<&'static str> {
         "paused" => "en pause",
         "changed, unread" => "changé, pas encore lu",
         "&Console\tF8" => "&Console\tF8",
+        "&Graph" => "&Graphique",
+        "&Watch List" => "&Liste de surveillance",
+        "Graph" => "Graphique",
+        "Watch List" => "Liste de surveillance",
+        "Follow" => "Suivre",
+        "ticks/pixel" => "ticks/pixel",
+        "pixels/tick" => "pixels/tick",
+        "Right-click a wire, a knot or a part, then Show Graph." => {
+            "Cliquez avec le bouton droit sur un fil, un nœud ou une pièce, puis Afficher le graphique."
+        }
+        "Right-click a wire, a knot or a part to watch it, or to hold the run when it changes." => {
+            "Cliquez avec le bouton droit sur un fil, un nœud ou une pièce pour le surveiller, ou pour suspendre la marche quand il change."
+        }
+        "Probes" => "Sondes",
+        "Watches" => "Surveillances",
+        "Breakpoints" => "Points d'arrêt",
+        "{} changes" => "{} changements",
+        "when" => "quand",
+        "held {}" => "arrêté {}",
+        "probes" => "sondes",
+        "watches" => "surveillances",
+        "breakpoints" => "points d'arrêt",
+        "at most {} {}" => "au plus {} {}",
+        "Held at tick {}: {}" => "Suspendu au tick {} : {}",
+        "Show &Graph" => "Afficher le &graphique",
+        "Add &Probe" => "Ajouter une &sonde",
+        "&Watch" => "Sur&veiller",
+        "&Break When Changes" => "&Arrêter quand il change",
+        "&Name This Part..." => "&Nommer la pièce...",
+        "&Copy Reference" => "&Copier la référence",
         "Console" => "Console",
         "Stop" => "Arrêter",
         "runs" => "tourne",

@@ -11,14 +11,20 @@
 mod console;
 #[cfg(test)]
 mod console_tests;
+mod context;
 mod control;
+mod graph;
 mod host;
 mod input;
 mod overlay;
 #[cfg(test)]
+mod probe_tests;
+mod probes;
+#[cfg(test)]
 mod tests;
 #[cfg(test)]
 mod ui_tests;
+mod watch;
 mod window;
 
 pub use console::{Line, LineKind};
@@ -81,6 +87,14 @@ pub struct Debugger {
     pub console: console::Console,
     /// The languages it runs.
     runtimes: console::Runtimes,
+    /// The popup menu (a right-click on the worksheet).
+    popup: Option<context::Popup>,
+    /// What the tools keep an eye on.
+    pub observed: probes::Observed,
+    /// The graph's view.
+    graph: graph::Graph,
+    /// Where the run is, for the windows.
+    time: graph::Time,
 }
 
 /// How the run goes under the tools.
@@ -121,6 +135,10 @@ impl Default for Debugger {
             colours: None,
             console: console::Console::default(),
             runtimes: console::Runtimes::default(),
+            popup: None,
+            observed: probes::Observed::default(),
+            graph: graph::Graph::default(),
+            time: graph::Time::default(),
         }
     }
 }
@@ -136,6 +154,8 @@ impl Debugger {
         self.run.assisted = false;
         self.run.paused = false;
         self.run.carry = 0;
+        self.observed.go();
+        self.time = graph::Time::default();
     }
 
     /// Whether a script changed this run's state ([`Debugger::on_go`]): a

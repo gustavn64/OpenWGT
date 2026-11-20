@@ -139,6 +139,11 @@ enum Cmd {
     Parts,
     Wires,
     Help(Option<String>),
+    Graph(Vec<Selector>),
+    Watch(Vec<Selector>),
+    Break(Cond),
+    Pause(bool),
+    Seek(u32),
 }
 
 #[derive(Debug, Clone, PartialEq)]
@@ -364,6 +369,32 @@ fn parse_line(src: &str) -> Result<Option<(Cmd, Cap, (u32, u32))>, ParseErr> {
             Cmd::Wires
         }
         "help" => Cmd::Help(toks.get(1).map(|t| t.text.clone())),
+        "graph" | "watch" => {
+            focus = focus_rest;
+            let sels = (1..toks.len()).map(sel).collect::<Result<Vec<_>, _>>()?;
+            if sels.is_empty() {
+                return Err((verb.col, verb.width, usage()));
+            }
+            if name == "graph" {
+                Cmd::Graph(sels)
+            } else {
+                Cmd::Watch(sels)
+            }
+        }
+        "break" => {
+            focus = focus_rest;
+            Cmd::Break(cond(&toks[1..], verb, true)?)
+        }
+        "pause" | "resume" => {
+            at_most(0)?;
+            Cmd::Pause(name == "pause")
+        }
+        "seek" => {
+            at_most(1)?;
+            let t = arg(1)?;
+            let v = num(1)?;
+            Cmd::Seek(u32::try_from(v).map_err(|_| err_at(t, "a tick is a whole number from 0"))?)
+        }
         _ => return Err(err_at(verb, format!("{name} isn't done yet"))),
     };
     Ok(Some((cmd, def.cap, focus)))
@@ -913,6 +944,19 @@ impl Task {
                 }
                 host.log(Level::Info, &out.join(", "));
             }
+            Cmd::Graph(list) | Cmd::Watch(list) => {
+                for sel in list {
+                    let r = if matches!(line.cmd, Cmd::Graph(_)) {
+                        host.graph(sel)
+                    } else {
+                        host.watch(sel)
+                    };
+                    r.map_err(|e| fatal(self, e))?;
+                }
+            }
+            Cmd::Break(c) => host.break_when(c).map_err(|e| fatal(self, e))?,
+            &Cmd::Pause(on) => host.pause(on).map_err(|e| fatal(self, e))?,
+            &Cmd::Seek(t) => host.seek(t).map_err(|e| fatal(self, e))?,
             Cmd::Parts => {
                 let text = parts_text(host);
                 host.log(Level::Info, &text);

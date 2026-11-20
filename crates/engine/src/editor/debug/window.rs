@@ -22,6 +22,8 @@ pub const MIN_H: i32 = 90;
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum Kind {
     Console,
+    Graph,
+    Watch,
 }
 
 /// A window: what it is and where.

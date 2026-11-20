@@ -31,10 +31,11 @@ LEFT, RIGHT = 1, 4
 # commands that work with parts by name and with the run
 # (engine::script::cmd) change the widget in ways the VM can't follow.
 UNSUPPORTED = {"open", "puzzle", "new", "run", "stop", "step", "until", "press", "set", "poke",
-               "setting", "seed"}
+               "setting", "seed", "pause", "resume", "seek"}
 # The port's commands that only look (or name parts to look with):
 # skipped here.
-SKIPPED = {"name", "expect", "assert", "log", "print", "parts", "wires", "help"}
+SKIPPED = {"name", "expect", "assert", "log", "print", "parts", "wires", "help", "graph", "watch",
+           "break"}
 KNOWN = {"size", "dump", "move", "down", "up", "click", "dclick", "drag", "key", "wait", "shot"} | SKIPPED
 
 # `#` starts a comment, unless a digit follows (`#7` is a part).
