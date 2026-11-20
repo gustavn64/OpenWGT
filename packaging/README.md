@@ -21,7 +21,7 @@ around it take. None of it carries the CD's data.
 
 ## A release
 
-1. Set the version in the four `crates/*/Cargo.toml` (and `Cargo.lock`),
+1. Set the version in every `crates/*/Cargo.toml` (and `Cargo.lock`),
    commit, tag `vX.Y.Z` and push the tag. The CI builds everything, makes
    the release with every file on it and pushes the container image.
 2. The checksums the package managers want, from the release's files:

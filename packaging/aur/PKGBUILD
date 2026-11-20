@@ -1,7 +1,7 @@
 # The AUR's package, built from the release's source. pkgver and the
 # checksum are the release's (packaging/README.md).
 pkgname=openwgt
-pkgver=0.11.0
+pkgver=0.12.0
 pkgrel=1
 pkgdesc="An open engine for Maxis' Widget Workshop, with its own graphics, sounds and data"
 arch=('x86_64' 'aarch64')

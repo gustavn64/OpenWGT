@@ -119,6 +119,20 @@ packs then come in the language picked before, else the system's.
 On a touch screen a tap is a click, a long press a double click, and a
 tap on a text field opens the device's own text box (in the browser).
 
+OpenWGT has parts of its own beside the original's: the Oscilloscope
+([docs/oscilloscope.md](docs/oscilloscope.md)), and the Sender and
+Receiver, which pass on/off, numbers and pictures from one player's
+widget to another's through a small relay, on a channel both name
+([docs/net-parts.md](docs/net-parts.md)).
+
+With **Debugging tools** on in Options ▸ Settings there's a Debug menu:
+pause, a tick at a time, slow motion, the values of wires and parts under
+the mouse, probes drawn as a graph, a watch list, breakpoints, and a
+timeline that goes back. Its console (F8) runs scripts in JavaScript or
+the built-in command language, which a widget can keep and which ask
+before they run; `--script FILE` runs one from the command line, with
+`--headless` without a window ([docs/widget-scripts.md](docs/widget-scripts.md)).
+
 Widgets travel as links too ([docs/web.md](docs/web.md#widget-links)):
 File ▸ Copy Link to Widget puts one on the clipboard, which opens the
 widget in the browser version for anyone with the CD, and File ▸ Open Widget Link
@@ -238,6 +252,9 @@ it), else the one picked in Options ▸ Settings, else the system's. Swedish Ope
 - [docs/gadgets/sound-time.md](docs/gadgets/sound-time.md): time and sound parts
 - [docs/gadgets/io.md](docs/gadgets/io.md): input and display parts
 - [docs/oscilloscope.md](docs/oscilloscope.md): the port's own parts and the Oscilloscope
+- [docs/net-parts.md](docs/net-parts.md): the Sender and Receiver, and their relay
+- [docs/widget-scripts.md](docs/widget-scripts.md): the debugging tools' names and scripts, in the console and in widgets
+- [docs/scripting-js-engine.md](docs/scripting-js-engine.md): why QuickJS runs the JavaScript
 
 ## Legal
 
