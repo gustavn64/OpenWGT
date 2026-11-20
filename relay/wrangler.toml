@@ -1,0 +1,37 @@
+# The relay for OpenWGT's network parts (README.md). Deploy: `wrangler deploy`.
+name = "openwgt-relay"
+main = "src/index.ts"
+compatibility_date = "2026-10-01"
+
+# Also served on openwgt-relay.<account subdomain>.workers.dev, at
+# /relay/<channel> (and /openwgt/relay/<channel>): a fallback that works
+# without the route below.
+workers_dev = true
+preview_urls = false
+
+# To serve it on gustavn.se/openwgt/relay/<channel> (the zone is on the same
+# Cloudflare account): uncomment this and `wrangler deploy` again, or add the
+# route in the dashboard (Workers & Pages > openwgt-relay > Settings >
+# Domains & Routes > Add > Route). The Worker then answers these paths in
+# front of the Pages site on the same hostname; everything else stays Pages.
+# routes = [
+#   { pattern = "gustavn.se/openwgt/relay/*", zone_name = "gustavn.se" },
+# ]
+
+# One Durable Object per channel (idFromName(channel)). SQLite-backed, the
+# kind the Free plan offers; it writes nothing to storage, all is in memory.
+[[durable_objects.bindings]]
+name = "CHANNEL"
+class_name = "Channel"
+
+[[migrations]]
+tag = "v1"
+new_sqlite_classes = ["Channel"]
+
+# No Workers Logs: the relay logs nothing itself, and keeps it that way.
+[observability]
+enabled = false
+
+[dev]
+ip = "127.0.0.1"
+port = 8787

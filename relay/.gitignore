@@ -1,0 +1,4 @@
+node_modules/
+.wrangler/
+# Made by `wrangler types` (npm run check)
+worker-configuration.d.ts

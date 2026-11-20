@@ -1,0 +1,13 @@
+{
+  "name": "openwgt-relay",
+  "private": true,
+  "description": "The relay for OpenWGT's network parts (a Cloudflare Worker)",
+  "license": "AGPL-3.0-or-later",
+  "type": "module",
+  "scripts": {
+    "dev": "wrangler dev",
+    "check": "wrangler types && tsc --noEmit",
+    "test": "./test.sh",
+    "deploy": "wrangler deploy"
+  }
+}
