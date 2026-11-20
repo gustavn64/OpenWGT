@@ -31,6 +31,7 @@ Välkommen till verkstaden i OpenWGT! Välj ett ämne nedan, eller tryck på **R
 - [Brytardelar](#switch-parts)
 - [Textdelar](#text-parts)
 - [Superdelar](#super-parts)
+- [Oscilloskopet](#oscilloscope)
 - [Sändare och mottagare](#network-parts)
 
 ## Pussel
@@ -270,7 +271,7 @@ keywords: delar, lista över delar
 
 Här är de sju flikarna i [verktygslådan](#tray) och vad som finns i dem:
 
-- [Visningsdelar](#display-parts): glödlampa, färgblandare, remsdiagram, bildprojektor, tresiffrig display, tiosiffrig display.
+- [Visningsdelar](#display-parts): glödlampa, färgblandare, remsdiagram, bildprojektor, tresiffrig display, tiosiffrig display och, med förbättringarna påslagna, [oscilloskopet](#oscilloscope).
 - [Tidsdelar](#timer-parts): digitalklocka, stoppur, metronom.
 - [Ljuddelar](#sound-parts): ljudbrytare, djurläten, blandade ljud, högtalare, stämgaffel, inspelare, ljudförvandlare.
 - [Sifferdelar](#number-parts): sifferknappar, tresiffrigt tal, räknare, litet tresiffrigt tal, skjutreglage, adderare, subtraherare, multiplicerare, dividerare, slantsingling, slumptalsgenerator, summerare, jämförare, mattefunktioner, area/volym, omvandlare och OCH-, ELLER-, XELLER- och INTE-grindarna.
@@ -281,7 +282,7 @@ Här är de sju flikarna i [verktygslådan](#tray) och vad som finns i dem:
 Varje del förklarar sig själv också: dubbelklicka på den på arbetsytan och läs dess [inställningsfönster](#settings).
 
 = Visningsdelar {#display-parts}
-keywords: visning, glödlampa, lampa, färgblandare, färg, remsdiagram, diagram, bildprojektor, bild, tresiffrig display, tiosiffrig display
+keywords: visning, glödlampa, lampa, färgblandare, färg, remsdiagram, diagram, bildprojektor, bild, tresiffrig display, tiosiffrig display, oscilloskop
 
 Fliken med bildskärmen. De här delarna visar vad uppfinningen gör.
 
@@ -294,6 +295,7 @@ Fliken med bildskärmen. De här delarna visar vad uppfinningen gör.
 ## Sida 2
 - **Tresiffrig display** - visar heltal från -99 till 999. Ett rött X betyder att talet inte får plats.
 - **Tiosiffrig display** - visar stora tal och decimaltal, upp till tio tecken.
+- **Oscilloskop** - med [förbättringarna](#openwgt-settings) påslagna: ritar två ingångar som linjer som hela tiden flyttar sig. Se [Oscilloskopet](#oscilloscope).
 
 Tips: medan du bygger kan du koppla en display till vilken utgång som helst för att se vad delen skickar. Se också [Sifferdelar](#number-parts) och [Textdelar](#text-parts).
 
@@ -415,6 +417,24 @@ Fliken med planeten: vetenskapslabbet, och delen som avslutar spel.
 Med [förbättringarna](#openwgt-settings) påslagna har en sista sida två delar som är OpenWGT:s egna: **sändaren** och **mottagaren**, som låter uppfinningar prata med varandra över internet. Se [Sändare och mottagare](#network-parts).
 
 Tips: en [omvandlare](#number-parts) gör om kanonens meter till fot.
+
+= Oscilloskopet {#oscilloscope}
+keywords: oscilloskop, diagram, kurva, linje, våg, fyrkantvåg, signal, frys, stoppa bilden, tidsskala, talområde
+
+En del som är OpenWGT:s egen, inte originalets: den ritar det som kommer in i dess två ingångar som två linjer som hela tiden flyttar sig medan uppfinningen går, som skärmen på ett riktigt oscilloskop. Den är den sista av [visningsdelarna](#display-parts) när [förbättringarna](#openwgt-settings) är påslagna.
+
+- **A** (gul) och **B** (blå) - koppla in tal eller PÅ/AV-signaler. Tal går upp och ner; en PÅ/AV-signal ritas som en fyrkantvåg, A:s ovanför B:s.
+- **Den nedersta ingången** - ett PÅ håller bilden stilla så att du kan titta på den; AV låter den gå vidare.
+- **Utgången** - skickar ut det som kommer in i A, så du kan sätta oscilloskopet mitt på en sladd.
+
+Till skillnad från [remsdiagrammet](#display-parts) blir det aldrig fullt: när linjen når högerkanten glider bilden åt vänster och det äldsta försvinner ut från skärmen. Tryck START igen för en tom skärm.
+
+## Inställningar
+- **Talområde** - **Automatiskt** anpassar skärmen efter talen (skärmen visar det högsta och lägsta talet i sina hörn). Välj **Från** och skriv två tal för att hålla området stilla; tal utanför stannar vid kanten.
+- **Tidsskala** - hur fort linjerna flyttar sig: med **1×** flyttar bilden en punkt varje tick (60 i sekunden), med **8×** en punkt var åttonde tick, så att den visar åtta gånger så lång tid.
+- **Bara punkter** - ritar en punkt för varje ögonblick i stället för hela linjer.
+
+Tips: koppla en metronom till B och en slumptalsgenerator till A, och se talen ändras vid varje slag.
 
 = Sändare och mottagare {#network-parts}
 keywords: sändare, mottagare, nätverk, internet, uppkopplad, kanal, kanalnamn, kompis, långt bort, relä, upptagen, lampa, integritet
@@ -627,6 +647,7 @@ Några ändringar som gör OpenWGT lite lättare att använda än originalet:
 
 - verktygslådan visar en hel flik på en gång, med sidorna under varandra och utan pilar;
 - verktygsfälten, inställningsfönstren och meddelanderutorna flyttas hela när du drar dem, inte som en kontur;
+- visningsdelarna får [oscilloskopet](#oscilloscope) sist;
 - superdelarna får en sista sida med [sändaren och mottagaren](#network-parts).
 
 Förbättringarna är påslagna från början. Kryssa ur **Förbättringar** för att få allt precis som i originalet.

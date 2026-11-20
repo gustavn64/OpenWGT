@@ -213,6 +213,8 @@ it), else the one picked in Options ▸ Settings, else the system's. Swedish Ope
 - `tools/opengfx/`: draws OpenWGFX, the port's own graphics.
 - `tools/opensfx/`: synthesizes OpenWSFX, the port's own sounds.
 - `tools/opendata/`: builds OpenWDATA, the port's own data.
+- `tools/openparts/`: draws and builds the pictures and data of the port's
+  own parts (the Oscilloscope).
 - `tools/compare/`: plays the same scripts into the original (in a Windows
   95 virtual machine) and the port, and compares the screens. The virtual
   machine is a local setup, not in the repository: `run_vm.py` imports
@@ -234,6 +236,7 @@ it), else the one picked in Options ▸ Settings, else the system's. Swedish Ope
 - [docs/gadgets/science.md](docs/gadgets/science.md): the science lab parts
 - [docs/gadgets/sound-time.md](docs/gadgets/sound-time.md): time and sound parts
 - [docs/gadgets/io.md](docs/gadgets/io.md): input and display parts
+- [docs/oscilloscope.md](docs/oscilloscope.md): the port's own parts and the Oscilloscope
 
 ## Legal
 
