@@ -48,6 +48,7 @@ mod profile;
 #[cfg(not(target_arch = "wasm32"))]
 mod script;
 mod sound;
+mod trust;
 #[cfg(target_arch = "wasm32")]
 mod web;
 
@@ -938,9 +939,6 @@ fn start(args: &Args, assets: Assets) -> Result<(), platform::Error> {
         copy: Box::new(platform::clipboard::set_text),
         paste: Box::new(platform::clipboard::request_text),
     });
-    if let Some(l) = &args.link {
-        editor.open_link(l);
-    }
     // The network parts connect as soon as the widget is open.
     editor
         .net
@@ -957,12 +955,27 @@ fn start(args: &Args, assets: Assets) -> Result<(), platform::Error> {
     let theme = platform::theme::SystemTheme::new();
     editor.set_system_dark(theme.dark());
     let settings_file = args.window.settings_file.clone();
+    // The scripts the player let run, kept with the settings.
+    if let Some(p) = &settings_file {
+        editor.debug.trust = Box::new(trust::SettingsTrust(p.clone()));
+    }
     editor.set_enhanced(enhanced(settings_file.as_deref()));
     editor.set_debug_tools(debug_tools(settings_file.as_deref()));
     // The debugging tools' console takes JavaScript (`:` before a line
     // for the built-in commands).
     #[cfg(feature = "js")]
     editor.set_script_runtime(Box::new(script_js::Js::new()));
+    // The link or the widget given, as one opened: whether its scripts
+    // may run is asked (not with `--script`, which is in charge).
+    #[cfg(not(target_arch = "wasm32"))]
+    let in_charge = args.script.file.is_some();
+    #[cfg(target_arch = "wasm32")]
+    let in_charge = false;
+    if let Some(l) = &args.link {
+        editor.open_link(l);
+    } else if editor.path.is_some() && !in_charge {
+        editor.ask_consent();
+    }
     #[cfg(not(target_arch = "wasm32"))]
     let script = script::Windowed::start(args, &mut editor).unwrap_or_else(|e| fail(&e));
     let app = Workshop {

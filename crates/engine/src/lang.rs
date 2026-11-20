@@ -297,6 +297,13 @@ fn sv(en: &str) -> Option<&'static str> {
         }
         "{}: not a text file." => "{}: inte en textfil.",
         "Keep" => "Behåll",
+        "This widget comes with scripts." => "Den här uppfinningen har skript med sig.",
+        "&Show" => "Vi&sa",
+        "&Run" => "&Kör",
+        "&Don't run" => "Kör &inte",
+        "The widget's scripts are listed above; none of them runs until you start it." => {
+            "Uppfinningens skript står ovan; inget av dem kör förrän du startar det."
+        }
         // Links and downloads.
         "A link to {} is on the clipboard ({} characters)." => "En länk till {} ligger i Urklipp ({} tecken).",
         "the widget" => "uppfinningen",
@@ -523,6 +530,13 @@ fn fr(en: &str) -> Option<&'static str> {
         }
         "{}: not a text file." => "{} : pas un fichier texte.",
         "Keep" => "Garder",
+        "This widget comes with scripts." => "Cet Eurêka est accompagné de scripts.",
+        "&Show" => "A&fficher",
+        "&Run" => "&Exécuter",
+        "&Don't run" => "&Ne pas exécuter",
+        "The widget's scripts are listed above; none of them runs until you start it." => {
+            "Les scripts de l'Eurêka sont listés ci-dessus ; aucun ne s'exécute avant que vous le lanciez."
+        }
         // Links and downloads.
         "A link to {} is on the clipboard ({} characters)." => {
             "Un lien vers {} est dans le Presse-papiers ({} caractères)."

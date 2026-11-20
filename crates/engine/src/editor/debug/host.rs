@@ -819,7 +819,9 @@ impl Editor {
             return Err(error(ErrorKind::Document, "the editor is busy (a box is open)"));
         }
         self.debug.forget();
-        self.drop_file(super::super::Dropped { name, path, data });
+        // The script is in charge: the widget's own scripts don't run, and
+        // nothing asks.
+        self.drop_widget(super::super::Dropped { name, path, data }, true);
         Ok(())
     }
 }

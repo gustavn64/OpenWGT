@@ -278,6 +278,7 @@ impl Editor {
         self.install(d, Some(swap_ext(path, ".WGT")));
         self.undo = undo;
         self.from_exe = true;
+        self.ask_consent();
         true
     }
 

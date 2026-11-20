@@ -8,6 +8,9 @@
 //! The tools are there only with the enhancements on and their own
 //! switch in Settings ("Debugging tools", off at first).
 
+mod consent;
+#[cfg(test)]
+mod consent_tests;
 mod console;
 #[cfg(test)]
 mod console_tests;
@@ -46,6 +49,7 @@ use crate::script::{MemorySink, Sink, SoundEvent};
 const MAX_SOUNDS: usize = 1000;
 
 /// What the editor keeps for scripts and debugging.
+#[allow(clippy::struct_excessive_bools)]
 pub struct Debugger {
     /// Where scripts' output goes; in memory unless the program says.
     pub sink: Box<dyn Sink>,
@@ -91,12 +95,14 @@ pub struct Debugger {
     /// The languages it runs.
     runtimes: console::Runtimes,
     /// The tasks running scripts of the Scripts list: the script's text,
-    /// its language, the task.
-    script_tasks: Vec<(
-        crate::script::trust::Digest,
-        console::Lang,
-        crate::script::runtime::TaskId,
-    )>,
+    /// its language, the task, and whether it's the widget's (which runs
+    /// without the tools too, until another widget comes).
+    script_tasks: Vec<ScriptTask>,
+    /// The scripts from other people's widgets the player trusts
+    /// (`consent`); the program keeps them with its settings.
+    pub trust: Box<dyn crate::script::trust::Trust>,
+    /// The widget dropped and waiting is a script's (`consent`).
+    pub(in crate::editor) dropped_by_script: bool,
     /// The popup menu (a right-click on the worksheet).
     popup: Option<context::Popup>,
     /// What the tools keep an eye on.
@@ -109,6 +115,16 @@ pub struct Debugger {
     timeline: timeline::Timeline,
     /// What the timeline window shows.
     shown: timeline::Shown,
+}
+
+/// A task running a script of the Scripts list.
+#[derive(Debug, Clone, Copy)]
+struct ScriptTask {
+    digest: crate::script::trust::Digest,
+    lang: console::Lang,
+    id: crate::script::runtime::TaskId,
+    /// One of the widget's (run as one that came with it).
+    widget: bool,
 }
 
 /// How the run goes under the tools.
@@ -149,6 +165,8 @@ impl Default for Debugger {
             console: console::Console::default(),
             runtimes: console::Runtimes::default(),
             script_tasks: Vec::new(),
+            trust: Box::new(crate::script::trust::MemoryTrust::default()),
+            dropped_by_script: false,
             popup: None,
             observed: probes::Observed::default(),
             graph: graph::Graph::default(),
@@ -218,9 +236,13 @@ impl Debugger {
         self.deadline.as_ref().is_some_and(|d| d())
     }
 
-    /// Forgets what was of the widget (another one comes): the probes,
-    /// watches and breakpoints, the run recorded.
+    /// Forgets what was of the widget (another one comes): its scripts
+    /// running, the probes, watches and breakpoints, the run recorded.
     pub(super) fn forget(&mut self) {
+        for t in self.script_tasks.iter().filter(|t| t.widget) {
+            self.runtimes.cancel(Some((t.lang, t.id)));
+        }
+        self.script_tasks.retain(|t| !t.widget);
         self.ended = None;
         self.observed = probes::Observed::default();
         self.timeline.forget();

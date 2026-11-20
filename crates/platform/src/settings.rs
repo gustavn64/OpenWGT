@@ -39,6 +39,13 @@
 //! language=en
 //! ```
 //!
+//! The scripts from other people's widgets the player let run, by their
+//! texts' SHA-256 (`openwgt`'s `trust`):
+//!
+//! ```text
+//! trusted_scripts=3f2a…,9b07…
+//! ```
+//!
 //! Writing the window's state keeps every other line of the file, and
 //! writing the switches keeps every line but theirs. A UI scale chosen in
 //! the game is written at once ([`save_value`]).

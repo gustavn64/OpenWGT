@@ -47,9 +47,16 @@ impl Editor {
         if self.console_drop(&file.name, &file.data) {
             return;
         }
+        self.drop_widget(file, false);
+    }
+
+    /// A widget to open as dropped (`by_script`: a script opens it, and
+    /// isn't asked whether its scripts may run).
+    pub(super) fn drop_widget(&mut self, file: Dropped, by_script: bool) {
         self.menu.close();
         self.stop();
         self.dropped = Some(file);
+        self.debug.dropped_by_script = by_script;
         self.confirm_save(Next::Dropped);
         self.update_menu();
     }
@@ -69,6 +76,7 @@ impl Editor {
     /// path its name is kept for the title and the next save.
     pub(super) fn open_dropped(&mut self) {
         let Some(f) = self.dropped.take() else { return };
+        let by_script = std::mem::take(&mut self.debug.dropped_by_script);
         let Ok(d) = Document::load(&self.assets, &f.data) else {
             self.alert(7);
             return;
@@ -76,6 +84,9 @@ impl Editor {
         self.install(d, f.path);
         if self.path.is_none() {
             self.drop_name = Some(f.name);
+        }
+        if !by_script {
+            self.ask_consent();
         }
     }
 

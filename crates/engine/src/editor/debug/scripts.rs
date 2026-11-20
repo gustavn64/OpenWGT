@@ -88,7 +88,12 @@ impl Editor {
         };
         match self.with_runtime(l, |rt, e| rt.start(&s.name, &s.source, caps, e)) {
             Some(Ok(id)) => {
-                self.debug.script_tasks.push((s.digest(), l, id));
+                self.debug.script_tasks.push(super::ScriptTask {
+                    digest: s.digest(),
+                    lang: l,
+                    id,
+                    widget: !caps.document,
+                });
                 true
             }
             Some(Err(e)) => {
@@ -110,13 +115,17 @@ impl Editor {
             .script_tasks
             .iter()
             .rev()
-            .find(|(sd, l, id)| sd == d && live.iter().any(|(ll, t)| ll == l && t.id == *id))
-            .map(|&(_, l, id)| (l, id))
+            .find(|s| s.digest == *d && live.iter().any(|(l, t)| *l == s.lang && t.id == s.id))
+            .map(|s| (s.lang, s.id))
     }
 
-    /// Whether `l`'s task `id` runs one of the listed scripts.
-    pub(super) fn is_script_task(&self, l: Lang, id: TaskId) -> bool {
-        self.debug.script_tasks.iter().any(|&(_, sl, sid)| sl == l && sid == id)
+    /// Whether `l`'s task `id` runs one of the listed scripts (one of the
+    /// widget's, if `widget`).
+    pub(super) fn is_script_task(&self, l: Lang, id: TaskId, widget: bool) -> bool {
+        self.debug
+            .script_tasks
+            .iter()
+            .any(|s| s.lang == l && s.id == id && (s.widget || !widget))
     }
 
     /// The console's last script, while the widget doesn't have it.
@@ -133,7 +142,7 @@ impl Editor {
         let live = self.debug.runtimes.live();
         self.debug
             .script_tasks
-            .retain(|(_, l, id)| live.iter().any(|(ll, t)| ll == l && t.id == *id));
+            .retain(|s| live.iter().any(|(l, t)| *l == s.lang && t.id == s.id));
         let mut rows: Vec<Row> = self
             .doc
             .scripts

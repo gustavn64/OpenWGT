@@ -620,17 +620,26 @@ impl Editor {
         Some(r)
     }
 
-    /// A frame of `ms` passed: the console's scripts run on (none while
-    /// one of them runs, or without the tools: then they're stopped).
+    /// A frame of `ms` passed: the scripts run on (none while one of
+    /// them runs). Without the tools the console's are stopped; the
+    /// widget's own run on.
     pub(in crate::editor) fn debug_frame(&mut self, ms: u64) {
         if self.debug.runtimes.busy {
             return;
         }
         if !self.debugging() {
-            if !self.debug.runtimes.live().is_empty() {
-                self.debug.runtimes.cancel(None);
+            let live = self.debug.runtimes.live();
+            if live.is_empty() {
+                return;
             }
-            return;
+            for (l, t) in &live {
+                if !self.is_script_task(*l, t.id, true) {
+                    self.debug.runtimes.cancel(Some((*l, t.id)));
+                }
+            }
+            if self.debug.runtimes.live().is_empty() {
+                return;
+            }
         }
         for l in [Lang::Commands, Lang::Program] {
             self.with_runtime(l, |rt, e| rt.frame(e, ms));
@@ -826,7 +835,7 @@ impl Editor {
     pub(super) fn console_tasks(&self) -> Vec<(Lang, TaskInfo)> {
         let mut v = self.debug.runtimes.live();
         // The Scripts list's show there.
-        v.retain(|(l, t)| !self.is_script_task(*l, t.id));
+        v.retain(|(l, t)| !self.is_script_task(*l, t.id, false));
         v.truncate(MAX_TASKS);
         v
     }

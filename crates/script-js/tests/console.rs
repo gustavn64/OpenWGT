@@ -53,3 +53,38 @@ fn the_console_runs_javascript() {
     let out = e.console_text();
     assert!(out.contains("waited true"), "{out}");
 }
+
+#[test]
+fn a_widgets_javascript_runs_as_one_that_came_with_it() {
+    let mut e = console();
+    let mut w = Document::new();
+    let id = w.new_id();
+    w.gadgets.push(engine::doc::new_gadget(
+        &e.assets,
+        engine::gadget::Tag(*b"swit"),
+        id,
+        100,
+        200,
+    ));
+    w.scripts.push(engine::port_parts::ext::Script {
+        name: "go.js".into(),
+        language: "JavaScript".into(),
+        source: "run();\nawait ticks(2);\nlog('ran', clock.running);\nloadPuzzle(1);\nlog('loaded');\n".into(),
+    });
+    e.drop_file(engine::editor::Dropped {
+        name: "go.wgt".into(),
+        path: None,
+        data: w.save(),
+    });
+    // Asked; Run.
+    e.key_down(u16::from(b'R'));
+    e.key_up(u16::from(b'R'));
+    for _ in 0..30 {
+        e.update(16, (12, 0, 0));
+    }
+    let out = e.console_text();
+    assert!(out.contains("ran true"), "{out}");
+    assert!(out.contains("go.js:4"), "{out}");
+    assert!(!out.contains("loaded"), "{out}");
+    assert_eq!(e.doc.gadgets.len(), 1, "the widget is still the one");
+}

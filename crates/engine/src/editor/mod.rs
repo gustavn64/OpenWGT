@@ -270,6 +270,8 @@ enum Then {
     HelpMissing,
     /// The widget to download.
     DownloadPath,
+    /// "This widget comes with scripts": Show, Run or Don't run.
+    Scripts,
 }
 
 /// What comes after the "Save changes?" question.
@@ -944,6 +946,7 @@ impl Editor {
         };
         if let Ok(d) = Document::load(&self.assets, &bytes) {
             self.install(d, Some(path.to_owned()));
+            self.ask_consent();
             true
         } else {
             self.alert(7);
@@ -1126,6 +1129,7 @@ impl Editor {
                     self.open_help();
                 }
             }
+            Then::Scripts => self.consent_answer(a),
             Then::DownloadPath => {
                 if a == Answer::Ok
                     && let Some(p) = input.filter(|p| !p.is_empty())

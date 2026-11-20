@@ -17,6 +17,10 @@ pub enum Answer {
     Yes,
     No,
     Retry,
+    /// The port's: a widget's scripts shown, run, not run.
+    Show,
+    Run,
+    DontRun,
 }
 
 impl Answer {
@@ -27,6 +31,9 @@ impl Answer {
             Answer::Yes => tr("&Yes"),
             Answer::No => tr("&No"),
             Answer::Retry => tr("&Retry"),
+            Answer::Show => tr("&Show"),
+            Answer::Run => tr("&Run"),
+            Answer::DontRun => tr("&Don't run"),
         }
     }
 }
@@ -67,7 +74,13 @@ impl Prompt {
         let lines = ui::wrap(font, &self.text, 360);
         let tw = lines.iter().map(|l| ui::width(font, l)).max().unwrap_or(0);
         let nb = i32::try_from(self.buttons.len()).unwrap_or(0);
-        let bw = nb * BUTTON_W + (nb - 1).max(0) * 6;
+        // As wide as the widest's words need, at least the usual.
+        let one = self
+            .buttons
+            .iter()
+            .map(|b| ui::width(font, &ui::strip_mnemonic(b.label()).0) + 16)
+            .fold(BUTTON_W, i32::max);
+        let bw = nb * one + (nb - 1).max(0) * 6;
         let w = (tw + 2 * MARGIN)
             .max(bw + 2 * MARGIN)
             .max(ui::width(font, &self.title) + 40);
@@ -82,7 +95,7 @@ impl Prompt {
         let by = r.y1 - 3 - MARGIN - BUTTON_H;
         let bx = r.x0 + (r.width() - bw) / 2;
         let buttons = (0..nb)
-            .map(|i| IRect::sized(bx + i * (BUTTON_W + 6), by, BUTTON_W, BUTTON_H))
+            .map(|i| IRect::sized(bx + i * (one + 6), by, one, BUTTON_H))
             .collect();
         (r, lines, buttons)
     }
@@ -135,8 +148,8 @@ impl Prompt {
         buttons[i].contains(p.0, p.1).then(|| self.buttons[i])
     }
 
-    /// A key: Enter is the first button, Esc Cancel (or OK alone),
-    /// letters the buttons' mnemonics.
+    /// A key: Enter is the first button, Esc Cancel (or Don't run, or OK
+    /// alone), letters the buttons' mnemonics.
     #[must_use]
     pub fn key(&self, vk: u16) -> Option<Answer> {
         match vk {
@@ -146,7 +159,7 @@ impl Prompt {
                     .buttons
                     .iter()
                     .copied()
-                    .find(|&b| b == Answer::Cancel)
+                    .find(|&b| b == Answer::Cancel || b == Answer::DontRun)
                     .or_else(|| (self.buttons == [Answer::Ok]).then_some(Answer::Ok));
             }
             _ => {}
