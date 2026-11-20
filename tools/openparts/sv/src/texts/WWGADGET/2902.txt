@@ -1,0 +1,1 @@
+Oscilloskopet ritar det som kommer in i A (gul) och B (blå) som två linjer som hela tiden flyttar sig: tal går upp och ner, en PÅ/AV-signal blir en fyrkantvåg. PÅ på den nedersta ingången håller bilden stilla. Utgången skickar ut det som kommer in i A.

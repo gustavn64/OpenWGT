@@ -217,6 +217,9 @@ fn links(tag: Tag) -> &'static [(At, At)] {
         b"rand" | b"Sldr" => &[(At::Combo(0), PRESET), (At::Edit(0), CUSTOM), (At::Edit(1), CUSTOM)],
         // `0x459615`: the hours; From and To aren't linked.
         b"StCh" => &[(At::Combo(0), PRESET), (At::Edit(2), CUSTOM)],
+        // The Oscilloscope (`crate::openparts::scope`): typing From or to
+        // fixes the range.
+        b"Scop" => &[(At::Edit(0), CUSTOM), (At::Edit(1), CUSTOM)],
         // `0x457e95`: a comparison or the number selects "Win / Lose if
         // input is:", True or False "Win if input is:".
         b"Stop" => &[
@@ -767,6 +770,13 @@ impl Dialog {
     /// OK (`0x41ea2e`): the dialog read back into the settings.
     pub fn apply(&mut self, g: &mut Gadget, assets: &Assets) {
         self.read(&mut g.core.settings, ui::font(assets));
+    }
+
+    /// Control `id`'s check and text, for the editor's tests.
+    #[cfg(test)]
+    pub(super) fn control(&self, id: u16) -> Option<(bool, &str)> {
+        let c = self.controls.iter().find(|c| c.id == id)?;
+        Some((c.checked, &c.text))
     }
 
     /// Control `id`'s centre in frame coordinates (for the tests' clicks).

@@ -14,6 +14,7 @@ pub mod link;
 pub mod net;
 pub mod opendata;
 pub mod opengfx;
+pub mod openparts;
 pub mod opensfx;
 pub mod port_parts;
 pub mod puzzle;

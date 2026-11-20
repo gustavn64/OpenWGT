@@ -1,0 +1,5 @@
+# The open parts' pictures (tools/openparts/draw.py): every frame's rectangle.
+# sheet frame top left bottom right
+1903 1 0 0 100 148
+1903 2 0 0 100 148
+1904 1 0 0 34 50

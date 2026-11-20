@@ -23,6 +23,10 @@
 !/crates/engine/opennet/**
 !/crates/engine/opennet-sv/**
 !/crates/engine/opennet-fr/**
+# The open parts' own (tools/openparts), the same.
+!/crates/engine/openparts/**
+!/crates/engine/openparts-sv/**
+!/crates/engine/openparts-fr/**
 # The port's own example widgets (examples/net, built by the engine's tests).
 !/examples/**
 

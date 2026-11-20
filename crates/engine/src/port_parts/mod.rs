@@ -57,11 +57,11 @@ pub struct Family {
 }
 
 /// Every family, in the order their resources win a tie.
-pub static FAMILIES: &[&Family] = &[&crate::net::FAMILY];
+pub static FAMILIES: &[&Family] = &[&crate::openparts::FAMILY, &crate::net::FAMILY];
 
 /// The tray indexes there are counts for: the game's 64 (index 0
 /// unused) and the families' ones after them.
-pub const TRAY_SLOTS: usize = 67;
+pub const TRAY_SLOTS: usize = 68;
 
 fn tray_parts() -> impl Iterator<Item = &'static TrayPart> {
     FAMILIES.iter().flat_map(|f| f.tray)
@@ -197,6 +197,53 @@ fn merge_strings(first: &[u8], second: &[u8]) -> Vec<u8> {
         }
     }
     out
+}
+
+/// What the families' tests share.
+#[cfg(test)]
+pub(crate) mod testing {
+    use crate::assets::Source;
+    use crate::lang::Lang;
+
+    /// A CD image in memory, through `formats::iso`.
+    struct Iso(Vec<u8>);
+
+    impl Source for Iso {
+        fn read(&self, path: &str) -> Option<Vec<u8>> {
+            formats::iso::read_file(&self.0, path)
+        }
+
+        fn list(&self, path: &str) -> Vec<String> {
+            self.read(path)
+                .and_then(|d| formats::iso::records(&d).ok())
+                .map_or_default(|r| r.into_iter().map(|r| r.name).collect())
+        }
+    }
+
+    /// The CDs: the English one extracted to `orig` (as `tools/` leaves
+    /// it), the Swedish and French ones where `WIDGET_SV_CD` and
+    /// `WIDGET_FR_CD` say (a folder or an image); each skipped without.
+    pub(crate) fn cds() -> Vec<(Lang, Box<dyn Source>, &'static str)> {
+        let mut out: Vec<(Lang, Box<dyn Source>, &'static str)> = Vec::new();
+        let orig = std::path::Path::new(env!("CARGO_MANIFEST_DIR")).join("../../orig");
+        if orig.exists() {
+            out.push((Lang::En, Box::new(crate::assets::Dir(orig)), "Label"));
+        } else {
+            eprintln!("no orig: skipped");
+        }
+        for (lang, var, label) in [(Lang::Sv, "WIDGET_SV_CD", "Etikett"), (Lang::Fr, "WIDGET_FR_CD", "Nom")] {
+            let Some(p) = std::env::var_os(var).map(std::path::PathBuf::from) else {
+                eprintln!("no {var}: skipped");
+                continue;
+            };
+            if p.is_dir() {
+                out.push((lang, Box::new(crate::assets::Dir(p)), label));
+            } else if let Ok(image) = std::fs::read(&p) {
+                out.push((lang, Box::new(Iso(image)), label));
+            }
+        }
+        out
+    }
 }
 
 #[cfg(test)]

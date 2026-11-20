@@ -3,7 +3,7 @@
 //! class's init function (the sheet it loads with `0x422940`, the knot
 //! table with `0x41db6c`, the gadget id it stores at `+0x28`).
 
-mod common;
+pub(crate) mod common;
 pub mod displays;
 pub mod inputs;
 pub mod labels;

@@ -1,0 +1,2 @@
+Byggtips:
+Koppla in det mellan två delar: det som kommer in i A går vidare ut genom utgången. Automatiskt anpassar talen till skärmen; ställ in Från och till för att hålla dem stilla. Med 8× går linjerna åtta gånger långsammare än med 1×, så du ser längre tid.

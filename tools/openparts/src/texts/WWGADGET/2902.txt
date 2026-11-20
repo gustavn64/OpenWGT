@@ -1,0 +1,1 @@
+The Oscilloscope draws what goes into A (yellow) and B (blue) as two lines that keep moving along: numbers go up and down, an ON/OFF signal makes a square wave. An ON at the bottom input holds the picture still. The output sends out what goes into A.

@@ -151,49 +151,9 @@ mod tests {
         assert!(frame(Lang::Sv) != en && frame(Lang::Fr) != en);
     }
 
-    /// A CD image in memory, through `formats::iso`.
-    struct Iso(Vec<u8>);
-
-    impl Source for Iso {
-        fn read(&self, path: &str) -> Option<Vec<u8>> {
-            formats::iso::read_file(&self.0, path)
-        }
-
-        fn list(&self, path: &str) -> Vec<String> {
-            self.read(path)
-                .and_then(|d| formats::iso::records(&d).ok())
-                .map_or_default(|r| r.into_iter().map(|r| r.name).collect())
-        }
-    }
-
-    /// The CDs: the English one extracted to `orig` (as `tools/` leaves
-    /// it), the Swedish and French ones where `WIDGET_SV_CD` and
-    /// `WIDGET_FR_CD` say (a folder or an image); each skipped without.
-    fn cds() -> Vec<(Lang, Box<dyn Source>, &'static str)> {
-        let mut out: Vec<(Lang, Box<dyn Source>, &'static str)> = Vec::new();
-        let orig = std::path::Path::new(env!("CARGO_MANIFEST_DIR")).join("../../orig");
-        if orig.exists() {
-            out.push((Lang::En, Box::new(crate::assets::Dir(orig)), "Label"));
-        } else {
-            eprintln!("no orig: skipped");
-        }
-        for (lang, var, label) in [(Lang::Sv, "WIDGET_SV_CD", "Etikett"), (Lang::Fr, "WIDGET_FR_CD", "Nom")] {
-            let Some(p) = std::env::var_os(var).map(std::path::PathBuf::from) else {
-                eprintln!("no {var}: skipped");
-                continue;
-            };
-            if p.is_dir() {
-                out.push((lang, Box::new(crate::assets::Dir(p)), label));
-            } else if let Ok(image) = std::fs::read(&p) {
-                out.push((lang, Box::new(Iso(image)), label));
-            }
-        }
-        out
-    }
-
     #[test]
     fn with_a_cd_the_parts_fill_its_gaps() {
-        for (lang, cd, label) in cds() {
+        for (lang, cd, label) in crate::port_parts::testing::cds() {
             let a = Assets::load(Some(&*cd), None).unwrap();
             assert_eq!(a.lang, lang);
             check(&a, lang);

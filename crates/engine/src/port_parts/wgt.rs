@@ -104,3 +104,78 @@ pub fn reveal(form: &mut Form) {
         form.chunks.insert(at, c);
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::assets::Assets;
+    use crate::doc::{Document, new_gadget};
+    use crate::gadget::Tag;
+
+    /// A Light Switch wired through an Oscilloscope to a Light Bulb, and
+    /// a Metronome into its B; the Oscilloscope's range fixed.
+    fn widget(a: &Assets) -> Document {
+        let mut doc = Document::new();
+        doc.background = 3;
+        for (tag, h) in [(b"swit", 10), (b"Scop", 100), (b"bulb", 300), (b"Metr", 10)] {
+            let id = doc.new_id();
+            doc.gadgets
+                .push(new_gadget(a, Tag(*tag), id, h, 20 + 100 * i32::from(tag == b"Metr")));
+        }
+        let s = &mut doc.gadgets[1].core.settings;
+        s.radios = [1, 2, 0, 0];
+        s.checks = 1;
+        s.set_label(0, b"-3");
+        s.set_label(1, b"3");
+        doc.connect(0, 0, 1, 0, vec![(60, 30)], 0).unwrap();
+        doc.connect(1, 3, 2, 0, vec![], 0).unwrap();
+        doc.connect(3, 0, 1, 1, vec![], 0).unwrap();
+        doc
+    }
+
+    #[test]
+    fn the_oscilloscope_survives_saving_and_hides_from_other_readers() {
+        let a = Assets::load(None, Some(&crate::opendata::builtin())).unwrap();
+        let doc = widget(&a);
+        let saved = doc.save();
+        let back = Document::load(&a, &saved).unwrap();
+        assert_eq!(back.save(), saved);
+        let tags: Vec<Tag> = back.gadgets.iter().map(|g| g.core.tag).collect();
+        assert_eq!(
+            tags,
+            [
+                Tag::new(b"swit"),
+                Tag::new(b"Scop"),
+                Tag::new(b"bulb"),
+                Tag::new(b"Metr")
+            ]
+        );
+        assert_eq!(
+            back.gadgets[1].core.settings.to_be(),
+            doc.gadgets[1].core.settings.to_be()
+        );
+        assert_eq!(back.wires.len(), 3);
+        assert_eq!(back.wires[0].points, [(60, 30)]);
+        // In the file: the part and its three wires in backgrounds.
+        let form = Form::parse(&saved).unwrap();
+        let tags: Vec<[u8; 4]> = form.chunks.iter().map(|c| c.tag).collect();
+        assert_eq!(&tags[..5], [*b"fver", BACK, BACK, BACK, BACK]);
+        assert!(!tags.iter().any(|&t| is_hidden(t)));
+        assert!(!tags.contains(b"conn"), "every wire reached it");
+        // As a reader that doesn't know it: the other three parts, no
+        // wires, the real background.
+        let mut plain = form.clone();
+        plain.chunks.retain(|c| hidden(c).is_none());
+        let other = Document::load(&a, &plain.write()).unwrap();
+        assert_eq!(other.gadgets.len(), 3);
+        assert_eq!(other.wires.len(), 0);
+        assert_eq!(other.background, 3);
+        let mut background = None;
+        for c in &form.chunks {
+            if c.tag == BACK {
+                background = wgt::be16(&c.data, 0).ok();
+            }
+        }
+        assert_eq!(background, Some(3));
+    }
+}
