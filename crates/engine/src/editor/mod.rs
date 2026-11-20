@@ -340,6 +340,8 @@ pub struct Editor {
     pub profile: Box<dyn Profile>,
     /// The sound input (the Recorder's and the Sound Switch's).
     pub mic: Box<dyn Mic>,
+    /// The network parts' connections (none without the host's transport).
+    pub net: crate::net::Hub,
     recording: Option<recorder::Recording>,
     /// The folder the last wave file came from (`DAT_004a2d90`).
     wav_dir: Option<std::path::PathBuf>,
@@ -445,6 +447,7 @@ impl Editor {
             puzzle_dialog: None,
             profile: Box::new(MemoryProfile::default()),
             mic: Box::new(NoMic),
+            net: crate::net::Hub::default(),
             recording: None,
             wav_dir: None,
             files: Box::new(StdFiles),
@@ -695,6 +698,7 @@ impl Editor {
         if self.recording.is_some() {
             self.poll_recording();
         }
+        self.net.sync(&mut self.doc, self.running, self.now);
         if !self.running {
             self.idle();
             self.update_menu();

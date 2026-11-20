@@ -5,14 +5,20 @@
 //!
 //! The engine stays free of input and output here as elsewhere: the parts
 //! keep what they are to send and what came in, [`proto`] reads and writes
-//! the relay's messages, and the host does the talking. Their pictures,
+//! the relay's messages, [`hub`] keeps the parts' connections, and the
+//! host gives it the sockets ([`Transport`]). Their pictures,
 //! dialogs and texts are the port's own too ([`pack`]), there whether the
 //! game's data is a CD's or OpenWDATA.
 
+#[cfg(test)]
+pub(crate) mod fake;
+pub mod hub;
 pub mod pack;
 pub mod parts;
 pub mod proto;
 pub mod wgt;
+
+pub use hub::{Hub, Socket, SocketEvent, Transport};
 
 /// A value on the wire: what a Sender sends and a Receiver gives.
 #[derive(Debug, Clone, Copy, PartialEq)]

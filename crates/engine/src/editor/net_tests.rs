@@ -1,6 +1,6 @@
 //! The network parts in the editor, on the port's own packs (no CD
-//! needed): the tray's page, the new part's channel and the dialog's
-//! Random.
+//! needed): the tray's page, the new part's channel, the dialog's Random,
+//! and the parts talking to a relay in memory.
 
 use super::*;
 use crate::assets::Packs;
@@ -223,4 +223,99 @@ fn a_typed_name_is_cleaned_on_ok() {
     }
     click_control(&mut e, 1);
     assert_eq!(e.doc.gadgets[0].core.settings.label(0), b"cat-sun");
+}
+
+/// Adds a part of class `tag` with `label` as its first text.
+fn add(e: &mut Editor, tag: crate::gadget::Tag, label: &str, h: i32) -> usize {
+    let id = e.doc.new_id();
+    let mut g = doc::new_gadget(&e.assets, tag, id, h, 300);
+    g.core.settings.set_label(0, label.as_bytes());
+    g.behavior.settings_changed(&mut g.core);
+    e.doc.gadgets.push(g);
+    e.doc.gadgets.len() - 1
+}
+
+fn status(e: &mut Editor, g: usize) -> crate::net::Status {
+    let any = e.doc.gadgets[g].behavior.as_any_mut();
+    if let Some(s) = any.downcast_mut::<crate::net::parts::Sender>() {
+        s.status
+    } else {
+        any.downcast_mut::<crate::net::parts::Receiver>().unwrap().status
+    }
+}
+
+#[test]
+fn the_editor_keeps_the_parts_talking() {
+    use crate::net::SocketEvent;
+    let mut e = editor(Lang::En);
+    let fake = crate::net::fake::Fake::default();
+    e.net
+        .set_transport(Box::new(fake.clone()), "wss://relay.test/openwgt/relay");
+    // A Constant of 42 wired into a Sender; a Receiver.
+    let c = add(&mut e, crate::gadget::Tag::new(b"cnst"), "42", 100);
+    let s = add(&mut e, SENDER, "cat-sun-oak", 250);
+    let r = add(&mut e, RECEIVER, "dog-moon-elm", 400);
+    let out = e.doc.gadgets[c].core.knots.iter().position(|k| !k.is_input()).unwrap();
+    e.doc.connect(c, out, s, 0, Vec::new(), 0).unwrap();
+    // Open: connected at once.
+    e.update(16, (0, 0, 0));
+    assert_eq!(fake.count(), 2);
+    assert_eq!(fake.url(0), "wss://relay.test/openwgt/relay/cat-sun-oak");
+    assert_eq!(fake.url(1), "wss://relay.test/openwgt/relay/dog-moon-elm");
+    fake.event(0, SocketEvent::Open);
+    fake.say(0, r#"{"t":"busy","busy":false}"#);
+    fake.say(0, r#"{"t":"peer","s":"open"}"#);
+    fake.event(1, SocketEvent::Open);
+    fake.say(1, r#"{"t":"peer","s":"run"}"#);
+    fake.say(1, r#"{"t":"val","k":"n","v":7}"#);
+    e.update(16, (0, 0, 0));
+    assert_eq!(fake.sent(0), [r#"{"t":"hello","role":"send","run":false,"v":1}"#]);
+    assert_eq!(fake.sent(1), [r#"{"t":"hello","role":"recv","run":false,"v":1}"#]);
+    assert_eq!((status(&mut e, s).lamp(), status(&mut e, r).lamp()), (3, 4));
+    // GO: the relay hears it and the Sender's value; the Receiver gives
+    // what came.
+    e.run();
+    e.update(20, (0, 0, 0));
+    assert_eq!(
+        fake.sent(0),
+        [r#"{"t":"run","run":true}"#, r#"{"t":"val","k":"n","v":42.0}"#]
+    );
+    assert_eq!(fake.sent(1), [r#"{"t":"run","run":true}"#]);
+    assert_eq!(e.doc.gadgets[r].core.number, 7.0);
+    fake.say(1, r#"{"t":"val","k":"b","v":true}"#);
+    e.update(20, (0, 0, 0));
+    assert!(e.doc.gadgets[r].core.state);
+    // The input changes: sent on the next frame.
+    let g = &mut e.doc.gadgets[c];
+    g.core.settings.set_label(0, b"43");
+    g.behavior.settings_changed(&mut g.core);
+    e.update(20, (0, 0, 0));
+    e.update(20, (0, 0, 0));
+    assert_eq!(fake.sent(0), [r#"{"t":"val","k":"n","v":43.0}"#]);
+    // STOP.
+    e.stop();
+    e.update(20, (0, 0, 0));
+    assert_eq!(fake.sent(0), [r#"{"t":"run","run":false}"#]);
+    // Undo makes the parts again: they get their state back, on the
+    // same connections.
+    e.snapshot();
+    e.undo();
+    assert_eq!(status(&mut e, r).lamp(), 1);
+    e.update(16, (0, 0, 0));
+    assert_eq!((status(&mut e, s).lamp(), status(&mut e, r).lamp()), (3, 4));
+    let rcv = e.doc.gadgets[r]
+        .behavior
+        .as_any()
+        .downcast_ref::<crate::net::parts::Receiver>()
+        .unwrap();
+    assert_eq!(rcv.inbox, Some(crate::net::NetValue::Bool(true)));
+    assert_eq!(fake.count(), 2);
+    // Deleted: its connection closes.
+    e.delete_gadget(r);
+    e.update(16, (0, 0, 0));
+    assert!(fake.dropped(1) && !fake.dropped(0));
+    // Another widget: the old one's go.
+    e.install(Document::new(), None);
+    e.update(16, (0, 0, 0));
+    assert!(fake.dropped(0));
 }
