@@ -65,7 +65,8 @@ impl Document {
     /// # Errors
     /// If it isn't one, or of a version the game doesn't read.
     pub fn load(assets: &Assets, bytes: &[u8]) -> Result<Document, Error> {
-        let form = Form::parse(bytes).map_err(Error::Format)?;
+        let mut form = Form::parse(bytes).map_err(Error::Format)?;
+        crate::net::wgt::reveal(&mut form);
         let version = form.version().unwrap_or(1);
         if version == 0 || version > VERSION {
             return Err(Error::Version(version));
@@ -144,6 +145,7 @@ impl Document {
                 data: write_tray_limits(&self.tray_limits),
             });
         }
+        crate::net::wgt::hide(&mut form);
         form.write()
     }
 

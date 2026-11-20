@@ -12,6 +12,7 @@
 pub mod pack;
 pub mod parts;
 pub mod proto;
+pub mod wgt;
 
 /// A value on the wire: what a Sender sends and a Receiver gives.
 #[derive(Debug, Clone, Copy, PartialEq)]
