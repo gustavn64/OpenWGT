@@ -1,0 +1,1 @@
+The Sender sends what you wire into it (on or off, a number or a picture) to the Receivers with the same channel name, in other widgets, even on other computers. Its lamp: grey, not connected; red, nobody there; yellow, a Receiver waits; green, it runs.

@@ -1,0 +1,1 @@
+L'émetteur envoie ce que tu branches dessus (marche ou arrêt, un nombre ou une image) aux récepteurs du même nom de canal, dans d'autres Eurêka, même sur d'autres ordinateurs. Voyant : gris, pas connecté ; rouge, personne ; jaune, un récepteur attend ; vert, il marche.

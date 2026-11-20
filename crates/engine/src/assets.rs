@@ -230,6 +230,9 @@ pub struct Assets {
     /// The port's own graphics' and sounds' ([`Packs`]), between the
     /// overrides and the CD's.
     own: BTreeMap<(Module, u32, u32), Vec<u8>>,
+    /// The network parts' own resources (`crate::net::pack`), behind all
+    /// the others: they only fill gaps, the CD's and the packs' stay.
+    pub(crate) extra: BTreeMap<(Module, u32, u32), Vec<u8>>,
     /// The language of the game's words: the CD's (its resources'), else
     /// the data pack's as the host chose it. The port's own words follow
     /// it (`crate::lang`).
@@ -345,6 +348,7 @@ impl Assets {
             a.own.append(&mut loaded.resources);
             a.pack_problems.append(&mut loaded.problems);
         }
+        crate::net::pack::install(&mut a);
         // After the CD's and the overrides', which win a tie in `font`.
         a.fonts.extend(bundled_fonts());
         Ok(a)
@@ -420,7 +424,7 @@ impl Assets {
     }
 
     /// Resource `id` of type `typ` in module `m`: the override's, else the
-    /// original's.
+    /// original's (else the network parts').
     #[must_use]
     pub fn get(&self, m: Module, typ: u32, id: u32) -> Option<&[u8]> {
         self.overrides
@@ -428,6 +432,7 @@ impl Assets {
             .or_else(|| self.own.get(&(m, typ, id)))
             .map(Vec::as_slice)
             .or_else(|| self.modules.get(&m)?.get(typ, id))
+            .or_else(|| self.extra.get(&(m, typ, id)).map(Vec::as_slice))
     }
 
     /// The ids of type `typ` in module `m`, originals and overrides,
@@ -459,10 +464,19 @@ impl Assets {
     }
 
     /// String `id` of `WIDGET.EXE`'s string table (its overrides' and
-    /// packs' blocks too).
+    /// packs' blocks too); one their block leaves empty, the network
+    /// parts' (`crate::net::pack`).
     #[must_use]
     pub fn string(&self, id: u32) -> Option<String> {
-        pe::string_in_block(self.get(Module::Exe, pe::RT_STRING, id / 16 + 1)?, id % 16)
+        let block = id / 16 + 1;
+        let s = pe::string_in_block(self.get(Module::Exe, pe::RT_STRING, block)?, id % 16);
+        if s.as_deref().is_none_or(str::is_empty)
+            && let Some(own) = self.extra.get(&(Module::Exe, pe::RT_STRING, block))
+            && let Some(t) = pe::string_in_block(own, id % 16).filter(|t| !t.is_empty())
+        {
+            return Some(t);
+        }
+        s
     }
 
     /// A text resource (type 1020) as a string (Windows-1252).

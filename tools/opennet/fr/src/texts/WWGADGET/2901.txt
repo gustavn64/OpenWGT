@@ -1,0 +1,1 @@
+Le récepteur donne ce qu'envoie l'émetteur du même nom de canal (marche ou arrêt, un nombre ou une image), depuis un autre Eurêka, même sur un autre ordinateur. Avant tout envoi, il donne arrêt et 0. Voyant : gris, pas connecté ; rouge, pas d'émetteur ; jaune, en attente ; vert, en marche.

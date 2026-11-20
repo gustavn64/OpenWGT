@@ -35,8 +35,11 @@ fn main() {
     for pack in ["opengfx-fr", "opendata-fr"] {
         embed(pack, "BUILTIN_FR");
     }
-    // The network parts' own (`net::pack`).
+    // The network parts' own (`net::pack`), with their words in Swedish
+    // and French.
     embed("opennet", "BUILTIN");
+    embed("opennet-sv", "BUILTIN_SV");
+    embed("opennet-fr", "BUILTIN_FR");
 }
 
 /// Writes `$OUT_DIR/<pack>_files.rs`: the constant `name`, the files of

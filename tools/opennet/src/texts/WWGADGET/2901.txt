@@ -1,0 +1,1 @@
+The Receiver gives out what the Sender with the same channel name sends (on or off, a number or a picture), from another widget, even on another computer. Before anything comes it gives off and 0. Its lamp: grey, not connected; red, no Sender; yellow, waiting; green, running.

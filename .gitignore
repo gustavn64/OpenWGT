@@ -19,6 +19,10 @@
 !/crates/engine/opendata/**
 !/crates/engine/opendata-sv/**
 !/crates/engine/opendata-fr/**
+# The network parts' own (tools/opennet), the same.
+!/crates/engine/opennet/**
+!/crates/engine/opennet-sv/**
+!/crates/engine/opennet-fr/**
 
 # Build output
 /target/

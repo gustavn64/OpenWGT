@@ -493,4 +493,91 @@ mod tests {
         assert_eq!(lcd_lines("abcdefghijklmnopqrst", 66, m), ["abcdefghij", "klmnopqrst"]);
         assert_eq!(lcd_lines("abcdefghijklmnopqrst", 30, m), ["abcde", "klmno"]);
     }
+
+    /// The parts draw inside their bounds, their names inside their
+    /// displays, long ones too; with OpenWDATA, in every language.
+    #[test]
+    fn the_parts_draw_their_names_on_their_displays() {
+        use crate::gfx::{IRect, Pictures, Surface};
+        let names = [
+            "cat-sun-oak",
+            "swamp-quilt-zebra",
+            "mmmmm-wwwww-mmmmm",
+            "abcdefghijklmnopqrst",
+            "kiwi42",
+            "",
+        ];
+        let (size, at) = (200_i32, 50);
+        for lang in crate::lang::Lang::ALL {
+            let data = crate::opendata::builtin_for(lang);
+            let packs = crate::assets::Packs {
+                data: Some(&data),
+                ..crate::assets::Packs::default()
+            };
+            let assets = crate::assets::Assets::load_with(None, packs, None).unwrap();
+            let pictures = Pictures::default();
+            for (tag, lcd) in [(SENDER, SENDER_LCD), (RECEIVER, RECEIVER_LCD)] {
+                for (col, name) in names.iter().enumerate() {
+                    let mut g = crate::doc::new_gadget(&assets, tag, 1, at, at);
+                    g.core.settings.set_label(0, name.as_bytes());
+                    let busy = col == 5 && tag == SENDER;
+                    let status = Status {
+                        online: col > 0,
+                        peer: [
+                            super::super::Peer::None,
+                            super::super::Peer::Open,
+                            super::super::Peer::Run,
+                        ][col % 3],
+                        busy,
+                    };
+                    if let Some(s) = g.behavior.as_any_mut().downcast_mut::<Sender>() {
+                        s.status = status;
+                    } else if let Some(r) = g.behavior.as_any_mut().downcast_mut::<Receiver>() {
+                        r.status = status;
+                    }
+                    let r = g.core.rect();
+                    assert_eq!((r.x1 - r.x0, r.y1 - r.y0), (88, 50));
+                    // Drawn on two backgrounds, and without the text: a
+                    // pixel either changed is drawn.
+                    let draw = |bg: u8, text: bool| {
+                        let mut s = Surface::new(size.cast_unsigned(), size.cast_unsigned());
+                        s.fill(IRect::new(0, 0, size, size), bg);
+                        let mut cx = DrawCx {
+                            surface: &mut s,
+                            assets: &assets,
+                            pictures: &pictures,
+                            running: false,
+                            ticks: 0,
+                            lights: false,
+                        };
+                        if text {
+                            g.behavior.draw(&g.core, &mut cx);
+                        } else {
+                            cx.frame_at_rect(g.core.sheet, status.lamp(), at, at);
+                        }
+                        s
+                    };
+                    let (a, b, bare) = (draw(3, true), draw(200, true), draw(3, false));
+                    let mut text = 0;
+                    for i in 0..a.pixels.len() {
+                        let x = i32::try_from(i).unwrap() % size;
+                        let y = i32::try_from(i).unwrap() / size;
+                        if a.pixels[i] != 3 || b.pixels[i] != 200 {
+                            assert!(r.contains(x, y), "{tag} {name}: {x}, {y} outside {r:?}");
+                        }
+                        if a.pixels[i] != bare.pixels[i] {
+                            text += 1;
+                            let (lx, ly, lw, lh) = lcd;
+                            let (x, y) = (x - at, y - at);
+                            assert!(
+                                lx < x && x < lx + lw && ly < y && y < ly + lh,
+                                "{tag} {name}: text at {x}, {y} outside the display"
+                            );
+                        }
+                    }
+                    assert!(text > 10, "{tag} {name:?}: no text");
+                }
+            }
+        }
+    }
 }
