@@ -62,6 +62,10 @@ impl Editor {
     /// The clipboard's text came: the widget in it opens as a dropped
     /// one ([`Editor::drop_file`]), else the player hears there's none.
     pub fn paste_link(&mut self, text: &str) {
+        if std::mem::take(&mut self.paste_to_field) {
+            self.paste_into_field(text);
+            return;
+        }
         self.open_text(text, tr("The clipboard holds no link to a widget."));
     }
 

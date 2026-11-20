@@ -281,7 +281,17 @@ enum Kind {
     MacFit,
 }
 
+/// Where the caret is in a field, and the other end of the selection
+/// (byte offsets into its text; the same when nothing is selected).
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+struct Cursor {
+    field: usize,
+    anchor: usize,
+    caret: usize,
+}
+
 /// An open dialog.
+#[allow(clippy::struct_excessive_bools)]
 #[derive(Debug, Clone)]
 pub struct Dialog {
     /// The gadget whose settings these are.
@@ -296,6 +306,10 @@ pub struct Dialog {
     controls: Vec<Control>,
     /// The edit field with the caret.
     focus: Option<usize>,
+    /// The caret and the selection in it ([`Dialog::sel`]).
+    cursor: Option<Cursor>,
+    /// The mouse is selecting text in the focused field.
+    selecting: bool,
     /// The button the mouse holds.
     pressed: Option<usize>,
     /// The drop-down list open.
@@ -484,6 +498,8 @@ impl Dialog {
             client,
             controls,
             focus,
+            cursor: None,
+            selecting: false,
             pressed: None,
             dropped: None,
             pic_sheet: None,
@@ -823,9 +839,18 @@ impl Dialog {
         Some((IRect::sized(c.rect.x0, c.rect.y1, c.rect.width(), h), ih))
     }
 
-    pub fn mouse_move(&mut self, _assets: &Assets, _p: (i32, i32)) {}
+    /// The mouse held down in a field moves the caret, selecting.
+    pub fn mouse_move(&mut self, assets: &Assets, p: (i32, i32)) {
+        let q = self.to_client(p);
+        if self.selecting
+            && let (Some(c), Some(font)) = (self.sel(), ui::font(assets))
+        {
+            let caret = self.hit(font, c.field, q);
+            self.set_sel(c.anchor, caret);
+        }
+    }
 
-    pub fn mouse_down(&mut self, assets: &Assets, p: (i32, i32), _dbl: bool) {
+    pub fn mouse_down(&mut self, assets: &Assets, p: (i32, i32), dbl: bool) {
         let q = self.to_client(p);
         if let Some(i) = self.dropped.take() {
             if let Some((r, ih)) = self.list_rect(i, assets)
@@ -854,7 +879,19 @@ impl Dialog {
         match &self.controls[i].ctl {
             Ctl::Push | Ctl::Check | Ctl::Radio(_) => self.pressed = Some(i),
             Ctl::Owner if self.controls[i].id == DOC_BUTTON => self.pressed = Some(i),
-            Ctl::Edit { .. } => self.focus = Some(i),
+            Ctl::Edit { .. } => {
+                self.focus = Some(i);
+                if let Some(font) = ui::font(assets) {
+                    let at = self.hit(font, i, q);
+                    if dbl {
+                        let (a, b) = word_at(&self.controls[i].text, at);
+                        self.set_sel(a, b);
+                    } else {
+                        self.set_sel(at, at);
+                        self.selecting = true;
+                    }
+                }
+            }
             Ctl::Combo { .. } => {
                 // `CBN_SETFOCUS`: the links, before anything is chosen.
                 self.dropped = Some(i);
@@ -865,6 +902,7 @@ impl Dialog {
     }
 
     pub fn mouse_up(&mut self, _assets: &Assets, p: (i32, i32)) -> Result {
+        self.selecting = false;
         let Some(i) = self.pressed.take() else {
             return Result::Open;
         };
@@ -1003,7 +1041,7 @@ impl Dialog {
 
     /// A key: typing into the focused field, Tab to the next field, Enter
     /// is the default button, Esc Cancel.
-    pub fn key(&mut self, vk: u16, shift: bool) -> Result {
+    pub fn key(&mut self, vk: u16) -> Result {
         if let Some(i) = self.dropped {
             if matches!(vk, 0x0d | 0x1b) {
                 self.dropped = None;
@@ -1033,37 +1071,231 @@ impl Dialog {
             }
             _ => {}
         }
-        let Some(f) = self.focus else { return Result::Open };
-        let Ctl::Edit { filter, .. } = self.controls[f].ctl else {
-            return Result::Open;
-        };
-        let text = &mut self.controls[f].text;
-        if vk == 0x08 {
-            if text.ends_with("\r\n") {
-                text.pop();
+        let Some(c) = self.sel() else { return Result::Open };
+        match vk {
+            // Backspace and Delete take the selection, else the character
+            // before or after the caret.
+            0x08 | 0x2e => {
+                if c.anchor == c.caret {
+                    let text = &self.controls[c.field].text;
+                    let other = if vk == 0x08 {
+                        prev_char(text, c.caret)
+                    } else {
+                        next_char(text, c.caret)
+                    };
+                    self.set_sel(other, c.caret);
+                }
+                self.replace_sel("");
             }
-            if text.pop().is_none() {
-                return Result::Open;
-            }
-        } else {
-            let c = if vk == 0x0d {
-                // A multi-line field's Enter (`ES_WANTRETURN`).
-                "\r\n".to_owned()
-            } else {
-                let Some(c) = super::prompt::typed(vk, shift) else {
-                    return Result::Open;
-                };
-                c.to_string()
-            };
-            // Unfiltered, the field holds what the settings block can.
-            let limit = if self.long_text { 239 } else { 59 };
-            if filter.max == 0 && text.len() + c.len() > limit {
-                return Result::Open;
-            }
-            text.push_str(&c);
+            // A multi-line field's Enter (`ES_WANTRETURN`).
+            0x0d => self.replace_sel("\r\n"),
+            _ => {}
         }
-        self.edit_changed(f);
         Result::Open
+    }
+
+    /// Text typed (in the keyboard's layout) into the focused field, over
+    /// what's selected in it.
+    pub fn text_input(&mut self, typed: &str) {
+        if self.dropped.is_some() {
+            return;
+        }
+        // A character at a time, as `WM_CHAR`s come: the filter takes or
+        // refuses each.
+        for c in typed.chars() {
+            self.replace_sel(c.encode_utf8(&mut [0; 4]));
+        }
+    }
+
+    /// The focused field's caret and selection: at the end of its text
+    /// unless set since in this field and still in its text.
+    fn sel(&self) -> Option<Cursor> {
+        let f = self.focus?;
+        let c = self.controls.get(f)?;
+        if !matches!(c.ctl, Ctl::Edit { .. }) {
+            return None;
+        }
+        let t = &c.text;
+        let ok = |i: usize| t.is_char_boundary(i) && !(t[..i].ends_with('\r') && t[i..].starts_with('\n'));
+        Some(match self.cursor {
+            Some(k) if k.field == f && ok(k.anchor) && ok(k.caret) => k,
+            _ => Cursor {
+                field: f,
+                anchor: t.len(),
+                caret: t.len(),
+            },
+        })
+    }
+
+    fn set_sel(&mut self, anchor: usize, caret: usize) {
+        if let Some(f) = self.focus {
+            self.cursor = Some(Cursor {
+                field: f,
+                anchor,
+                caret,
+            });
+        }
+    }
+
+    /// The selection's text, its lines apart by `\n`.
+    #[must_use]
+    pub fn selected_text(&self) -> Option<String> {
+        let c = self.sel()?;
+        let (lo, hi) = (c.anchor.min(c.caret), c.anchor.max(c.caret));
+        (lo < hi).then(|| self.controls[c.field].text[lo..hi].replace("\r\n", "\n"))
+    }
+
+    /// Ctrl+X: the selection's text, taken out of the field.
+    pub fn cut(&mut self) -> Option<String> {
+        let t = self.selected_text()?;
+        self.replace_sel("");
+        Some(t)
+    }
+
+    /// Ctrl+A: all the focused field's text selected.
+    pub fn select_all(&mut self) {
+        if let Some(c) = self.sel() {
+            self.set_sel(0, self.controls[c.field].text.len());
+        }
+    }
+
+    /// Ctrl+V: `text` over the selection; a one-line field takes its lines
+    /// as one, apart by spaces.
+    pub fn paste(&mut self, text: &str) {
+        let Some(c) = self.sel() else { return };
+        let multiline = matches!(self.controls[c.field].ctl, Ctl::Edit { multiline: true, .. });
+        let text = text.replace("\r\n", "\n").replace('\t', " ");
+        let text = if multiline {
+            text.replace('\n', "\r\n")
+        } else {
+            text.replace(['\r', '\n'], " ")
+        };
+        self.replace_sel(&text);
+    }
+
+    /// The focused field's selection replaced by `with` (as much of it as
+    /// fits), the caret after it; if the filter refuses the new text, the
+    /// field is left as it was.
+    fn replace_sel(&mut self, with: &str) {
+        let Some(c) = self.sel() else { return };
+        let Ctl::Edit { filter, .. } = self.controls[c.field].ctl else {
+            return;
+        };
+        let (lo, hi) = (c.anchor.min(c.caret), c.anchor.max(c.caret));
+        let old = self.controls[c.field].text.clone();
+        let mut with = with;
+        // Unfiltered, the field holds what the settings block can (one
+        // byte a character in the file's Windows-1252).
+        if filter.max == 0 {
+            let limit: usize = if self.long_text { 239 } else { 59 };
+            let room = limit.saturating_sub(old.chars().count() - old[lo..hi].chars().count());
+            if let Some((at, _)) = with.char_indices().nth(room) {
+                with = with[..at].trim_end_matches('\r');
+            }
+        }
+        if with.is_empty() && lo == hi {
+            return;
+        }
+        self.controls[c.field].text = format!("{}{with}{}", &old[..lo], &old[hi..]);
+        self.edit_changed(c.field);
+        if self.controls[c.field].text == old {
+            self.cursor = Some(c);
+        } else {
+            let at = lo + with.len();
+            self.cursor = Some(Cursor {
+                field: c.field,
+                anchor: at,
+                caret: at,
+            });
+        }
+    }
+
+    /// The caret keys in the focused field: the arrows, Home and End move
+    /// it (by words with Ctrl, by lines in a multi-line field), Shift
+    /// selects. Whether `vk` was one.
+    pub fn caret_key(&mut self, assets: &Assets, vk: u16, shift: bool, ctrl: bool) -> bool {
+        if self.dropped.is_some() || !matches!(vk, 0x23..=0x28) {
+            return false;
+        }
+        let (Some(c), Some(font)) = (self.sel(), ui::font(assets)) else {
+            return false;
+        };
+        let text = &self.controls[c.field].text;
+        let (lo, hi) = (c.anchor.min(c.caret), c.anchor.max(c.caret));
+        let lines = self.field_lines(font, c.field);
+        let line = line_of(&lines, c.caret);
+        let caret = match vk {
+            // Left and right without Shift first close the selection.
+            0x25 if !shift && lo < hi => lo,
+            0x27 if !shift && lo < hi => hi,
+            0x25 if ctrl => prev_word(text, c.caret),
+            0x27 if ctrl => next_word(text, c.caret),
+            0x25 => prev_char(text, c.caret),
+            0x27 => next_char(text, c.caret),
+            0x24 if ctrl => 0,
+            0x23 if ctrl => text.len(),
+            0x24 => lines[line].start,
+            0x23 => lines[line].end,
+            0x26 | 0x28 => {
+                let to = if vk == 0x26 {
+                    line.checked_sub(1)
+                } else {
+                    Some(line + 1)
+                };
+                match to.filter(|&l| l < lines.len()) {
+                    Some(l) => {
+                        let x = ui::width(font, &text[lines[line].start..c.caret]);
+                        at_x(font, text, lines[l].clone(), x)
+                    }
+                    None if vk == 0x26 => lines[line].start,
+                    None => lines[line].end,
+                }
+            }
+            _ => return false,
+        };
+        let anchor = if shift { c.anchor } else { caret };
+        self.set_sel(anchor, caret);
+        true
+    }
+
+    /// Field `f`'s lines (as [`ui::wrap_ranges`]), as drawn.
+    #[allow(clippy::single_range_in_vec_init)]
+    fn field_lines(&self, font: &formats::fnt::Font, f: usize) -> Vec<std::ops::Range<usize>> {
+        let c = &self.controls[f];
+        match c.ctl {
+            Ctl::Edit { multiline: true, .. } => ui::wrap_ranges(font, &c.text, c.rect.width() - 6),
+            _ => vec![0..c.text.len()],
+        }
+    }
+
+    /// Where field `f`'s line `range` starts (client coordinates), and how
+    /// far a one-line field's text is moved left to keep the caret in.
+    fn line_x(&self, font: &formats::fnt::Font, f: usize, range: &std::ops::Range<usize>) -> i32 {
+        let c = &self.controls[f];
+        let r = c.rect;
+        match c.ctl {
+            Ctl::Edit {
+                multiline: true,
+                center: true,
+                ..
+            } => r.x0 + (r.width() - ui::width(font, &c.text[range.clone()])) / 2,
+            Ctl::Edit { multiline: true, .. } => r.x0 + 3,
+            _ => {
+                let caret = self.sel().filter(|k| k.field == f).map_or(c.text.len(), |k| k.caret);
+                let x = ui::width(font, &c.text[..caret]);
+                r.x0 + 3 - (x - (r.width() - 7)).max(0)
+            }
+        }
+    }
+
+    /// The place in field `f`'s text nearest client point `q`.
+    fn hit(&self, font: &formats::fnt::Font, f: usize, q: (i32, i32)) -> usize {
+        let lines = self.field_lines(font, f);
+        let r = self.controls[f].rect;
+        let row = usize::try_from((q.1 - r.y0 - 3).max(0) / i32::from(font.height).max(1)).unwrap_or(0);
+        let range = lines[row.min(lines.len() - 1)].clone();
+        let x0 = self.line_x(font, f, &range);
+        at_x(font, &self.controls[f].text, range, q.0 - x0)
     }
 
     /// Draws the dialog; `gadget` is the one whose settings these are.
@@ -1121,30 +1353,41 @@ impl Dialog {
                         s.set_clip(inner);
                     }
                 },
-                Ctl::Edit { multiline, center, .. } => {
+                Ctl::Edit { .. } => {
                     s.fill(r, ui::WHITE);
                     ui::sunken(s, r);
                     let inner = s.clip();
                     s.set_clip(r.inset(2).intersect(inner));
-                    let lines = if *multiline {
-                        ui::wrap(font, &c.text, r.width() - 6)
-                    } else {
-                        vec![c.text.clone()]
-                    };
+                    let cursor = self.sel().filter(|k| k.field == i);
+                    let (lo, hi) = cursor.map_or((0, 0), |k| (k.anchor.min(k.caret), k.anchor.max(k.caret)));
+                    let fh = i32::from(font.height);
                     let mut y = r.y0 + 3;
-                    let mut end = (r.x0 + 3, y);
-                    for line in &lines {
-                        let x = if *center && *multiline {
-                            r.x0 + (r.width() - ui::width(font, line)) / 2
-                        } else {
-                            r.x0 + 3
-                        };
-                        let tw = s.text(font, x, y, &crate::text::encode(line), ui::BLACK);
-                        end = (x + tw, y);
-                        y += i32::from(font.height);
+                    for line in self.field_lines(font, i) {
+                        let x = self.line_x(font, i, &line) + ox;
+                        let yy = y;
+                        s.text(font, x, yy, &crate::text::encode(&c.text[line.clone()]), ui::BLACK);
+                        // The selection: white on blue.
+                        let (a, b) = (lo.clamp(line.start, line.end), hi.clamp(line.start, line.end));
+                        if a < b {
+                            let sx = x + ui::width(font, &c.text[line.start..a]);
+                            let sel = &c.text[a..b];
+                            s.fill(IRect::sized(sx, yy, ui::width(font, sel), fh), ui::BLUE);
+                            s.text(font, sx, yy, &crate::text::encode(sel), ui::WHITE);
+                        }
+                        y += fh;
                     }
-                    if self.focus == Some(i) {
-                        s.fill(IRect::sized(end.0, end.1, 1, i32::from(font.height)), ui::BLACK);
+                    if let Some(k) = cursor
+                        && lo == hi
+                        && self.focus == Some(i)
+                    {
+                        let lines = self.field_lines(font, i);
+                        let l = line_of(&lines, k.caret);
+                        let range = lines[l].clone();
+                        let x = self.line_x(font, i, &range)
+                            + ox
+                            + ui::width(font, &c.text[range.start..k.caret.min(range.end)]);
+                        let cy = r.y0 + 3 + i32::try_from(l).unwrap_or(0) * fh;
+                        s.fill(IRect::sized(x, cy, 1, fh), ui::BLACK);
                     }
                     s.set_clip(inner);
                 }
@@ -1281,6 +1524,68 @@ impl Dialog {
             _ => {}
         }
     }
+}
+
+/// The place before the character before `i` (a line break is one).
+fn prev_char(t: &str, i: usize) -> usize {
+    if t[..i].ends_with("\r\n") {
+        return i - 2;
+    }
+    t[..i].char_indices().next_back().map_or(0, |(k, _)| k)
+}
+
+/// The place after the character at `i` (a line break is one).
+fn next_char(t: &str, i: usize) -> usize {
+    if t[i..].starts_with("\r\n") {
+        return i + 2;
+    }
+    t[i..].chars().next().map_or(i, |c| i + c.len_utf8())
+}
+
+/// The start of the word before `i` (Ctrl+Left).
+fn prev_word(t: &str, i: usize) -> usize {
+    let before = t[..i].trim_end();
+    before
+        .char_indices()
+        .rev()
+        .find(|(_, c)| c.is_whitespace())
+        .map_or(0, |(k, c)| k + c.len_utf8())
+}
+
+/// The start of the word after `i` (Ctrl+Right), past the spaces.
+fn next_word(t: &str, i: usize) -> usize {
+    let rest = &t[i..];
+    let word = rest.find(char::is_whitespace).unwrap_or(rest.len());
+    let space = rest[word..]
+        .find(|c: char| !c.is_whitespace())
+        .unwrap_or(rest.len() - word);
+    i + word + space
+}
+
+/// The word round `i` (a double click): from the spaces before it to
+/// those after.
+fn word_at(t: &str, i: usize) -> (usize, usize) {
+    let start = t[..i].rfind(char::is_whitespace).map_or(0, |k| k + 1);
+    let end = t[i..].find(char::is_whitespace).map_or(t.len(), |k| i + k);
+    (start, end)
+}
+
+/// Which of `lines` the place `i` is on.
+fn line_of(lines: &[std::ops::Range<usize>], i: usize) -> usize {
+    lines.iter().rposition(|l| l.start <= i).unwrap_or(0)
+}
+
+/// The place in line `range` of `t` nearest `x` pixels from its start.
+fn at_x(font: &formats::fnt::Font, t: &str, range: std::ops::Range<usize>, x: i32) -> usize {
+    let mut best = (range.start, x.abs());
+    for (k, c) in t[range.clone()].char_indices() {
+        let at = range.start + k + c.len_utf8();
+        let d = (ui::width(font, &t[range.start..at]) - x).abs();
+        if d < best.1 {
+            best = (at, d);
+        }
+    }
+    best.0
 }
 
 /// `text` as read back with `EM_FMTLINES` (`0x41a49b`, `0x41a44e`): each
@@ -1530,14 +1835,13 @@ mod tests {
         // The edit takes three digits only.
         let edit = d.of_kind(|c| matches!(c, Ctl::Edit { .. })).next();
         d.focus = edit;
-        d.key(0x41, false);
-        d.key(0x37, false);
-        d.key(0x38, false);
+        d.text_input("A");
+        d.text_input("78");
         let mut back = Settings::default();
         d.read(&mut back, None);
         assert_eq!(back.label(0), b"427");
         assert!(d.changed);
-        assert_eq!(d.key(0x0d, false), Result::Ok);
+        assert_eq!(d.key(0x0d), Result::Ok);
     }
 
     /// A change in the dialog shows in its picture at once (`0x41eb78`
@@ -1682,7 +1986,10 @@ mod tests {
                 d.dropped = None;
                 Result::Open
             }
-            Ctl::Edit { .. } => d.key(0x31, false),
+            Ctl::Edit { .. } => {
+                d.text_input("1");
+                Result::Open
+            }
             _ => d.mouse_up(a, p),
         }
     }
@@ -1762,23 +2069,19 @@ mod tests {
         let mut d = open(&a, *b"Pend");
         work(&mut d, &a, 115);
         while !text(&d, 115).is_empty() {
-            d.key(0x08, false);
+            d.key(0x08);
         }
-        for vk in [0x31, 0x32, 0x41, 0xbd, 0x33, 0x34, 0x35, 0x36] {
-            d.key(vk, false);
-        }
+        d.text_input("12A-3456");
         assert_eq!(text(&d, 115), "12345");
         // A signed real number field: a minus first, an exponent.
         let mut d = open(&a, *b"Stop");
         work(&mut d, &a, 115);
         while !text(&d, 115).is_empty() {
-            d.key(0x08, false);
+            d.key(0x08);
         }
-        for vk in [0xbd, 0xbe, 0x31, 0xbe, 0x45, 0x35, 0x36] {
-            d.key(vk, false);
-        }
+        d.text_input("-.1.e56");
         assert_eq!(text(&d, 115), "-1.e56");
-        d.key(0x37, false);
+        d.text_input("7");
         assert_eq!(text(&d, 115), "-1.e56");
         // Read back as typed.
         let mut s = Settings::default();

@@ -129,24 +129,41 @@ pub fn grey_label(s: &mut Surface, font: &Font, x: i32, y: i32, text: &str) {
 /// at newlines (`DrawText(DT_WORDBREAK)`).
 #[must_use]
 pub fn wrap(font: &Font, text: &str, w: i32) -> Vec<String> {
+    wrap_ranges(font, text, w)
+        .into_iter()
+        .map(|r| text[r].to_owned())
+        .collect()
+}
+
+/// [`wrap`]'s lines as where they are in `text`: each line is
+/// `text[range]` (the space a line broke at and the paragraphs' `\r\n`
+/// belong to none).
+#[must_use]
+pub fn wrap_ranges(font: &Font, text: &str, w: i32) -> Vec<std::ops::Range<usize>> {
     let mut lines = Vec::new();
+    let mut at = 0;
     for para in text.split('\n') {
+        let start = at;
+        at += para.len() + 1;
         let para = para.trim_end_matches('\r');
-        let mut line = String::new();
+        let mut line: Option<std::ops::Range<usize>> = None;
+        let mut word_at = start;
         for word in para.split(' ') {
-            let candidate = if line.is_empty() {
-                word.to_owned()
-            } else {
-                format!("{line} {word}")
-            };
-            if width(font, &candidate) > w && !line.is_empty() {
-                lines.push(std::mem::take(&mut line));
-                word.clone_into(&mut line);
-            } else {
-                line = candidate;
-            }
+            let word_r = word_at..word_at + word.len();
+            word_at = word_r.end + 1;
+            line = Some(match line {
+                Some(l) if !l.is_empty() => {
+                    if width(font, &text[l.start..word_r.end]) > w {
+                        lines.push(l);
+                        word_r
+                    } else {
+                        l.start..word_r.end
+                    }
+                }
+                _ => word_r,
+            });
         }
-        lines.push(line);
+        lines.push(line.unwrap_or(start..start));
     }
     lines
 }
