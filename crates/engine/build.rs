@@ -1,6 +1,6 @@
 //! Builds the port's own graphics, sounds and data (`opengfx`, `opensfx`,
-//! `opendata`: the folders of the same names) into the program: a table of every file
-//! under each, path and bytes.
+//! `opendata`, `opennet`: the folders of the same names) into the program:
+//! a table of every file under each, path and bytes.
 
 use std::fmt::Write as _;
 use std::path::{Path, PathBuf};
@@ -35,6 +35,8 @@ fn main() {
     for pack in ["opengfx-fr", "opendata-fr"] {
         embed(pack, "BUILTIN_FR");
     }
+    // The network parts' own (`net::pack`).
+    embed("opennet", "BUILTIN");
 }
 
 /// Writes `$OUT_DIR/<pack>_files.rs`: the constant `name`, the files of

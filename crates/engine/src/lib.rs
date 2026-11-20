@@ -11,6 +11,7 @@ pub mod gadgets;
 pub mod gfx;
 pub mod lang;
 pub mod link;
+pub mod net;
 pub mod opendata;
 pub mod opengfx;
 pub mod opensfx;
