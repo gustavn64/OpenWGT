@@ -272,6 +272,13 @@ pub struct Hub {
     base: String,
     /// By part id.
     eps: BTreeMap<u32, Endpoint>,
+    /// What [`Hub::sync`] put in Receivers since this was last taken, by
+    /// part id: for the debugging tools' timeline, which records what comes
+    /// from outside.
+    pub delivered: Vec<(u32, Option<NetValue>)>,
+    /// While set, [`Hub::sync`] leaves the Receivers' values alone: a run
+    /// gone back to replays what they got then.
+    pub hold: bool,
 }
 
 impl Hub {
@@ -337,13 +344,54 @@ impl Hub {
                     None => (Status::default(), None),
                 };
                 r.status = status;
-                if r.inbox != value {
-                    r.inbox = value;
-                    r.inbox_gen = r.inbox_gen.wrapping_add(1);
+                if r.inbox != value && !self.hold {
+                    deliver(r, value);
+                    self.delivered.push((id, value));
                 }
             }
         }
         self.eps.retain(|id, _| seen.contains(id));
+    }
+}
+
+/// Puts `value` in Receiver `r`, as come from the relay.
+fn deliver(r: &mut Receiver, value: Option<NetValue>) {
+    r.inbox = value;
+    r.inbox_gen = r.inbox_gen.wrapping_add(1);
+}
+
+/// A Receiver's value as bytes, for the debugging tools' record
+/// ([`redeliver`] reads them).
+#[must_use]
+pub fn value_bytes(value: Option<NetValue>) -> Vec<u8> {
+    match value {
+        None => Vec::new(),
+        Some(NetValue::Bool(b)) => vec![0, u8::from(b)],
+        Some(NetValue::Number(n)) => [&[1][..], &n.to_le_bytes()].concat(),
+        Some(NetValue::Picture(p)) => [&[2][..], &p.to_le_bytes()].concat(),
+    }
+}
+
+/// Delivers again what [`value_bytes`] made of a Receiver's value, to the
+/// Receiver with id `id` in `doc`: the debugging tools replaying a run.
+pub fn redeliver(doc: &mut Document, id: u32, bytes: &[u8]) {
+    let value = match bytes {
+        [0, b] => Some(NetValue::Bool(*b != 0)),
+        [1, n @ ..] => <[u8; 8]>::try_from(n)
+            .ok()
+            .map(|n| NetValue::Number(f64::from_le_bytes(n))),
+        [2, p @ ..] => <[u8; 4]>::try_from(p)
+            .ok()
+            .map(|p| NetValue::Picture(u32::from_le_bytes(p))),
+        _ => None,
+    };
+    let receiver = doc
+        .gadgets
+        .iter_mut()
+        .filter(|g| g.core.id == id)
+        .find_map(|g| g.behavior.as_any_mut().downcast_mut::<Receiver>());
+    if let Some(r) = receiver {
+        deliver(r, value);
     }
 }
 

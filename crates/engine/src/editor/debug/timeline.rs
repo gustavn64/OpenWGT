@@ -392,6 +392,14 @@ impl Editor {
         });
     }
 
+    /// Whether the run, gone back to, replays its record: what comes from
+    /// outside is held back meanwhile (the record has what came then).
+    #[must_use]
+    pub fn replaying(&self) -> bool {
+        let tl = &self.debug.timeline;
+        self.running && tl.start.is_some() && self.env.ticks < tl.end
+    }
+
     /// How deliveries from outside ([`Editor::record_external`]) are made
     /// again when a seek replays them.
     pub fn set_redeliver(&mut self, f: Redeliver) {

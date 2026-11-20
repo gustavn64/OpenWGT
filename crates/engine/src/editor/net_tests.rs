@@ -346,3 +346,41 @@ fn browser_sender_link() {
     doc.connect(1, 0, 0, 0, Vec::new(), 0).unwrap();
     std::fs::write(out, crate::link::encode(&page, Some("SEND42.WGT"), &doc.save())).unwrap();
 }
+
+/// The debugging tools' timeline records what Receivers get, and a run
+/// gone back to gets it again from the record, not from the relay.
+#[test]
+fn a_run_gone_back_to_gets_the_receivers_values_again() {
+    use crate::net::SocketEvent;
+    use crate::script::Host;
+    let mut e = editor(Lang::En);
+    e.set_enhanced(true);
+    e.set_debug_tools(true);
+    let fake = crate::net::fake::Fake::default();
+    e.net
+        .set_transport(Box::new(fake.clone()), "wss://relay.test/openwgt/relay");
+    let r = add(&mut e, RECEIVER, "dog-moon-elm", 400);
+    e.update(16, (0, 0, 0));
+    fake.event(0, SocketEvent::Open);
+    fake.say(0, r#"{"t":"peer","s":"run"}"#);
+    e.run();
+    e.update(100, (0, 0, 0));
+    fake.say(0, r#"{"t":"val","k":"n","v":7}"#);
+    e.update(100, (0, 0, 0));
+    let seven = e.env.ticks;
+    assert_eq!(e.doc.gadgets[r].core.number, 7.0);
+    fake.say(0, r#"{"t":"val","k":"n","v":9}"#);
+    e.update(100, (0, 0, 0));
+    assert_eq!(e.doc.gadgets[r].core.number, 9.0);
+    let end = e.env.ticks;
+    e.seek(seven - 8).unwrap();
+    assert_eq!(e.doc.gadgets[r].core.number, 0.0);
+    e.seek(seven).unwrap();
+    assert_eq!(e.doc.gadgets[r].core.number, 7.0);
+    // Going on over the record: the relay's 9 waits; the record's comes.
+    assert!(e.replaying());
+    e.update(16, (0, 0, 0));
+    assert_eq!(e.doc.gadgets[r].core.number, 7.0);
+    e.seek(end).unwrap();
+    assert_eq!(e.doc.gadgets[r].core.number, 9.0);
+}

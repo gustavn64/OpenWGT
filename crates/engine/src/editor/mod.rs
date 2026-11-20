@@ -492,6 +492,10 @@ impl Editor {
         e.tray.apply_limits(&limits);
         e.menu = e.load_menu();
         e.update_menu();
+        // A run gone back to gets its Receivers' values again from the record.
+        e.set_redeliver(Box::new(|doc, _, _, id, bytes| {
+            crate::net::hub::redeliver(doc, id, bytes);
+        }));
         e
     }
 
@@ -719,7 +723,11 @@ impl Editor {
         if self.recording.is_some() {
             self.poll_recording();
         }
+        self.net.hold = self.replaying();
         self.net.sync(&mut self.doc, self.running, self.now);
+        for (id, v) in std::mem::take(&mut self.net.delivered) {
+            self.record_external(id, &crate::net::hub::value_bytes(v));
+        }
         if !self.running {
             self.idle();
             self.update_menu();
