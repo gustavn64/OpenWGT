@@ -23,6 +23,8 @@
 !/crates/engine/opennet/**
 !/crates/engine/opennet-sv/**
 !/crates/engine/opennet-fr/**
+# The port's own example widgets (examples/net, built by the engine's tests).
+!/examples/**
 
 # Build output
 /target/
