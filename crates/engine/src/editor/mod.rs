@@ -373,6 +373,9 @@ pub struct Editor {
     /// A text field was pressed since the host last asked
     /// ([`Editor::take_text_tapped`]).
     text_tapped: bool,
+    /// The clipboard's text asked for goes into the focused text field
+    /// (Ctrl+V in one), not to [`Editor::paste_link`]'s link.
+    paste_to_field: bool,
     /// Whether the window is full screen, as the host says.
     full_screen: bool,
     /// Full screen as the player set it in the Settings window, for the
@@ -459,6 +462,7 @@ impl Editor {
             settings: None,
             ui_scale: (Scale::Auto, 1.0),
             text_tapped: false,
+            paste_to_field: false,
             full_screen: false,
             new_full_screen: None,
             new_scale: None,
@@ -2242,10 +2246,7 @@ impl Editor {
     /// Characters Windows-1252 lacks (the game's font, the file) are left
     /// out.
     pub fn text_input(&mut self, typed: &str) {
-        let typed: String = typed
-            .chars()
-            .filter(|&c| c == '?' || crate::text::encode(c.encode_utf8(&mut [0; 4])) != b"?")
-            .collect();
+        let typed = cp1252_only(typed);
         if typed.is_empty()
             || self.recording.is_some()
             || self.about.is_some()
@@ -2270,6 +2271,55 @@ impl Editor {
             && !self.menu.is_open()
         {
             h.text_input(&typed);
+        }
+    }
+
+    /// Ctrl+A, C, X and V in a text field: the dialog's `d`, else the file
+    /// dialog's name (which only pastes). Whether `vk` was one of them.
+    fn field_clipboard(&mut self, d: Option<&mut Dialog>, vk: u16) -> bool {
+        let copied = match (vk, d) {
+            (0x56, _) => {
+                if let Some(l) = &mut self.links {
+                    self.paste_to_field = true;
+                    (l.paste)();
+                }
+                return true;
+            }
+            (0x41, Some(d)) => {
+                d.select_all();
+                return true;
+            }
+            (0x43, Some(d)) => d.selected_text(),
+            (0x58, Some(d)) => d.cut(),
+            _ => return false,
+        };
+        if let (Some(t), Some(l)) = (copied, &mut self.links) {
+            let _ = (l.copy)(&t);
+        }
+        true
+    }
+
+    /// A key in the settings dialog: the clipboard's, the caret's, then
+    /// the dialog's own.
+    fn dialog_key(&mut self, mut d: Dialog, vk: u16) {
+        if (self.ctrl && !self.alt && self.field_clipboard(Some(&mut d), vk))
+            || d.caret_key(&self.assets, vk, self.shift, self.ctrl)
+        {
+            self.dialog = Some(d);
+            return;
+        }
+        let r = d.key(vk);
+        self.dialog_result(d, r);
+    }
+
+    /// The clipboard's text asked for by Ctrl+V in a text field: pasted
+    /// there, what Windows-1252 lacks left out.
+    fn paste_into_field(&mut self, text: &str) {
+        let text = cp1252_only(text);
+        if let Some((d, _)) = &mut self.file_dialog {
+            d.text_input(&text.replace(['\r', '\n', '\t'], " "));
+        } else if let Some(d) = &mut self.dialog {
+            d.paste(&text);
         }
     }
 
@@ -2310,12 +2360,13 @@ impl Editor {
             return;
         }
         if self.file_dialog.is_some() {
-            self.file_key(vk);
+            if !(self.ctrl && !self.alt && self.field_clipboard(None, vk)) {
+                self.file_key(vk);
+            }
             return;
         }
-        if let Some(mut d) = self.dialog.take() {
-            let r = d.key(vk);
-            self.dialog_result(d, r);
+        if let Some(d) = self.dialog.take() {
+            self.dialog_key(d, vk);
             return;
         }
         if let Some(d) = &mut self.puzzle_dialog {
@@ -2845,3 +2896,11 @@ mod file_tests;
 mod lang_tests;
 #[cfg(test)]
 mod tests;
+
+/// `text` without the characters Windows-1252 lacks (the game's font and
+/// files have only those).
+fn cp1252_only(text: &str) -> String {
+    text.chars()
+        .filter(|&c| c == '?' || crate::text::encode(c.encode_utf8(&mut [0; 4])) != b"?")
+        .collect()
+}
