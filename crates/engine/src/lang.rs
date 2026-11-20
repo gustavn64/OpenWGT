@@ -221,6 +221,22 @@ fn sv(en: &str) -> Option<&'static str> {
         "Open Widget &Link\tCtrl+V" => "Öppna uppfinnings&länk\tCtrl+V",
         "Copy Lin&k to Widget" => "Ko&piera länk till uppfinningen",
         "&Settings..." => "&Inställningar...",
+        // The debugging tools (Settings, the Debug menu, the status, the
+        // pointer's note).
+        "&Debugging tools" => "Felsöknings&verktyg",
+        "&Debug" => "&Felsök",
+        "&Pause\tF6" => "&Paus\tF6",
+        "&Step 1 Tick\tF7" => "&Stega 1 tick\tF7",
+        "Step 1 S&econd" => "Stega 1 s&ekund",
+        "&Normal Speed" => "&Normal fart",
+        "Slow Motion &1/2" => "Ultrarapid &1/2",
+        "Slow Motion 1/&4" => "Ultrarapid 1/&4",
+        "Slow Motion 1/1&0" => "Ultrarapid 1/1&0",
+        "Slow Motion 1/&60" => "Ultrarapid 1/&60",
+        "Stop Sc&ripts" => "Stoppa sk&ript",
+        "tick {}" => "tick {}",
+        "paused" => "pausad",
+        "changed, unread" => "ändrad, oläst",
         // Links and downloads.
         "A link to {} is on the clipboard ({} characters)." => "En länk till {} ligger i Urklipp ({} tecken).",
         "the widget" => "uppfinningen",
@@ -369,6 +385,22 @@ fn fr(en: &str) -> Option<&'static str> {
         "Open Widget &Link\tCtrl+V" => "Ouvrir un &lien d'Eurêka\tCtrl+V",
         "Copy Lin&k to Widget" => "Copier le lien &vers l'Eurêka",
         "&Settings..." => "&Paramètres...",
+        // The debugging tools (Settings, the Debug menu, the status, the
+        // pointer's note).
+        "&Debugging tools" => "Outils de &débogage",
+        "&Debug" => "&Débogage",
+        "&Pause\tF6" => "&Pause\tF6",
+        "&Step 1 Tick\tF7" => "Avancer d'un &tick\tF7",
+        "Step 1 S&econd" => "Avancer d'une s&econde",
+        "&Normal Speed" => "Vitesse &normale",
+        "Slow Motion &1/2" => "Ralenti &1/2",
+        "Slow Motion 1/&4" => "Ralenti 1/&4",
+        "Slow Motion 1/1&0" => "Ralenti 1/1&0",
+        "Slow Motion 1/&60" => "Ralenti 1/&60",
+        "Stop Sc&ripts" => "A&rrêter les scripts",
+        "tick {}" => "tick {}",
+        "paused" => "en pause",
+        "changed, unread" => "changé, pas encore lu",
         // Links and downloads.
         "A link to {} is on the clipboard ({} characters)." => {
             "Un lien vers {} est dans le Presse-papiers ({} caractères)."

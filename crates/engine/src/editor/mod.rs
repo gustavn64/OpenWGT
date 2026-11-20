@@ -677,6 +677,7 @@ impl Editor {
         self.env.ms = 0;
         self.env.exclusive = None;
         self.ms_rest = 0;
+        self.debug.on_go();
         self.doc.start(&self.assets, &mut self.env);
         self.main_bar.select(id::GO);
         self.update_menu();
@@ -719,7 +720,7 @@ impl Editor {
             return;
         }
         self.poll_listen();
-        self.ms_rest += ms * TICKS_PER_SECOND;
+        self.ms_rest += self.debug_scale(ms) * TICKS_PER_SECOND;
         // At most a few ticks to catch up after a stall.
         let mut n = 0;
         while self.ms_rest >= 1000 && n < 8 {
@@ -743,7 +744,7 @@ impl Editor {
             // A Win / Lose Checker ended the run: a win marks the
             // puzzle solved (`0x42d4b1`), then the run stops
             // (`0x430ee7`) and its sound plays.
-            if end.solved {
+            if end.solved && !self.debug.assisted() {
                 self.mark_solved();
             }
             self.debug.run_ended(end.solved);
@@ -1163,6 +1164,7 @@ impl Editor {
             702 => cmd::STEEL,
             _ => cmd::PLAIN,
         }];
+        self.update_debug_menu();
         let name = self.display_name();
         self.title = format!("{APP} - {name}");
     }
@@ -1230,9 +1232,11 @@ impl Editor {
                     scale,
                     current,
                     self.tray.enhanced,
+                    self.debug_tools(),
                     self.full_screen,
                 ));
             }
+            id if debug::is_command(id) => self.debug_command(id),
             // Printing: nothing to print to.
             _ => {}
         }
@@ -1315,6 +1319,9 @@ impl Editor {
         let p = Self::to_view((x, y));
         self.env.mouse = p;
         self.env.cursor_screen = (x, y);
+        if self.debug_mouse_move(x, y) {
+            return;
+        }
         if let Some(d) = &mut self.dialog {
             d.mouse_move(&self.assets, (x, y));
         }
@@ -2118,6 +2125,7 @@ impl Editor {
             menu.add_links();
         }
         menu.add_settings();
+        self.add_debug_menu(&mut menu);
         menu
     }
 
@@ -2198,6 +2206,7 @@ impl Editor {
                 self.set_enhanced(on);
                 self.new_enhanced = Some(on);
             }
+            settings::Outcome::DebugTools(on) => self.debug_tools_changed(on),
             settings::Outcome::Language(l) => self.change_lang = Some(l),
             settings::Outcome::ChangeCd => {
                 self.settings = None;
@@ -2419,6 +2428,9 @@ impl Editor {
         }
         if self.alt && (0x41..=0x5a).contains(&vk) && self.menu.open_mnemonic(char::from(u8::try_from(vk).unwrap_or(0)))
         {
+            return;
+        }
+        if self.debug_key(vk) {
             return;
         }
         if let Some(c) = self.menu.accel(vk, self.shift, self.ctrl, self.alt) {
@@ -2644,6 +2656,7 @@ impl Editor {
 
     /// Draws everything.
     pub fn draw(&mut self) {
+        self.debug_prepare();
         let frame = self.surface.bounds();
         let view = self.worksheet();
         self.surface.set_clip(view);
@@ -2687,6 +2700,7 @@ impl Editor {
             }
             _ => {}
         }
+        self.debug.draw(s, &self.assets, &self.pictures, view);
         s.origin = (0, 0);
         s.set_clip(frame);
         // `WinHelp`'s window, kept on top of the game's and below its

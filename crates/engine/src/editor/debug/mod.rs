@@ -1,11 +1,22 @@
 //! The editor's side of scripts and debugging: what it keeps for them
-//! ([`Debugger`]) and the [`crate::script::Host`] it is to them
-//! (`host.rs`). A child of `editor`, so it can reach the editor's own
-//! fields; the hooks in the editor itself are single lines.
+//! ([`Debugger`]), the [`crate::script::Host`] it is to them (`host.rs`),
+//! and the debugging tools: the Debug menu's run control (`control.rs`),
+//! the pointer's note of values and the run's status (`overlay.rs`). A
+//! child of `editor`, so it can reach the editor's own fields; the hooks
+//! in the editor itself are single lines.
+//!
+//! The tools are there only with the enhancements on and their own
+//! switch in Settings ("Debugging tools", off at first).
 
+mod control;
 mod host;
+mod overlay;
 #[cfg(test)]
 mod tests;
+#[cfg(test)]
+mod ui_tests;
+
+pub use control::{Speed, is_command};
 
 use std::collections::{BTreeMap, VecDeque};
 
@@ -38,6 +49,32 @@ pub struct Debugger {
     /// The wall clock the widget sees while a script lets time pass:
     /// hours, minutes, seconds.
     pub local_time: (u32, u32, u32),
+    /// The debugging tools' switch (Settings), and its change for the
+    /// host to keep.
+    tools: bool,
+    new_tools: Option<bool>,
+    /// The run's control: held, slowed, helped.
+    run: RunControl,
+    /// Debug ▸ Stop Scripts, for the program running them.
+    stop_scripts: bool,
+    /// Whether the program has scripts running (Stop Scripts is greyed
+    /// without).
+    pub scripts_running: bool,
+    hover: overlay::Hover,
+}
+
+/// How the run goes under the tools.
+#[derive(Debug, Clone, Copy, Default)]
+struct RunControl {
+    /// Held (Pause).
+    paused: bool,
+    /// How fast it goes.
+    speed: Speed,
+    /// What's left of the milliseconds slowed down
+    /// ([`Editor::debug_scale`](super::Editor)).
+    carry: u64,
+    /// A script changed this run's state: it doesn't solve the puzzle.
+    assisted: bool,
 }
 
 impl Default for Debugger {
@@ -51,6 +88,12 @@ impl Default for Debugger {
             assets_for: None,
             deadline: None,
             local_time: (12, 0, 0),
+            tools: false,
+            new_tools: None,
+            run: RunControl::default(),
+            stop_scripts: false,
+            scripts_running: false,
+            hover: overlay::Hover::default(),
         }
     }
 }
@@ -59,6 +102,38 @@ impl Debugger {
     /// A part ended the run, the puzzle `solved` or not.
     pub(super) fn run_ended(&mut self, solved: bool) {
         self.ended = Some(solved);
+    }
+
+    /// GO: a run of the player's, at first; not held.
+    pub(super) fn on_go(&mut self) {
+        self.run.assisted = false;
+        self.run.paused = false;
+        self.run.carry = 0;
+    }
+
+    /// Whether a script changed this run's state ([`Debugger::on_go`]): a
+    /// win then doesn't mark the puzzle solved.
+    #[must_use]
+    pub fn assisted(&self) -> bool {
+        self.run.assisted
+    }
+
+    /// Whether the run is held (Debug ▸ Pause).
+    #[must_use]
+    pub fn paused(&self) -> bool {
+        self.run.paused
+    }
+
+    /// How fast the run goes (Debug ▸ Slow Motion).
+    #[must_use]
+    pub fn speed(&self) -> Speed {
+        self.run.speed
+    }
+
+    /// Debug ▸ Stop Scripts was chosen, once: the program running scripts
+    /// stops them.
+    pub fn take_stop_scripts(&mut self) -> bool {
+        std::mem::take(&mut self.stop_scripts)
     }
 
     fn heard(&mut self, e: SoundEvent) {

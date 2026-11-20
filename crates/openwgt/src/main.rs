@@ -475,6 +475,11 @@ impl App for Workshop {
         {
             save_enhanced(path, on);
         }
+        if let Some(on) = self.editor.take_debug_tools()
+            && let Some(path) = &self.settings_file
+        {
+            save_debug_tools(path, on);
+        }
         let cmds = self.editor.take_sounds();
         self.sound.play(cmds);
         self.editor.draw();
@@ -859,6 +864,29 @@ fn save_enhanced(path: &Path, on: bool) {
     }
 }
 
+/// The switch of the enhancements' debugging tools in the settings file
+/// (`enhance.debugging_tools`, off unless it says on).
+const DEBUG_TOOLS: &str = "debugging_tools";
+
+/// Whether the debugging tools are on in the settings file at `settings`.
+fn debug_tools(settings: Option<&Path>) -> bool {
+    settings.is_some_and(|p| {
+        platform::settings::EnhanceSettings::load(p)
+            .overrides
+            .iter()
+            .rev()
+            .find(|(k, _)| k == DEBUG_TOOLS)
+            .is_some_and(|&(_, on)| on)
+    })
+}
+
+/// Keeps the debugging tools' switch in the settings file at `path`.
+fn save_debug_tools(path: &Path, on: bool) {
+    if let Err(e) = platform::settings::EnhanceSettings::save(path, None, &[(DEBUG_TOOLS, on)], &[]) {
+        eprintln!("{}: {e}", path.display());
+    }
+}
+
 fn start(args: &Args, assets: Assets) -> Result<(), platform::Error> {
     let mut doc = Document::new();
     let mut path = None;
@@ -911,6 +939,7 @@ fn start(args: &Args, assets: Assets) -> Result<(), platform::Error> {
     editor.set_system_dark(theme.dark());
     let settings_file = args.window.settings_file.clone();
     editor.set_enhanced(enhanced(settings_file.as_deref()));
+    editor.set_debug_tools(debug_tools(settings_file.as_deref()));
     #[cfg(not(target_arch = "wasm32"))]
     let script = script::Windowed::start(args, &mut editor).unwrap_or_else(|e| fail(&e));
     let app = Workshop {

@@ -219,8 +219,14 @@ impl Windowed {
 
     /// A frame of `ms` passed.
     pub fn frame(&mut self, editor: &mut Editor, ms: u64) {
+        let stop = editor.debug.take_stop_scripts();
+        editor.debug.scripts_running = !self.done;
         if self.done {
             return;
+        }
+        // Debug ▸ Stop Scripts.
+        if stop {
+            self.rt.cancel(None);
         }
         self.rt.frame(editor, ms);
         if let Some(t) = self.rt.tasks().into_iter().find(|t| t.id == self.task)

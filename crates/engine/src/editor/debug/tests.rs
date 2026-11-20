@@ -12,7 +12,7 @@ use crate::script::{
 };
 
 /// The port's own packs in English, as without a CD.
-fn assets() -> Assets {
+pub(super) fn assets() -> Assets {
     let graphics = crate::opengfx::builtin_for(Lang::En);
     let sounds = crate::opensfx::builtin();
     let data = crate::opendata::builtin_for(Lang::En);
@@ -26,24 +26,24 @@ fn assets() -> Assets {
     assets
 }
 
-fn editor() -> Editor {
+pub(super) fn editor() -> Editor {
     Editor::new(assets(), Document::new(), 640, 433)
 }
 
-fn add(e: &mut Editor, tag: [u8; 4], h: i32, v: i32) -> PartId {
+pub(super) fn add(e: &mut Editor, tag: [u8; 4], h: i32, v: i32) -> PartId {
     let id = e.doc.new_id();
     let g = doc::new_gadget(&e.assets, Tag(tag), id, h, v);
     e.doc.gadgets.push(g);
     PartId(id)
 }
 
-fn index(e: &Editor, id: PartId) -> usize {
+pub(super) fn index(e: &Editor, id: PartId) -> usize {
     e.doc.gadgets.iter().position(|g| g.core.id == id.0).unwrap()
 }
 
 /// Wires output `out` (counted among the outputs) of `from` to input `inp`
 /// of `to`.
-fn connect(e: &mut Editor, from: PartId, out: usize, to: PartId, inp: usize) {
+pub(super) fn connect(e: &mut Editor, from: PartId, out: usize, to: PartId, inp: usize) {
     let (f, t) = (index(e, from), index(e, to));
     let nth = |e: &Editor, g: usize, input: bool, n: usize| {
         let knots = &e.doc.gadgets[g].core.knots;

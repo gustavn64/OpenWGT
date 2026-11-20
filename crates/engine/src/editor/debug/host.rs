@@ -50,7 +50,7 @@ impl Editor {
     }
 
     /// What gadget `i`'s output `k` gives.
-    fn out_value(&self, i: usize, k: usize) -> Val {
+    pub(super) fn out_value(&self, i: usize, k: usize) -> Val {
         self.doc
             .gadgets
             .get(i)
@@ -128,7 +128,7 @@ impl Editor {
     }
 
     /// Gadget `i` as a script sees it.
-    fn info(&self, i: usize) -> PartInfo {
+    pub(super) fn info(&self, i: usize) -> PartInfo {
         let g = &self.doc.gadgets[i];
         let r = g.core.rect();
         let knots = g
@@ -444,6 +444,7 @@ impl Host for Editor {
         let r = self
             .doc
             .with_gadget(i, &self.assets, &mut self.env, |g, io| adapt::work(c, g, io, v));
+        self.debug.run.assisted |= self.running && r.is_ok();
         r.map_err(refused)
     }
 
@@ -495,6 +496,7 @@ impl Host for Editor {
                 ));
             }
         }
+        self.debug.run.assisted |= self.running;
         let outs: Vec<usize> = core
             .knots
             .iter()
@@ -538,6 +540,7 @@ impl Host for Editor {
                 ),
             ));
         }
+        self.debug.run.assisted = true;
         let (gh, gv) = (self.doc.gadgets[i].core.h, self.doc.gadgets[i].core.v);
         self.doc.with_gadget(i, &self.assets, &mut self.env, |g, io| {
             g.behavior.click(&mut g.core, io, x - gh, y - gv);

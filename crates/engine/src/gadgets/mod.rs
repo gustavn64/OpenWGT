@@ -15,6 +15,9 @@ mod x87;
 
 use crate::gadget::{Behavior, Tag};
 
+/// A number as the displays show it (the debugging tools' values too).
+pub use common::format_number;
+
 /// A gadget class.
 pub struct Class {
     pub tag: Tag,
