@@ -18,11 +18,19 @@ chrono = { version = "0.4", default-features = false, features = ["clock", "wasm
 # The system's (or the browser's) language, for the port's own packs
 # without a CD.
 sys-locale = { version = "0.3", features = ["js"] }
+# The network parts' web sockets (`net`): natively a thread each on
+# tungstenite, with rustls for wss:// (`tls`: webpki-roots, the Mozilla
+# roots built in); in the browser the page's WebSocket.
+ewebsock = { version = "0.8", features = ["tls"] }
 
 # The file dialog that asks for the CD when it isn't given (`pick`):
 # natively only, the browser's page asks for it itself.
 [target.'cfg(not(target_arch = "wasm32"))'.dependencies]
 rfd = "0.18"
+# The crypto of ewebsock's rustls: ring, not the default aws-lc-rs, which
+# needs CMake and NASM to build on Windows. With ring alone among its
+# features, rustls takes it without being told.
+rustls ={ version = "0.23", default-features = false, features = ["ring", "std", "tls12", "logging"] }
 
 # Whether rfd has a dialog to show (`pick::has_dialog`): the portal's
 # FileChooser on the session bus.

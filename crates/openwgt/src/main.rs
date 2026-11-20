@@ -7,18 +7,19 @@
 //!
 //! `openwgt [--open] [--lang=en|sv|fr] [--opengfx[=DIR]] [--opensfx[=DIR]]
 //! [--opendata[=DIR]] [--overrides=DIR] [--export=DIR] [--no-audio]
-//! [--window-size=WxH] [--fullscreen|--windowed] [--ui-scale=N|auto] [--help]
-//! [CD] [WIDGET.WGT|LINK]` ([`USAGE`]), where `CD` is the game's CD: an
-//! ISO image or a folder with its files (default: the one `.iso` in the
-//! current directory, else `orig`), and `LINK` a widget link
-//! (`engine::link`). `--overrides` names a folder whose
-//! files replace or add to the CD's resources (`engine::assets`);
+//! [--window-size=WxH] [--fullscreen|--windowed] [--ui-scale=N|auto]
+//! [--relay=URL] [--help] [CD] [WIDGET.WGT|LINK]` ([`USAGE`]), where `CD`
+//! is the game's CD: an ISO image or a folder with its files (default: the
+//! one `.iso` in the current directory, else `orig`), and `LINK` a widget
+//! link (`engine::link`). `--overrides` names a folder whose files replace
+//! or add to the CD's resources (`engine::assets`);
 //! `--export` writes every resource there in that layout and quits.
 //! `--opengfx`, `--opensfx` and `--opendata` use the port's own pictures,
 //! sounds and data instead of the CD's (`engine::opengfx`,
 //! `engine::opensfx`, `engine::opendata`); `--open` uses the three and no
-//! CD. Started without a CD and with none here or picked before (`pick`),
-//! it runs on the three packs, as with `--open`. In the browser (`web`,
+//! CD. `--relay` names the relay of the network parts (`net`). Started
+//! without a CD and with none here or picked before (`pick`), it runs on
+//! the three packs, as with `--open`. In the browser (`web`,
 //! `docs/web.md`) the page asks for the CD image or plays without it, and
 //! its query is the command line.
 
@@ -39,6 +40,7 @@ macro_rules! println {
 
 mod cd;
 mod files;
+mod net;
 #[cfg(not(target_arch = "wasm32"))]
 mod pick;
 mod profile;
@@ -65,7 +67,7 @@ const LINK_PAGE: &str = "https://gustavn.se/openwgt/play/";
 
 const USAGE: &str =
     "usage: openwgt [--open] [--lang=en|sv|fr] [--opengfx[=DIR]] [--opensfx[=DIR]] [--opendata[=DIR]] [--overrides=DIR] [--export=DIR] [--no-audio] [--window-size=WxH] \
-[--fullscreen|--windowed] [--ui-scale=N|auto] [--help] [CD] [WIDGET.WGT|LINK]
+[--fullscreen|--windowed] [--ui-scale=N|auto] [--relay=URL] [--help] [CD] [WIDGET.WGT|LINK]
 
   CD               the game's CD: an ISO image or a folder with its files
                    (default: the .iso in the current directory, else orig)
@@ -93,7 +95,10 @@ const USAGE: &str =
   --ui-scale=N|auto
                    window pixels per game pixel, such as 2 or 1.5, in
                    quarters; auto follows the display's scaling
-                   (remembered, ui_scale in the settings file)";
+                   (remembered, ui_scale in the settings file)
+  --relay=URL      the relay the Sender and Receiver parts connect to
+                   (default: $OPENWGT_RELAY, else
+                   wss://gustavn.se/openwgt/relay)";
 
 #[derive(Clone)]
 struct Args {
@@ -113,6 +118,8 @@ struct Args {
     /// `--lang`: the language of the port's own packs (with a CD, the
     /// CD's wins).
     lang: Option<engine::lang::Lang>,
+    /// `--relay`: the network parts' relay.
+    relay: Option<String>,
     /// The options to start again with on another CD (Change CD...):
     /// the ones the player gave, taken before a missing CD switches the
     /// packs on.
@@ -206,6 +213,7 @@ fn args(mut it: impl Iterator<Item = std::ffi::OsString>) -> Args {
         opendata: None,
         open: false,
         lang: None,
+        relay: None,
         restart: Vec::new(),
         no_audio: false,
         window: WindowOptions {
@@ -240,6 +248,7 @@ fn args(mut it: impl Iterator<Item = std::ffi::OsString>) -> Args {
                 }
             }
             "--export" => a.export = value().map(PathBuf::from),
+            "--relay" => a.relay = value(),
             // Its folder only after `=`: a bare `--opengfx` takes no value.
             "--opengfx" | "--opensfx" | "--opendata" => {
                 let pack = match s.split_once('=') {
@@ -714,6 +723,9 @@ fn restart_options(args: &Args) -> Vec<std::ffi::OsString> {
     if let Some(l) = args.lang {
         o.push(format!("--lang={}", l.code()).into());
     }
+    if let Some(r) = &args.relay {
+        o.push(format!("--relay={r}").into());
+    }
     if args.no_audio {
         o.push("--no-audio".into());
     }
@@ -863,6 +875,10 @@ fn start(args: &Args, assets: Assets) -> Result<(), platform::Error> {
     if let Some(l) = &args.link {
         editor.open_link(l);
     }
+    // The network parts connect as soon as the widget is open.
+    editor
+        .net
+        .set_transport(Box::<net::WsTransport>::default(), &net::relay(args.relay.as_deref()));
     // `0x415018`: the random generator starts at `(u32)time(NULL)`.
     editor.env.rng = chrono::Utc::now().timestamp().rem_euclid(1 << 32).unsigned_abs();
     let audio = if args.no_audio {
@@ -916,5 +932,10 @@ mod tests {
         assert_eq!(restart(&["--opensfx", "x.iso"]), ["--opensfx"]);
         // Play without the CD speaks the language asked for.
         assert_eq!(restart(&["--lang=fr", "x.iso"]), ["--lang=fr"]);
+        assert_eq!(
+            restart(&["--relay=ws://127.0.0.1:8787", "--no-audio"]),
+            ["--relay=ws://127.0.0.1:8787", "--no-audio"]
+        );
+        assert_eq!(restart(&["--relay", "ws://h", "x.iso"]), ["--relay=ws://h"]);
     }
 }
