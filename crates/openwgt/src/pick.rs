@@ -201,7 +201,7 @@ fn on_path(_name: &str) -> bool {
 
 /// `message` in a message box, as an error (nowhere without a dialog).
 pub fn error_box(message: &str) {
-    if !has_dialog() {
+    if !has_dialog() || crate::script::headless() {
         return;
     }
     rfd::MessageDialog::new()

@@ -1,8 +1,10 @@
 //! The port's own Settings window (Options ▸ Settings...), in the look of
 //! the original's dialogs: the UI scale, which the window follows at once,
 //! and the one switch for all of the port's enhancements of the original
-//! ([`super::tray`]'s whole-folder tray, windows dragged whole). The host keeps both
-//! ([`super::Editor::take_ui_scale`], [`super::Editor::take_enhanced`]).
+//! ([`super::tray`]'s whole-folder tray, windows dragged whole), with the
+//! debugging tools' under it while they're on ([`super::debug`]). The host
+//! keeps them ([`super::Editor::take_ui_scale`],
+//! [`super::Editor::take_enhanced`], [`super::Editor::take_debug_tools`]).
 //! Without a CD the language button switches the game to the next
 //! language at once ([`super::Editor::take_change_lang`]).
 //! Change CD... asks the host for another CD image
@@ -38,11 +40,14 @@ const SMALL: i32 = 23;
 const CHECK_H: i32 = 16;
 /// The enhancements' note under their switch.
 const NOTE: &str = "The parts tray shows a whole folder at once; windows drag whole.";
+/// The height the debugging tools' switch adds (with the enhancements on).
+const DEBUG_H: i32 = CHECK_H + 4;
 
 /// The parts a letter presses: their labels' underlined letters.
-const MNEMONIC_PARTS: [(Part, &str); 6] = [
+const MNEMONIC_PARTS: [(Part, &str); 7] = [
     (Part::Auto, "&Automatic (the display's)"),
     (Part::Enhanced, "&Enhancements"),
+    (Part::DebugTools, "&Debugging tools"),
     (Part::FullScreen, "&Full screen"),
     (Part::Language, "&Language:"),
     (Part::ChangeCd, "&Change CD..."),
@@ -55,6 +60,8 @@ pub enum Outcome {
     None,
     Scale(Scale),
     Enhanced(bool),
+    /// The debugging tools on or off.
+    DebugTools(bool),
     /// Another language (without a CD): the game switches to it at once.
     Language(Lang),
     /// Play without the CD: the game starts again on the port's own
@@ -76,19 +83,21 @@ enum Part {
     Smaller,
     Bigger,
     Enhanced,
+    DebugTools,
     Language,
     FullScreen,
     ChangeCd,
     NoCd,
 }
 
-const PARTS: [Part; 10] = [
+const PARTS: [Part; 11] = [
     Part::Close,
     Part::CloseBox,
     Part::Auto,
     Part::Smaller,
     Part::Bigger,
     Part::Enhanced,
+    Part::DebugTools,
     Part::Language,
     Part::FullScreen,
     Part::ChangeCd,
@@ -102,6 +111,8 @@ pub struct SettingsBox {
     pub scale: Scale,
     pub current: f64,
     pub enhanced: bool,
+    /// The debugging tools' switch, shown while the enhancements are on.
+    pub debug_tools: bool,
     /// The language played in, and what decides it: only the player's
     /// choice can be changed here. The language button goes round the
     /// languages, each press switching to the next.
@@ -148,6 +159,7 @@ impl SettingsBox {
         scale: Scale,
         current: f64,
         enhanced: bool,
+        debug_tools: bool,
         full_screen: bool,
     ) -> SettingsBox {
         let lang = assets.lang;
@@ -158,7 +170,7 @@ impl SettingsBox {
         } else {
             LangFrom::Player
         };
-        let h = Self::height(assets);
+        let h = Self::height(assets, enhanced);
         let window = IRect::sized(
             area.x0 + (area.width() - W) / 2,
             area.y0 + (area.height() - h) / 2,
@@ -169,6 +181,7 @@ impl SettingsBox {
             scale,
             current,
             enhanced,
+            debug_tools,
             lang,
             lang_from,
             full_screen,
@@ -187,6 +200,7 @@ impl SettingsBox {
             self.scale,
             self.current,
             self.enhanced,
+            self.debug_tools,
             self.full_screen,
         );
         b.move_to((self.window.x0, self.window.y0));
@@ -197,10 +211,12 @@ impl SettingsBox {
         ui::font(assets).map_or_else(Vec::new, |f| ui::wrap(f, tr(NOTE), W - 2 * FRAME - 2 * MARGIN - 17))
     }
 
-    fn height(assets: &Assets) -> i32 {
+    fn height(assets: &Assets, enhanced: bool) -> i32 {
         let lh = ui::font(assets).map_or(13, |f| i32::from(f.height));
         let note = i32::try_from(Self::note(assets).len()).unwrap_or(0) * lh;
-        2 * FRAME
+        let debug = if enhanced { DEBUG_H } else { 0 };
+        debug
+            + 2 * FRAME
             + CAPTION_H
             + 3 * MARGIN
             + lh
@@ -245,7 +261,15 @@ impl SettingsBox {
         let bigger = IRect::sized(value.x1 + 4, row, SMALL, SMALL);
         let enhanced = IRect::sized(x, group.y1 + MARGIN, inner, CHECK_H);
         let note = i32::try_from(Self::note(assets).len()).unwrap_or(0) * lh;
-        let full_screen = IRect::sized(x, enhanced.y1 + note + MARGIN, inner, CHECK_H);
+        // The debugging tools' switch, under the enhancements' note while
+        // they're on.
+        let debug_tools = IRect::sized(x + 17, enhanced.y1 + note + 4, inner - 17, CHECK_H);
+        let below = if self.enhanced {
+            debug_tools.y1
+        } else {
+            enhanced.y1 + note
+        };
+        let full_screen = IRect::sized(x, below + MARGIN, inner, CHECK_H);
         let close = IRect::sized(
             self.window.x1 - FRAME - MARGIN - BUTTON_W,
             self.window.y1 - FRAME - MARGIN - BUTTON_H,
@@ -262,6 +286,7 @@ impl SettingsBox {
             value,
             bigger,
             enhanced,
+            debug_tools,
             language,
             full_screen,
             change_cd,
@@ -278,6 +303,7 @@ impl SettingsBox {
             Part::Smaller => l.smaller,
             Part::Bigger => l.bigger,
             Part::Enhanced => l.enhanced,
+            Part::DebugTools => l.debug_tools,
             Part::Language => l.language,
             Part::FullScreen => l.full_screen,
             Part::ChangeCd => l.change_cd,
@@ -299,6 +325,7 @@ impl SettingsBox {
             Part::Smaller => self.shown() > MIN_SCALE,
             Part::Bigger => self.shown() < MAX_SCALE,
             Part::Language => self.lang_from == LangFrom::Player,
+            Part::DebugTools => self.enhanced,
             // Only with a CD: without one the game is on the packs.
             Part::NoCd => self.lang_from == LangFrom::Cd,
             _ => true,
@@ -325,7 +352,14 @@ impl SettingsBox {
             }
             Part::Enhanced => {
                 self.enhanced = !self.enhanced;
+                // The debugging tools' switch comes and goes with them.
+                let d = if self.enhanced { DEBUG_H } else { -DEBUG_H };
+                self.window.y1 += d;
                 Outcome::Enhanced(self.enhanced)
+            }
+            Part::DebugTools => {
+                self.debug_tools = !self.debug_tools;
+                Outcome::DebugTools(self.debug_tools)
             }
             Part::Language => {
                 // The next language, round.
@@ -450,6 +484,10 @@ impl SettingsBox {
             ui::label(s, font, l.enhanced.x0 + 17, y, &line, ui::BLACK);
             y += i32::from(font.height);
         }
+        if self.enhanced {
+            let (r, on, down) = (l.debug_tools, self.debug_tools, pressed(Part::DebugTools));
+            check(s, font, r, tr("&Debugging tools"), on, down);
+        }
         let language = if self.lang_from == LangFrom::Cd {
             trf("Language: the CD's ({})", &[self.lang.name()])
         } else {
@@ -501,6 +539,7 @@ struct Layout {
     value: IRect,
     bigger: IRect,
     enhanced: IRect,
+    debug_tools: IRect,
     language: IRect,
     full_screen: IRect,
     change_cd: IRect,
@@ -544,6 +583,7 @@ mod tests {
             scale: Scale::Auto,
             current: 2.0,
             enhanced: true,
+            debug_tools: false,
             lang: Lang::En,
             lang_from: LangFrom::Player,
             full_screen: false,
@@ -554,6 +594,15 @@ mod tests {
         assert_eq!(b.key(0x6b), Outcome::Scale(Scale::Fixed(2.25)));
         assert_eq!(b.key(0x41), Outcome::Scale(Scale::Auto));
         assert_eq!(b.key(0x41), Outcome::Scale(Scale::Fixed(2.0)));
+        assert_eq!(b.key(0x44), Outcome::DebugTools(true));
+        assert_eq!(b.key(0x44), Outcome::DebugTools(false));
+        assert_eq!(b.key(0x45), Outcome::Enhanced(false));
+        assert_eq!(
+            b.key(0x44),
+            Outcome::None,
+            "no debugging tools without the enhancements"
+        );
+        assert_eq!(b.key(0x45), Outcome::Enhanced(true));
         assert_eq!(b.key(0x45), Outcome::Enhanced(false));
         assert_eq!(b.key(0x46), Outcome::FullScreen(true));
         assert!(!b.full_screen, "only the host's word checks it");

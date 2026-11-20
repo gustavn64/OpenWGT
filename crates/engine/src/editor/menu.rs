@@ -219,6 +219,20 @@ impl Menu {
         }
     }
 
+    /// Adds the debugging tools' menu (`super::debug`) with `items`, before
+    /// the last (Help).
+    pub fn add_debug(&mut self, items: Vec<MenuItem>) {
+        let at = self.items.len().saturating_sub(1);
+        self.items.insert(
+            at,
+            MenuItem::Popup {
+                text: tr("&Debug").to_owned(),
+                flags: 0x10,
+                items,
+            },
+        );
+    }
+
     /// Adds `new` to the File menu after the first of `after` there.
     fn add_file_items(&mut self, after: &[u16], new: &[(u16, &str)]) {
         let Some(MenuItem::Popup { items, .. }) = self.items.first_mut() else {

@@ -8,11 +8,12 @@
 //! `openwgt [--open] [--lang=en|sv|fr] [--opengfx[=DIR]] [--opensfx[=DIR]]
 //! [--opendata[=DIR]] [--overrides=DIR] [--export=DIR] [--no-audio]
 //! [--window-size=WxH] [--fullscreen|--windowed] [--ui-scale=N|auto]
-//! [--relay=URL] [--help] [CD] [WIDGET.WGT|LINK]` ([`USAGE`]), where `CD`
-//! is the game's CD: an ISO image or a folder with its files (default: the
-//! one `.iso` in the current directory, else `orig`), and `LINK` a widget
-//! link (`engine::link`). `--overrides` names a folder whose files replace
-//! or add to the CD's resources (`engine::assets`);
+//! [--relay=URL] [--help] [--script FILE [--headless] [--out DIR] [--seed N]
+//! [--budget N] [--timeout S]] [CD] [WIDGET.WGT|LINK]` ([`USAGE`]), where
+//! `CD` is the game's CD: an ISO image or a folder with its files (default:
+//! the one `.iso` in the current directory, else `orig`), and `LINK` a
+//! widget link (`engine::link`). `--overrides` names a folder whose files
+//! replace or add to the CD's resources (`engine::assets`);
 //! `--export` writes every resource there in that layout and quits.
 //! `--opengfx`, `--opensfx` and `--opendata` use the port's own pictures,
 //! sounds and data instead of the CD's (`engine::opengfx`,
@@ -44,6 +45,8 @@ mod net;
 #[cfg(not(target_arch = "wasm32"))]
 mod pick;
 mod profile;
+#[cfg(not(target_arch = "wasm32"))]
+mod script;
 mod sound;
 #[cfg(target_arch = "wasm32")]
 mod web;
@@ -67,7 +70,8 @@ const LINK_PAGE: &str = "https://gustavn.se/openwgt/play/";
 
 const USAGE: &str =
     "usage: openwgt [--open] [--lang=en|sv|fr] [--opengfx[=DIR]] [--opensfx[=DIR]] [--opendata[=DIR]] [--overrides=DIR] [--export=DIR] [--no-audio] [--window-size=WxH] \
-[--fullscreen|--windowed] [--ui-scale=N|auto] [--relay=URL] [--help] [CD] [WIDGET.WGT|LINK]
+[--fullscreen|--windowed] [--ui-scale=N|auto] [--relay=URL] [--help] \
+[--script FILE [--headless] [--out DIR] [--seed N] [--budget N] [--timeout S]] [CD] [WIDGET.WGT|LINK]
 
   CD               the game's CD: an ISO image or a folder with its files
                    (default: the .iso in the current directory, else orig)
@@ -98,7 +102,16 @@ const USAGE: &str =
                    (remembered, ui_scale in the settings file)
   --relay=URL      the relay the Sender and Receiver parts connect to
                    (default: $OPENWGT_RELAY, else
-                   wss://gustavn.se/openwgt/relay)";
+                   wss://gustavn.se/openwgt/relay)
+  --script FILE    runs a script of commands in the game (its help command
+                   lists them)
+  --headless       runs the script with no window, as fast as it goes, and
+                   exits: 0 if it ran through, 1 if a check failed or it
+                   stopped on an error, 2 if it couldn't start
+  --out DIR        where the script's shots go (default: here)
+  --seed N         the parts' random numbers start from N
+  --budget N       the most commands a script runs between two waits
+  --timeout S      stops a headless script after S seconds";
 
 #[derive(Clone)]
 struct Args {
@@ -127,6 +140,9 @@ struct Args {
     restart: Vec<std::ffi::OsString>,
     no_audio: bool,
     window: WindowOptions,
+    /// `--script` and the options that go with it.
+    #[cfg(not(target_arch = "wasm32"))]
+    script: script::Options,
 }
 
 impl Args {
@@ -220,6 +236,8 @@ fn args(mut it: impl Iterator<Item = std::ffi::OsString>) -> Args {
             settings_file: platform::settings::settings_file(),
             ..WindowOptions::default()
         },
+        #[cfg(not(target_arch = "wasm32"))]
+        script: script::Options::default(),
     };
     while let Some(arg) = it.next() {
         let s = arg.to_string_lossy().into_owned();
@@ -277,26 +295,35 @@ fn args(mut it: impl Iterator<Item = std::ffi::OsString>) -> Args {
                 let scale = platform::UiScale::parse(&v);
                 a.window.ui_scale = Some(scale.unwrap_or_else(|| usage_error(&format!("bad UI scale {v}"))));
             }
-            k if k.starts_with('-') => usage_error(&format!("unknown option {k}")),
-            _ => {
-                let p = PathBuf::from(&s);
-                let is_widget = p.extension().is_some_and(|e| e.eq_ignore_ascii_case("wgt"));
-                let is_link = engine::link::decode(&s).is_some();
-                if (is_widget || is_link) && a.widget.is_none() && a.link.is_none() {
-                    if is_link {
-                        a.link = Some(s);
-                    } else {
-                        a.widget = Some(p);
-                    }
-                } else if a.cd.is_none() {
-                    a.cd = Some(p);
-                } else {
-                    usage_error(&format!("too many arguments: {s}"));
-                }
+            #[cfg(not(target_arch = "wasm32"))]
+            "--headless" => a.script.headless = true,
+            #[cfg(not(target_arch = "wasm32"))]
+            "--script" | "--out" | "--seed" | "--budget" | "--timeout" => {
+                a.script.set(&key, value()).unwrap_or_else(|e| usage_error(&e));
             }
+            k if k.starts_with('-') => usage_error(&format!("unknown option {k}")),
+            _ => positional(&mut a, s),
         }
     }
     a
+}
+
+/// An argument that isn't an option: the widget or link, else the CD.
+fn positional(a: &mut Args, s: String) {
+    let p = PathBuf::from(&s);
+    let is_widget = p.extension().is_some_and(|e| e.eq_ignore_ascii_case("wgt"));
+    let is_link = engine::link::decode(&s).is_some();
+    if (is_widget || is_link) && a.widget.is_none() && a.link.is_none() {
+        if is_link {
+            a.link = Some(s);
+        } else {
+            a.widget = Some(p);
+        }
+    } else if a.cd.is_none() {
+        a.cd = Some(p);
+    } else {
+        usage_error(&format!("too many arguments: {s}"));
+    }
 }
 
 /// The game in the window.
@@ -323,6 +350,9 @@ struct Workshop {
     /// CD image to be dropped on it instead of showing the game.
     #[cfg(not(target_arch = "wasm32"))]
     asking: Option<pick::DropScreen>,
+    /// The script `--script` runs, a frame at a time.
+    #[cfg(not(target_arch = "wasm32"))]
+    script: Option<script::Windowed>,
 }
 
 impl Workshop {
@@ -439,6 +469,10 @@ impl App for Workshop {
             self.editor.open_link(&l);
         }
         self.editor.update(ms, sound::local_time());
+        #[cfg(not(target_arch = "wasm32"))]
+        if let Some(s) = &mut self.script {
+            s.frame(&mut self.editor, ms);
+        }
         if self.editor.take_change_cd() {
             self.change_cd();
         }
@@ -452,6 +486,11 @@ impl App for Workshop {
             && let Some(path) = &self.settings_file
         {
             save_enhanced(path, on);
+        }
+        if let Some(on) = self.editor.take_debug_tools()
+            && let Some(path) = &self.settings_file
+        {
+            save_debug_tools(path, on);
         }
         let cmds = self.editor.take_sounds();
         self.sound.play(cmds);
@@ -690,6 +729,9 @@ fn main() {
         }
         return;
     }
+    if args.script.headless {
+        std::process::exit(script::run_without_window(&args, assets));
+    }
     if let Err(e) = start(&args, assets) {
         fail(&e.to_string());
     }
@@ -837,6 +879,29 @@ fn save_enhanced(path: &Path, on: bool) {
     }
 }
 
+/// The switch of the enhancements' debugging tools in the settings file
+/// (`enhance.debugging_tools`, off unless it says on).
+const DEBUG_TOOLS: &str = "debugging_tools";
+
+/// Whether the debugging tools are on in the settings file at `settings`.
+fn debug_tools(settings: Option<&Path>) -> bool {
+    settings.is_some_and(|p| {
+        platform::settings::EnhanceSettings::load(p)
+            .overrides
+            .iter()
+            .rev()
+            .find(|(k, _)| k == DEBUG_TOOLS)
+            .is_some_and(|&(_, on)| on)
+    })
+}
+
+/// Keeps the debugging tools' switch in the settings file at `path`.
+fn save_debug_tools(path: &Path, on: bool) {
+    if let Err(e) = platform::settings::EnhanceSettings::save(path, None, &[(DEBUG_TOOLS, on)], &[]) {
+        eprintln!("{}: {e}", path.display());
+    }
+}
+
 fn start(args: &Args, assets: Assets) -> Result<(), platform::Error> {
     let mut doc = Document::new();
     let mut path = None;
@@ -893,6 +958,9 @@ fn start(args: &Args, assets: Assets) -> Result<(), platform::Error> {
     editor.set_system_dark(theme.dark());
     let settings_file = args.window.settings_file.clone();
     editor.set_enhanced(enhanced(settings_file.as_deref()));
+    editor.set_debug_tools(debug_tools(settings_file.as_deref()));
+    #[cfg(not(target_arch = "wasm32"))]
+    let script = script::Windowed::start(args, &mut editor).unwrap_or_else(|e| fail(&e));
     let app = Workshop {
         editor,
         sound: Sound::new(audio),
@@ -906,6 +974,8 @@ fn start(args: &Args, assets: Assets) -> Result<(), platform::Error> {
         carry: Duration::ZERO,
         #[cfg(not(target_arch = "wasm32"))]
         asking: None,
+        #[cfg(not(target_arch = "wasm32"))]
+        script,
     };
     platform::run("OpenWGT", args.window.clone(), app)
 }

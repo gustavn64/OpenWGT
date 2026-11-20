@@ -9,6 +9,7 @@
 //! (the view's client area) below it.
 
 pub mod about;
+pub mod debug;
 pub mod dialog;
 mod download;
 mod file;
@@ -105,6 +106,16 @@ mod snd {
     pub const ARROW: u32 = 0x94;
     pub const SLIDE: u32 = 0x95;
     pub const MOVING: u32 = 0x96;
+}
+
+/// How one tick of the running widget ended ([`Editor::tick_once`]).
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum TickEnd {
+    /// It ran; the widget runs on.
+    Ran,
+    /// A part ended the run (a Win / Lose Checker), the puzzle solved or
+    /// not; the editor is back to editing.
+    Stopped { solved: bool },
 }
 
 /// Mouse buttons the editor tells apart.
@@ -393,6 +404,8 @@ pub struct Editor {
     change_lang: Option<crate::lang::Lang>,
     /// Play without the CD was pressed, and the widget saved or let go.
     play_without_cd: bool,
+    /// Scripts' and debugging's ([`debug`]).
+    pub debug: debug::Debugger,
 }
 
 impl Editor {
@@ -473,6 +486,7 @@ impl Editor {
             change_cd: false,
             change_lang: None,
             play_without_cd: false,
+            debug: debug::Debugger::default(),
         };
         let limits = e.doc.tray_limits.clone();
         e.tray.apply_limits(&limits);
@@ -600,6 +614,7 @@ impl Editor {
             || self.about.is_some()
             || self.menu.covers(&self.assets, p)
             || self.help.as_ref().is_some_and(|h| h.contains(p))
+            || self.debug.covers(p)
         {
             return false;
         }
@@ -666,6 +681,7 @@ impl Editor {
         self.env.ms = 0;
         self.env.exclusive = None;
         self.ms_rest = 0;
+        self.debug_go();
         self.doc.start(&self.assets, &mut self.env);
         self.main_bar.select(id::GO);
         self.update_menu();
@@ -694,6 +710,7 @@ impl Editor {
     /// tick, or (editing) the hover selection (`0x424778`).
     pub fn update(&mut self, ms: u64, local_time: (u32, u32, u32)) {
         self.now += ms;
+        self.debug_frame(ms);
         self.env.local_time = local_time;
         self.tray.animate(self.now);
         if let Some(h) = &mut self.help {
@@ -709,39 +726,51 @@ impl Editor {
             return;
         }
         self.poll_listen();
-        self.ms_rest += ms * TICKS_PER_SECOND;
+        self.ms_rest += self.debug_scale(ms) * TICKS_PER_SECOND;
         // At most a few ticks to catch up after a stall.
         let mut n = 0;
         while self.ms_rest >= 1000 && n < 8 {
             self.ms_rest -= 1000;
-            self.doc.tick(&self.assets, &mut self.env);
-            if let Some(end) = self.env.end_run.take() {
-                // A Win / Lose Checker ended the run: a win marks the
-                // puzzle solved (`0x42d4b1`), then the run stops
-                // (`0x430ee7`) and its sound plays.
-                if end.solved {
-                    self.mark_solved();
-                }
-                self.stop();
-                if let Some(sound) = self.assets.sound(end.sound) {
-                    let voice = self.env.voice();
-                    self.env.sounds.push(SoundCmd::Play {
-                        voice,
-                        sound,
-                        looping: false,
-                    });
-                }
+            if let TickEnd::Stopped { .. } = self.tick_once() {
                 return;
             }
-            self.env.keys.clear();
-            self.env.ticks = self.env.ticks.wrapping_add(1);
-            self.env.ms += 1000 / TICKS_PER_SECOND;
             n += 1;
         }
         if n == 8 {
             self.ms_rest = 0;
         }
         self.update_menu();
+    }
+
+    /// One tick of the running widget, the clock advanced after it; or the
+    /// run ended by a part during it.
+    pub fn tick_once(&mut self) -> TickEnd {
+        self.debug_before_tick();
+        self.doc.tick(&self.assets, &mut self.env);
+        if let Some(end) = self.env.end_run.take() {
+            // A Win / Lose Checker ended the run: a win marks the
+            // puzzle solved (`0x42d4b1`), then the run stops
+            // (`0x430ee7`) and its sound plays.
+            if end.solved && !self.debug.assisted() {
+                self.mark_solved();
+            }
+            self.debug.run_ended(end.solved);
+            self.stop();
+            if let Some(sound) = self.assets.sound(end.sound) {
+                let voice = self.env.voice();
+                self.env.sounds.push(SoundCmd::Play {
+                    voice,
+                    sound,
+                    looping: false,
+                });
+            }
+            return TickEnd::Stopped { solved: end.solved };
+        }
+        self.env.keys.clear();
+        self.env.ticks = self.env.ticks.wrapping_add(1);
+        self.env.ms += 1000 / TICKS_PER_SECOND;
+        self.debug_after_tick();
+        TickEnd::Ran
     }
 
     // ---- selection --------------------------------------------------
@@ -871,6 +900,7 @@ impl Editor {
     /// the Pointer, no undo (`0x416348`).
     fn install(&mut self, doc: Document, path: Option<String>) {
         self.stop();
+        self.debug.forget();
         self.doc = doc;
         self.undo = None;
         self.tray.reset_counts();
@@ -1143,6 +1173,7 @@ impl Editor {
             702 => cmd::STEEL,
             _ => cmd::PLAIN,
         }];
+        self.update_debug_menu();
         let name = self.display_name();
         self.title = format!("{APP} - {name}");
     }
@@ -1210,9 +1241,11 @@ impl Editor {
                     scale,
                     current,
                     self.tray.enhanced,
+                    self.debug_tools(),
                     self.full_screen,
                 ));
             }
+            id if debug::is_command(id) => self.debug_command(id),
             // Printing: nothing to print to.
             _ => {}
         }
@@ -1295,6 +1328,9 @@ impl Editor {
         let p = Self::to_view((x, y));
         self.env.mouse = p;
         self.env.cursor_screen = (x, y);
+        if self.debug_mouse_move(x, y) {
+            return;
+        }
         if let Some(d) = &mut self.dialog {
             d.mouse_move(&self.assets, (x, y));
         }
@@ -1471,6 +1507,9 @@ impl Editor {
             // Any button closes the About window (`0x415300`).
             return;
         }
+        if self.debug_mouse_down(x, y, button) {
+            return;
+        }
         if button != Button::Left {
             self.env.right_down = true;
             return;
@@ -1567,6 +1606,7 @@ impl Editor {
         if self.env.exclusive.is_none()
             && let Some(i) = worksheet::gadget_at(&self.doc, p)
         {
+            self.debug_record_click(i, p);
             let (gh, gv) = (self.doc.gadgets[i].core.h, self.doc.gadgets[i].core.v);
             self.doc.with_gadget(i, &self.assets, &mut self.env, |g, io| {
                 g.behavior.click(&mut g.core, io, p.0 - gh, p.1 - gv);
@@ -1828,6 +1868,9 @@ impl Editor {
         let p = Self::to_view((x, y));
         self.env.mouse = p;
         self.env.cursor_screen = (x, y);
+        if self.debug_mouse_up(x, y, button) {
+            return;
+        }
         if button != Button::Left {
             self.env.right_down = false;
             return;
@@ -1980,7 +2023,7 @@ impl Editor {
     /// The wheel scrolls the puzzle list or the help window under the
     /// pointer; the worksheet doesn't scroll.
     pub fn wheel(&mut self, _dx: i32, dy: i32) {
-        if self.prompt.is_some() {
+        if self.prompt.is_some() || self.debug_wheel(dy) {
             return;
         }
         if self.file_dialog.is_none()
@@ -2099,6 +2142,7 @@ impl Editor {
             menu.add_links();
         }
         menu.add_settings();
+        self.add_debug_menu(&mut menu);
         menu
     }
 
@@ -2147,7 +2191,10 @@ impl Editor {
         if let Some((f, _)) = &self.file_dialog {
             return f.focused_text();
         }
-        self.dialog.as_ref().and_then(Dialog::focused_text)
+        self.dialog
+            .as_ref()
+            .and_then(Dialog::focused_text)
+            .or_else(|| self.debug_focused_text())
     }
 
     /// Replaces the focused text field's text (edited elsewhere).
@@ -2156,6 +2203,8 @@ impl Editor {
             f.set_focused_text(text);
         } else if let Some(d) = &mut self.dialog {
             d.set_focused_text(text);
+        } else {
+            self.debug_set_focused_text(text);
         }
     }
 
@@ -2179,6 +2228,7 @@ impl Editor {
                 self.set_enhanced(on);
                 self.new_enhanced = Some(on);
             }
+            settings::Outcome::DebugTools(on) => self.debug_tools_changed(on),
             settings::Outcome::Language(l) => self.change_lang = Some(l),
             settings::Outcome::ChangeCd => {
                 self.settings = None;
@@ -2268,7 +2318,7 @@ impl Editor {
             d.text_input(&typed);
             return;
         }
-        if self.puzzle_dialog.is_some() {
+        if self.puzzle_dialog.is_some() || self.debug_text(&typed) {
             return;
         }
         if let Some(h) = &mut self.help
@@ -2325,6 +2375,8 @@ impl Editor {
             d.text_input(&text.replace(['\r', '\n', '\t'], " "));
         } else if let Some(d) = &mut self.dialog {
             d.paste(&text);
+        } else {
+            self.debug_paste(&text);
         }
     }
 
@@ -2400,6 +2452,9 @@ impl Editor {
         }
         if self.alt && (0x41..=0x5a).contains(&vk) && self.menu.open_mnemonic(char::from(u8::try_from(vk).unwrap_or(0)))
         {
+            return;
+        }
+        if self.debug_key(vk) {
             return;
         }
         if let Some(c) = self.menu.accel(vk, self.shift, self.ctrl, self.alt) {
@@ -2625,6 +2680,7 @@ impl Editor {
 
     /// Draws everything.
     pub fn draw(&mut self) {
+        self.debug_prepare();
         let frame = self.surface.bounds();
         let view = self.worksheet();
         self.surface.set_clip(view);
@@ -2668,6 +2724,7 @@ impl Editor {
             }
             _ => {}
         }
+        self.debug.draw(s, &self.assets, &self.pictures, view);
         s.origin = (0, 0);
         s.set_clip(frame);
         // `WinHelp`'s window, kept on top of the game's and below its
@@ -2675,6 +2732,7 @@ impl Editor {
         if let Some(h) = &self.help {
             h.draw(s, &self.assets);
         }
+        self.debug.draw_windows(s, &self.assets);
         self.menu.draw(s, &self.assets, frame.width());
         if let Some(d) = &self.dialog {
             let g = d.gadget.and_then(|g| self.doc.gadgets.get(g));
