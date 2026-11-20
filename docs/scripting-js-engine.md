@@ -12,7 +12,7 @@ pinned wasm-bindgen, adds an eighth of Boa's size there, and is the only
 one of the two with a real per-frame budget, a memory cap and a
 catchable stack overflow. The cost is a C compiler: clang (with its
 wasm32 backend) and `llvm-ar` for the browser build. The binding is
-`crates/script-js`.
+`crates/script-js` (below).
 
 ## Numbers
 
@@ -86,3 +86,50 @@ would mean:
 The plan's fallback (Boa with loop and recursion limits) stays possible
 behind the same `engine::script::Runtime` trait if QuickJS ever has to
 go.
+
+## The binding (`crates/script-js`)
+
+`script_js::Js` implements `engine::script::runtime::Runtime`; `openwgt`
+uses it for `--script FILE.js` (feature `js`, on by default; without it
+`.js` scripts are refused and the command language stays). In the
+browser build the whole binding adds 1,226,735 bytes to
+`widget_bg.wasm` (+14 %, +502 KB gzipped), with no import from `env`.
+
+- **The API** of `crates/script-js/openwgt-script.d.ts` is JavaScript
+  (`src/prelude.js`) over one native function that only the prelude
+  holds (`src/ops.rs`). The declarations are generated from the table
+  in `src/api.rs`, and a test keeps the file in step
+  (`UPDATE_DTS=1 cargo test -p script-js` writes it); `help()` and the
+  console's completion come from the same table.
+- **The host** reaches the natives through a scoped thread-local
+  (`scoped-tls-hkt`) for the length of each call from the editor, so the
+  crate has no unsafe code. Arguments are read before the host is taken,
+  so a getter in the script can't take it twice.
+- **A script** is an ES module (strict, top-level `await`) started at the
+  next frame. `ticks(n)`, `seconds(s)` and `until(cond)` are promises
+  resolved in the runtime's `frame`, `after_tick` and `resume`, in
+  "beats": ticks while the widget runs, the time that passes (in ticks)
+  while it doesn't. Headless, `resume` sleeps until the next one is due
+  (a tick at a time while an `until` or an `onChange` is waiting).
+- **Sandbox:** no module loader (static imports don't load, `import()`
+  rejects); no `WeakRef`, `FinalizationRegistry`, `SharedArrayBuffer`,
+  `Atomics`, `performance`, timers or IO. `Date` is the game's clock,
+  1995-09-01 at the first tick and following the ticks; `Math.random` is
+  a seeded generator (`seed(n)`), apart from the parts' own.
+- **Limits:** the budget (`Limits::budget`, `--budget`) is counted in
+  QuickJS's interrupt checks, one per 10,000 operations or so (the
+  default 1,000,000 is 100 checks, about 17 ms of a tight loop). Going
+  over ends the task with "the script ran too long without waiting (use
+  `await ticks(1)` in long loops); stopped", which `try`/`catch` can't
+  stop; what it queued runs out under a fresh budget, or QuickJS starts
+  again. Memory is capped at 32 MiB ("the script took more memory than
+  it may"), the stack at 256 KiB (a `RangeError`).
+- **Errors** carry the file, line and column with the source line and a
+  caret (QuickJS places a call at its last argument, so failed checks
+  are underlined at the `assert` they're in, and a part not found at its
+  name). The game's refusals are `WidgetError`s with `.code`, `.part`
+  and `.suggestions`. A budget error's place is only as good as QuickJS
+  gives it: the function the loop is in.
+- `pause()`, `resume()` and `speed()` need the debugging tools (Settings,
+  Debugging tools); `graph()` and `watch()` need windows the host doesn't
+  have yet. Where they're missing they do nothing, with a warning once.

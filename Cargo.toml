@@ -1,6 +1,6 @@
 [workspace]
 resolver = "3"
-members = ["crates/formats", "crates/platform", "crates/engine", "crates/openwgt", "crates/script-js-spike"]
+members = ["crates/formats", "crates/platform", "crates/engine", "crates/openwgt", "crates/script-js", "crates/script-js-clock"]
 
 [workspace.package]
 edition = "2024"

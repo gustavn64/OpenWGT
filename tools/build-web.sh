@@ -1,11 +1,12 @@
 #!/bin/sh
 # Builds the browser version (docs/web.md) into web/: the page, the
 # wasm-bindgen glue and the module. Needs the wasm32-unknown-unknown
-# target and the wasm-bindgen CLI of the version the crates pin
-# (crates/openwgt/Cargo.toml):
+# target, the wasm-bindgen CLI of the version the crates pin
+# (crates/openwgt/Cargo.toml), and clang and llvm-ar for QuickJS:
 #
 #   rustup target add wasm32-unknown-unknown
 #   cargo install wasm-bindgen-cli --version 0.2.130
+#   apt install clang llvm   (or the flake's shell: nix develop)
 #
 #   tools/build-web.sh            # release build into web/
 #   tools/build-web.sh --debug    # debug build (slow editor, quick build)
@@ -37,6 +38,20 @@ have=$("$bindgen" --version | cut -d' ' -f2)
 if [ "$want" != "$have" ]; then
     echo "wasm-bindgen $have, but the crates need $want: cargo install wasm-bindgen-cli --version $want" >&2
     exit 1
+fi
+
+# QuickJS (the feature js: scripts in JavaScript) is C, built for wasm32
+# by a clang with that backend, its objects archived by llvm-ar (GNU ar
+# can't index them). The flake's shell sets both; else the ones on the
+# path.
+if [ -z "${CC_wasm32_unknown_unknown:-}" ]; then
+    export CC_wasm32_unknown_unknown=clang
+fi
+if [ -z "${AR_wasm32_unknown_unknown:-}" ]; then
+    ar=$(command -v llvm-ar || ls /usr/bin/llvm-ar-* 2>/dev/null | sort -V | tail -n 1 || true)
+    if [ -n "$ar" ]; then
+        export AR_wasm32_unknown_unknown="$ar"
+    fi
 fi
 
 flag=

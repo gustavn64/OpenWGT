@@ -64,14 +64,6 @@ extern "C" {
     fn delete_file(path: &str);
 }
 
-/// Scripting spike (phase 0): `(await import('./widget.js')).js_spike()`
-/// in the page's console.
-#[cfg(feature = "js-spike")]
-#[wasm_bindgen]
-pub fn js_spike() -> String {
-    script_js_spike::run_all()
-}
-
 /// The module's start: shows a panic on the page and starts [`run`].
 pub(crate) fn main() {
     std::panic::set_hook(Box::new(|info| {

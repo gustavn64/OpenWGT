@@ -8,15 +8,15 @@ publish.workspace = true
 homepage.workspace = true
 repository.workspace = true
 
-# Scripting spike (phase 0, not for merging): an engine linked in, run
-# with `--js-spike` (native) or `js_spike()` (the page's module).
+# `js`: scripts in JavaScript (crates/script-js, QuickJS) besides the
+# built-in command language. QuickJS is C: the browser build needs a
+# clang for wasm32 (docs/scripting-js-engine.md).
 [features]
-js-spike = ["dep:script-js-spike"]
-js-spike-quickjs = ["js-spike", "script-js-spike/quickjs"]
-js-spike-boa = ["js-spike", "script-js-spike/boa"]
+default = ["js"]
+js = ["dep:script-js"]
 
 [dependencies]
-script-js-spike = { path = "../script-js-spike", optional = true }
+script-js = { path = "../script-js", optional = true }
 engine = { path = "../engine" }
 formats = { path = "../formats" }
 platform = { path = "../platform" }

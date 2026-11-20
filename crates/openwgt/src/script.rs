@@ -1,13 +1,15 @@
 //! Scripts from the command line (natively): `--script FILE` runs a
-//! script of the built-in command language (`engine::script::cmd`) in the
-//! game, in its window or, with `--headless`, with none, as fast as it
-//! goes, and then exits: 0 if it ran through, 1 if a check failed or it
-//! stopped on an error, 2 if it couldn't start.
+//! script of the built-in command language (`engine::script::cmd`), or
+//! of JavaScript if FILE ends in `.js` (`script_js`, with the feature
+//! `js`), in the game, in its window or, with `--headless`, with none, as
+//! fast as it goes, and then exits: 0 if it ran through, 1 if a check
+//! failed or it stopped on an error, 2 if it couldn't start.
 //!
 //! - `--out DIR`: where `shot NAME` writes `NAME.png` (default: here);
 //! - `--seed N`: the parts' random numbers start from `N` (default: the
 //!   time, as the game's);
-//! - `--budget N`: the most commands it runs between two waits;
+//! - `--budget N`: the work it may do between two waits (commands; for
+//!   JavaScript roughly operations);
 //! - `--timeout S`: stops it after `S` seconds of real time (headless).
 //!
 //! What it logs goes to the standard output, errors and failed checks to
@@ -112,12 +114,35 @@ fn prepare(o: &Options, editor: &mut Editor, args: &crate::Args) -> Result<(), S
     Ok(())
 }
 
-fn runtime(o: &Options) -> CommandRuntime {
-    let mut rt = CommandRuntime::new();
+/// Whether `file` is JavaScript (by its name).
+fn is_js(file: &str) -> bool {
+    std::path::Path::new(file)
+        .extension()
+        .is_some_and(|e| e.eq_ignore_ascii_case("js") || e.eq_ignore_ascii_case("mjs"))
+}
+
+/// The language `file` is in.
+///
+/// # Errors
+/// JavaScript, in a program built without it.
+#[cfg_attr(feature = "js", allow(clippy::unnecessary_wraps))]
+fn runtime(o: &Options, file: &str) -> Result<Box<dyn Runtime>, String> {
+    let mut rt: Box<dyn Runtime> = if is_js(file) {
+        #[cfg(feature = "js")]
+        {
+            Box::new(script_js::Js::new())
+        }
+        #[cfg(not(feature = "js"))]
+        return Err(format!(
+            "{file}: this program was built without JavaScript (the feature js)"
+        ));
+    } else {
+        Box::new(CommandRuntime::new())
+    };
     if let Some(b) = o.budget {
         rt.set_limits(Limits { budget: b });
     }
-    rt
+    Ok(rt)
 }
 
 /// Runs the script with no window; the exit code.
@@ -147,7 +172,14 @@ pub fn run_without_window(args: &crate::Args, assets: engine::assets::Assets) ->
             }
         }
     }
-    let size = cmd::size_of(&src).unwrap_or((640, 433));
+    let mut rt = match runtime(o, &file) {
+        Ok(rt) => rt,
+        Err(e) => {
+            eprintln!("{e}");
+            return 2;
+        }
+    };
+    let size = if is_js(&file) { None } else { cmd::size_of(&src) }.unwrap_or((640, 433));
     let mut editor = Editor::new(assets, doc, size.0, size.1);
     editor.path = path;
     editor.files = Box::new(crate::files::PlatformFiles);
@@ -165,7 +197,7 @@ pub fn run_without_window(args: &crate::Args, assets: engine::assets::Assets) ->
         eprintln!("{e}");
         return 1;
     }
-    match run_headless(&mut runtime(o), &file, &src, Caps::ALL, &mut editor) {
+    match run_headless(rt.as_mut(), &file, &src, Caps::ALL, &mut editor) {
         Ok(r) if r.passed() => 0,
         Ok(r) => {
             if r.failures > 0 {
@@ -188,7 +220,7 @@ pub fn run_without_window(args: &crate::Args, assets: engine::assets::Assets) ->
 
 /// A script running in the game's window, a frame at a time.
 pub struct Windowed {
-    rt: CommandRuntime,
+    rt: Box<dyn Runtime>,
     task: TaskId,
     file: String,
     done: bool,
@@ -207,7 +239,7 @@ impl Windowed {
         }
         let (file, src) = read(o)?;
         prepare(o, editor, args)?;
-        let mut rt = runtime(o);
+        let mut rt = runtime(o, &file)?;
         let task = rt.start(&file, &src, Caps::ALL, editor).map_err(|e| e.to_string())?;
         Ok(Some(Windowed {
             rt,

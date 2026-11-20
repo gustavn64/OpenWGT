@@ -1,0 +1,18 @@
+[package]
+name = "script-js"
+version = "0.11.0"
+description = "Scripts in JavaScript for OpenWGT: QuickJS behind engine::script's Runtime"
+edition.workspace = true
+license.workspace = true
+publish.workspace = true
+
+[dependencies]
+engine = { path = "../engine" }
+rquickjs = { version = "0.14", default-features = false, features = ["std", "rust-alloc"] }
+# The host lent to the natives for the length of a call, without unsafe
+# code here.
+scoped-tls-hkt = "0.1"
+script-js-clock = { path = "../script-js-clock" }
+
+[lints]
+workspace = true

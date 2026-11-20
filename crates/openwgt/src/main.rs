@@ -98,14 +98,14 @@ const USAGE: &str =
                    window pixels per game pixel, such as 2 or 1.5, in
                    quarters; auto follows the display's scaling
                    (remembered, ui_scale in the settings file)
-  --script FILE    runs a script of commands in the game (its help command
-                   lists them)
+  --script FILE    runs a script in the game: commands (its help command
+                   lists them), or JavaScript if FILE ends in .js
   --headless       runs the script with no window, as fast as it goes, and
                    exits: 0 if it ran through, 1 if a check failed or it
                    stopped on an error, 2 if it couldn't start
   --out DIR        where the script's shots go (default: here)
   --seed N         the parts' random numbers start from N
-  --budget N       the most commands a script runs between two waits
+  --budget N       the work a script may do between two waits
   --timeout S      stops a headless script after S seconds";
 
 #[derive(Clone)]
@@ -678,12 +678,6 @@ fn default_cd() -> PathBuf {
 
 #[cfg(not(target_arch = "wasm32"))]
 fn main() {
-    // Scripting spike (phase 0).
-    #[cfg(feature = "js-spike")]
-    if std::env::args().nth(1).as_deref() == Some("--js-spike") {
-        print!("{}", script_js_spike::run_all());
-        return;
-    }
     // A panic's message in a box too when started from the icon.
     let report = std::panic::take_hook();
     std::panic::set_hook(Box::new(move |info| {
