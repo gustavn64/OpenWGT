@@ -16,6 +16,14 @@ const LABEL: Tag = Tag::new(b"TxLb");
 /// How far a Label may be from the part it names, in pixels.
 const LABEL_GAP: i32 = 40;
 
+/// The refusal of what only the debugging tools do.
+fn no_tools(what: &str) -> HostError {
+    error(
+        ErrorKind::Unsupported,
+        format!("{what} needs the debugging tools (Settings, Debugging tools)"),
+    )
+}
+
 fn error(kind: ErrorKind, msg: impl Into<String>) -> HostError {
     HostError::new(kind, msg)
 }
@@ -618,6 +626,42 @@ impl Host for Editor {
 
     fn seed(&mut self, rng: u64) {
         self.env.rng = rng;
+    }
+
+    fn pause(&mut self, on: bool) -> HostResult<()> {
+        if !self.debugging() {
+            return Err(no_tools("holding the run"));
+        }
+        self.debug.run.paused = on && self.running;
+        Ok(())
+    }
+
+    fn paused(&self) -> bool {
+        self.debug.run.paused
+    }
+
+    fn set_speed(&mut self, factor: f64) -> HostResult<f64> {
+        if !self.debugging() {
+            return Err(no_tools("slow motion"));
+        }
+        if !(factor > 0.0 && factor <= 1.0) {
+            return Err(error(
+                ErrorKind::BadArg,
+                format!("a speed is from 1 (full) down to 1/60, not {factor}"),
+            ));
+        }
+        // The nearest of the menu's speeds (by ratio).
+        let of = |s: super::Speed| 1.0 / f64::from(u32::try_from(s.divisor()).unwrap_or(1));
+        let s = super::Speed::ALL
+            .into_iter()
+            .min_by(|&a, &b| {
+                let d = |s| (factor / of(s)).ln().abs();
+                d(a).total_cmp(&d(b))
+            })
+            .unwrap_or_default();
+        self.debug.run.speed = s;
+        self.debug.run.carry = 0;
+        Ok(of(s))
     }
 
     fn new_widget(&mut self) {

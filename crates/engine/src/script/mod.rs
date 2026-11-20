@@ -465,6 +465,8 @@ pub enum ErrorKind {
     Document,
     /// The script was stopped (from outside, or its time ran out).
     Stopped,
+    /// This host can't do it (no debugging tools, no graph window).
+    Unsupported,
 }
 
 impl ErrorKind {
@@ -484,6 +486,7 @@ impl ErrorKind {
             ErrorKind::Timeout => "Timeout",
             ErrorKind::Document => "Document",
             ErrorKind::Stopped => "Stopped",
+            ErrorKind::Unsupported => "Unsupported",
         }
     }
 }
@@ -507,6 +510,11 @@ impl fmt::Display for HostError {
 impl std::error::Error for HostError {}
 
 pub type HostResult<T> = Result<T, HostError>;
+
+/// What a host without `what` says.
+fn unsupported(what: &str) -> HostError {
+    HostError::new(ErrorKind::Unsupported, format!("{what} isn't there in this game"))
+}
 
 /// The editor as scripts drive it. Every operation checks everything
 /// first and then does it whole, or does nothing and says why.
@@ -703,6 +711,48 @@ pub trait Host {
 
     /// Seeds the parts' random numbers.
     fn seed(&mut self, rng: u64);
+
+    // ---- debugging (a host with the debugging tools) ----------------
+
+    /// Holds the running widget (`true`), or lets it go on.
+    ///
+    /// # Errors
+    /// [`ErrorKind::Unsupported`] where nothing can hold it.
+    fn pause(&mut self, _on: bool) -> HostResult<()> {
+        Err(unsupported("holding the run"))
+    }
+
+    /// Whether the run is held.
+    fn paused(&self) -> bool {
+        false
+    }
+
+    /// Runs the widget at `factor` of the real time (1 for full speed);
+    /// the speed it took (the nearest one there is).
+    ///
+    /// # Errors
+    /// [`ErrorKind::Unsupported`] where there's no slow motion.
+    fn set_speed(&mut self, _factor: f64) -> HostResult<f64> {
+        Err(unsupported("slow motion"))
+    }
+
+    /// Shows the values `what` stands for in a graph.
+    ///
+    /// # Errors
+    /// [`ErrorKind::Unsupported`] where there are no graphs; a part or knot
+    /// that isn't there.
+    fn graph(&mut self, _what: &[Selector]) -> HostResult<()> {
+        Err(unsupported("graphs"))
+    }
+
+    /// Keeps the value `what` stands for in sight.
+    ///
+    /// # Errors
+    /// [`ErrorKind::Unsupported`] where nothing shows them; a part or knot
+    /// that isn't there.
+    fn watch(&mut self, _what: &Selector) -> HostResult<()> {
+        Err(unsupported("watches"))
+    }
 
     /// Whether `c` holds; `start` holds the values [`Cond::Changed`]
     /// compares with (from [`Host::snapshot`]).
