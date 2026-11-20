@@ -147,6 +147,15 @@ settle. Seconds to the answer:
 | 104729 | 379 | 191 | 66 | 34 |
 | 999983 | 1167 | 585 | 197 | 100 |
 
+To try them, open `prime-ask.wgt` in one window and a prime tester (or
+several, each in its own window) in others, press GO in all, type a
+number on the keypad and ENTER: each tester's answer shows on its
+display in the asking widget.
+
+```sh
+openwgt examples/net/prime-ask.wgt & openwgt examples/net/prime-4-parallel.wgt &
+```
+
 The widgets are made, checked and written by
 `crates/engine/src/editor/prime_tests.rs` (`cargo test -p engine --
 --ignored write_prime_examples` writes them again).

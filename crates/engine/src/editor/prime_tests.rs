@@ -415,6 +415,28 @@ fn build(assets: &Assets, v: &Variant) -> Document {
     b.finish()
 }
 
+/// The widget that asks: a Numeric Keypad's number to all of them, and
+/// their answers on Ten-Digit Displays.
+const ASK_FILE: &str = "prime-ask.wgt";
+
+fn build_ask(assets: &Assets) -> Document {
+    let mut b = Builder::new(assets);
+    b.label("Is it a prime? Ask them", true);
+    b.label("Type a number, then ENTER", false);
+    b.label("1 prime, 0 not, -1 not yet", false);
+    b.band("The number", WIDTH);
+    let pad = b.part(*b"NmKP", |_| {});
+    let snd = b.part(*b"NSnd", |c| c.settings.set_label(0, ASK.as_bytes()));
+    b.wire((pad, 0), (snd, 0));
+    for v in VARIANTS {
+        b.band(v.file.trim_end_matches(".wgt"), CHAIN_W);
+        let rcv = b.part(*b"NRcv", |c| c.settings.set_label(0, v.channel.as_bytes()));
+        let show = b.part(*b"di10", |_| {});
+        b.wire((rcv, 0), (show, 0));
+    }
+    b.finish()
+}
+
 fn assets() -> Assets {
     let graphics = crate::opengfx::builtin_for(Lang::En);
     let sounds = crate::opensfx::builtin();
@@ -516,10 +538,10 @@ fn is_prime(n: f64) -> bool {
 }
 
 /// Where the widgets are kept: `examples/net/` in the repository.
-fn example(v: &Variant) -> std::path::PathBuf {
+fn example(file: &str) -> std::path::PathBuf {
     std::path::Path::new(env!("CARGO_MANIFEST_DIR"))
         .join("../../examples/net")
-        .join(v.file)
+        .join(file)
 }
 
 /// Each widget as saved and opened again, in its file, answers.
@@ -528,7 +550,7 @@ fn prime_testers_answer() {
     let assets = assets();
     for v in VARIANTS {
         let bytes = build(&assets, v).save();
-        let file = std::fs::read(example(v)).unwrap_or_default();
+        let file = std::fs::read(example(v.file)).unwrap_or_default();
         assert!(
             file == bytes,
             "examples/net/{} is out of date: cargo test -p engine -- --ignored write_prime_examples",
@@ -550,9 +572,37 @@ fn prime_testers_answer() {
 fn write_prime_examples() {
     let assets = assets();
     for v in VARIANTS {
-        let path = example(v);
+        let path = example(v.file);
         std::fs::create_dir_all(path.parent().unwrap()).unwrap();
         std::fs::write(&path, build(&assets, v).save()).unwrap();
+    }
+    std::fs::write(example(ASK_FILE), build_ask(&assets).save()).unwrap();
+}
+
+/// The asking widget, as saved, sends what's typed on its keypad and
+/// shows what its Receivers get.
+#[test]
+fn prime_ask_widget() {
+    let assets = assets();
+    let bytes = build_ask(&assets).save();
+    assert!(
+        std::fs::read(example(ASK_FILE)).unwrap_or_default() == bytes,
+        "examples/net/{ASK_FILE} is out of date: cargo test -p engine -- --ignored write_prime_examples"
+    );
+    let doc = Document::load(&assets, &bytes).unwrap();
+    let count = |tag| doc.gadgets.iter().filter(|g| g.core.tag == tag).count();
+    assert_eq!(
+        (count(SENDER), count(RECEIVER), count(Tag(*b"di10"))),
+        (1, VARIANTS.len(), VARIANTS.len())
+    );
+    for w in &doc.wires {
+        let (from, to) = (&doc.gadgets[w.from].core, &doc.gadgets[w.to].core);
+        assert!(
+            (from.tag, to.tag) == (Tag(*b"NmKP"), SENDER) || (from.tag, to.tag) == (RECEIVER, Tag(*b"di10")),
+            "{:?} -> {:?}",
+            from.tag,
+            to.tag
+        );
     }
 }
 
@@ -625,8 +675,12 @@ fn prime_testers_look() {
         return;
     };
     let assets = assets();
-    for v in VARIANTS {
-        let mut e = Editor::new(self::assets(), build(&assets, v), 1280, 1200);
+    let docs = VARIANTS
+        .iter()
+        .map(|v| (v.file, build(&assets, v)))
+        .chain([(ASK_FILE, build_ask(&assets))]);
+    for (file, doc) in docs {
+        let mut e = Editor::new(self::assets(), doc, 1280, 1200);
         e.draw();
         let pal = e.assets.palette();
         let s = &e.surface;
@@ -634,6 +688,6 @@ fn prime_testers_look() {
         for &i in &s.pixels {
             out.extend_from_slice(&pal[usize::from(i)]);
         }
-        std::fs::write(std::path::Path::new(&dir).join(v.file).with_extension("ppm"), out).unwrap();
+        std::fs::write(std::path::Path::new(&dir).join(file).with_extension("ppm"), out).unwrap();
     }
 }
