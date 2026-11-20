@@ -278,6 +278,7 @@ impl Editor {
             return;
         }
         self.debug.console.tasks = self.console_tasks();
+        self.debug.console.rows = self.script_rows();
         self.debug.console.focused = self.console_has_keys();
         if self.debug.window(Kind::Watch).is_some() {
             self.watch_values();

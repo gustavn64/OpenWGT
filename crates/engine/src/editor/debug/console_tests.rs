@@ -231,7 +231,7 @@ fn scripts_are_listed_and_stopped() {
     e.draw();
     let w = e.debug.window(Kind::Console).unwrap();
     let font = crate::editor::ui::font(&e.assets).unwrap();
-    let (_, stop) = super::console::layout(w.rect, font, 1).tasks[0];
+    let (_, stop) = super::console::layout(w.rect, font, 0, 1, 1).tasks[0];
     e.mouse_down(stop.x0 + 3, stop.y0 + 3, Button::Left);
     e.mouse_up(stop.x0 + 3, stop.y0 + 3, Button::Left);
     e.draw();
@@ -257,7 +257,7 @@ fn a_touch_screen_edits_the_line_in_its_box() {
     // A tap on the line asks for the box.
     let w = e.debug.window(Kind::Console).unwrap();
     let font = crate::editor::ui::font(&e.assets).unwrap();
-    let line = super::console::layout(w.rect, font, 0).input;
+    let line = super::console::layout(w.rect, font, 0, 0, 1).input;
     e.mouse_down(line.x0 + 30, line.y0 + 4, Button::Left);
     e.mouse_up(line.x0 + 30, line.y0 + 4, Button::Left);
     assert_eq!(e.take_text_tapped().map(|f| f.text), Some("step 4".to_owned()));

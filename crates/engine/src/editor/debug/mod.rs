@@ -20,6 +20,9 @@ mod overlay;
 #[cfg(test)]
 mod probe_tests;
 mod probes;
+mod scripts;
+#[cfg(test)]
+mod scripts_tests;
 #[cfg(test)]
 mod tests;
 mod timeline;
@@ -33,7 +36,7 @@ mod window;
 pub use console::{Line, LineKind};
 pub use control::{Speed, is_command};
 
-use std::collections::{BTreeMap, VecDeque};
+use std::collections::VecDeque;
 
 use crate::assets::Assets;
 use crate::lang::Lang;
@@ -44,9 +47,6 @@ const MAX_SOUNDS: usize = 1000;
 
 /// What the editor keeps for scripts and debugging.
 pub struct Debugger {
-    /// The names scripts gave parts, by id. (Kept in memory for now;
-    /// they're to be saved with the widget.)
-    names: BTreeMap<u32, String>,
     /// Where scripts' output goes; in memory unless the program says.
     pub sink: Box<dyn Sink>,
     sounds: VecDeque<SoundEvent>,
@@ -90,6 +90,13 @@ pub struct Debugger {
     pub console: console::Console,
     /// The languages it runs.
     runtimes: console::Runtimes,
+    /// The tasks running scripts of the Scripts list: the script's text,
+    /// its language, the task.
+    script_tasks: Vec<(
+        crate::script::trust::Digest,
+        console::Lang,
+        crate::script::runtime::TaskId,
+    )>,
     /// The popup menu (a right-click on the worksheet).
     popup: Option<context::Popup>,
     /// What the tools keep an eye on.
@@ -121,7 +128,6 @@ struct RunControl {
 impl Default for Debugger {
     fn default() -> Debugger {
         Debugger {
-            names: BTreeMap::new(),
             sink: Box::new(MemorySink::default()),
             sounds: VecDeque::new(),
             failures: 0,
@@ -142,6 +148,7 @@ impl Default for Debugger {
             colours: None,
             console: console::Console::default(),
             runtimes: console::Runtimes::default(),
+            script_tasks: Vec::new(),
             popup: None,
             observed: probes::Observed::default(),
             graph: graph::Graph::default(),
@@ -149,6 +156,14 @@ impl Default for Debugger {
             timeline: timeline::Timeline::default(),
             shown: timeline::Shown::default(),
         }
+    }
+}
+
+impl super::Editor {
+    /// The name the debugging tools gave part `id` (kept in the widget).
+    #[must_use]
+    pub fn part_name(&self, id: u32) -> Option<&str> {
+        self.doc.names.get(&id).map(String::as_str)
     }
 }
 
@@ -203,16 +218,9 @@ impl Debugger {
         self.deadline.as_ref().is_some_and(|d| d())
     }
 
-    /// The name of part `id`.
-    #[must_use]
-    pub fn name(&self, id: u32) -> Option<&str> {
-        self.names.get(&id).map(String::as_str)
-    }
-
-    /// Forgets what was of the widget (another one comes): the names, the
-    /// probes, watches and breakpoints, the run recorded.
+    /// Forgets what was of the widget (another one comes): the probes,
+    /// watches and breakpoints, the run recorded.
     pub(super) fn forget(&mut self) {
-        self.names.clear();
         self.ended = None;
         self.observed = probes::Observed::default();
         self.timeline.forget();

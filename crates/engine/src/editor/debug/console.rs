@@ -1,7 +1,11 @@
-//! The console (Debug ▸ Console): a modeless window with the log of what
-//! scripts said, in colour, the scripts running (each with a stop box),
-//! and a line to type commands into, with its history (Up, Down),
-//! completion (Tab) and the clipboard (Ctrl+V).
+//! The console (Debug ▸ Console): a modeless window with the widget's
+//! scripts (`scripts`), the log of what scripts said, in colour, the
+//! scripts running (each with a stop box), and a line to type commands
+//! into, with its history (Up, Down), completion (Tab) and the clipboard
+//! (Ctrl+V). Ctrl+Enter (or Shift+Enter) starts another line in it, for
+//! a script of several lines; Enter runs them all. Such a script is the
+//! console's last script, which the Scripts list offers to keep in the
+//! widget.
 //!
 //! A line starting with `:` is in the built-in command language
 //! ([`crate::script::cmd`]); any other goes to the program's language
@@ -25,8 +29,10 @@ const MAX_LINES: usize = 2000;
 const MAX_BYTES: usize = 200 * 1024;
 /// The most lines the history keeps.
 const MAX_HISTORY: usize = 100;
-/// The longest line taken.
-pub const MAX_INPUT: usize = 1000;
+/// The most characters the line takes (all its lines).
+pub const MAX_INPUT: usize = 8000;
+/// The most rows of it shown at once.
+const MAX_INPUT_ROWS: usize = 6;
 /// The most completions listed.
 const MAX_LISTED: usize = 40;
 /// The scripts' list shows at most so many.
@@ -81,8 +87,9 @@ pub enum Lang {
 pub struct Runtimes {
     pub commands: Option<Box<dyn Runtime>>,
     pub program: Option<Box<dyn Runtime>>,
-    /// Whether the program gave a language (it may be out).
+    /// Whether the program gave a language (it may be out), and its name.
     pub has_program: bool,
+    pub program_language: Option<&'static str>,
     /// One is running: the frames' hook leaves them be.
     pub busy: bool,
 }
@@ -93,6 +100,7 @@ impl Default for Runtimes {
             commands: Some(Box::new(crate::script::cmd::CommandRuntime::new())),
             program: None,
             has_program: false,
+            program_language: None,
             busy: false,
         }
     }
@@ -153,6 +161,10 @@ pub struct Console {
     scroll: usize,
     /// The scripts listed and their stop boxes, as last drawn.
     pub tasks: Vec<(Lang, TaskInfo)>,
+    /// The Scripts list's rows, as last drawn (`scripts`).
+    pub rows: Vec<super::scripts::Row>,
+    /// The last script run or loaded here, which Keep puts in the widget.
+    pub last: Option<crate::port_parts::ext::Script>,
     /// Whether it has the keyboard (as last drawn).
     pub focused: bool,
 }
@@ -208,6 +220,63 @@ impl Console {
         s
     }
 
+    /// A new line at the caret (Ctrl+Enter), if there's room.
+    fn new_line(&mut self) {
+        if self.input.chars().count() < MAX_INPUT {
+            self.input.insert(self.caret, '\n');
+            self.caret += 1;
+            self.hist_at = None;
+        }
+    }
+
+    /// Where the caret's line starts and ends.
+    fn line_bounds(&self) -> (usize, usize) {
+        let start = self.input[..self.caret].rfind('\n').map_or(0, |i| i + 1);
+        let end = self.input[self.caret..]
+            .find('\n')
+            .map_or(self.input.len(), |i| self.caret + i);
+        (start, end)
+    }
+
+    /// The caret a line up (`up`) or down, at the same character of it;
+    /// false at the first or last line.
+    fn line_move(&mut self, up: bool) -> bool {
+        let (start, end) = self.line_bounds();
+        let col = self.input[start..self.caret].chars().count();
+        let (from, to) = if up {
+            if start == 0 {
+                return false;
+            }
+            let s = self.input[..start - 1].rfind('\n').map_or(0, |i| i + 1);
+            (s, start - 1)
+        } else {
+            if end == self.input.len() {
+                return false;
+            }
+            let e = self.input[end + 1..]
+                .find('\n')
+                .map_or(self.input.len(), |i| end + 1 + i);
+            (end + 1, e)
+        };
+        let line = &self.input[from..to];
+        self.caret = from + line.char_indices().nth(col).map_or(line.len(), |(i, _)| i);
+        true
+    }
+
+    /// How many rows the line has.
+    #[must_use]
+    pub fn input_rows(&self) -> usize {
+        self.input.matches('\n').count() + 1
+    }
+
+    /// The first row of the line shown, `shown` rows of it showing: so
+    /// the caret's row shows.
+    fn first_row(&self, shown: usize) -> usize {
+        let at = self.input[..self.caret].matches('\n').count();
+        at.saturating_sub(shown.saturating_sub(1))
+            .min(self.input_rows().saturating_sub(shown))
+    }
+
     /// Text typed at the caret.
     pub fn type_text(&mut self, t: &str) {
         let room = MAX_INPUT.saturating_sub(self.input.chars().count());
@@ -260,12 +329,20 @@ impl Console {
     /// The keys that only edit the line, move in the history or scroll.
     fn edit_key(&mut self, vk: u16, ctrl: bool) {
         match vk {
-            VK_UP => self.recall(true),
-            VK_DOWN => self.recall(false),
+            VK_UP => {
+                if !self.line_move(true) {
+                    self.recall(true);
+                }
+            }
+            VK_DOWN => {
+                if !self.line_move(false) {
+                    self.recall(false);
+                }
+            }
             VK_LEFT => self.caret = self.prev_char(),
             VK_RIGHT => self.caret = self.next_char(),
-            VK_HOME => self.caret = 0,
-            VK_END => self.caret = self.input.len(),
+            VK_HOME => self.caret = if ctrl { 0 } else { self.line_bounds().0 },
+            VK_END => self.caret = if ctrl { self.input.len() } else { self.line_bounds().1 },
             VK_PRIOR => self.scroll += 5,
             VK_NEXT => self.scroll = self.scroll.saturating_sub(5),
             VK_BACK => {
@@ -327,31 +404,44 @@ fn carets(row: &str, next: &str) -> Option<(usize, usize)> {
     }
 }
 
-/// What the console's window has where: the scripts' rows (each with its
-/// stop box), the log, the line.
+/// What the console's window has where: the Scripts list's rows, the
+/// tasks' rows (each with its stop box), the log, the line.
 pub struct Layout {
+    pub rows: Vec<IRect>,
     pub tasks: Vec<(IRect, IRect)>,
     pub log: IRect,
     pub input: IRect,
 }
 
-/// The console's parts in the window at `r`.
+/// The console's parts in the window at `r`, with `rows` rows of the
+/// Scripts list, `tasks` tasks and a line of `input_rows` rows.
 #[must_use]
-pub fn layout(r: IRect, font: &Font, tasks: usize) -> Layout {
+pub fn layout(r: IRect, font: &Font, rows: usize, tasks: usize, input_rows: usize) -> Layout {
     let c = window::client(r).inset(2);
     let lh = i32::from(font.height);
     let row = lh + 4;
+    let m = i32::try_from(rows.min(super::scripts::MAX_ROWS)).unwrap_or(0);
+    let rows = (0..m)
+        .map(|i| IRect::sized(c.x0, c.y0 + i * (row + 2), c.width(), row + 2))
+        .collect();
+    let top = c.y0 + m * (row + 2);
     let n = i32::try_from(tasks.min(MAX_TASKS)).unwrap_or(0);
     let tasks = (0..n)
         .map(|i| {
-            let r = IRect::sized(c.x0, c.y0 + i * row, c.width(), row);
+            let r = IRect::sized(c.x0, top + i * row, c.width(), row);
             let stop = IRect::sized(r.x1 - 40, r.y0 + 1, 40, row - 2);
             (r, stop)
         })
         .collect();
-    let input = IRect::new(c.x0, c.y1 - lh - 6, c.x1, c.y1);
-    let log = IRect::new(c.x0, c.y0 + n * row, c.x1, input.y0 - 3);
-    Layout { tasks, log, input }
+    let shown = i32::try_from(input_rows.clamp(1, MAX_INPUT_ROWS)).unwrap_or(1);
+    let input = IRect::new(c.x0, c.y1 - shown * lh - 6, c.x1, c.y1);
+    let log = IRect::new(c.x0, top + n * row, c.x1, input.y0 - 3);
+    Layout {
+        rows,
+        tasks,
+        log,
+        input,
+    }
 }
 
 /// The prompt before the line.
@@ -368,11 +458,20 @@ fn task_text(t: &TaskInfo) -> String {
 }
 
 impl Console {
+    /// Its parts in its window `r`, as they are now.
+    #[must_use]
+    pub fn layout(&self, r: IRect, font: &Font) -> Layout {
+        layout(r, font, self.rows.len(), self.tasks.len(), self.input_rows())
+    }
+
     /// Draws the console in its window `r`, its line's caret shown while it
     /// has the keyboard.
     pub fn draw(&self, s: &mut Surface, font: &Font, r: IRect, focused: bool, col: Colours) {
-        let l = layout(r, font, self.tasks.len());
+        let l = self.layout(r, font);
         let lh = i32::from(font.height);
+        for (rr, row) in l.rows.iter().zip(&self.rows) {
+            super::scripts::draw_row(s, font, *rr, row, col);
+        }
         for ((row, stop), (_, t)) in l.tasks.iter().zip(&self.tasks) {
             let old = s.set_clip(IRect::new(row.x0, row.y0, stop.x0 - 2, row.y1).intersect(s.clip()));
             ui::label(s, font, row.x0 + 2, row.y0 + 2, &task_text(t), ui::BLACK);
@@ -417,22 +516,40 @@ impl Console {
             y += lh;
         }
         s.set_clip(old);
-        // The line.
+        // The line, the rows about the caret's.
         ui::sunken(s, l.input);
         let field = l.input.inset(2);
         s.fill(field, ui::WHITE);
         let old = s.set_clip(field.intersect(s.clip()));
-        let x0 = field.x0 + 2 + ui::label(s, font, field.x0 + 2, field.y0 + 1, PROMPT, col.blue);
+        let x0 = field.x0 + 2 + ui::width(font, PROMPT);
         let room = field.x1 - 4 - x0;
-        // Scrolled so the caret shows.
-        let mut from = 0;
-        while from < self.caret && ui::width(font, &self.input[from..self.caret]) > room {
-            from += self.input[from..].chars().next().map_or(1, char::len_utf8);
-        }
-        ui::label(s, font, x0, field.y0 + 1, &self.input[from..], ui::BLACK);
-        if focused {
-            let cx = x0 + ui::width(font, &self.input[from..self.caret]);
-            s.fill(IRect::new(cx, field.y0 + 1, cx + 1, field.y0 + 1 + lh), ui::BLACK);
+        let shown = self.input_rows().min(MAX_INPUT_ROWS);
+        let first = self.first_row(shown);
+        let (cs, _) = self.line_bounds();
+        let mut start = 0;
+        for (row, line) in self.input.split('\n').enumerate() {
+            let line_start = start;
+            start += line.len() + 1;
+            if row < first || row >= first + shown {
+                continue;
+            }
+            let y = field.y0 + 1 + i32::try_from(row - first).unwrap_or(0) * lh;
+            if row == 0 {
+                ui::label(s, font, field.x0 + 2, y, PROMPT, col.blue);
+            }
+            // The caret's row scrolled so the caret shows.
+            let mut from = 0;
+            if line_start == cs {
+                let at = self.caret - cs;
+                while from < at && ui::width(font, &line[from..at]) > room {
+                    from += line[from..].chars().next().map_or(1, char::len_utf8);
+                }
+                if focused {
+                    let cx = x0 + ui::width(font, &line[from..at]);
+                    s.fill(IRect::new(cx, y, cx + 1, y + lh), ui::BLACK);
+                }
+            }
+            ui::label(s, font, x0, y, &line[from..], ui::BLACK);
         }
         s.set_clip(old);
     }
@@ -487,6 +604,7 @@ impl Editor {
     /// The program's own scripting language for the console's lines (the
     /// built-in commands stay for lines starting with `:`).
     pub fn set_script_runtime(&mut self, rt: Box<dyn Runtime>) {
+        self.debug.runtimes.program_language = Some(rt.language());
         self.debug.runtimes.program = Some(rt);
         self.debug.runtimes.has_program = true;
     }
@@ -531,7 +649,8 @@ impl Editor {
     /// Runs the line typed in the console.
     pub(super) fn console_submit(&mut self) {
         let line = self.debug.console.take_line();
-        self.debug.console.add(LineKind::Input, &format!("{PROMPT}{line}"));
+        let shown = line.replace('\n', &format!("\n{}", " ".repeat(PROMPT.len())));
+        self.debug.console.add(LineKind::Input, &format!("{PROMPT}{shown}"));
         let text = line.trim();
         if text.is_empty() {
             return;
@@ -545,6 +664,18 @@ impl Editor {
             return;
         }
         let file = "console";
+        let language = match l {
+            Lang::Commands => Some(crate::script::cmd::LANGUAGE),
+            Lang::Program => self.debug.runtimes.program_language,
+        };
+        // A script of several lines is the console's last script.
+        if let Some(language) = language.filter(|_| text.contains('\n')) {
+            self.set_last_script(crate::port_parts::ext::Script {
+                name: file.to_owned(),
+                language: language.to_owned(),
+                source: text.to_owned(),
+            });
+        }
         let r = self.with_runtime(l, |rt, e| rt.repl(text, e));
         match r {
             Some(Ok(Some(v))) => self.debug.console.add(LineKind::Result, &v),
@@ -626,6 +757,7 @@ impl Editor {
     pub(super) fn console_key(&mut self, vk: u16) -> bool {
         let ctrl = self.ctrl && !self.alt;
         match vk {
+            VK_RETURN if ctrl || self.shift => self.debug.console.new_line(),
             VK_RETURN => self.console_submit(),
             VK_ESCAPE => {
                 if !self.debug.runtimes.live().is_empty() || self.debug.scripts_running {
@@ -693,6 +825,8 @@ impl Editor {
     /// The scripts' list, for the console to show.
     pub(super) fn console_tasks(&self) -> Vec<(Lang, TaskInfo)> {
         let mut v = self.debug.runtimes.live();
+        // The Scripts list's show there.
+        v.retain(|(l, t)| !self.is_script_task(*l, t.id));
         v.truncate(MAX_TASKS);
         v
     }
@@ -714,7 +848,20 @@ impl Editor {
     /// (which a touch screen then edits in its own box).
     pub(super) fn console_click(&mut self, r: IRect, p: (i32, i32)) {
         let Some(font) = ui::font(&self.assets) else { return };
-        let l = layout(r, font, self.debug.console.tasks.len());
+        let c = &self.debug.console;
+        let l = c.layout(r, font);
+        let rows = c.rows.clone();
+        for (rr, row) in l.rows.iter().zip(&rows) {
+            let (run, other) = super::scripts::buttons(font, *rr, row.which);
+            if run.contains(p.0, p.1) {
+                self.script_press(row.which, super::scripts::Press::RunStop);
+                return;
+            }
+            if other.contains(p.0, p.1) {
+                self.script_press(row.which, super::scripts::Press::Other);
+                return;
+            }
+        }
         let tasks = self.debug.console.tasks.clone();
         for ((_, stop), (lang, t)) in l.tasks.iter().zip(&tasks) {
             if stop.contains(p.0, p.1) {
@@ -724,17 +871,23 @@ impl Editor {
         }
         if l.input.contains(p.0, p.1) {
             self.text_tapped = true;
-            // The caret to the character clicked.
+            // The caret to the character clicked, in the row clicked.
             let field = l.input.inset(2);
             let x0 = field.x0 + 2 + ui::width(font, PROMPT);
+            let lh = i32::from(font.height).max(1);
             let c = &mut self.debug.console;
-            let mut at = 0;
-            for (i, ch) in c.input.char_indices() {
-                let w = ui::width(font, &c.input[..i + ch.len_utf8()]);
+            let shown = c.input_rows().min(MAX_INPUT_ROWS);
+            let row = c.first_row(shown) + usize::try_from((p.1 - field.y0 - 1).max(0) / lh).unwrap_or(0);
+            let row = row.min(c.input_rows() - 1);
+            let start: usize = c.input.split('\n').take(row).map(|l| l.len() + 1).sum();
+            let line = c.input[start..].split('\n').next().unwrap_or("");
+            let mut at = start;
+            for (i, ch) in line.char_indices() {
+                let w = ui::width(font, &line[..i + ch.len_utf8()]);
                 if x0 + w > p.0 + 2 {
                     break;
                 }
-                at = i + ch.len_utf8();
+                at = start + i + ch.len_utf8();
             }
             c.caret = at;
         }

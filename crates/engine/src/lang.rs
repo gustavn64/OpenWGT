@@ -287,6 +287,16 @@ fn sv(en: &str) -> Option<&'static str> {
         "line" => "rad",
         "Scripts stopped." => "Skripten stoppade.",
         "A script is running; try again when it waits." => "Ett skript kör; försök igen när det väntar.",
+        // The widget's scripts.
+        "{}: there is no {} here to run it." => "{}: här finns inget {} som kan köra det.",
+        "not in the widget" => "inte i uppfinningen",
+        "{} is no longer in the widget." => "{} finns inte längre i uppfinningen.",
+        "{} is in the widget now; it is saved with it." => "{} finns i uppfinningen nu och sparas med den.",
+        "{} loaded ({} lines): its row above runs it, or keeps it in the widget." => {
+            "{} inläst ({} rader): raden ovan kör det eller behåller det i uppfinningen."
+        }
+        "{}: not a text file." => "{}: inte en textfil.",
+        "Keep" => "Behåll",
         // Links and downloads.
         "A link to {} is on the clipboard ({} characters)." => "En länk till {} ligger i Urklipp ({} tecken).",
         "the widget" => "uppfinningen",
@@ -501,6 +511,18 @@ fn fr(en: &str) -> Option<&'static str> {
         "line" => "ligne",
         "Scripts stopped." => "Scripts arrêtés.",
         "A script is running; try again when it waits." => "Un script tourne ; réessayez quand il attend.",
+        // The widget's scripts.
+        "{}: there is no {} here to run it." => "{} : aucun {} ici pour l'exécuter.",
+        "not in the widget" => "pas dans l'Eurêka",
+        "{} is no longer in the widget." => "{} n'est plus dans l'Eurêka.",
+        "{} is in the widget now; it is saved with it." => {
+            "{} est maintenant dans l'Eurêka ; il est enregistré avec lui."
+        }
+        "{} loaded ({} lines): its row above runs it, or keeps it in the widget." => {
+            "{} chargé ({} lignes) : sa ligne ci-dessus l'exécute ou le garde dans l'Eurêka."
+        }
+        "{}: not a text file." => "{} : pas un fichier texte.",
+        "Keep" => "Garder",
         // Links and downloads.
         "A link to {} is on the clipboard ({} characters)." => {
             "Un lien vers {} est dans le Presse-papiers ({} caractères)."

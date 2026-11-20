@@ -247,7 +247,7 @@ impl Editor {
         let PartSel::Id(id) = sel.part else {
             return select::show(sel);
         };
-        let part = match self.debug.name(id) {
+        let part = match self.part_name(id) {
             Some(n) => PartSel::Text {
                 text: n.to_owned(),
                 nth: None,

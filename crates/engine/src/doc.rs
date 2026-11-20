@@ -2,6 +2,7 @@
 //! to saved widgets (`0x42503e` reads them), run a tick at a time
 //! (`0x42498f`) and drawn.
 
+use std::collections::BTreeMap;
 use std::fmt;
 
 use formats::wgt::{self, Chunk, Form};
@@ -9,6 +10,7 @@ use formats::wgt::{self, Chunk, Form};
 use crate::assets::Assets;
 use crate::gadget::{Core, DrawCx, Gadget, Settings, Tag, Unknown, knots};
 use crate::gadgets;
+use crate::port_parts::ext::{self, Script};
 use crate::sim::{Env, Io, Wire};
 
 /// The size of a saved gadget's base part.
@@ -47,8 +49,13 @@ pub struct Document {
     pub tray_limits: Vec<(Tag, i16)>,
     /// The version it was read as.
     pub version: u16,
-    /// The port's extension chunks (`port_parts::ext`), as read: written
-    /// after the game's own, hidden from other readers.
+    /// The names the debugging tools gave parts, by id (the port's own,
+    /// `port_parts::ext`).
+    pub names: BTreeMap<u32, String>,
+    /// The scripts that come with it (the port's own).
+    pub scripts: Vec<Script>,
+    /// The port's other extension chunks (`port_parts::ext`), as read:
+    /// written after the game's own, hidden from other readers.
     pub ext: Vec<Chunk>,
     next_id: u32,
 }
@@ -90,7 +97,9 @@ impl Document {
                         conns.push(conn);
                     }
                 }
-                t if crate::port_parts::ext::is_extension(*t) => doc.ext.push(c.clone()),
+                &ext::NAMES if let Some(names) = ext::read_names(&c.data) => doc.names.extend(names),
+                &ext::SCRIPT if let Some(script) = ext::read_script(&c.data) => doc.scripts.push(script),
+                t if ext::is_extension(*t) => doc.ext.push(c.clone()),
                 _ => doc.gadgets.push(load_gadget(assets, c)),
             }
         }
@@ -149,7 +158,12 @@ impl Document {
                 data: write_tray_limits(&self.tray_limits),
             });
         }
-        // The port's own, last; hidden with its parts.
+        // The port's own, last; hidden with its parts. Names only of the
+        // parts there are.
+        let mut names = self.names.clone();
+        names.retain(|id, _| self.gadgets.iter().any(|g| g.core.id == *id));
+        form.chunks.extend(ext::names_chunk(&names));
+        form.chunks.extend(self.scripts.iter().map(ext::script_chunk));
         form.chunks.extend(self.ext.iter().cloned());
         crate::port_parts::wgt::hide(&mut form);
         form.write()

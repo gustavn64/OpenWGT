@@ -223,7 +223,7 @@ fn the_popup_offers_the_tools_for_what_is_under_the_pointer() {
     assert_eq!(e.debug.console.input, format!("name #{} ", sw.0));
     e.text_input("Lamp switch");
     e.key_down(VK_RETURN);
-    assert_eq!(e.debug.name(sw.0), Some("Lamp switch"));
+    assert_eq!(e.part_name(sw.0), Some("Lamp switch"));
     // Copy Reference: by its name now.
     assert_eq!(e.reference(&sel(&format!("#{}.0", sw.0))), "\"Lamp switch\".out");
     // On a knot (the windows out of the way).

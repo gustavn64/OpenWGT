@@ -37,9 +37,14 @@ impl Editor {
 
     /// A file was dropped onto the window: "Save changes?" as File ▸
     /// Open asks, then it opens. A drop while a box is up is ignored;
-    /// one while the widget runs stops it.
+    /// one while the widget runs stops it. With the debugging tools on, a
+    /// script file goes to their console instead (`debug::scripts`).
     pub fn drop_file(&mut self, file: Dropped) {
         if self.busy() {
+            return;
+        }
+        // A script, to the debugging tools' console.
+        if self.console_drop(&file.name, &file.data) {
             return;
         }
         self.menu.close();

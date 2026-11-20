@@ -870,7 +870,11 @@ impl Editor {
         };
         self.snapshot();
         match Document::load(&self.assets, &buf) {
-            Ok(d) => {
+            Ok(mut d) => {
+                // The parts' names and the widget's scripts aren't edits
+                // of the worksheet: they stay as they are.
+                d.names = std::mem::take(&mut self.doc.names);
+                d.scripts = std::mem::take(&mut self.doc.scripts);
                 self.doc = d;
                 let limits = self.doc.tray_limits.clone();
                 self.tray.apply_limits(&limits);

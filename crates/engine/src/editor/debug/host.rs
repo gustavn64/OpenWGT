@@ -168,7 +168,7 @@ impl Editor {
             id: PartId(g.core.id),
             tag: g.core.tag.to_string(),
             kind,
-            name: self.debug.name(g.core.id).map(str::to_owned),
+            name: self.part_name(g.core.id).map(str::to_owned),
             label: self.label_of(i),
             rect: (r.x0, r.y0, r.x1, r.y1),
             locked: g.core.locked,
@@ -356,7 +356,9 @@ impl Host for Editor {
     fn set_name(&mut self, id: PartId, name: Option<&str>) -> HostResult<()> {
         self.index_of(id)?;
         let Some(name) = name.map(str::trim) else {
-            self.debug.names.remove(&id.0);
+            if self.doc.names.remove(&id.0).is_some() {
+                self.set_dirty();
+            }
             return Ok(());
         };
         let plain = select::parse(&value::quote(name));
@@ -370,7 +372,7 @@ impl Host for Editor {
             ));
         }
         if let Some((&other, _)) = self
-            .debug
+            .doc
             .names
             .iter()
             .find(|&(&o, n)| o != id.0 && n.eq_ignore_ascii_case(name))
@@ -381,9 +383,12 @@ impl Host for Editor {
                     format!("{} is the name of #{other} already", value::quote(name)),
                 ));
             }
-            self.debug.names.remove(&other);
+            self.doc.names.remove(&other);
         }
-        self.debug.names.insert(id.0, name.to_owned());
+        if self.part_name(id.0) != Some(name) {
+            self.doc.names.insert(id.0, name.to_owned());
+            self.set_dirty();
+        }
         Ok(())
     }
 

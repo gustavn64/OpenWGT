@@ -26,6 +26,9 @@ use super::{
     value,
 };
 
+/// The built-in language's name ([`Runtime::language`]).
+pub const LANGUAGE: &str = "commands";
+
 /// Milliseconds a window's frame takes, as the input commands move.
 pub const FRAME_MS: u64 = 16;
 /// The longest `until` waits by default: 10 s.
@@ -1053,7 +1056,7 @@ fn wires_text(host: &dyn Host) -> String {
 
 impl Runtime for CommandRuntime {
     fn language(&self) -> &'static str {
-        "commands"
+        LANGUAGE
     }
 
     fn check(&mut self, file: &str, src: &str) -> Result<(), ScriptError> {

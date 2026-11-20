@@ -18,6 +18,7 @@ pub mod api;
 pub mod cmd;
 pub mod runtime;
 pub mod select;
+pub mod trust;
 pub mod value;
 
 use std::fmt;
