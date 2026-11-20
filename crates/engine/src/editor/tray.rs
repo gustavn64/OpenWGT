@@ -43,8 +43,8 @@ pub const FOLDERS: [&[i8]; 7] = [
 ];
 
 /// The tray indexes there are counts for: the game's 64 (index 0 unused)
-/// and the network parts' (`crate::net::TRAY`).
-pub const SLOTS: usize = 65 + crate::net::TRAY.len();
+/// and the port's own parts' (`crate::port_parts`).
+pub const SLOTS: usize = crate::port_parts::TRAY_SLOTS;
 
 /// The slot area in the tray (`+0xb5c`): 350×40 at (67, 51).
 pub const AREA: IRect = IRect::new(67, 51, 417, 91);
@@ -78,12 +78,12 @@ const LOWER_X: i32 = 61;
 /// A row of the face the frame's sides are repeated from.
 const SIDE_ROW: i32 = 60;
 
-/// The tag of tray index `i` (`0x435c60`), or the network parts'.
+/// The tag of tray index `i` (`0x435c60`), or the port's own parts'.
 #[must_use]
 pub fn tag_of(i: u8) -> Option<Tag> {
     TAGS.get(usize::from(i).checked_sub(1)?)
         .map(|t| Tag(**t))
-        .or_else(|| crate::net::tray_tag(i))
+        .or_else(|| crate::port_parts::tray_tag(i))
 }
 
 /// The tray index of `tag` (`0x435c93`).
@@ -92,14 +92,14 @@ pub fn index_of(tag: Tag) -> Option<u8> {
     TAGS.iter()
         .position(|t| **t == tag.0)
         .and_then(|i| u8::try_from(i + 1).ok())
-        .or_else(|| crate::net::tray_index(tag))
+        .or_else(|| crate::port_parts::tray_index(tag))
 }
 
 /// Tray index `i`'s picture: sheet 898 frame `i` for 1..30, else sheet 899
-/// frame `i − 30` (`0x432229`); the network parts' their own.
+/// frame `i − 30` (`0x432229`); the port's own parts' their own.
 #[must_use]
 pub fn picture(i: u8) -> (u32, u16) {
-    if let Some(p) = crate::net::tray_picture(i) {
+    if let Some(p) = crate::port_parts::tray_picture(i) {
         p
     } else if i <= 30 {
         (898, u16::from(i))
@@ -121,7 +121,7 @@ fn sizes(assets: &Assets, pictures: &Pictures) -> Vec<(i32, i32)> {
 }
 
 /// Every folder's pages, laid out by the parts' pictures' sizes; with the
-/// enhancements, the network parts' page too.
+/// enhancements, the port's own parts too.
 fn folders(sizes: &[(i32, i32)], enhanced: bool) -> Vec<Vec<Vec<Slot>>> {
     let size = |i: u8| sizes.get(usize::from(i)).copied().unwrap_or((0, 0));
     (0..)
@@ -129,7 +129,7 @@ fn folders(sizes: &[(i32, i32)], enhanced: bool) -> Vec<Vec<Vec<Slot>>> {
         .map(|(f, l)| {
             let mut list = l.to_vec();
             if enhanced {
-                list.extend_from_slice(crate::net::tray_extra(f));
+                list.extend(crate::port_parts::tray_extra(f));
             }
             layout(&list, size)
         })

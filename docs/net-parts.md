@@ -41,7 +41,7 @@ the host only gives them their sockets (`crates/openwgt/src/net.rs`).
 - **Saving**: the original's loader would make a part of every chunk it
   doesn't know and has no class for these, so they are saved, with the
   wires that reach them, inside `back` chunks right after `fver`
-  (`net::wgt`); the original sees a background before the real one, the
+  (`port_parts::wgt`); the original sees a background before the real one, the
   port puts them back where they were. A widget link carries them the
   same way.
 

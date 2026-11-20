@@ -31,6 +31,7 @@ Bienvenue dans l'atelier d'OpenWGT ! Choisis une rubrique ci-dessous, ou appuie
 - [Pièces interrupteurs](#switch-parts)
 - [Pièces de texte](#text-parts)
 - [Superpièces](#super-parts)
+- [L'Oscilloscope](#oscilloscope)
 - [Émetteur et Récepteur](#network-parts)
 
 ## Problèmes
@@ -270,7 +271,7 @@ keywords: pièces, liste des pièces, gadgets
 
 Voici les sept dossiers de la [fenêtre à outils](#tray) et ce qu'ils contiennent :
 
-- [Pièces d'affichage](#display-parts) : Ampoule, Mélangeur de couleurs, Traceur de courbes, Projecteur d'images, Afficheur à trois chiffres, Afficheur à dix chiffres.
+- [Pièces d'affichage](#display-parts) : Ampoule, Mélangeur de couleurs, Traceur de courbes, Projecteur d'images, Afficheur à trois chiffres, Afficheur à dix chiffres et, avec les améliorations, l'[Oscilloscope](#oscilloscope).
 - [Pièces de temps](#timer-parts) : Horloge numérique, Chronomètre, Métronome.
 - [Pièces sonores](#sound-parts) : Interrupteur sonore, Cris d'animaux, Sons variés, Haut-parleur, Diapason, Enregistreur, Transformateur de son.
 - [Pièces numériques](#number-parts) : Pavé numérique, Nombre à trois chiffres, Compteur, Mini nombre à trois chiffres, Curseur, Additionneur, Soustracteur, Multiplicateur, Diviseur, Pile ou face, Générateur de nombres aléatoires, Totalisateur, Comparateur, Fonctions mathématiques, Aire/Volume, Convertisseur, et les portes ET, OU, XOU et INV.
@@ -281,7 +282,7 @@ Voici les sept dossiers de la [fenêtre à outils](#tray) et ce qu'ils contienne
 Chaque pièce s'explique aussi elle-même : double-clique dessus sur la zone de travail et lis sa [fenêtre de réglages](#settings).
 
 = Pièces d'affichage {#display-parts}
-keywords: affichage, ampoule, lampe, mélangeur de couleurs, couleur, traceur de courbes, graphique, projecteur d'images, image, afficheur à trois chiffres, afficheur à dix chiffres
+keywords: affichage, ampoule, lampe, mélangeur de couleurs, couleur, traceur de courbes, graphique, projecteur d'images, image, afficheur à trois chiffres, afficheur à dix chiffres, oscilloscope
 
 Le dossier avec l'écran sur son onglet. Ces pièces montrent ce que fait ton Eurêka.
 
@@ -294,6 +295,7 @@ Le dossier avec l'écran sur son onglet. Ces pièces montrent ce que fait ton Eu
 ## Page 2
 - **Afficheur à trois chiffres** - montre les nombres entiers de -99 à 999. Un X rouge veut dire que le nombre ne rentre pas.
 - **Afficheur à dix chiffres** - montre les grands nombres et les nombres à virgule, jusqu'à dix caractères.
+- **Oscilloscope** - avec les [améliorations](#openwgt-settings) : dessine deux entrées sous forme de lignes qui défilent sans arrêt. Voir [L'Oscilloscope](#oscilloscope).
 
 Astuce : pendant que tu construis, relie un afficheur à n'importe quelle sortie pour voir ce que la pièce envoie. Voir aussi [Pièces numériques](#number-parts) et [Pièces de texte](#text-parts).
 
@@ -415,6 +417,24 @@ Le dossier avec la planète sur son onglet : le laboratoire de sciences, et la 
 Avec les [améliorations](#openwgt-settings), une dernière page a deux pièces propres à OpenWGT : l'**Émetteur** et le **Récepteur**, qui permettent à des Eurêkas de se parler par Internet. Voir [Émetteur et Récepteur](#network-parts).
 
 Astuce : un [Convertisseur](#number-parts) transforme les mètres du Canon en pieds.
+
+= L'Oscilloscope {#oscilloscope}
+keywords: oscilloscope, courbe, trace, ligne, onde, créneau, signal, figer, pause, échelle de temps, plage
+
+Une pièce propre à OpenWGT, absente de l'original : elle dessine ce qui entre dans ses deux entrées sous forme de deux lignes qui défilent sans arrêt pendant que ton Eurêka marche, comme l'écran d'un vrai oscilloscope. C'est la dernière des [Pièces d'affichage](#display-parts) quand les [améliorations](#openwgt-settings) sont activées.
+
+- **A** (jaune) et **B** (bleu) - branche-y des nombres ou des signaux ON/OFF. Les nombres montent et descendent ; un signal ON/OFF est dessiné en créneaux, ceux de A au-dessus de ceux de B.
+- **L'entrée du bas** - un ON fige l'image pour que tu puisses la regarder ; OFF la laisse repartir.
+- **La sortie** - envoie ce qui entre en A, pour que tu puisses placer l'Oscilloscope au milieu d'un fil.
+
+Contrairement au [Traceur de courbes](#display-parts), il n'est jamais plein : quand la ligne atteint le bord droit, l'image glisse vers la gauche et le plus ancien sort de l'écran. Appuie de nouveau sur GO pour un écran vide.
+
+## Réglages
+- **Plage de nombres** - **Automatique** ajuste l'écran aux nombres (l'écran montre le plus grand et le plus petit dans ses coins). Choisis **De** et tape deux nombres pour que la plage ne bouge plus ; les nombres en dehors restent au bord.
+- **Échelle de temps** - la vitesse des lignes : à **1×** l'image avance d'un point à chaque top (60 par seconde), à **8×** d'un point tous les huit tops, et montre donc huit fois plus de temps.
+- **Points seuls** - dessine un point pour chaque instant au lieu de lignes reliées.
+
+Astuce : branche un Métronome sur B et un Générateur de nombres aléatoires sur A, et regarde les nombres changer à chaque battement.
 
 = Émetteur et Récepteur {#network-parts}
 keywords: émetteur, récepteur, réseau, Internet, en ligne, canal, nom du canal, ami, à distance, relais, occupé, voyant, vie privée
@@ -627,6 +647,7 @@ Quelques changements qui rendent OpenWGT un peu plus facile à utiliser que l'or
 
 - la fenêtre à outils montre un dossier entier d'un coup, ses pages l'une sous l'autre, sans flèches ;
 - les barres d'outils, les fenêtres de réglages et les boîtes de message se déplacent en entier quand tu les fais glisser, et pas seulement leur contour ;
+- les Pièces d'affichage ont l'[Oscilloscope](#oscilloscope) à la fin ;
 - les Superpièces ont une dernière page avec l'[Émetteur et le Récepteur](#network-parts).
 
 Les améliorations sont activées au départ. Décoche **Améliorations** pour que tout soit exactement comme dans l'original.

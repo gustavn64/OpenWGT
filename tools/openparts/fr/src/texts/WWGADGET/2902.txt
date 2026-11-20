@@ -1,0 +1,1 @@
+L'Oscilloscope dessine ce qui entre en A (jaune) et en B (bleu) sous forme de deux lignes qui défilent sans arrêt : les nombres montent et descendent, un signal ON/OFF fait des créneaux. Un ON sur l'entrée du bas fige l'image. La sortie envoie ce qui entre en A.

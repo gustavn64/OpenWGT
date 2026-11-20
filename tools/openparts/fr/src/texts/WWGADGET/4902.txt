@@ -1,0 +1,2 @@
+Astuce de construction :
+Branche-le entre deux pièces : ce qui entre en A ressort par la sortie. Automatique ajuste les nombres à l'écran ; règle De et à pour qu'ils ne bougent plus. À 8×, les lignes défilent huit fois moins vite qu'à 1× : tu vois plus de temps.

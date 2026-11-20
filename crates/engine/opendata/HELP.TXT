@@ -31,6 +31,7 @@ Welcome to the OpenWGT workshop! Pick a topic below, or press **Index** to look 
 - [Switch parts](#switch-parts)
 - [Text parts](#text-parts)
 - [Super parts](#super-parts)
+- [The Oscilloscope](#oscilloscope)
 - [Sender and Receiver](#network-parts)
 
 ## Puzzles
@@ -270,7 +271,7 @@ keywords: parts, gadgets, list of parts
 
 Here are the seven folders of the [parts tray](#tray) and what's in them:
 
-- [Display parts](#display-parts): Light Bulb, Color Mixer, Strip Chart, Graphic Projector, Three-Digit Display, Ten-Digit Display.
+- [Display parts](#display-parts): Light Bulb, Color Mixer, Strip Chart, Graphic Projector, Three-Digit Display, Ten-Digit Display, and, with the enhancements on, the [Oscilloscope](#oscilloscope).
 - [Timer parts](#timer-parts): Digital Clock, Stopwatch, Metronome.
 - [Sound parts](#sound-parts): Sound Switch, Animal Sounds, Assorted Sounds, Speaker, Tuning Fork, Recorder, Sound Transformer.
 - [Number parts](#number-parts): Numeric Keypad, Three-Digit Number, Counter, Mini Three-Digit Number, Slider, Adder, Subtractor, Multiplier, Divider, Coin Toss, Random Number Generator, Totaler, Comparer, Math Functions, Area/Volume, Converter, and the AND, OR, XOR and NOT Gates.
@@ -281,7 +282,7 @@ Here are the seven folders of the [parts tray](#tray) and what's in them:
 Every part explains itself, too: double-click it on the worksheet and read its [settings window](#settings).
 
 = Display Parts {#display-parts}
-keywords: display, light bulb, lamp, color mixer, colour, strip chart, graph, graphic projector, picture, three-digit display, ten-digit display
+keywords: display, light bulb, lamp, color mixer, colour, strip chart, graph, graphic projector, picture, three-digit display, ten-digit display, oscilloscope
 
 The folder with the monitor on its tab. These parts show what your widget is doing.
 
@@ -294,6 +295,7 @@ The folder with the monitor on its tab. These parts show what your widget is doi
 ## Page 2
 - **Three-Digit Display** - shows whole numbers from -99 to 999. A red X means the number doesn't fit.
 - **Ten-Digit Display** - shows big numbers and decimals, up to ten characters.
+- **Oscilloscope** - with the [enhancements](#openwgt-settings) on: draws two inputs as lines that keep moving along. See [The Oscilloscope](#oscilloscope).
 
 Tip: while you build, wire a display to any output to see what that part is sending. See also [Number parts](#number-parts) and [Text parts](#text-parts).
 
@@ -415,6 +417,24 @@ The folder with the planet on its tab: the science lab, and the part that ends g
 With the [enhancements](#openwgt-settings) on, a last page has two parts of OpenWGT's own: the **Sender** and the **Receiver**, which let widgets talk to each other over the Internet. See [Sender and Receiver](#network-parts).
 
 Tip: a [Converter](#number-parts) part turns the Cannon's feet into meters.
+
+= The Oscilloscope {#oscilloscope}
+keywords: oscilloscope, scope, graph, trace, line, wave, square wave, signal, freeze, hold, time scale, range
+
+A part that is OpenWGT's own, not the original's: it draws what goes into its two inputs as two lines that keep moving along while the widget runs, like the screen of a real oscilloscope. It is the last of the [Display parts](#display-parts) while the [enhancements](#openwgt-settings) are on.
+
+- **A** (yellow) and **B** (blue) - wire numbers or ON/OFF signals into them. Numbers go up and down; an ON/OFF signal is drawn as a square wave, A's above B's.
+- **The bottom input** - an ON holds the picture still, so that you can look at it; OFF lets it move on.
+- **The output** - sends out what goes into A, so you can put the Oscilloscope in the middle of a wire.
+
+Unlike the [Strip Chart](#display-parts), it never fills up: once the line reaches the right side, the picture slides left and the oldest part goes off the screen. Press GO again for an empty screen.
+
+## Settings
+- **Number Range** - **Automatic** fits the numbers on the screen to it (the screen shows the top and bottom numbers in its corners). Choose **From** and type two numbers to keep the range still; numbers outside it stay at the edge.
+- **Time scale** - how fast the lines move: at **1×** the picture moves one dot each tick (60 a second), at **8×** one dot every eight ticks, so it shows eight times as much time.
+- **Dots only** - draws a dot for each moment instead of joined-up lines.
+
+Tip: wire a Metronome into B and a Random Number Generator into A, and watch the numbers change on each beat.
 
 = Sender and Receiver {#network-parts}
 keywords: sender, receiver, network, Internet, online, channel, channel name, friend, far away, relay, busy, lamp, privacy
@@ -627,6 +647,7 @@ A few changes that make OpenWGT a little easier to use than the original:
 
 - the parts tray shows a whole folder at once, its pages one under the other, without page arrows;
 - the toolbars, settings windows and message boxes move whole when you drag them, not as an outline;
+- the Display parts get the [Oscilloscope](#oscilloscope) at the end;
 - the Super parts get a last page with the [Sender and the Receiver](#network-parts).
 
 The enhancements are on at first. Untick **Enhancements** to make everything exactly like the original.

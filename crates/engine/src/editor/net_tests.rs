@@ -68,15 +68,17 @@ fn the_parts_are_in_the_tray_only_with_the_enhancements() {
     assert!(!indexes(&e).iter().any(|&i| i > 64));
     let plain = e.tray.folders.clone();
     e.set_enhanced(true);
-    // A page of their own after the Super Parts', the others unchanged.
+    // A page of their own after the Super Parts', the others without
+    // them (other families' parts may come too).
     let f = crate::net::TRAY_FOLDER;
     assert_eq!(e.tray.folders.len(), plain.len());
+    let ours = |s: &tray::Slot| crate::net::tray_tag(s.index).is_some();
     for (k, (a, b)) in e.tray.folders.iter().zip(&plain).enumerate() {
         if k == f {
             assert_eq!(&a[..b.len()], &b[..]);
             assert_eq!(a.len(), b.len() + 1);
         } else {
-            assert_eq!(a, b);
+            assert!(!a.iter().flatten().any(ours));
         }
     }
     let page = e.tray.folders[f].last().unwrap();

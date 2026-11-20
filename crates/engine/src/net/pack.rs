@@ -5,18 +5,18 @@
 //! resources (`crate::opendata`) in one folder.
 //!
 //! The game's data has nothing for these parts, the CD's no more than
-//! OpenWDATA, so they go behind all of it ([`install`]): they fill only
-//! what is missing, and a string only where its block leaves it empty
-//! (`Assets::string`). Exporting the resources leaves them out.
+//! OpenWDATA, so they go behind all of it (`crate::port_parts::install`):
+//! they fill only what is missing, and a string only where its block
+//! leaves it empty (`Assets::string`). Exporting the resources leaves
+//! them out.
 //!
 //! The pack also has the word list of the random channel names
 //! ([`words`]).
 
 use std::sync::OnceLock;
 
-use crate::assets::{Assets, Embedded, Source};
+use crate::assets::{Embedded, Source};
 use crate::lang::Lang;
-use crate::opengfx::Overlay;
 
 include!(concat!(env!("OUT_DIR"), "/opennet_files.rs"));
 include!(concat!(env!("OUT_DIR"), "/opennet-sv_files.rs"));
@@ -35,31 +35,7 @@ pub fn builtin() -> Embedded {
 /// pictures, dialogs and texts.
 #[must_use]
 pub fn builtin_for(lang: Lang) -> Box<dyn Source> {
-    let top = match lang {
-        Lang::Sv => BUILTIN_SV,
-        Lang::Fr => BUILTIN_FR,
-        Lang::En => &[],
-    };
-    if top.is_empty() {
-        Box::new(builtin())
-    } else {
-        Box::new(Overlay {
-            top: Box::new(Embedded::new(top)),
-            base: Box::new(builtin()),
-        })
-    }
-}
-
-/// Puts the pack, in the language of the game's words (its word for
-/// Cancel, the CD's or OpenWDATA's), behind everything `a` has.
-pub(crate) fn install(a: &mut Assets) {
-    let lang = a.string(0xf221).and_then(|w| Lang::of_cancel(&w)).unwrap_or(a.lang);
-    let pack = builtin_for(lang);
-    let mut extra = crate::assets::read_resources(&*pack);
-    let mut pictures = crate::opengfx::load(&*pack, &a.palette());
-    extra.append(&mut pictures.resources);
-    a.pack_problems.append(&mut pictures.problems);
-    a.extra = extra;
+    crate::port_parts::embedded(BUILTIN, BUILTIN_SV, BUILTIN_FR, lang)
 }
 
 /// The words random channel names are made of (`tools/opennet/src/words.txt`):
@@ -83,7 +59,7 @@ pub fn words() -> &'static [&'static str] {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::assets::{Module, Packs, rt};
+    use crate::assets::{Assets, Module, Packs, rt};
     use crate::gfx::Pictures;
     use formats::tables::KnotKind;
 
@@ -175,49 +151,9 @@ mod tests {
         assert!(frame(Lang::Sv) != en && frame(Lang::Fr) != en);
     }
 
-    /// A CD image in memory, through `formats::iso`.
-    struct Iso(Vec<u8>);
-
-    impl Source for Iso {
-        fn read(&self, path: &str) -> Option<Vec<u8>> {
-            formats::iso::read_file(&self.0, path)
-        }
-
-        fn list(&self, path: &str) -> Vec<String> {
-            self.read(path)
-                .and_then(|d| formats::iso::records(&d).ok())
-                .map_or_default(|r| r.into_iter().map(|r| r.name).collect())
-        }
-    }
-
-    /// The CDs: the English one extracted to `orig` (as `tools/` leaves
-    /// it), the Swedish and French ones where `WIDGET_SV_CD` and
-    /// `WIDGET_FR_CD` say (a folder or an image); each skipped without.
-    fn cds() -> Vec<(Lang, Box<dyn Source>, &'static str)> {
-        let mut out: Vec<(Lang, Box<dyn Source>, &'static str)> = Vec::new();
-        let orig = std::path::Path::new(env!("CARGO_MANIFEST_DIR")).join("../../orig");
-        if orig.exists() {
-            out.push((Lang::En, Box::new(crate::assets::Dir(orig)), "Label"));
-        } else {
-            eprintln!("no orig: skipped");
-        }
-        for (lang, var, label) in [(Lang::Sv, "WIDGET_SV_CD", "Etikett"), (Lang::Fr, "WIDGET_FR_CD", "Nom")] {
-            let Some(p) = std::env::var_os(var).map(std::path::PathBuf::from) else {
-                eprintln!("no {var}: skipped");
-                continue;
-            };
-            if p.is_dir() {
-                out.push((lang, Box::new(crate::assets::Dir(p)), label));
-            } else if let Ok(image) = std::fs::read(&p) {
-                out.push((lang, Box::new(Iso(image)), label));
-            }
-        }
-        out
-    }
-
     #[test]
     fn with_a_cd_the_parts_fill_its_gaps() {
-        for (lang, cd, label) in cds() {
+        for (lang, cd, label) in crate::port_parts::testing::cds() {
             let a = Assets::load(Some(&*cd), None).unwrap();
             assert_eq!(a.lang, lang);
             check(&a, lang);

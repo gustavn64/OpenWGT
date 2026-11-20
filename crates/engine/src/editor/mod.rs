@@ -1806,7 +1806,7 @@ impl Editor {
         self.ui_sound(snd::TAKEN);
         let id = self.doc.new_id();
         let mut gadget = doc::new_gadget(&self.assets, tag, id, -2000, -2000);
-        crate::net::parts::name_new(&mut gadget.core);
+        crate::port_parts::taken_from_tray(&mut gadget.core);
         gadget.behavior.layout(&mut gadget.core, &self.assets);
         let b = gadget.core.bounds;
         let mut hot = (i32::from(b.width()) / 2, i32::from(b.height()) / 2);
@@ -2901,6 +2901,8 @@ mod file_tests;
 mod lang_tests;
 #[cfg(test)]
 mod net_tests;
+#[cfg(test)]
+mod openparts_tests;
 #[cfg(test)]
 mod prime_tests;
 #[cfg(test)]
