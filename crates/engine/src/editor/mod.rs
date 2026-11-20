@@ -9,6 +9,7 @@
 //! (the view's client area) below it.
 
 pub mod about;
+pub mod debug;
 pub mod dialog;
 mod download;
 mod file;
@@ -105,6 +106,16 @@ mod snd {
     pub const ARROW: u32 = 0x94;
     pub const SLIDE: u32 = 0x95;
     pub const MOVING: u32 = 0x96;
+}
+
+/// How one tick of the running widget ended ([`Editor::tick_once`]).
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum TickEnd {
+    /// It ran; the widget runs on.
+    Ran,
+    /// A part ended the run (a Win / Lose Checker), the puzzle solved or
+    /// not; the editor is back to editing.
+    Stopped { solved: bool },
 }
 
 /// Mouse buttons the editor tells apart.
@@ -388,6 +399,8 @@ pub struct Editor {
     change_lang: Option<crate::lang::Lang>,
     /// Play without the CD was pressed, and the widget saved or let go.
     play_without_cd: bool,
+    /// Scripts' and debugging's ([`debug`]).
+    pub debug: debug::Debugger,
 }
 
 impl Editor {
@@ -466,6 +479,7 @@ impl Editor {
             change_cd: false,
             change_lang: None,
             play_without_cd: false,
+            debug: debug::Debugger::default(),
         };
         let limits = e.doc.tray_limits.clone();
         e.tray.apply_limits(&limits);
@@ -706,34 +720,44 @@ impl Editor {
         let mut n = 0;
         while self.ms_rest >= 1000 && n < 8 {
             self.ms_rest -= 1000;
-            self.doc.tick(&self.assets, &mut self.env);
-            if let Some(end) = self.env.end_run.take() {
-                // A Win / Lose Checker ended the run: a win marks the
-                // puzzle solved (`0x42d4b1`), then the run stops
-                // (`0x430ee7`) and its sound plays.
-                if end.solved {
-                    self.mark_solved();
-                }
-                self.stop();
-                if let Some(sound) = self.assets.sound(end.sound) {
-                    let voice = self.env.voice();
-                    self.env.sounds.push(SoundCmd::Play {
-                        voice,
-                        sound,
-                        looping: false,
-                    });
-                }
+            if let TickEnd::Stopped { .. } = self.tick_once() {
                 return;
             }
-            self.env.keys.clear();
-            self.env.ticks = self.env.ticks.wrapping_add(1);
-            self.env.ms += 1000 / TICKS_PER_SECOND;
             n += 1;
         }
         if n == 8 {
             self.ms_rest = 0;
         }
         self.update_menu();
+    }
+
+    /// One tick of the running widget, the clock advanced after it; or the
+    /// run ended by a part during it.
+    pub fn tick_once(&mut self) -> TickEnd {
+        self.doc.tick(&self.assets, &mut self.env);
+        if let Some(end) = self.env.end_run.take() {
+            // A Win / Lose Checker ended the run: a win marks the
+            // puzzle solved (`0x42d4b1`), then the run stops
+            // (`0x430ee7`) and its sound plays.
+            if end.solved {
+                self.mark_solved();
+            }
+            self.debug.run_ended(end.solved);
+            self.stop();
+            if let Some(sound) = self.assets.sound(end.sound) {
+                let voice = self.env.voice();
+                self.env.sounds.push(SoundCmd::Play {
+                    voice,
+                    sound,
+                    looping: false,
+                });
+            }
+            return TickEnd::Stopped { solved: end.solved };
+        }
+        self.env.keys.clear();
+        self.env.ticks = self.env.ticks.wrapping_add(1);
+        self.env.ms += 1000 / TICKS_PER_SECOND;
+        TickEnd::Ran
     }
 
     // ---- selection --------------------------------------------------

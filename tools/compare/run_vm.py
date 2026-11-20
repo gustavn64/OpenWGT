@@ -7,6 +7,7 @@ area at each `shot`.
     run_vm.py SCRIPT OUT_DIR [--snapshot ww-editor]
 """
 import os
+import re
 import sys
 import time
 
@@ -26,9 +27,18 @@ LEFT, RIGHT = 1, 4
 
 # The script's commands the VM can't play: the port's `open` drops a file
 # on the window and `puzzle` loads one directly; here, start from a
-# snapshot with the widget or puzzle already open instead.
-UNSUPPORTED = {"open", "puzzle"}
-KNOWN = {"size", "dump", "move", "down", "up", "click", "dclick", "drag", "key", "wait", "shot"}
+# snapshot with the widget or puzzle already open instead. The port's
+# commands that work with parts by name and with the run
+# (engine::script::cmd) change the widget in ways the VM can't follow.
+UNSUPPORTED = {"open", "puzzle", "new", "run", "stop", "step", "until", "press", "set", "poke",
+               "setting", "seed"}
+# The port's commands that only look (or name parts to look with):
+# skipped here.
+SKIPPED = {"name", "expect", "assert", "log", "print", "parts", "wires", "help"}
+KNOWN = {"size", "dump", "move", "down", "up", "click", "dclick", "drag", "key", "wait", "shot"} | SKIPPED
+
+# `#` starts a comment, unless a digit follows (`#7` is a part).
+COMMENT = re.compile(r"#(?!\d)")
 
 
 def parse(script):
@@ -36,7 +46,7 @@ def parse(script):
     checked before the VM is touched."""
     lines = []
     for i, line in enumerate(open(script), 1):
-        w = line.split("#")[0].split()
+        w = COMMENT.split(line)[0].split()
         if not w:
             continue
         cmd, a = w[0], w[1:]
@@ -83,7 +93,7 @@ def main(argv):
     time.sleep(1)
     for _, cmd, a, n in lines:
         btn = RIGHT if "right" in a else LEFT
-        if cmd in ("size", "dump"):
+        if cmd in ("size", "dump") or cmd in SKIPPED:
             continue
         if cmd == "move":
             move(n[0], n[1])
