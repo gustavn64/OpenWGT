@@ -465,6 +465,8 @@ pub enum ErrorKind {
     Document,
     /// The script was stopped (from outside, or its time ran out).
     Stopped,
+    /// This host can't do it (no debugging tools, no graph window).
+    Unsupported,
 }
 
 impl ErrorKind {
@@ -484,6 +486,7 @@ impl ErrorKind {
             ErrorKind::Timeout => "Timeout",
             ErrorKind::Document => "Document",
             ErrorKind::Stopped => "Stopped",
+            ErrorKind::Unsupported => "Unsupported",
         }
     }
 }
@@ -507,6 +510,11 @@ impl fmt::Display for HostError {
 impl std::error::Error for HostError {}
 
 pub type HostResult<T> = Result<T, HostError>;
+
+/// What a host without `what` says.
+fn unsupported(what: &str) -> HostError {
+    HostError::new(ErrorKind::Unsupported, format!("{what} isn't there in this game"))
+}
 
 /// The editor as scripts drive it. Every operation checks everything
 /// first and then does it whole, or does nothing and says why.
@@ -703,6 +711,22 @@ pub trait Host {
 
     /// Seeds the parts' random numbers.
     fn seed(&mut self, rng: u64);
+
+    // ---- debugging (a host with the debugging tools) ----------------
+
+    /// Whether the run is held.
+    fn paused(&self) -> bool {
+        false
+    }
+
+    /// Runs the widget at `factor` of the real time (1 for full speed);
+    /// the speed it took (the nearest one there is).
+    ///
+    /// # Errors
+    /// [`ErrorKind::Unsupported`] where there's no slow motion.
+    fn set_speed(&mut self, _factor: f64) -> HostResult<f64> {
+        Err(unsupported("slow motion"))
+    }
 
     /// Whether `c` holds; `start` holds the values [`Cond::Changed`]
     /// compares with (from [`Host::snapshot`]).
@@ -951,7 +975,7 @@ pub trait Host {
 #[must_use]
 pub fn no_tools() -> HostError {
     HostError::new(
-        ErrorKind::Caps,
+        ErrorKind::Unsupported,
         "the debugging tools are off (Settings: Enhancements, Debugging tools)",
     )
 }

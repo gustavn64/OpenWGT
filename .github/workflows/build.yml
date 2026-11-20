@@ -255,6 +255,10 @@ jobs:
         with:
           tool: wasm-bindgen@${{ steps.bindgen.outputs.version }}
 
+      # QuickJS (scripts in JavaScript) is C: clang for wasm32, llvm-ar.
+      - name: clang and llvm-ar
+        run: sudo apt-get update && sudo apt-get install -y --no-install-recommends clang llvm
+
       - name: Build
         run: tools/build-web.sh --out web
 

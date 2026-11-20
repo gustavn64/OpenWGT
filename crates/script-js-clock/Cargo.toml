@@ -1,0 +1,15 @@
+[package]
+name = "script-js-clock"
+version = "0.11.0"
+description = "The clock QuickJS asks the browser build's module for"
+edition.workspace = true
+license.workspace = true
+publish.workspace = true
+
+# Its own lints: the one function here needs `#[unsafe(no_mangle)]`,
+# which the workspace's `unsafe_code = "forbid"` doesn't allow.
+[lints.rust]
+unsafe_code = "deny"
+
+[lints.clippy]
+pedantic = { level = "warn", priority = -1 }

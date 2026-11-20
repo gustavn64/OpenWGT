@@ -8,7 +8,15 @@ publish.workspace = true
 homepage.workspace = true
 repository.workspace = true
 
+# `js`: scripts in JavaScript (crates/script-js, QuickJS) besides the
+# built-in command language. QuickJS is C: the browser build needs a
+# clang for wasm32 (docs/scripting-js-engine.md).
+[features]
+default = ["js"]
+js = ["dep:script-js"]
+
 [dependencies]
+script-js = { path = "../script-js", optional = true }
 engine = { path = "../engine" }
 formats = { path = "../formats" }
 platform = { path = "../platform" }

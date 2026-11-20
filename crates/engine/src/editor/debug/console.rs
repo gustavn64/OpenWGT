@@ -478,6 +478,12 @@ struct Row {
 }
 
 impl Editor {
+    /// The console's log, a line each: what was typed and what came of it.
+    #[must_use]
+    pub fn console_text(&self) -> String {
+        self.debug.console.text()
+    }
+
     /// The program's own scripting language for the console's lines (the
     /// built-in commands stay for lines starting with `:`).
     pub fn set_script_runtime(&mut self, rt: Box<dyn Runtime>) {
