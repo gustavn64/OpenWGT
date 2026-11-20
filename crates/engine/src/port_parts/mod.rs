@@ -14,8 +14,11 @@
 //! - **Resources**: every family's pack goes behind all the game's data
 //!   ([`install`]), the first family's first where two have the same
 //!   resource; a string block is shared, string by string.
-//! - **Saving**: [`wgt`] hides the parts from the original game's loader.
+//! - **Saving**: [`wgt`] hides the parts from the original game's loader,
+//!   and with them what the port keeps about a widget beside the game's
+//!   content ([`ext`]).
 
+pub mod ext;
 pub mod wgt;
 
 use std::collections::BTreeMap;

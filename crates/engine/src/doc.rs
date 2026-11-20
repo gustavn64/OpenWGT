@@ -47,6 +47,9 @@ pub struct Document {
     pub tray_limits: Vec<(Tag, i16)>,
     /// The version it was read as.
     pub version: u16,
+    /// The port's extension chunks (`port_parts::ext`), as read: written
+    /// after the game's own, hidden from other readers.
+    pub ext: Vec<Chunk>,
     next_id: u32,
 }
 
@@ -87,6 +90,7 @@ impl Document {
                         conns.push(conn);
                     }
                 }
+                t if crate::port_parts::ext::is_extension(*t) => doc.ext.push(c.clone()),
                 _ => doc.gadgets.push(load_gadget(assets, c)),
             }
         }
@@ -145,6 +149,8 @@ impl Document {
                 data: write_tray_limits(&self.tray_limits),
             });
         }
+        // The port's own, last; hidden with its parts.
+        form.chunks.extend(self.ext.iter().cloned());
         crate::port_parts::wgt::hide(&mut form);
         form.write()
     }

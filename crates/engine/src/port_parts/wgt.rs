@@ -1,4 +1,5 @@
-//! Saving widgets with the port's own parts so that the original game,
+//! Saving widgets with the port's own parts (and its extension chunks,
+//! [`super::ext`]) so that the original game,
 //! and any other reader that doesn't know them, still opens them. The
 //! original's loader makes a part of every chunk it doesn't know and has
 //! no class for these (`NSnd`, `Scop`...: its factory gives nothing,
@@ -30,9 +31,10 @@ const LAYOUT: u8 = 1;
 /// The bytes before the chunk's tag.
 const HEAD: usize = 2 + 4 + 1 + 2;
 
-/// Whether a chunk tagged `tag` is one of the port's own parts'.
+/// Whether a chunk tagged `tag` is hidden: one of the port's own parts',
+/// or one of its extension chunks ([`super::ext`]).
 pub(crate) fn is_hidden(tag: [u8; 4]) -> bool {
-    super::is_port_part(crate::gadget::Tag(tag))
+    super::is_port_part(crate::gadget::Tag(tag)) || super::ext::is_extension(tag)
 }
 
 /// Hides the port's own parts of `form`, about to be written, and the
