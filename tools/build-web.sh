@@ -2,7 +2,7 @@
 # Builds the browser version (docs/web.md) into web/: the page, the
 # wasm-bindgen glue and the module. Needs the wasm32-unknown-unknown
 # target and the wasm-bindgen CLI of the version the crates pin
-# (crates/widget/Cargo.toml):
+# (crates/openwgt/Cargo.toml):
 #
 #   rustup target add wasm32-unknown-unknown
 #   cargo install wasm-bindgen-cli --version 0.2.130
@@ -32,7 +32,7 @@ bindgen=${WASM_BINDGEN:-wasm-bindgen}
 if ! command -v "$bindgen" >/dev/null 2>&1 && [ -x "$HOME/.cargo/bin/wasm-bindgen" ]; then
     bindgen=$HOME/.cargo/bin/wasm-bindgen
 fi
-want=$(sed -n 's/^wasm-bindgen = "=\(.*\)"$/\1/p' "$root/crates/widget/Cargo.toml")
+want=$(sed -n 's/^wasm-bindgen = "=\(.*\)"$/\1/p' "$root/crates/openwgt/Cargo.toml")
 have=$("$bindgen" --version | cut -d' ' -f2)
 if [ "$want" != "$have" ]; then
     echo "wasm-bindgen $have, but the crates need $want: cargo install wasm-bindgen-cli --version $want" >&2
@@ -47,7 +47,7 @@ mkdir -p "$out"
 rm -rf "$out/snippets"
 "$bindgen" --target web --no-typescript --out-dir "$out" --out-name widget \
     "$root/target/wasm32-unknown-unknown/$profile/openwgt.wasm"
-cp "$root/crates/widget/web/index.html" "$out/index.html"
-cp "$root/crates/widget/web/manifest.webmanifest" "$out/manifest.webmanifest"
-cp "$root/crates/widget/res/icon.png" "$out/icon.png"
+cp "$root/crates/openwgt/web/index.html" "$out/index.html"
+cp "$root/crates/openwgt/web/manifest.webmanifest" "$out/manifest.webmanifest"
+cp "$root/crates/openwgt/res/icon.png" "$out/icon.png"
 echo "built $out: serve it over HTTP (python3 -m http.server -d $out 8000)"

@@ -6,7 +6,7 @@
 //! file is writable) and `Done=` in `%WINDIR%\WIDGET.INI`. The port reads
 //! the puzzle file from the CD (or the overrides) and never writes it,
 //! as the original does with a read-only install; the INI's part goes to
-//! a [`Profile`], which the `widget` crate keeps as a `WIDGET.INI` in the
+//! a [`Profile`], which the `openwgt` crate keeps as a `WIDGET.INI` in the
 //! port's settings folder.
 
 use std::collections::BTreeMap;

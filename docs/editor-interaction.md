@@ -1049,7 +1049,7 @@ name without extension gets the default one (for Open only when the name
 as typed isn't a file). Messages as Windows 95's: "%s\nFile not found.
 \nPlease verify the correct file name was given.", "%s\nPath not found
 ...", "%s already exists.\nDo you want to replace it?" (Yes/No). Files go
-through `platform::fs` (the `widget` crate's `PlatformFiles`), so the
+through `platform::fs` (the `openwgt` crate's `PlatformFiles`), so the
 browser lists its storage. The CD's sample widgets show as the folder
 `FUNWIDGE` of a drive "Widget Workshop CD" (`CD:` in paths) in "Look in":
 the original ran from the CD, where `FUNWIDGE` was a subfolder of the

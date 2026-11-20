@@ -1,5 +1,5 @@
 //! The files the editor opens and saves: the player's own, through a
-//! [`Files`] the `widget` crate gives it (`platform::fs`, so the browser's
+//! [`Files`] the `openwgt` crate gives it (`platform::fs`, so the browser's
 //! storage too), and the CD's sample widgets (`FUNWIDGE`, read with the
 //! rest of the CD into [`crate::assets::Assets::samples`]), which the file
 //! dialogs show as the folder [`SAMPLES`] of a drive of their own, [`CD`].

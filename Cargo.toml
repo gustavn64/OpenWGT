@@ -1,6 +1,6 @@
 [workspace]
 resolver = "3"
-members = ["crates/formats", "crates/platform", "crates/engine", "crates/widget"]
+members = ["crates/formats", "crates/platform", "crates/engine", "crates/openwgt"]
 
 [workspace.package]
 edition = "2024"

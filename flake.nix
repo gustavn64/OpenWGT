@@ -52,7 +52,7 @@
           };
           common = {
             inherit src;
-            inherit (craneLib.crateNameFromCargoToml { cargoToml = ./crates/widget/Cargo.toml; }) pname version;
+            inherit (craneLib.crateNameFromCargoToml { cargoToml = ./crates/openwgt/Cargo.toml; }) pname version;
             strictDeps = true;
             nativeBuildInputs = [ pkgs.pkg-config ];
             buildInputs = [ pkgs.alsa-lib ];
@@ -127,7 +127,7 @@
               p.scipy
             ]))
             # the browser build (tools/build-web.sh): the CLI must be the
-            # version crates/widget/Cargo.toml pins
+            # version crates/openwgt/Cargo.toml pins
             wasm-bindgen-cli_0_2_130
             lld
             # the CD image's files, the comparison VM

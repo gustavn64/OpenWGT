@@ -7,7 +7,7 @@ around it take. None of it carries the CD's data.
 | Where | What | How |
 |---|---|---|
 | The release | `openwgt-x86_64.AppImage`, `openwgt-aarch64.AppImage` | CI (linuxdeploy) |
-| The release | `openwgt-x86_64.deb`, `openwgt-aarch64.deb`, `.rpm`s | CI (cargo-deb, cargo-generate-rpm; `crates/widget/Cargo.toml`) |
+| The release | `openwgt-x86_64.deb`, `openwgt-aarch64.deb`, `.rpm`s | CI (cargo-deb, cargo-generate-rpm; `crates/openwgt/Cargo.toml`) |
 | The release | `openwgt-linux-x86_64.tar.gz`, `-aarch64` | CI: the bare program |
 | The release | `openwgt-windows-x86_64.exe`, `openwgt-windows-arm64.exe` | CI |
 | The release | `openwgt-macos.dmg` (Apple silicon and Intel) | CI |
