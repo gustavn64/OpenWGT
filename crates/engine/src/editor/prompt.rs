@@ -159,50 +159,16 @@ impl Prompt {
     }
 }
 
-/// The character a key types on a US keyboard.
-#[must_use]
-pub fn typed(vk: u16, shift: bool) -> Option<char> {
-    let c = match (vk, shift) {
-        (0x41..=0x5a, false) => char::from(u8::try_from(vk).ok()? + 32),
-        (0x41..=0x5a, true) | (0x30..=0x39, false) => char::from(u8::try_from(vk).ok()?),
-        (0x30..=0x39, true) => *b")!@#$%^&*("
-            .get(usize::from(vk - 0x30))
-            .map(|&b| char::from(b))
-            .as_ref()?,
-        (0x60..=0x69, _) => char::from(u8::try_from(vk - 0x30).ok()?),
-        (0x20, _) => ' ',
-        (0xbe | 0x6e, false) => '.',
-        (0xbc, false) => ',',
-        (0xbd | 0x6d, false) => '-',
-        (0xbd, true) => '_',
-        (0xbf | 0x6f, false) => '/',
-        (0xdc, false) => '\\',
-        (0xba, true) => ':',
-        (0xba, false) => ';',
-        (0xde, false) => '\'',
-        (0xbb, false) => '=',
-        (0xbb, true) | (0x6b, _) => '+',
-        (0xdb, false) => '[',
-        (0xdd, false) => ']',
-        (0xc0, true) => '~',
-        _ => return None,
-    };
-    Some(c)
-}
-
 #[cfg(test)]
 mod tests {
     use super::*;
 
     #[test]
-    fn answers_and_typing() {
+    fn answers() {
         let p = Prompt::new("t", "x", &[Answer::Yes, Answer::No, Answer::Cancel]);
         assert_eq!(p.key(u16::from(b'N')), Some(Answer::No));
         assert_eq!(p.key(0x0d), Some(Answer::Yes));
         assert_eq!(p.key(0x1b), Some(Answer::Cancel));
         assert_eq!(Prompt::new("t", "x", &[Answer::Ok]).key(0x1b), Some(Answer::Ok));
-        assert_eq!(typed(0x42, false), Some('b'));
-        assert_eq!(typed(0x57, true), Some('W'));
-        assert_eq!(typed(0xbe, false), Some('.'));
     }
 }

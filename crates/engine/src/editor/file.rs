@@ -145,9 +145,15 @@ impl Editor {
         }
     }
 
+    pub(super) fn file_text(&mut self, typed: &str) {
+        if let Some((d, _)) = &mut self.file_dialog {
+            d.text_input(typed);
+        }
+    }
+
     pub(super) fn file_key(&mut self, vk: u16) {
         if let Some((mut d, then)) = self.file_dialog.take() {
-            let o = d.key(&self.assets, self.fs(), vk, self.shift);
+            let o = d.key(&self.assets, self.fs(), vk);
             self.file_outcome(d, then, o);
         }
     }

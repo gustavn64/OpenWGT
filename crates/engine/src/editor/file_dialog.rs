@@ -21,7 +21,7 @@ use crate::files::{self, Fs};
 use crate::gfx::{IRect, Surface};
 
 use super::dialog::{CAPTION_H, FRAME, arrow, base_units, close_box, draw_window, mul_div};
-use super::prompt::{Answer, Prompt, typed};
+use super::prompt::{Answer, Prompt};
 use super::puzzle_dialog::focus_rect;
 use super::ui;
 
@@ -877,7 +877,7 @@ impl FileDialog {
     /// and the list; in the list the arrows, Home and End move, Backspace
     /// goes up a folder and a letter to the next name starting with it;
     /// in the name, typing.
-    pub fn key(&mut self, assets: &Assets, fs: Fs, vk: u16, shift: bool) -> Outcome {
+    pub fn key(&mut self, assets: &Assets, fs: Fs, vk: u16) -> Outcome {
         if let Some((pr, asked)) = &mut self.asked {
             if let Some(a) = pr.key(vk) {
                 let asked = asked.clone();
@@ -910,7 +910,7 @@ impl FileDialog {
             _ => {}
         }
         match self.focus {
-            Focus::List => self.list_key(assets, fs, vk, shift),
+            Focus::List => self.list_key(assets, fs, vk),
             Focus::Name => {
                 if vk == VK_BACK {
                     if std::mem::take(&mut self.name_sel) {
@@ -918,18 +918,34 @@ impl FileDialog {
                     } else {
                         self.name.pop();
                     }
-                } else if let Some(c) = typed(vk, shift) {
-                    if std::mem::take(&mut self.name_sel) {
-                        self.name.clear();
-                    }
-                    self.name.push(c);
                 }
             }
         }
         Outcome::Open
     }
 
-    fn list_key(&mut self, assets: &Assets, fs: Fs, vk: u16, shift: bool) {
+    /// Text typed (in the keyboard's layout): into the name, or in the
+    /// list to the next name starting with its letter.
+    pub fn text_input(&mut self, typed: &str) {
+        if self.asked.is_some() || self.dropped.is_some() {
+            return;
+        }
+        match self.focus {
+            Focus::Name => {
+                if std::mem::take(&mut self.name_sel) {
+                    self.name.clear();
+                }
+                self.name.push_str(typed);
+            }
+            Focus::List => {
+                if let Some(c) = typed.chars().next() {
+                    self.type_ahead(c);
+                }
+            }
+        }
+    }
+
+    fn list_key(&mut self, assets: &Assets, fs: Fs, vk: u16) {
         let rows = self.rows();
         let last = self.items.len().saturating_sub(1);
         let sel = self.sel;
@@ -946,20 +962,22 @@ impl FileDialog {
                     self.go(assets, fs, &d);
                 }
             }
-            _ => {
-                let Some(c) = typed(vk, shift) else { return };
-                let n = self.items.len();
-                let start = sel.map_or(0, |i| i + 1);
-                if let Some(i) = (0..n).map(|k| (start + k) % n).find(|&i| {
-                    self.items[i]
-                        .name
-                        .chars()
-                        .next()
-                        .is_some_and(|f| f.eq_ignore_ascii_case(&c))
-                }) {
-                    self.select(i);
-                }
-            }
+            _ => {}
+        }
+    }
+
+    /// The next name after the selected one starting with `c`.
+    fn type_ahead(&mut self, c: char) {
+        let n = self.items.len();
+        let start = self.sel.map_or(0, |i| i + 1);
+        if let Some(i) = (0..n).map(|k| (start + k) % n).find(|&i| {
+            self.items[i]
+                .name
+                .chars()
+                .next()
+                .is_some_and(|f| f.to_lowercase().eq(c.to_lowercase()))
+        }) {
+            self.select(i);
         }
     }
 
@@ -1385,43 +1403,43 @@ mod tests {
         // Folders first, the filter's files, no hidden ones.
         assert_eq!(names(&d), ["sub", "a.wgt", "B.WGT"]);
         // Tab to the list (its first entry), Enter opens the folder.
-        assert_eq!(d.key(&a, fs(), VK_TAB, false), Outcome::Open);
+        assert_eq!(d.key(&a, fs(), VK_TAB), Outcome::Open);
         assert_eq!(d.sel, Some(0));
-        d.key(&a, fs(), VK_RETURN, false);
+        d.key(&a, fs(), VK_RETURN);
         assert_eq!((d.dir.clone(), names(&d)), (dir.join("sub"), vec!["x.wgt"]));
         // Backspace goes up; a letter finds the name.
-        d.key(&a, fs(), VK_BACK, false);
+        d.key(&a, fs(), VK_BACK);
         assert_eq!(d.dir, dir);
-        d.key(&a, fs(), u16::from(b'B'), false);
+        d.text_input("b");
         assert_eq!((d.sel, d.name.as_str()), (Some(2), "B.WGT"));
-        d.key(&a, fs(), VK_UP, false);
+        d.key(&a, fs(), VK_UP);
         assert_eq!(d.name, "a.wgt");
         // A pattern typed lists what it takes.
         typing(&mut d, "*.txt");
-        d.key(&a, fs(), VK_RETURN, false);
+        d.key(&a, fs(), VK_RETURN);
         assert_eq!(names(&d), ["sub", "c.txt"]);
         // A missing file: the message, then back.
         typing(&mut d, "nope");
-        assert_eq!(d.key(&a, fs(), VK_RETURN, false), Outcome::Open);
+        assert_eq!(d.key(&a, fs(), VK_RETURN), Outcome::Open);
         assert_eq!(
             d.message(),
             Some("nope\nFile not found.\nPlease verify the correct file name was given.")
         );
-        d.key(&a, fs(), VK_RETURN, false);
+        d.key(&a, fs(), VK_RETURN);
         assert_eq!(d.message(), None);
         // The default extension; a folder by name; a path.
         typing(&mut d, "a");
-        assert_eq!(d.key(&a, fs(), VK_RETURN, false), Outcome::Done(dir.join("a.wgt")));
+        assert_eq!(d.key(&a, fs(), VK_RETURN), Outcome::Done(dir.join("a.wgt")));
         typing(&mut d, "sub");
-        assert_eq!(d.key(&a, fs(), VK_RETURN, false), Outcome::Open);
+        assert_eq!(d.key(&a, fs(), VK_RETURN), Outcome::Open);
         assert_eq!((d.dir.clone(), d.name.as_str()), (dir.join("sub"), ""));
         typing(&mut d, "../c.txt");
-        assert_eq!(d.key(&a, fs(), VK_RETURN, false), Outcome::Done(dir.join("c.txt")));
+        assert_eq!(d.key(&a, fs(), VK_RETURN), Outcome::Done(dir.join("c.txt")));
         typing(&mut d, "/no/such/folder/a.wgt");
-        d.key(&a, fs(), VK_RETURN, false);
+        d.key(&a, fs(), VK_RETURN);
         assert!(d.message().unwrap().contains("Path not found"));
-        d.key(&a, fs(), VK_ESCAPE, false);
-        assert_eq!(d.key(&a, fs(), VK_ESCAPE, false), Outcome::Cancel);
+        d.key(&a, fs(), VK_ESCAPE);
+        assert_eq!(d.key(&a, fs(), VK_ESCAPE), Outcome::Cancel);
         std::fs::remove_dir_all(&dir).unwrap();
     }
 
@@ -1484,24 +1502,21 @@ mod tests {
         let area = IRect::new(0, 0, 800, 600);
         let mut d = FileDialog::new(&a, fs(), SAVE_WIDGET, &dir, "a", area);
         // The name starts selected: typing replaces it.
-        d.key(&a, fs(), u16::from(b'Q'), false);
+        d.text_input("q");
         assert_eq!(d.name, "q");
-        assert_eq!(d.key(&a, fs(), VK_RETURN, false), Outcome::Done(dir.join("q.wgt")));
+        assert_eq!(d.key(&a, fs(), VK_RETURN), Outcome::Done(dir.join("q.wgt")));
         typing(&mut d, "a");
-        assert_eq!(d.key(&a, fs(), VK_RETURN, false), Outcome::Open);
+        assert_eq!(d.key(&a, fs(), VK_RETURN), Outcome::Open);
         let want = format!(
             "{} already exists.\nDo you want to replace it?",
             dir.join("a.wgt").display()
         );
         assert_eq!(d.message(), Some(want.as_str()));
         // No: back to the dialog; Yes: that file.
-        assert_eq!(d.key(&a, fs(), u16::from(b'N'), false), Outcome::Open);
+        assert_eq!(d.key(&a, fs(), u16::from(b'N')), Outcome::Open);
         assert_eq!(d.message(), None);
-        d.key(&a, fs(), VK_RETURN, false);
-        assert_eq!(
-            d.key(&a, fs(), u16::from(b'Y'), false),
-            Outcome::Done(dir.join("a.wgt"))
-        );
+        d.key(&a, fs(), VK_RETURN);
+        assert_eq!(d.key(&a, fs(), u16::from(b'Y')), Outcome::Done(dir.join("a.wgt")));
         std::fs::remove_dir_all(&dir).unwrap();
     }
 
@@ -1516,10 +1531,10 @@ mod tests {
         }
         let mut d = FileDialog::new(&a, fs(), OPEN_WIDGET, &dir, "", IRect::new(0, 0, 800, 600));
         assert!(d.has_bar() && d.max_first() > 0);
-        d.key(&a, fs(), VK_TAB, false);
-        d.key(&a, fs(), VK_END, false);
+        d.key(&a, fs(), VK_TAB);
+        d.key(&a, fs(), VK_END);
         assert_eq!((d.sel, d.first), (Some(199), d.max_first()));
-        d.key(&a, fs(), VK_HOME, false);
+        d.key(&a, fs(), VK_HOME);
         assert_eq!(d.first, 0);
         d.wheel(-1);
         assert_eq!(d.first, 1);

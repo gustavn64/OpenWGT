@@ -142,7 +142,7 @@ pub fn download(name: &str, data: &[u8]) -> bool {
 // focused from a touch (the
 // browsers bring up their keyboard only for one); what's typed into it
 // becomes the game's key presses, as Windows' virtual-key codes with
-// Shift around them (`editor::prompt::typed`'s keys), the key let go a
+// Shift around them (a US keyboard's), the key let go a
 // little later so that a Keypress part sees it held.
 #[wasm_bindgen::prelude::wasm_bindgen(inline_js = r#"
 const KEEP = "~~";

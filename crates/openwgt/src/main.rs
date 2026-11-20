@@ -483,6 +483,7 @@ impl App for Workshop {
             Input::Wheel { dx, dy, .. } => self.editor.wheel(dx, dy),
             Input::KeyDown(vk) => self.editor.key_down(vk),
             Input::KeyUp(vk) => self.editor.key_up(vk),
+            Input::Text(text) => self.editor.text_input(&text),
             Input::Close => self.editor.quit(),
         }
     }

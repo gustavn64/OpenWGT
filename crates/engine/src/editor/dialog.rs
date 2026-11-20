@@ -1003,7 +1003,7 @@ impl Dialog {
 
     /// A key: typing into the focused field, Tab to the next field, Enter
     /// is the default button, Esc Cancel.
-    pub fn key(&mut self, vk: u16, shift: bool) -> Result {
+    pub fn key(&mut self, vk: u16) -> Result {
         if let Some(i) = self.dropped {
             if matches!(vk, 0x0d | 0x1b) {
                 self.dropped = None;
@@ -1045,25 +1045,42 @@ impl Dialog {
             if text.pop().is_none() {
                 return Result::Open;
             }
+        } else if vk == 0x0d {
+            // A multi-line field's Enter (`ES_WANTRETURN`).
+            self.insert(f, filter, "\r\n");
+            return Result::Open;
         } else {
-            let c = if vk == 0x0d {
-                // A multi-line field's Enter (`ES_WANTRETURN`).
-                "\r\n".to_owned()
-            } else {
-                let Some(c) = super::prompt::typed(vk, shift) else {
-                    return Result::Open;
-                };
-                c.to_string()
-            };
-            // Unfiltered, the field holds what the settings block can.
-            let limit = if self.long_text { 239 } else { 59 };
-            if filter.max == 0 && text.len() + c.len() > limit {
-                return Result::Open;
-            }
-            text.push_str(&c);
+            return Result::Open;
         }
         self.edit_changed(f);
         Result::Open
+    }
+
+    /// Text typed (in the keyboard's layout) into the focused field.
+    pub fn text_input(&mut self, typed: &str) {
+        if self.dropped.is_some() {
+            return;
+        }
+        let Some(f) = self.focus else { return };
+        let Ctl::Edit { filter, .. } = self.controls[f].ctl else {
+            return;
+        };
+        for c in typed.chars() {
+            self.insert(f, filter, c.encode_utf8(&mut [0; 4]));
+        }
+    }
+
+    /// `c` added to field `f`'s text if it fits.
+    fn insert(&mut self, f: usize, filter: Filter, c: &str) {
+        let text = &mut self.controls[f].text;
+        // Unfiltered, the field holds what the settings block can.
+        let limit = if self.long_text { 239 } else { 59 };
+        // (One byte a character in the file's Windows-1252.)
+        if filter.max == 0 && text.chars().count() + c.chars().count() > limit {
+            return;
+        }
+        text.push_str(c);
+        self.edit_changed(f);
     }
 
     /// Draws the dialog; `gadget` is the one whose settings these are.
@@ -1530,14 +1547,13 @@ mod tests {
         // The edit takes three digits only.
         let edit = d.of_kind(|c| matches!(c, Ctl::Edit { .. })).next();
         d.focus = edit;
-        d.key(0x41, false);
-        d.key(0x37, false);
-        d.key(0x38, false);
+        d.text_input("A");
+        d.text_input("78");
         let mut back = Settings::default();
         d.read(&mut back, None);
         assert_eq!(back.label(0), b"427");
         assert!(d.changed);
-        assert_eq!(d.key(0x0d, false), Result::Ok);
+        assert_eq!(d.key(0x0d), Result::Ok);
     }
 
     /// A change in the dialog shows in its picture at once (`0x41eb78`
@@ -1682,7 +1698,10 @@ mod tests {
                 d.dropped = None;
                 Result::Open
             }
-            Ctl::Edit { .. } => d.key(0x31, false),
+            Ctl::Edit { .. } => {
+                d.text_input("1");
+                Result::Open
+            }
             _ => d.mouse_up(a, p),
         }
     }
@@ -1762,23 +1781,19 @@ mod tests {
         let mut d = open(&a, *b"Pend");
         work(&mut d, &a, 115);
         while !text(&d, 115).is_empty() {
-            d.key(0x08, false);
+            d.key(0x08);
         }
-        for vk in [0x31, 0x32, 0x41, 0xbd, 0x33, 0x34, 0x35, 0x36] {
-            d.key(vk, false);
-        }
+        d.text_input("12A-3456");
         assert_eq!(text(&d, 115), "12345");
         // A signed real number field: a minus first, an exponent.
         let mut d = open(&a, *b"Stop");
         work(&mut d, &a, 115);
         while !text(&d, 115).is_empty() {
-            d.key(0x08, false);
+            d.key(0x08);
         }
-        for vk in [0xbd, 0xbe, 0x31, 0xbe, 0x45, 0x35, 0x36] {
-            d.key(vk, false);
-        }
+        d.text_input("-.1.e56");
         assert_eq!(text(&d, 115), "-1.e56");
-        d.key(0x37, false);
+        d.text_input("7");
         assert_eq!(text(&d, 115), "-1.e56");
         // Read back as typed.
         let mut s = Settings::default();
