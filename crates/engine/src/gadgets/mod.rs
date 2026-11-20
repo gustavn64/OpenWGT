@@ -116,9 +116,12 @@ classes! {
     b"St10" "cSticker10" 2034 1061 1061 displays::sticker;
 }
 
-/// The class tagged `tag`: the game's, or a network part
-/// (`crate::net::parts`).
+/// The class tagged `tag`: the game's, or one of the port's own parts
+/// (`crate::port_parts`).
 #[must_use]
 pub fn class(tag: Tag) -> Option<&'static Class> {
-    CLASSES.iter().chain(crate::net::parts::CLASSES).find(|c| c.tag == tag)
+    CLASSES
+        .iter()
+        .find(|c| c.tag == tag)
+        .or_else(|| crate::port_parts::class(tag))
 }

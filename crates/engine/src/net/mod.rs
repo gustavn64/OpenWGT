@@ -16,9 +16,12 @@ pub mod hub;
 pub mod pack;
 pub mod parts;
 pub mod proto;
-pub mod wgt;
+#[cfg(test)]
+mod wgt_tests;
 
 pub use hub::{Hub, Socket, SocketEvent, Transport};
+
+use crate::port_parts::{Family, TrayPart};
 
 /// A value on the wire: what a Sender sends and a Receiver gives.
 #[derive(Debug, Clone, Copy, PartialEq)]
@@ -71,9 +74,20 @@ impl Status {
 }
 
 /// The network parts in the tray: their tray indexes, after the game's 64,
-/// and tags. Their help lines are strings `2500 +` the index, as the
-/// game's.
-pub const TRAY: [(u8, crate::gadget::Tag); 2] = [(65, parts::SENDER), (66, parts::RECEIVER)];
+/// tags and pictures. Their help lines are strings `2500 +` the index, as
+/// the game's.
+pub const TRAY: [TrayPart; 2] = [
+    TrayPart {
+        index: 65,
+        tag: parts::SENDER,
+        picture: (TRAY_SHEET, 1),
+    },
+    TrayPart {
+        index: 66,
+        tag: parts::RECEIVER,
+        picture: (TRAY_SHEET, 2),
+    },
+];
 /// Their folder, "Super Parts", where they have a page of their own at the
 /// end (`-2` starts it) while the port's enhancements are on.
 pub const TRAY_FOLDER: usize = 6;
@@ -82,23 +96,33 @@ const TRAY_PAGE: [i8; 3] = [-2, 65, 66];
 /// Receiver's.
 pub const TRAY_SHEET: u32 = 1902;
 
+/// The network parts as a family of the port's own parts
+/// (`crate::port_parts`).
+pub static FAMILY: Family = Family {
+    name: "opennet",
+    classes: parts::CLASSES,
+    tray: &TRAY,
+    folders: &[(TRAY_FOLDER, &TRAY_PAGE)],
+    pack: pack::builtin_for,
+    taken: Some(parts::name_new),
+};
+
 /// The tag of tray index `i`, if it is a network part's.
 #[must_use]
 pub fn tray_tag(i: u8) -> Option<crate::gadget::Tag> {
-    TRAY.iter().find(|(n, _)| *n == i).map(|(_, t)| *t)
+    TRAY.iter().find(|p| p.index == i).map(|p| p.tag)
 }
 
 /// The tray index of a network part's `tag`.
 #[must_use]
 pub fn tray_index(tag: crate::gadget::Tag) -> Option<u8> {
-    TRAY.iter().find(|(_, t)| *t == tag).map(|(n, _)| *n)
+    TRAY.iter().find(|p| p.tag == tag).map(|p| p.index)
 }
 
 /// Tray index `i`'s picture, if it is a network part's.
 #[must_use]
 pub fn tray_picture(i: u8) -> Option<(u32, u16)> {
-    let first = TRAY[0].0;
-    tray_tag(i).map(|_| (TRAY_SHEET, u16::from(i - first) + 1))
+    TRAY.iter().find(|p| p.index == i).map(|p| p.picture)
 }
 
 /// What the network parts add to folder `f`'s list of tray indexes.

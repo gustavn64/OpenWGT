@@ -5,18 +5,18 @@
 //! resources (`crate::opendata`) in one folder.
 //!
 //! The game's data has nothing for these parts, the CD's no more than
-//! OpenWDATA, so they go behind all of it ([`install`]): they fill only
-//! what is missing, and a string only where its block leaves it empty
-//! (`Assets::string`). Exporting the resources leaves them out.
+//! OpenWDATA, so they go behind all of it (`crate::port_parts::install`):
+//! they fill only what is missing, and a string only where its block
+//! leaves it empty (`Assets::string`). Exporting the resources leaves
+//! them out.
 //!
 //! The pack also has the word list of the random channel names
 //! ([`words`]).
 
 use std::sync::OnceLock;
 
-use crate::assets::{Assets, Embedded, Source};
+use crate::assets::{Embedded, Source};
 use crate::lang::Lang;
-use crate::opengfx::Overlay;
 
 include!(concat!(env!("OUT_DIR"), "/opennet_files.rs"));
 include!(concat!(env!("OUT_DIR"), "/opennet-sv_files.rs"));
@@ -35,31 +35,7 @@ pub fn builtin() -> Embedded {
 /// pictures, dialogs and texts.
 #[must_use]
 pub fn builtin_for(lang: Lang) -> Box<dyn Source> {
-    let top = match lang {
-        Lang::Sv => BUILTIN_SV,
-        Lang::Fr => BUILTIN_FR,
-        Lang::En => &[],
-    };
-    if top.is_empty() {
-        Box::new(builtin())
-    } else {
-        Box::new(Overlay {
-            top: Box::new(Embedded::new(top)),
-            base: Box::new(builtin()),
-        })
-    }
-}
-
-/// Puts the pack, in the language of the game's words (its word for
-/// Cancel, the CD's or OpenWDATA's), behind everything `a` has.
-pub(crate) fn install(a: &mut Assets) {
-    let lang = a.string(0xf221).and_then(|w| Lang::of_cancel(&w)).unwrap_or(a.lang);
-    let pack = builtin_for(lang);
-    let mut extra = crate::assets::read_resources(&*pack);
-    let mut pictures = crate::opengfx::load(&*pack, &a.palette());
-    extra.append(&mut pictures.resources);
-    a.pack_problems.append(&mut pictures.problems);
-    a.extra = extra;
+    crate::port_parts::embedded(BUILTIN, BUILTIN_SV, BUILTIN_FR, lang)
 }
 
 /// The words random channel names are made of (`tools/opennet/src/words.txt`):
@@ -83,7 +59,7 @@ pub fn words() -> &'static [&'static str] {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::assets::{Module, Packs, rt};
+    use crate::assets::{Assets, Module, Packs, rt};
     use crate::gfx::Pictures;
     use formats::tables::KnotKind;
 
