@@ -21,7 +21,7 @@ words.txt                    the random channel names' words
 |---|---|
 | The Sender, the Receiver | sheets 1900, 1901, frames 1 to 4: the lamp grey (no link), red (nobody there), amber (there, stopped), green (running); 88 × 50 |
 | The tray's icons | sheet 1902, frames 1 (Sender) and 2 (Receiver) |
-| Knots | `WWGADGET` 1014/1900 (an input at 1, 36), 1014/1901 (an output at 86, 36) |
+| Knots | `WWGADGET` 1014/1900 (an input at 4, 36), 1014/1901 (an output at 83, 36) |
 | Numbers | `WWGADGET` 1021/2900, 2901 (dialog, Doc texts) |
 | Doc texts | `WWGADGET` 1020/2900, 2901 and the tips 4900, 4901 |
 | Settings dialogs | `WIDGET` 5/2900, 2901 |

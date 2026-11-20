@@ -108,10 +108,10 @@ mod tests {
         let s = knots(1900);
         let r = knots(1901);
         assert_eq!((s.len(), r.len()), (1, 1));
-        assert_eq!((s[0].def.at.v, s[0].def.at.h, s[0].def.kind), (36, 1, KnotKind::Input));
+        assert_eq!((s[0].def.at.v, s[0].def.at.h, s[0].def.kind), (36, 4, KnotKind::Input));
         assert_eq!(
             (r[0].def.at.v, r[0].def.at.h, r[0].def.kind),
-            (36, 86, KnotKind::Output)
+            (36, 83, KnotKind::Output)
         );
         let pictures = Pictures::default();
         for (sheet, frames, size) in [(1900, 4, (88, 50)), (1901, 4, (88, 50)), (1902, 2, (44, 25))] {
