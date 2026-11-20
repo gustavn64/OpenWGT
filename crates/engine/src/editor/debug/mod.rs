@@ -22,6 +22,9 @@ mod probe_tests;
 mod probes;
 #[cfg(test)]
 mod tests;
+mod timeline;
+#[cfg(test)]
+mod timeline_tests;
 #[cfg(test)]
 mod ui_tests;
 mod watch;
@@ -95,6 +98,10 @@ pub struct Debugger {
     graph: graph::Graph,
     /// Where the run is, for the windows.
     time: graph::Time,
+    /// The run recorded since GO, to go back in.
+    timeline: timeline::Timeline,
+    /// What the timeline window shows.
+    shown: timeline::Shown,
 }
 
 /// How the run goes under the tools.
@@ -139,6 +146,8 @@ impl Default for Debugger {
             observed: probes::Observed::default(),
             graph: graph::Graph::default(),
             time: graph::Time::default(),
+            timeline: timeline::Timeline::default(),
+            shown: timeline::Shown::default(),
         }
     }
 }

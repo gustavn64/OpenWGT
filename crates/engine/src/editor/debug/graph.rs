@@ -1,6 +1,7 @@
 //! The graph window (Debug ▸ Graph): the probes' records as traces over
 //! time ([`crate::plot`]), following the run (or the timeline's cursor);
-//! dragged sideways to look back, zoomed with − and + (or the wheel).
+//! dragged sideways to look back, zoomed with − and + (or the wheel);
+//! a click goes to that tick ([`super::timeline`]).
 
 use formats::fnt::Font;
 
@@ -168,9 +169,26 @@ impl Editor {
         }
     }
 
-    /// The button let go over the plot.
-    pub(super) fn graph_release(&mut self) {
-        self.debug.graph.drag = None;
+    /// The button let go over the plot: a click (not a drag) goes to the
+    /// tick under it.
+    pub(super) fn graph_release(&mut self, r: IRect) {
+        let Some(font) = ui::font(&self.assets) else { return };
+        let time = self.debug.time;
+        let g = &mut self.debug.graph;
+        let Some((x0, t0)) = g.drag.take() else { return };
+        if g.moved {
+            return;
+        }
+        let area = layout(r, font).plot.inset(2);
+        let view = View {
+            t0,
+            ..g.view(area, time)
+        };
+        #[allow(clippy::cast_possible_truncation, clippy::cast_sign_loss)]
+        let t = view.tick(area, x0).round().max(0.0) as u32;
+        if self.debug.timeline.end > 0 {
+            self.timeline_seek_click(t);
+        }
     }
 
     /// The wheel over the graph: zoomed in (up) or out.

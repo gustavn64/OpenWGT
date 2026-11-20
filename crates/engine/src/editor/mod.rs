@@ -678,7 +678,7 @@ impl Editor {
         self.env.ms = 0;
         self.env.exclusive = None;
         self.ms_rest = 0;
-        self.debug.on_go();
+        self.debug_go();
         self.doc.start(&self.assets, &mut self.env);
         self.main_bar.select(id::GO);
         self.update_menu();
@@ -1601,6 +1601,7 @@ impl Editor {
         if self.env.exclusive.is_none()
             && let Some(i) = worksheet::gadget_at(&self.doc, p)
         {
+            self.debug_record_click(i, p);
             let (gh, gv) = (self.doc.gadgets[i].core.h, self.doc.gadgets[i].core.v);
             self.doc.with_gadget(i, &self.assets, &mut self.env, |g, io| {
                 g.behavior.click(&mut g.core, io, p.0 - gh, p.1 - gv);

@@ -235,7 +235,12 @@ impl Editor {
 
     /// `tick 1234 · paused · ¼×`.
     pub(super) fn debug_status(&self) -> String {
-        let mut s = trf("tick {}", &[&self.env.ticks.to_string()]);
+        let end = self.debug.timeline.end;
+        let mut s = if self.env.ticks < end {
+            trf("tick {} / {}", &[&self.env.ticks.to_string(), &end.to_string()])
+        } else {
+            trf("tick {}", &[&self.env.ticks.to_string()])
+        };
         if self.debug.run.paused {
             s.push_str(" · ");
             s.push_str(tr("paused"));

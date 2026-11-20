@@ -26,7 +26,6 @@ pub struct Probe {
     pub colour: usize,
     /// The changes since GO: from which tick on, what.
     pub changes: Vec<(u32, Sample)>,
-    last: Option<Val>,
 }
 
 /// A value listed as it is now.
@@ -78,7 +77,6 @@ impl Observed {
     pub fn clear_history(&mut self) {
         for p in &mut self.probes {
             p.changes.clear();
-            p.last = None;
         }
     }
 
@@ -98,7 +96,6 @@ impl Observed {
         for p in &mut self.probes {
             let n = p.changes.partition_point(|(c, _)| *c <= t);
             p.changes.truncate(n);
-            p.last = None;
         }
     }
 }
@@ -170,14 +167,12 @@ impl Editor {
                 name,
                 colour,
                 changes: Vec::new(),
-                last: None,
             };
             // What it is now, from now on.
             if self.running {
                 let t = self.env.ticks;
                 if let Ok(v) = self.value(&p.sel) {
                     p.changes.push((t, sample(&v)));
-                    p.last = Some(v);
                 }
             }
             self.debug.observed.probes.push(p);
@@ -242,14 +237,13 @@ impl Editor {
     /// Records the probes' values now, at tick `t`.
     pub(super) fn record_probes(&mut self, t: u32) {
         for i in 0..self.debug.observed.probes.len() {
-            let v = self.value(&self.debug.observed.probes[i].sel).unwrap_or(Val::None);
+            let v = sample(&self.value(&self.debug.observed.probes[i].sel).unwrap_or(Val::None));
             let p = &mut self.debug.observed.probes[i];
-            if p.last.as_ref() != Some(&v) {
-                p.changes.push((t, sample(&v)));
+            if p.changes.last().is_none_or(|(_, last)| *last != v) {
+                p.changes.push((t, v));
                 if p.changes.len() > MAX_CHANGES {
                     p.changes.drain(..MAX_CHANGES / 10);
                 }
-                p.last = Some(v);
             }
         }
     }

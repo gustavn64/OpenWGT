@@ -24,6 +24,7 @@ pub enum Kind {
     Console,
     Graph,
     Watch,
+    Timeline,
 }
 
 /// A window: what it is and where.

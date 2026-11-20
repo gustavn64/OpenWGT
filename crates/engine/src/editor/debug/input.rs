@@ -5,7 +5,7 @@
 
 use super::super::{Button, Editor, TextField, menu, ui};
 use super::window::{self, Colours, Drag, Hit, Kind, Win};
-use super::{Debugger, context, watch};
+use super::{Debugger, context, timeline, watch};
 use crate::assets::Assets;
 use crate::gfx::{IRect, Surface};
 use crate::lang::tr;
@@ -146,6 +146,7 @@ impl Editor {
                 self.watch_click(w.rect, p);
                 false
             }
+            Kind::Timeline => self.timeline_click(w.rect, p),
         }
     }
 
@@ -168,6 +169,11 @@ impl Editor {
                 }
             }
             Drag::Client { kind: Kind::Graph } => self.graph_drag((x, y)),
+            Drag::Client { kind: Kind::Timeline } => {
+                if let Some(w) = self.debug.window(Kind::Timeline) {
+                    self.timeline_drag(w.rect, (x, y), false);
+                }
+            }
             Drag::Client { .. } => {}
         }
         true
@@ -182,8 +188,13 @@ impl Editor {
         if self.debug.drag.is_none() {
             return false;
         }
+        let d = self.debug.drag;
         self.window_drag_move(x, y);
-        self.graph_release();
+        match (d, self.debug.window(Kind::Graph), self.debug.window(Kind::Timeline)) {
+            (Some(Drag::Client { kind: Kind::Graph }), Some(w), _) => self.graph_release(w.rect),
+            (Some(Drag::Client { kind: Kind::Timeline }), _, Some(w)) => self.timeline_drag(w.rect, (x, y), true),
+            _ => {}
+        }
         self.debug.drag = None;
         true
     }
@@ -201,7 +212,7 @@ impl Editor {
         match w.kind {
             Kind::Console => self.console_wheel(dy),
             Kind::Graph => self.graph_wheel(dy),
-            Kind::Watch => {}
+            Kind::Watch | Kind::Timeline => {}
         }
         true
     }
@@ -271,16 +282,19 @@ impl Editor {
         if self.debug.window(Kind::Watch).is_some() {
             self.watch_values();
         }
+        self.debug.shown = self.timeline_shown();
     }
 }
 
 /// Where window `kind` first opens in `area`.
 fn first_place(kind: Kind, area: IRect) -> IRect {
     let w = area.width();
+    let wide = (w - 16).min(440);
     match kind {
-        Kind::Console => IRect::sized(area.x0 + 8, area.y1 - 210, (w - 16).min(440), 200),
-        Kind::Graph => IRect::sized(area.x1 - 8 - (w - 16).min(400), area.y0 + 60, (w - 16).min(400), 220),
-        Kind::Watch => IRect::sized(area.x1 - 8 - 280, area.y1 - 210, 280, 200),
+        Kind::Console => IRect::sized(area.x0 + 8, area.y1 - 210, wide, 200),
+        Kind::Graph => IRect::sized(area.x1 - 8 - (w - 16).min(400), area.y0 + 114, (w - 16).min(400), 200),
+        Kind::Watch => IRect::sized(area.x1 - 8 - 280, area.y1 - 150, 280, 145),
+        Kind::Timeline => IRect::sized(area.x0 + 60, area.y0 + 22, (w - 120).clamp(160, 440), 88),
     }
 }
 
@@ -315,6 +329,7 @@ impl Debugger {
                 Kind::Console => tr("Console"),
                 Kind::Graph => tr("Graph"),
                 Kind::Watch => tr("Watch List"),
+                Kind::Timeline => tr("Timeline"),
             };
             window::draw(s, font, w.rect, title, active);
             let old = s.set_clip(window::client(w.rect).intersect(s.clip()));
@@ -322,6 +337,7 @@ impl Debugger {
                 Kind::Console => self.console.draw(s, font, w.rect, self.console.focused && active, col),
                 Kind::Graph => self.graph.draw(s, font, w.rect, col, &self.observed.probes, self.time),
                 Kind::Watch => watch::draw(s, font, w.rect, col, &self.observed),
+                Kind::Timeline => timeline::draw(s, font, w.rect, col, self.shown),
             }
             s.set_clip(old);
         }

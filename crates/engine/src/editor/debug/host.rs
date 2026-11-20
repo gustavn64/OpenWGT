@@ -445,6 +445,9 @@ impl Host for Editor {
             .doc
             .with_gadget(i, &self.assets, &mut self.env, |g, io| adapt::work(c, g, io, v));
         self.debug.run.assisted |= self.running && r.is_ok();
+        if self.running && r.is_ok() {
+            self.timeline_event(super::timeline::Event::SetValue { id: id.0, v: v.clone() });
+        }
         r.map_err(refused)
     }
 
@@ -497,6 +500,8 @@ impl Host for Editor {
             }
         }
         self.debug.run.assisted |= self.running;
+        self.timeline_event(super::timeline::Event::Poke { id: id.0, v: v.clone() });
+        let core = &self.doc.gadgets[i].core;
         let outs: Vec<usize> = core
             .knots
             .iter()
@@ -541,6 +546,7 @@ impl Host for Editor {
             ));
         }
         self.debug.run.assisted = true;
+        self.debug_record_click(i, (x, y));
         let (gh, gv) = (self.doc.gadgets[i].core.h, self.doc.gadgets[i].core.v);
         self.doc.with_gadget(i, &self.assets, &mut self.env, |g, io| {
             g.behavior.click(&mut g.core, io, x - gh, y - gv);
@@ -736,6 +742,10 @@ impl Host for Editor {
 
     fn pause(&mut self, on: bool) -> HostResult<()> {
         self.set_paused(on)
+    }
+
+    fn seek(&mut self, tick: u32) -> HostResult<()> {
+        self.timeline_seek(tick)
     }
 
     fn dump(&self) -> String {

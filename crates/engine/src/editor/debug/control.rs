@@ -22,6 +22,7 @@ pub mod cmd {
     pub const CONSOLE: u16 = 0x9019;
     pub const GRAPH: u16 = 0x901a;
     pub const WATCH: u16 = 0x901b;
+    pub const TIMELINE: u16 = 0x901c;
     /// The last the tools may use.
     pub const LAST: u16 = 0x902f;
 }
@@ -116,6 +117,7 @@ fn items() -> Vec<MenuItem> {
         item(cmd::CONSOLE, tr("&Console\tF8")),
         item(cmd::GRAPH, tr("&Graph")),
         item(cmd::WATCH, tr("&Watch List")),
+        item(cmd::TIMELINE, tr("&Timeline")),
         item(cmd::STOP_SCRIPTS, tr("Stop Sc&ripts")),
     ]
 }
@@ -203,6 +205,7 @@ impl Editor {
             (Kind::Console, cmd::CONSOLE),
             (Kind::Graph, cmd::GRAPH),
             (Kind::Watch, cmd::WATCH),
+            (Kind::Timeline, cmd::TIMELINE),
         ] {
             if self.debug.window(kind).is_some() {
                 self.menu.checked.push(id);
@@ -241,6 +244,7 @@ impl Editor {
             cmd::CONSOLE => self.toggle_window(Kind::Console),
             cmd::GRAPH => self.toggle_window(Kind::Graph),
             cmd::WATCH => self.toggle_window(Kind::Watch),
+            cmd::TIMELINE => self.toggle_window(Kind::Timeline),
             _ => {
                 if let Some(s) = Speed::ALL.into_iter().find(|s| s.command() == id) {
                     self.debug.run.speed = s;
@@ -269,10 +273,17 @@ impl Editor {
 
     /// Before a tick: the probes' first values, at GO.
     pub(in crate::editor) fn debug_before_tick(&mut self) {
-        if self.debugging() && self.env.ticks == 0 {
+        if !self.debugging() {
+            return;
+        }
+        let t = self.env.ticks;
+        let seeking = self.debug.timeline.doing.seeking;
+        if t == 0 && !seeking {
             self.record_probes(0);
             self.break_starts();
         }
+        self.timeline_before_tick();
+        self.debug.timeline.replayed = seeking || t < self.debug.timeline.end;
     }
 
     /// After a tick: the probes recorded, the breakpoints checked.
@@ -280,9 +291,18 @@ impl Editor {
         if !self.debugging() {
             return;
         }
+        self.timeline_after_tick();
+        if self.debug.timeline.doing.seeking {
+            return;
+        }
         let t = self.env.ticks;
-        self.debug.time = super::graph::Time { cursor: t, end: t };
-        self.record_probes(t);
+        self.debug.time = super::graph::Time {
+            cursor: t,
+            end: self.debug.timeline.end.max(t),
+        };
+        if !self.debug.timeline.replayed {
+            self.record_probes(t);
+        }
         self.check_breaks();
     }
 

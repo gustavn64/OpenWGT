@@ -268,6 +268,18 @@ fn sv(en: &str) -> Option<&'static str> {
         "&Break When Changes" => "&Bryt när den ändras",
         "&Name This Part..." => "&Namnge delen...",
         "&Copy Reference" => "&Kopiera referens",
+        "&Timeline" => "&Tidslinje",
+        "Timeline" => "Tidslinje",
+        "tick {} / {}" => "tick {} / {}",
+        "tick {} of {}" => "tick {} av {}",
+        "too long to go back in" => "för lång för att gå tillbaka i",
+        "GO to record a run" => "Tryck GO för att spela in en körning",
+        "The run is too long to go back in; the timeline stops." => {
+            "Körningen är för lång för att gå tillbaka i; tidslinjen slutar."
+        }
+        "nothing is recorded yet: GO first" => "inget är inspelat än: tryck GO först",
+        "the run was too long to go back in" => "körningen var för lång för att gå tillbaka i",
+        "the widget changed since that run" => "uppfinningen har ändrats sedan den körningen",
         "Console" => "Konsol",
         "Stop" => "Stoppa",
         "runs" => "kör",
@@ -470,6 +482,18 @@ fn fr(en: &str) -> Option<&'static str> {
         "&Break When Changes" => "&Arrêter quand il change",
         "&Name This Part..." => "&Nommer la pièce...",
         "&Copy Reference" => "&Copier la référence",
+        "&Timeline" => "C&hronologie",
+        "Timeline" => "Chronologie",
+        "tick {} / {}" => "tick {} / {}",
+        "tick {} of {}" => "tick {} sur {}",
+        "too long to go back in" => "trop longue pour revenir en arrière",
+        "GO to record a run" => "GO pour enregistrer une marche",
+        "The run is too long to go back in; the timeline stops." => {
+            "La marche est trop longue pour revenir en arrière ; la chronologie s'arrête."
+        }
+        "nothing is recorded yet: GO first" => "rien n'est encore enregistré : GO d'abord",
+        "the run was too long to go back in" => "la marche était trop longue pour revenir en arrière",
+        "the widget changed since that run" => "l'Eurêka a changé depuis cette marche",
         "Console" => "Console",
         "Stop" => "Arrêter",
         "runs" => "tourne",
