@@ -114,7 +114,7 @@
   {
    "id": 108,
    "class": "static",
-   "text": "Parts with the same name talk to each other.",
+   "text": "Parts on the same channel talk to each other.",
    "rect": [
     13,
     120,

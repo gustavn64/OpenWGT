@@ -92,7 +92,7 @@ mod tests {
     fn words(lang: Lang) -> (&'static str, &'static str, &'static str, &'static str) {
         match lang {
             Lang::En => ("Sender", "Receiver", "BUSY", "Channel name:"),
-            Lang::Sv => ("Sändare", "Mottagare", "UPPTAGEN", "Kanalens namn:"),
+            Lang::Sv => ("Sändare", "Mottagare", "UPPTAGEN", "Kanalnamn:"),
             Lang::Fr => ("Émetteur", "Récepteur", "OCCUPÉ", "Nom du canal\u{a0}:"),
         }
     }

@@ -31,6 +31,7 @@ Welcome to the OpenWGT workshop! Pick a topic below, or press **Index** to look 
 - [Switch parts](#switch-parts)
 - [Text parts](#text-parts)
 - [Super parts](#super-parts)
+- [Sender and Receiver](#network-parts)
 
 ## Puzzles
 - [Playing puzzles](#puzzles)
@@ -275,7 +276,7 @@ Here are the seven folders of the [parts tray](#tray) and what's in them:
 - [Number parts](#number-parts): Numeric Keypad, Three-Digit Number, Counter, Mini Three-Digit Number, Slider, Adder, Subtractor, Multiplier, Divider, Coin Toss, Random Number Generator, Totaler, Comparer, Math Functions, Area/Volume, Converter, and the AND, OR, XOR and NOT Gates.
 - [Switch parts](#switch-parts): Light Switch, Keypress, Mouse Button, Mouse Distance Measurer, Dynamite Plunger, Switcher, and the Two-way, Three-way and Four-way Splitters.
 - [Text parts](#text-parts): Label, Message List, Billboard and ten Stickers.
-- [Super parts](#super-parts): Win / Lose Checker, Pendulum, Gravity Chamber, Cannon, Heart, Solar System.
+- [Super parts](#super-parts): Win / Lose Checker, Pendulum, Gravity Chamber, Cannon, Heart, Solar System, and, with the enhancements on, the [Sender and the Receiver](#network-parts).
 
 Every part explains itself, too: double-click it on the worksheet and read its [settings window](#settings).
 
@@ -410,7 +411,35 @@ The folder with the planet on its tab: the science lab, and the part that ends g
 - **Heart** - beats like the heart of an animal you choose, from a gerbil to an elephant. It sends ON with each beat, or the pulse rate or the heart's weight.
 - **Solar System** - pick a planet and it sends out a fact about it as a number: its size, the length of its day or year, its distance from the Sun and more.
 
+## Page 3
+With the [enhancements](#openwgt-settings) on, a last page has two parts of OpenWGT's own: the **Sender** and the **Receiver**, which let widgets talk to each other over the Internet. See [Sender and Receiver](#network-parts).
+
 Tip: a [Converter](#number-parts) part turns the Cannon's feet into meters.
+
+= Sender and Receiver {#network-parts}
+keywords: sender, receiver, network, Internet, online, channel, channel name, friend, far away, relay, busy, lamp, privacy
+
+Two parts that are OpenWGT's own, not the original's: they let widgets talk to each other over the Internet, from one computer to another. They are on the last page of the [Super parts](#super-parts) while the [enhancements](#openwgt-settings) are on.
+
+- **Sender** - sends what is wired into it, an ON/OFF signal, a number or a picture, to every Receiver with the same channel name. It sends when you press GO, then each time its input changes. A sound sends nothing.
+- **Receiver** - sends out what its Sender sends. Until something comes, and after the Sender leaves, it sends OFF and 0.
+
+## Channel names
+Each new Sender or Receiver gets a channel name of three random words, like *cat-sun-oak*, shown on its display. Double-click the part to see or change it, or click **Random** for a new one. Tell the name to a friend: a Receiver with that name in their widget gets what your Sender sends. A name has up to 20 letters, digits and hyphens; capitals become small letters and spaces become hyphens.
+
+## The lamp
+- grey: not connected (no Internet, or trying again);
+- red: connected, but nobody on the other side;
+- yellow: the other side is there, its widget stopped;
+- green: the other side's widget is running.
+
+A Sender's lamp shows its Receivers: green as soon as one of them runs. One Sender can talk to many Receivers, but a channel has only one Sender at a time: a second one shows **BUSY** and takes over when the first one leaves.
+
+## Good to know
+- The parts connect as soon as the widget is open, and let go when it is closed, the part is deleted or its channel name changes.
+- What goes over the Internet: the channel name, whether each widget is running, and the Sender's values. Nothing else about you or your widget, and the relay in between keeps nothing.
+- Anyone who knows a channel name can send to it or listen in, so don't send secrets, and pick a new name with **Random** if strangers join in.
+- The original Widget Workshop doesn't know these parts: it opens a widget that has them, but without them.
 
 = Playing Puzzles {#puzzles}
 keywords: puzzle, puzzles, load puzzle, challenge, solved, locked
@@ -597,7 +626,8 @@ How big everything is drawn. **Automatic** follows your screen's own setting; on
 A few changes that make OpenWGT a little easier to use than the original:
 
 - the parts tray shows a whole folder at once, its pages one under the other, without page arrows;
-- the toolbars, settings windows and message boxes move whole when you drag them, not as an outline.
+- the toolbars, settings windows and message boxes move whole when you drag them, not as an outline;
+- the Super parts get a last page with the [Sender and the Receiver](#network-parts).
 
 The enhancements are on at first. Untick **Enhancements** to make everything exactly like the original.
 

@@ -9,14 +9,13 @@ compatibility_date = "2026-10-01"
 workers_dev = true
 preview_urls = false
 
-# To serve it on gustavn.se/openwgt/relay/<channel> (the zone is on the same
-# Cloudflare account): uncomment this and `wrangler deploy` again, or add the
-# route in the dashboard (Workers & Pages > openwgt-relay > Settings >
-# Domains & Routes > Add > Route). The Worker then answers these paths in
-# front of the Pages site on the same hostname; everything else stays Pages.
-# routes = [
-#   { pattern = "gustavn.se/openwgt/relay/*", zone_name = "gustavn.se" },
-# ]
+# Served on gustavn.se/openwgt/relay/<channel> (the zone is on the same
+# Cloudflare account), the game's default relay. The Worker answers these
+# paths in front of the Pages site on the same hostname; everything else
+# stays Pages.
+routes = [
+  { pattern = "gustavn.se/openwgt/relay/*", zone_name = "gustavn.se" },
+]
 
 # One Durable Object per channel (idFromName(channel)). SQLite-backed, the
 # kind the Free plan offers; it writes nothing to storage, all is in memory.

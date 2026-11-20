@@ -198,8 +198,9 @@ The page's query string takes the command line's options without their
 with the CD, the built-in packs; a folder after `=` means nothing
 there), `?lang=en`, `?lang=sv` or `?lang=fr` (the packs' language
 without a CD; else the one Settings ▸ Language picked, else the
-browser's). A `.WGT` name opens that widget from the storage
-(`?MYWIDGET.WGT`). `--overrides`, `--export` and the window's size mean
+browser's), `?relay=URL` (the network parts' relay,
+[net-parts.md](net-parts.md)). A `.WGT` name opens that widget from the
+storage (`?MYWIDGET.WGT`). `--overrides`, `--export` and the window's size mean
 nothing there. A bad option stops the page with the reason shown at the
 bottom. What the port would print on the terminal goes to
 the browser's console.

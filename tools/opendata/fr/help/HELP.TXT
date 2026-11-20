@@ -31,6 +31,7 @@ Bienvenue dans l'atelier d'OpenWGT ! Choisis une rubrique ci-dessous, ou appuie
 - [Pièces interrupteurs](#switch-parts)
 - [Pièces de texte](#text-parts)
 - [Superpièces](#super-parts)
+- [Émetteur et Récepteur](#network-parts)
 
 ## Problèmes
 - [Résoudre des problèmes](#puzzles)
@@ -275,7 +276,7 @@ Voici les sept dossiers de la [fenêtre à outils](#tray) et ce qu'ils contienne
 - [Pièces numériques](#number-parts) : Pavé numérique, Nombre à trois chiffres, Compteur, Mini nombre à trois chiffres, Curseur, Additionneur, Soustracteur, Multiplicateur, Diviseur, Pile ou face, Générateur de nombres aléatoires, Totalisateur, Comparateur, Fonctions mathématiques, Aire/Volume, Convertisseur, et les portes ET, OU, XOU et INV.
 - [Pièces interrupteurs](#switch-parts) : Interrupteur, Touche clavier, Bouton de souris, Mesureur de distance, Détonateur, Aiguillage, et les Répartiteurs à deux, trois et quatre sorties.
 - [Pièces de texte](#text-parts) : Étiquette, Liste de messages, Panneau d'affichage et dix Autocollants.
-- [Superpièces](#super-parts) : Vérificateur gagné/perdu, Pendule, Chambre de gravité, Canon, Coeur, Système solaire.
+- [Superpièces](#super-parts) : Vérificateur gagné/perdu, Pendule, Chambre de gravité, Canon, Coeur, Système solaire et, avec les améliorations, l'[Émetteur et le Récepteur](#network-parts).
 
 Chaque pièce s'explique aussi elle-même : double-clique dessus sur la zone de travail et lis sa [fenêtre de réglages](#settings).
 
@@ -410,7 +411,35 @@ Le dossier avec la planète sur son onglet : le laboratoire de sciences, et la 
 - **Coeur** - bat comme le coeur d'un animal que tu choisis, de la gerboise à l'éléphant. Il envoie ON à chaque battement, ou bien le rythme cardiaque ou le poids du coeur.
 - **Système solaire** - choisis une planète et il envoie un renseignement sur elle sous forme de nombre : sa taille, la durée de son jour ou de son année, sa distance au Soleil et d'autres encore.
 
+## Page 3
+Avec les [améliorations](#openwgt-settings), une dernière page a deux pièces propres à OpenWGT : l'**Émetteur** et le **Récepteur**, qui permettent à des Eurêkas de se parler par Internet. Voir [Émetteur et Récepteur](#network-parts).
+
 Astuce : un [Convertisseur](#number-parts) transforme les mètres du Canon en pieds.
+
+= Émetteur et Récepteur {#network-parts}
+keywords: émetteur, récepteur, réseau, Internet, en ligne, canal, nom du canal, ami, à distance, relais, occupé, voyant, vie privée
+
+Deux pièces propres à OpenWGT, absentes de l'original : elles permettent à des Eurêkas de se parler par Internet, d'un ordinateur à l'autre. Elles sont sur la dernière page des [Superpièces](#super-parts) quand les [améliorations](#openwgt-settings) sont activées.
+
+- **Émetteur** - envoie ce qui est branché dessus, signal ON/OFF, nombre ou image, à tous les Récepteurs du même nom de canal. Il envoie quand tu appuies sur GO, puis chaque fois que son entrée change. Un son n'envoie rien.
+- **Récepteur** - envoie ce qu'envoie son Émetteur. Tant que rien n'est arrivé, et après le départ de l'Émetteur, il envoie OFF et 0.
+
+## Noms de canal
+Chaque nouvel Émetteur ou Récepteur reçoit un nom de canal de trois mots tirés au hasard, comme *cat-sun-oak*, affiché sur son écran. Double-clique sur la pièce pour le voir ou le changer, ou clique sur **Au hasard** pour en avoir un autre. Donne le nom à un ami : un Récepteur de ce nom dans son Eurêka reçoit ce qu'envoie ton Émetteur. Un nom a jusqu'à 20 lettres (de a à z, sans accents), chiffres et tirets ; les majuscules deviennent des minuscules et les espaces des tirets.
+
+## Le voyant
+- gris : pas connecté (pas d'Internet, ou nouvel essai en cours) ;
+- rouge : connecté, mais personne de l'autre côté ;
+- jaune : l'autre côté est là, son Eurêka à l'arrêt ;
+- vert : l'Eurêka de l'autre côté est en marche.
+
+Le voyant d'un Émetteur montre ses Récepteurs : vert dès que l'un d'eux est en marche. Un Émetteur peut parler à plusieurs Récepteurs, mais un canal n'a qu'un Émetteur à la fois : un deuxième affiche **OCCUPÉ** et prend la suite quand le premier part.
+
+## Bon à savoir
+- Les pièces se connectent dès que l'Eurêka est ouvert, et se déconnectent quand il est fermé, quand la pièce est supprimée ou quand son nom de canal change.
+- Ce qui passe par Internet : le nom du canal, si chaque Eurêka est en marche, et les valeurs de l'Émetteur. Rien d'autre sur toi ou ton Eurêka, et le relais entre vous ne garde rien.
+- Qui connaît un nom de canal peut y envoyer ou écouter : n'envoie pas de secrets, et prends un nouveau nom avec **Au hasard** si des inconnus arrivent.
+- Le jeu original ne connaît pas ces pièces : il ouvre un Eurêka qui en a, mais sans elles.
 
 = Résoudre des problèmes {#puzzles}
 keywords: problème, problèmes, charger un problème, défi, résolu, verrouillé
@@ -597,7 +626,8 @@ La taille à laquelle tout est dessiné. **Automatique** suit le réglage de ton
 Quelques changements qui rendent OpenWGT un peu plus facile à utiliser que l'original :
 
 - la fenêtre à outils montre un dossier entier d'un coup, ses pages l'une sous l'autre, sans flèches ;
-- les barres d'outils, les fenêtres de réglages et les boîtes de message se déplacent en entier quand tu les fais glisser, et pas seulement leur contour.
+- les barres d'outils, les fenêtres de réglages et les boîtes de message se déplacent en entier quand tu les fais glisser, et pas seulement leur contour ;
+- les Superpièces ont une dernière page avec l'[Émetteur et le Récepteur](#network-parts).
 
 Les améliorations sont activées au départ. Décoche **Améliorations** pour que tout soit exactement comme dans l'original.
 

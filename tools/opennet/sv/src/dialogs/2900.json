@@ -78,7 +78,7 @@
   {
    "id": 105,
    "class": "static",
-   "text": "Kanalens namn:",
+   "text": "Kanalnamn:",
    "rect": [
     13,
     91,
@@ -114,7 +114,7 @@
   {
    "id": 108,
    "class": "static",
-   "text": "Delar med samma namn pratar med varandra.",
+   "text": "Delar på samma kanal pratar med varandra.",
    "rect": [
     13,
     120,

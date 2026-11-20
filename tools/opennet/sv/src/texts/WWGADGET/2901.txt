@@ -1,1 +1,1 @@
-Mottagaren ger ut det som sändaren med samma kanalnamn skickar (av eller på, ett tal eller en bild), från en annan uppfinning, även på en annan dator. Innan något kommer ger den av och 0. Lampan: grå, inte ansluten; röd, ingen sändare; gul, väntar; grön, går.
+Mottagaren skickar ut det som sändaren med samma kanalnamn skickar, en PÅ/AV-signal, ett tal eller en bild, från en annan uppfinning, även på en annan dator. Tills något kommer skickar den AV och 0. Lampan: grå, inte ansluten; röd, ingen sändare; gul, sändaren står still; grön, den är igång.

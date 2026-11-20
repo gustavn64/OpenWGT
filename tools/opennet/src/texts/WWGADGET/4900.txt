@@ -1,2 +1,2 @@
 Construction Tip:
-Click Random for a new channel name and tell it to a friend. A Receiver with that name in their widget gives what your Sender gets, so your switch can light their bulb. BUSY means another Sender has the name.
+Click Random for a new channel name and tell it to a friend. A Receiver with that name in their widget sends out what goes into your Sender, so your Light Switch can light their Light Bulb. BUSY means another Sender has the channel; yours takes over when it leaves.

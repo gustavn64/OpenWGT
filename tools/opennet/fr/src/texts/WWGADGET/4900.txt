@@ -1,2 +1,2 @@
 Astuce de construction :
-Clique sur Au hasard pour un nouveau nom de canal et donne-le à un ami. Un récepteur de ce nom dans son Eurêka donne ce que reçoit ton émetteur : ton interrupteur peut allumer son ampoule. OCCUPÉ : un autre émetteur a ce nom.
+Clique sur Au hasard pour un nouveau nom de canal et donne-le à un ami. Un Récepteur de ce nom dans son Eurêka envoie ce qui entre dans ton Émetteur : ton Interrupteur peut allumer son Ampoule. OCCUPÉ : un autre Émetteur a le canal ; le tien prend la suite quand il part.

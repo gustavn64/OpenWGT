@@ -31,6 +31,7 @@ Välkommen till verkstaden i OpenWGT! Välj ett ämne nedan, eller tryck på **R
 - [Brytardelar](#switch-parts)
 - [Textdelar](#text-parts)
 - [Superdelar](#super-parts)
+- [Sändare och mottagare](#network-parts)
 
 ## Pussel
 - [Lösa pussel](#puzzles)
@@ -275,7 +276,7 @@ Här är de sju flikarna i [verktygslådan](#tray) och vad som finns i dem:
 - [Sifferdelar](#number-parts): sifferknappar, tresiffrigt tal, räknare, litet tresiffrigt tal, skjutreglage, adderare, subtraherare, multiplicerare, dividerare, slantsingling, slumptalsgenerator, summerare, jämförare, mattefunktioner, area/volym, omvandlare och OCH-, ELLER-, XELLER- och INTE-grindarna.
 - [Brytardelar](#switch-parts): strömbrytare, tangenttryck, musknapp, musavståndsmätare, dynamittändare, växlare samt två-, tre- och fyrvägsdelarna.
 - [Textdelar](#text-parts): etikett, meddelandelista, anslagstavla och tio klistermärken.
-- [Superdelar](#super-parts): vinstkollare, pendel, gravitationskammare, kanon, hjärta, solsystemet.
+- [Superdelar](#super-parts): vinstkollare, pendel, gravitationskammare, kanon, hjärta, solsystemet och, med förbättringarna påslagna, [sändaren och mottagaren](#network-parts).
 
 Varje del förklarar sig själv också: dubbelklicka på den på arbetsytan och läs dess [inställningsfönster](#settings).
 
@@ -410,7 +411,35 @@ Fliken med planeten: vetenskapslabbet, och delen som avslutar spel.
 - **Hjärta** - slår som hjärtat hos ett djur du väljer, från en ökenråtta till en elefant. Det skickar PÅ vid varje slag, eller pulsen eller hjärtats vikt.
 - **Solsystemet** - välj en planet så skickar den ut ett faktum om den som ett tal: storleken, hur långt dygnet eller året är, avståndet till solen med mera.
 
+## Sida 3
+Med [förbättringarna](#openwgt-settings) påslagna har en sista sida två delar som är OpenWGT:s egna: **sändaren** och **mottagaren**, som låter uppfinningar prata med varandra över internet. Se [Sändare och mottagare](#network-parts).
+
 Tips: en [omvandlare](#number-parts) gör om kanonens meter till fot.
+
+= Sändare och mottagare {#network-parts}
+keywords: sändare, mottagare, nätverk, internet, uppkopplad, kanal, kanalnamn, kompis, långt bort, relä, upptagen, lampa, integritet
+
+Två delar som är OpenWGT:s egna, inte originalets: de låter uppfinningar prata med varandra över internet, från en dator till en annan. De finns på sista sidan av [superdelarna](#super-parts) när [förbättringarna](#openwgt-settings) är påslagna.
+
+- **Sändare** - skickar det som är inkopplat i den, en PÅ/AV-signal, ett tal eller en bild, till alla mottagare med samma kanalnamn. Den skickar när du trycker på GO och sedan varje gång ingången ändras. Ett ljud skickar ingenting.
+- **Mottagare** - skickar ut det som sändaren skickar. Innan något har kommit, och när sändaren har gått, skickar den AV och 0.
+
+## Kanalnamn
+Varje ny sändare eller mottagare får ett kanalnamn av tre slumpade ord, till exempel *cat-sun-oak*, och visar det i sin display. Dubbelklicka på delen för att se eller ändra det, eller klicka på **Slumpa** för ett nytt. Berätta namnet för en kompis: en mottagare med det namnet i kompisens uppfinning får det din sändare skickar. Ett namn har upp till 20 bokstäver (a till z), siffror och bindestreck; stora bokstäver blir små och mellanslag blir bindestreck.
+
+## Lampan
+- grå: inte ansluten (inget internet, eller försöker igen);
+- röd: ansluten, men ingen på andra sidan;
+- gul: andra sidan finns, men dess uppfinning står still;
+- grön: andra sidans uppfinning är igång.
+
+En sändares lampa visar dess mottagare: grön så fort en av dem är igång. En sändare kan prata med många mottagare, men en kanal har bara en sändare åt gången: en andra visar **UPPTAGEN** och tar över när den första går.
+
+## Bra att veta
+- Delarna ansluter så fort uppfinningen är öppen och släpper när den stängs, när delen tas bort eller när kanalnamnet ändras.
+- Det som går över internet: kanalnamnet, om varje uppfinning är igång, och sändarens värden. Inget annat om dig eller din uppfinning, och reläet mellan er sparar ingenting.
+- Alla som kan ett kanalnamn kan skicka till det eller lyssna, så skicka inga hemligheter, och ta ett nytt namn med **Slumpa** om främlingar dyker upp.
+- Originalspelet känner inte till de här delarna: det öppnar en uppfinning som har dem, men utan dem.
 
 = Lösa pussel {#puzzles}
 keywords: pussel, hämta pussel, utmaning, löst, låst
@@ -597,7 +626,8 @@ Hur stort allt ritas. **Automatiskt** följer skärmens egen inställning; på e
 Några ändringar som gör OpenWGT lite lättare att använda än originalet:
 
 - verktygslådan visar en hel flik på en gång, med sidorna under varandra och utan pilar;
-- verktygsfälten, inställningsfönstren och meddelanderutorna flyttas hela när du drar dem, inte som en kontur.
+- verktygsfälten, inställningsfönstren och meddelanderutorna flyttas hela när du drar dem, inte som en kontur;
+- superdelarna får en sista sida med [sändaren och mottagaren](#network-parts).
 
 Förbättringarna är påslagna från början. Kryssa ur **Förbättringar** för att få allt precis som i originalet.
 

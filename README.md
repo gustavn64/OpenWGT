@@ -142,8 +142,10 @@ Options: `--open`, `--opengfx`, `--opensfx` and `--opendata`
 ([below](#without-the-cd-openwgfx-openwsfx-openwdata)), `--lang=en|sv|fr`,
 `--no-audio`, `--window-size=WxH`, `--fullscreen`, `--windowed`,
 `--ui-scale=N|auto` (remembered in the settings file), `--overrides=DIR`
-(resources that replace or add to the CD's) and `--export=DIR` (writes
-every resource there in that layout and quits).
+(resources that replace or add to the CD's), `--export=DIR` (writes
+every resource there in that layout and quits) and `--relay=URL` (the
+network parts' relay, also `OPENWGT_RELAY`;
+[docs/net-parts.md](docs/net-parts.md)).
 
 The browser version: `tools/build-web.sh`, [docs/web.md](docs/web.md).
 Every push to master builds every package
