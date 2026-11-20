@@ -217,10 +217,7 @@ fn a_typed_name_is_cleaned_on_ok() {
     e.doc.gadgets.push(g);
     e.open_settings(0);
     click_control(&mut e, 106);
-    for k in [b'C', b'A', b'T', 0x20, b'S', b'U', b'N'] {
-        e.key_down(u16::from(k));
-        e.key_up(u16::from(k));
-    }
+    e.text_input("Cat Sun");
     click_control(&mut e, 1);
     assert_eq!(e.doc.gadgets[0].core.settings.label(0), b"cat-sun");
 }
