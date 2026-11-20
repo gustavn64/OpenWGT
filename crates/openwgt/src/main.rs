@@ -8,6 +8,7 @@
 //! `openwgt [--open] [--lang=en|sv|fr] [--opengfx[=DIR]] [--opensfx[=DIR]]
 //! [--opendata[=DIR]] [--overrides=DIR] [--export=DIR] [--no-audio]
 //! [--window-size=WxH] [--fullscreen|--windowed] [--ui-scale=N|auto] [--help]
+//! [--script FILE [--headless] [--out DIR] [--seed N] [--budget N] [--timeout S]]
 //! [CD] [WIDGET.WGT|LINK]` ([`USAGE`]), where `CD` is the game's CD: an
 //! ISO image or a folder with its files (default: the one `.iso` in the
 //! current directory, else `orig`), and `LINK` a widget link
@@ -42,6 +43,8 @@ mod files;
 #[cfg(not(target_arch = "wasm32"))]
 mod pick;
 mod profile;
+#[cfg(not(target_arch = "wasm32"))]
+mod script;
 mod sound;
 #[cfg(target_arch = "wasm32")]
 mod web;
@@ -65,7 +68,8 @@ const LINK_PAGE: &str = "https://gustavn.se/openwgt/play/";
 
 const USAGE: &str =
     "usage: openwgt [--open] [--lang=en|sv|fr] [--opengfx[=DIR]] [--opensfx[=DIR]] [--opendata[=DIR]] [--overrides=DIR] [--export=DIR] [--no-audio] [--window-size=WxH] \
-[--fullscreen|--windowed] [--ui-scale=N|auto] [--help] [CD] [WIDGET.WGT|LINK]
+[--fullscreen|--windowed] [--ui-scale=N|auto] [--help] \
+[--script FILE [--headless] [--out DIR] [--seed N] [--budget N] [--timeout S]] [CD] [WIDGET.WGT|LINK]
 
   CD               the game's CD: an ISO image or a folder with its files
                    (default: the .iso in the current directory, else orig)
@@ -93,7 +97,16 @@ const USAGE: &str =
   --ui-scale=N|auto
                    window pixels per game pixel, such as 2 or 1.5, in
                    quarters; auto follows the display's scaling
-                   (remembered, ui_scale in the settings file)";
+                   (remembered, ui_scale in the settings file)
+  --script FILE    runs a script of commands in the game (its help command
+                   lists them)
+  --headless       runs the script with no window, as fast as it goes, and
+                   exits: 0 if it ran through, 1 if a check failed or it
+                   stopped on an error, 2 if it couldn't start
+  --out DIR        where the script's shots go (default: here)
+  --seed N         the parts' random numbers start from N
+  --budget N       the most commands a script runs between two waits
+  --timeout S      stops a headless script after S seconds";
 
 #[derive(Clone)]
 struct Args {
@@ -120,6 +133,9 @@ struct Args {
     restart: Vec<std::ffi::OsString>,
     no_audio: bool,
     window: WindowOptions,
+    /// `--script` and the options that go with it.
+    #[cfg(not(target_arch = "wasm32"))]
+    script: script::Options,
 }
 
 impl Args {
@@ -212,6 +228,8 @@ fn args(mut it: impl Iterator<Item = std::ffi::OsString>) -> Args {
             settings_file: platform::settings::settings_file(),
             ..WindowOptions::default()
         },
+        #[cfg(not(target_arch = "wasm32"))]
+        script: script::Options::default(),
     };
     while let Some(arg) = it.next() {
         let s = arg.to_string_lossy().into_owned();
@@ -268,6 +286,12 @@ fn args(mut it: impl Iterator<Item = std::ffi::OsString>) -> Args {
                 let scale = platform::UiScale::parse(&v);
                 a.window.ui_scale = Some(scale.unwrap_or_else(|| usage_error(&format!("bad UI scale {v}"))));
             }
+            #[cfg(not(target_arch = "wasm32"))]
+            "--headless" => a.script.headless = true,
+            #[cfg(not(target_arch = "wasm32"))]
+            "--script" | "--out" | "--seed" | "--budget" | "--timeout" => {
+                a.script.set(&key, value()).unwrap_or_else(|e| usage_error(&e));
+            }
             k if k.starts_with('-') => usage_error(&format!("unknown option {k}")),
             _ => {
                 let p = PathBuf::from(&s);
@@ -314,6 +338,9 @@ struct Workshop {
     /// CD image to be dropped on it instead of showing the game.
     #[cfg(not(target_arch = "wasm32"))]
     asking: Option<pick::DropScreen>,
+    /// The script `--script` runs, a frame at a time.
+    #[cfg(not(target_arch = "wasm32"))]
+    script: Option<script::Windowed>,
 }
 
 impl Workshop {
@@ -430,6 +457,10 @@ impl App for Workshop {
             self.editor.open_link(&l);
         }
         self.editor.update(ms, sound::local_time());
+        #[cfg(not(target_arch = "wasm32"))]
+        if let Some(s) = &mut self.script {
+            s.frame(&mut self.editor, ms);
+        }
         if self.editor.take_change_cd() {
             self.change_cd();
         }
@@ -680,6 +711,9 @@ fn main() {
         }
         return;
     }
+    if args.script.headless {
+        std::process::exit(script::run_without_window(&args, assets));
+    }
     if let Err(e) = start(&args, assets) {
         fail(&e.to_string());
     }
@@ -876,6 +910,8 @@ fn start(args: &Args, assets: Assets) -> Result<(), platform::Error> {
     editor.set_system_dark(theme.dark());
     let settings_file = args.window.settings_file.clone();
     editor.set_enhanced(enhanced(settings_file.as_deref()));
+    #[cfg(not(target_arch = "wasm32"))]
+    let script = script::Windowed::start(args, &mut editor).unwrap_or_else(|e| fail(&e));
     let app = Workshop {
         editor,
         sound: Sound::new(audio),
@@ -889,6 +925,8 @@ fn start(args: &Args, assets: Assets) -> Result<(), platform::Error> {
         carry: Duration::ZERO,
         #[cfg(not(target_arch = "wasm32"))]
         asking: None,
+        #[cfg(not(target_arch = "wasm32"))]
+        script,
     };
     platform::run("OpenWGT", args.window.clone(), app)
 }
