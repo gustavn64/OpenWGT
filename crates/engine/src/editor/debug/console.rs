@@ -12,13 +12,19 @@
 //! ([`Editor::set_script_runtime`]), or without one to the built-in
 //! language too. Typing comes as text ([`Editor::text_input`]), in the
 //! keyboard's own layout; the keys only edit.
+//!
+//! The log and the line are in a fixed-pitch font ([`ui::mono`]), what's
+//! typed and the values shown in the syntax's colours
+//! ([`super::highlight`]).
 
 use std::collections::VecDeque;
 
 use formats::fnt::Font;
 
 use super::super::{Editor, TextField, ui};
+use super::highlight::{self, State, Syntax, Tok};
 use super::window::{self, Colours};
+use crate::assets::Assets;
 use crate::gfx::{IRect, Surface};
 use crate::lang::tr;
 use crate::script::runtime::{Runtime, TaskId, TaskInfo, TaskState};
@@ -71,6 +77,34 @@ pub struct Line {
     pub kind: LineKind,
     pub text: String,
     pub mark: Option<(usize, usize)>,
+    /// The language it's in, to colour it by (after the prompt of what
+    /// was typed).
+    pub syntax: Option<Syntax>,
+    /// It goes on from the line before (added with it): a comment open
+    /// there is still open.
+    pub more: bool,
+}
+
+/// The fonts the console draws with: the dialogs' for its lists and
+/// buttons, a fixed-pitch one for the log and the line, and that one's
+/// bold for keywords (the plain one where the bold's cells differ).
+#[derive(Clone, Copy)]
+pub struct Fonts<'a> {
+    pub ui: &'a Font,
+    pub mono: &'a Font,
+    pub bold: &'a Font,
+}
+
+impl<'a> Fonts<'a> {
+    #[must_use]
+    pub fn of(assets: &'a Assets) -> Option<Fonts<'a>> {
+        let ui = ui::font(assets)?;
+        let mono = ui::mono(assets, false).unwrap_or(ui);
+        let bold = ui::mono(assets, true)
+            .filter(|b| b.height == mono.height && ui::width(b, "Mi.") == ui::width(mono, "Mi."))
+            .unwrap_or(mono);
+        Some(Fonts { ui, mono, bold })
+    }
 }
 
 /// Which language a task is in.
@@ -174,6 +208,11 @@ impl Console {
     /// script error shows it (`7 | line` then `  | ^^^^`), becomes a mark
     /// under its line.
     pub fn add(&mut self, kind: LineKind, text: &str) {
+        self.add_in(kind, text, None);
+    }
+
+    /// Adds `text` as [`Console::add`] does, in `syntax`'s colours.
+    pub fn add_in(&mut self, kind: LineKind, text: &str, syntax: Option<Syntax>) {
         let rows: Vec<&str> = text.split('\n').collect();
         let mut i = 0;
         while i < rows.len() {
@@ -182,6 +221,8 @@ impl Console {
                 kind,
                 text: row.to_owned(),
                 mark: None,
+                syntax,
+                more: i > 0,
             };
             if let Some(next) = rows.get(i + 1)
                 && let Some(mark) = carets(row, next)
@@ -416,9 +457,9 @@ pub struct Layout {
 /// The console's parts in the window at `r`, with `rows` rows of the
 /// Scripts list, `tasks` tasks and a line of `input_rows` rows.
 #[must_use]
-pub fn layout(r: IRect, font: &Font, rows: usize, tasks: usize, input_rows: usize) -> Layout {
+pub fn layout(r: IRect, fonts: Fonts, rows: usize, tasks: usize, input_rows: usize) -> Layout {
     let c = window::client(r).inset(2);
-    let lh = i32::from(font.height);
+    let lh = i32::from(fonts.ui.height);
     let row = lh + 4;
     let m = i32::try_from(rows.min(super::scripts::MAX_ROWS)).unwrap_or(0);
     let rows = (0..m)
@@ -434,7 +475,7 @@ pub fn layout(r: IRect, font: &Font, rows: usize, tasks: usize, input_rows: usiz
         })
         .collect();
     let shown = i32::try_from(input_rows.clamp(1, MAX_INPUT_ROWS)).unwrap_or(1);
-    let input = IRect::new(c.x0, c.y1 - shown * lh - 6, c.x1, c.y1);
+    let input = IRect::new(c.x0, c.y1 - shown * i32::from(fonts.mono.height) - 6, c.x1, c.y1);
     let log = IRect::new(c.x0, top + n * row, c.x1, input.y0 - 3);
     Layout {
         rows,
@@ -460,30 +501,33 @@ fn task_text(t: &TaskInfo) -> String {
 impl Console {
     /// Its parts in its window `r`, as they are now.
     #[must_use]
-    pub fn layout(&self, r: IRect, font: &Font) -> Layout {
-        layout(r, font, self.rows.len(), self.tasks.len(), self.input_rows())
+    pub fn layout(&self, r: IRect, fonts: Fonts) -> Layout {
+        layout(r, fonts, self.rows.len(), self.tasks.len(), self.input_rows())
     }
 
     /// Draws the console in its window `r`, its line's caret shown while it
-    /// has the keyboard.
-    pub fn draw(&self, s: &mut Surface, font: &Font, r: IRect, focused: bool, col: Colours) {
-        let l = self.layout(r, font);
-        let lh = i32::from(font.height);
+    /// has the keyboard; lines not starting with `:` are in the program's
+    /// language if `program`.
+    pub fn draw(&self, s: &mut Surface, fonts: Fonts, r: IRect, focused: bool, col: Colours, program: bool) {
+        let font = fonts.ui;
+        let mono = fonts.mono;
+        let l = self.layout(r, fonts);
         for (rr, row) in l.rows.iter().zip(&self.rows) {
             super::scripts::draw_row(s, font, *rr, row, col);
         }
         for ((row, stop), (_, t)) in l.tasks.iter().zip(&self.tasks) {
             let old = s.set_clip(IRect::new(row.x0, row.y0, stop.x0 - 2, row.y1).intersect(s.clip()));
-            ui::label(s, font, row.x0 + 2, row.y0 + 2, &task_text(t), ui::BLACK);
+            plain(s, font, row.x0 + 2, row.y0 + 2, &task_text(t), ui::BLACK);
             s.set_clip(old);
             ui::button(s, font, *stop, tr("Stop"), false, false, true);
         }
         // The log, from the end up.
+        let lh = i32::from(mono.height);
         ui::sunken(s, l.log);
         let inner = l.log.inset(2);
         s.fill(inner, ui::WHITE);
         let old = s.set_clip(inner.intersect(s.clip()));
-        let rows = self.rows(font, inner.width() - 4);
+        let rows = self.rows(mono, inner.width() - 4);
         let fit = usize::try_from(inner.height() / lh.max(1)).unwrap_or(0);
         let end = rows
             .len()
@@ -492,8 +536,7 @@ impl Console {
         let mut y = inner.y1 - i32::try_from(end - start).unwrap_or(0) * lh;
         for row in &rows[start..end] {
             let c = match row.kind {
-                LineKind::Input => col.blue,
-                LineKind::Info => ui::BLACK,
+                LineKind::Input | LineKind::Info => ui::BLACK,
                 LineKind::Warn => col.orange,
                 LineKind::Error => col.red,
                 LineKind::Result => col.green,
@@ -502,16 +545,14 @@ impl Console {
                 Some((x, w)) => {
                     // `^`s under the characters marked.
                     let x0 = inner.x0 + 2 + x;
-                    let step = ui::width(font, "^").max(1);
+                    let step = ui::width(mono, "^").max(1);
                     let mut cx = x0;
                     while cx < x0 + (*w).max(step) {
-                        ui::label(s, font, cx, y, "^", col.red);
+                        plain(s, mono, cx, y, "^", col.red);
                         cx += step;
                     }
                 }
-                None => {
-                    ui::label(s, font, inner.x0 + 2, y, &row.text, c);
-                }
+                None => draw_pieces(s, fonts, (inner.x0 + 2, y), &row.text, &row.pieces, c, col),
             }
             y += lh;
         }
@@ -521,13 +562,16 @@ impl Console {
         let field = l.input.inset(2);
         s.fill(field, ui::WHITE);
         let old = s.set_clip(field.intersect(s.clip()));
-        let x0 = field.x0 + 2 + ui::width(font, PROMPT);
+        let x0 = field.x0 + 2 + ui::width(mono, PROMPT);
         let room = field.x1 - 4 - x0;
         let shown = self.input_rows().min(MAX_INPUT_ROWS);
         let first = self.first_row(shown);
         let (cs, _) = self.line_bounds();
+        let syntax = input_syntax(&self.input, program);
+        let mut state = State::Code;
         let mut start = 0;
         for (row, line) in self.input.split('\n').enumerate() {
+            let spans = highlight::spans(line, syntax, &mut state);
             let line_start = start;
             start += line.len() + 1;
             if row < first || row >= first + shown {
@@ -535,35 +579,70 @@ impl Console {
             }
             let y = field.y0 + 1 + i32::try_from(row - first).unwrap_or(0) * lh;
             if row == 0 {
-                ui::label(s, font, field.x0 + 2, y, PROMPT, col.blue);
+                plain(s, mono, field.x0 + 2, y, PROMPT, col.blue);
             }
             // The caret's row scrolled so the caret shows.
             let mut from = 0;
             if line_start == cs {
                 let at = self.caret - cs;
-                while from < at && ui::width(font, &line[from..at]) > room {
+                while from < at && ui::width(mono, &line[from..at]) > room {
                     from += line[from..].chars().next().map_or(1, char::len_utf8);
                 }
                 if focused {
-                    let cx = x0 + ui::width(font, &line[from..at]);
+                    let cx = x0 + ui::width(mono, &line[from..at]);
                     s.fill(IRect::new(cx, y, cx + 1, y + lh), ui::BLACK);
                 }
             }
-            ui::label(s, font, x0, y, &line[from..], ui::BLACK);
+            let pieces = highlight::pieces(&spans, from..line.len());
+            draw_pieces(s, fonts, (x0, y), &line[from..], &pieces, ui::BLACK, col);
         }
         s.set_clip(old);
     }
 
     /// The log's lines as drawn rows `w` wide: long ones wrapped, a mark's
-    /// carets on a row of their own (where in pixels, how wide).
+    /// carets on a row of their own (where in pixels, how wide), each cut
+    /// into its syntax's pieces.
     fn rows(&self, font: &Font, w: i32) -> Vec<Row> {
         let mut rows = Vec::new();
+        let mut state = State::Code;
         for l in &self.lines {
+            let spans = match l.syntax {
+                Some(syntax) => {
+                    // What was typed is coloured after its prompt; a
+                    // script of several lines goes on from line to line.
+                    let typed = l.kind == LineKind::Input;
+                    let skip = if typed && l.text.is_char_boundary(PROMPT.len()) {
+                        PROMPT.len()
+                    } else {
+                        0
+                    };
+                    if !l.more {
+                        state = State::Code;
+                    }
+                    let mut v: Vec<_> = highlight::spans(&l.text[skip..], syntax, &mut state)
+                        .into_iter()
+                        .map(|(r, t)| (r.start + skip..r.end + skip, t))
+                        .collect();
+                    if typed && l.text.starts_with(PROMPT) {
+                        v.insert(0, (0..PROMPT.len(), Tok::Prompt));
+                    }
+                    v
+                }
+                None => Vec::new(),
+            };
+            let cut = |r: std::ops::Range<usize>| {
+                if spans.is_empty() {
+                    Vec::new()
+                } else {
+                    highlight::pieces(&spans, r)
+                }
+            };
             if let Some((at, n)) = l.mark {
                 rows.push(Row {
                     kind: l.kind,
                     text: l.text.clone(),
                     carets: None,
+                    pieces: cut(0..l.text.len()),
                 });
                 let before: String = l.text.chars().take(at).collect();
                 let marked: String = l.text.chars().skip(at).take(n.max(1)).collect();
@@ -573,14 +652,18 @@ impl Console {
                     kind: l.kind,
                     text: String::new(),
                     carets: Some((x, mw)),
+                    pieces: Vec::new(),
                 });
                 continue;
             }
-            for r in ui::wrap_ranges(font, &l.text, w) {
+            for (k, r) in ui::wrap_ranges(font, &l.text, w).into_iter().enumerate() {
+                // The first row keeps the line's indent.
+                let r = if k == 0 { 0..r.end } else { r };
                 rows.push(Row {
                     kind: l.kind,
-                    text: l.text[r].to_owned(),
+                    text: l.text[r.clone()].to_owned(),
                     carets: None,
+                    pieces: cut(r),
                 });
             }
         }
@@ -588,10 +671,57 @@ impl Console {
     }
 }
 
+/// The language of the line `input`: the commands' after a `:`, else the
+/// program's if it has one.
+fn input_syntax(input: &str, program: bool) -> Syntax {
+    if program && !input.trim_start().starts_with(':') {
+        Syntax::Js
+    } else {
+        Syntax::Commands
+    }
+}
+
+/// Draws `text` as it is (no `&` marks a mnemonic); its width.
+fn plain(s: &mut Surface, font: &Font, x: i32, y: i32, text: &str, c: u8) -> i32 {
+    s.text(font, x, y, &crate::text::encode(text), c)
+}
+
+/// Draws `text` at `at` in `pieces` ([`highlight::pieces`]), each kind in
+/// its colour, keywords in bold, the plain ones (and all, with none) in
+/// `c`.
+fn draw_pieces(
+    s: &mut Surface,
+    fonts: Fonts,
+    at: (i32, i32),
+    text: &str,
+    pieces: &[(std::ops::Range<usize>, Option<Tok>)],
+    c: u8,
+    col: Colours,
+) {
+    let (mut x, y) = at;
+    if pieces.is_empty() {
+        plain(s, fonts.mono, x, y, text, c);
+        return;
+    }
+    for (r, t) in pieces {
+        let (font, colour) = match t {
+            None => (fonts.mono, c),
+            Some(Tok::Keyword) => (fonts.bold, col.blue),
+            Some(Tok::Prompt) => (fonts.mono, col.blue),
+            Some(Tok::Literal | Tok::Part) => (fonts.mono, col.purple),
+            Some(Tok::Number) => (fonts.mono, col.teal),
+            Some(Tok::Str) => (fonts.mono, col.maroon),
+            Some(Tok::Comment) => (fonts.mono, col.grey),
+        };
+        x += plain(s, font, x, y, &text[r.clone()], colour);
+    }
+}
+
 struct Row {
     kind: LineKind,
     text: String,
     carets: Option<(i32, i32)>,
+    pieces: Vec<(std::ops::Range<usize>, Option<Tok>)>,
 }
 
 impl Editor {
@@ -660,7 +790,10 @@ impl Editor {
     pub(super) fn console_submit(&mut self) {
         let line = self.debug.console.take_line();
         let shown = line.replace('\n', &format!("\n{}", " ".repeat(PROMPT.len())));
-        self.debug.console.add(LineKind::Input, &format!("{PROMPT}{shown}"));
+        let syntax = input_syntax(&line, self.debug.runtimes.has_program);
+        self.debug
+            .console
+            .add_in(LineKind::Input, &format!("{PROMPT}{shown}"), Some(syntax));
         let text = line.trim();
         if text.is_empty() {
             return;
@@ -688,7 +821,7 @@ impl Editor {
         }
         let r = self.with_runtime(l, |rt, e| rt.repl(text, e));
         match r {
-            Some(Ok(Some(v))) => self.debug.console.add(LineKind::Result, &v),
+            Some(Ok(Some(v))) => self.debug.console.add_in(LineKind::Result, &v, Some(Syntax::Js)),
             Some(Ok(None)) => {}
             Some(Err(e)) => {
                 let mut e = e;
@@ -715,7 +848,7 @@ impl Editor {
         match self.value(&sel) {
             Ok(v) => {
                 let s = format!("{} = {}", select::show(&sel), value::format(&v));
-                self.debug.console.add(LineKind::Result, &s);
+                self.debug.console.add_in(LineKind::Result, &s, Some(Syntax::Js));
                 true
             }
             // A command misspelt, more likely: the language says.
@@ -857,9 +990,10 @@ impl Editor {
     /// A click in the console's window `r` at `p`: a stop box, the line
     /// (which a touch screen then edits in its own box).
     pub(super) fn console_click(&mut self, r: IRect, p: (i32, i32)) {
-        let Some(font) = ui::font(&self.assets) else { return };
+        let Some(fonts) = Fonts::of(&self.assets) else { return };
+        let (font, mono) = (fonts.ui, fonts.mono);
         let c = &self.debug.console;
-        let l = c.layout(r, font);
+        let l = c.layout(r, fonts);
         let rows = c.rows.clone();
         for (rr, row) in l.rows.iter().zip(&rows) {
             let (run, other) = super::scripts::buttons(font, *rr, row.which);
@@ -869,6 +1003,10 @@ impl Editor {
             }
             if other.contains(p.0, p.1) {
                 self.script_press(row.which, super::scripts::Press::Other);
+                return;
+            }
+            if rr.contains(p.0, p.1) {
+                self.script_press(row.which, super::scripts::Press::Read);
                 return;
             }
         }
@@ -883,8 +1021,8 @@ impl Editor {
             self.text_tapped = true;
             // The caret to the character clicked, in the row clicked.
             let field = l.input.inset(2);
-            let x0 = field.x0 + 2 + ui::width(font, PROMPT);
-            let lh = i32::from(font.height).max(1);
+            let x0 = field.x0 + 2 + ui::width(mono, PROMPT);
+            let lh = i32::from(mono.height).max(1);
             let c = &mut self.debug.console;
             let shown = c.input_rows().min(MAX_INPUT_ROWS);
             let row = c.first_row(shown) + usize::try_from((p.1 - field.y0 - 1).max(0) / lh).unwrap_or(0);
@@ -893,7 +1031,7 @@ impl Editor {
             let line = c.input[start..].split('\n').next().unwrap_or("");
             let mut at = start;
             for (i, ch) in line.char_indices() {
-                let w = ui::width(font, &line[..i + ch.len_utf8()]);
+                let w = ui::width(mono, &line[..i + ch.len_utf8()]);
                 if x0 + w > p.0 + 2 {
                     break;
                 }
@@ -980,6 +1118,36 @@ mod tests {
         c.recall(false);
         c.recall(false);
         assert_eq!(c.input, "pa", "the line typed before comes back");
+    }
+
+    #[test]
+    fn rows_keep_a_lines_indent_and_colours() {
+        let fonts = crate::assets::bundled_fonts();
+        let mono = fonts.iter().find(|f| f.face == "Widget Mono").unwrap();
+        let mut c = Console::default();
+        c.add_in(
+            LineKind::Input,
+            "> if (a) {\n    b = 1 /* x\n  y */ }",
+            Some(Syntax::Js),
+        );
+        let rows = c.rows(mono, 400);
+        let texts: Vec<_> = rows.iter().map(|r| r.text.as_str()).collect();
+        assert_eq!(texts, ["> if (a) {", "    b = 1 /* x", "  y */ }"]);
+        let kinds = |r: &Row| -> Vec<(String, Option<Tok>)> {
+            r.pieces
+                .iter()
+                .map(|(g, t)| (r.text[g.clone()].to_owned(), *t))
+                .collect()
+        };
+        assert_eq!(
+            kinds(&rows[0])[..2],
+            [
+                ("> ".to_owned(), Some(Tok::Prompt)),
+                ("if".to_owned(), Some(Tok::Keyword))
+            ]
+        );
+        // The comment goes on into the next line.
+        assert_eq!(kinds(&rows[2])[1], ("y */".to_owned(), Some(Tok::Comment)));
     }
 
     #[test]

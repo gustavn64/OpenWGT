@@ -17,6 +17,7 @@ mod console_tests;
 mod context;
 mod control;
 mod graph;
+mod highlight;
 mod host;
 mod input;
 mod overlay;

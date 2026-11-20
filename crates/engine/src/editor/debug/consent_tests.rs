@@ -157,7 +157,9 @@ fn show_lists_them_in_the_console_without_running_them() {
     assert!(!e.running);
     assert_eq!(e.debug.console.rows.len(), 1);
     assert!(!e.debug.console.rows[0].running);
-    assert!(e.debug.console.text().contains("none of them runs until you start it"));
+    let log = e.debug.console.text();
+    assert!(log.contains("none of them runs until you start it"));
+    assert!(log.contains("log ran\nrun\nwait 10000\n"), "its text to read: {log}");
     assert!(!trust.trusted(&Digest::of(GO)));
 }
 

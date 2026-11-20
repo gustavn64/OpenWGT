@@ -154,6 +154,7 @@ pub struct Colours {
     pub blue: u8,
     pub purple: u8,
     pub teal: u8,
+    pub maroon: u8,
     pub grey: u8,
     pub light_grey: u8,
 }
@@ -169,6 +170,7 @@ impl Colours {
             blue: n([0, 60, 200]),
             purple: n([140, 0, 160]),
             teal: n([0, 130, 130]),
+            maroon: n([150, 20, 20]),
             grey: n([128, 128, 128]),
             light_grey: n([220, 220, 220]),
         }

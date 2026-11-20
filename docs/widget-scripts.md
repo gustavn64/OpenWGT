@@ -48,7 +48,15 @@ it in the widget (under a name of its own): a `.js`, `.mjs`, `.txt` or
 `.cmd` file dropped onto the window while the tools are on (it isn't run
 until ▶), or the last script of several lines typed (Ctrl+Enter or
 Shift+Enter starts another line; Enter runs them all). With the tools
-off, a dropped file opens as a widget, as before.
+off, a dropped file opens as a widget, as before. A click on a script's
+name writes its text in the console, to read before running it.
+
+The console's log and line are in a fixed-pitch font (Courier New or
+Courier where the overrides carry one, else the port's own Widget Mono,
+Liberation Mono drawn as a bitmap), and what's typed, the values shown and
+the scripts' texts are in their language's colours: keywords (or a
+command's name) blue and bold, strings dark red, numbers teal, `true`,
+`null` and parts' numbers (`#7`) purple, comments grey.
 
 A script of the widget's always runs as one that came with a widget
 (`Caps::EMBEDDED`): it can look, control the run and change settings and
@@ -63,8 +71,8 @@ comes with scripts asks, in the game's message box:
 
 > This widget comes with scripts. **[Show] [Run] [Don't run]**
 
-- **Show** (Enter): the console opens with the scripts listed, none of
-  them run. If the debugging tools were off they are turned on for the
+- **Show** (Enter): the console opens with the scripts listed and their
+  texts written out, none of them run. If the debugging tools were off they are turned on for the
   session, not in the settings.
 - **Run**: they run, and the player's trust in them is remembered.
 - **Don't run** (Esc): nothing runs.

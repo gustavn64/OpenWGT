@@ -323,6 +323,9 @@ impl Debugger {
     pub fn draw_windows(&self, s: &mut Surface, assets: &Assets) {
         let Some(font) = ui::font(assets) else { return };
         let Some(col) = self.colours else { return };
+        let Some(fonts) = super::console::Fonts::of(assets) else {
+            return;
+        };
         let top = self.windows.len().saturating_sub(1);
         for (i, w) in self.windows.iter().enumerate() {
             let active = i == top && self.focus == Some(w.kind);
@@ -335,7 +338,11 @@ impl Debugger {
             window::draw(s, font, w.rect, title, active);
             let old = s.set_clip(window::client(w.rect).intersect(s.clip()));
             match w.kind {
-                Kind::Console => self.console.draw(s, font, w.rect, self.console.focused && active, col),
+                Kind::Console => {
+                    let focused = self.console.focused && active;
+                    self.console
+                        .draw(s, fonts, w.rect, focused, col, self.runtimes.has_program);
+                }
                 Kind::Graph => self.graph.draw(s, font, w.rect, col, &self.observed.probes, self.time),
                 Kind::Watch => watch::draw(s, font, w.rect, col, &self.observed),
                 Kind::Timeline => timeline::draw(s, font, w.rect, col, self.shown),

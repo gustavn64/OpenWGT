@@ -208,8 +208,9 @@ it), else the one picked in Options ▸ Settings, else the system's. Swedish Ope
 - `ghidra/pzl_dump.py`: lists what a puzzle file (`WIDGET.PZL`) holds.
 - `tools/build-web.sh`: builds the browser version into `web/`.
 - `tools/make-icon.py`: draws the port's icon.
-- `tools/make-sans-font.py`: renders Widget Sans, the bundled stand-in for
-  the gadgets' Arial, from Liberation Sans (`crates/engine/fonts`).
+- `tools/make-fonts.py`: renders Widget Sans, the bundled stand-in for
+  the gadgets' Arial, from Liberation Sans, and Widget Mono, the debug
+  console's, from Liberation Mono (`crates/engine/fonts`).
 - `tools/opengfx/`: draws OpenWGFX, the port's own graphics.
 - `tools/opensfx/`: synthesizes OpenWSFX, the port's own sounds.
 - `tools/opendata/`: builds OpenWDATA, the port's own data.

@@ -230,8 +230,7 @@ fn scripts_are_listed_and_stopped() {
     e.update(16, (12, 0, 0));
     e.draw();
     let w = e.debug.window(Kind::Console).unwrap();
-    let font = crate::editor::ui::font(&e.assets).unwrap();
-    let (_, stop) = super::console::layout(w.rect, font, 0, 1, 1).tasks[0];
+    let (_, stop) = super::console::layout(w.rect, super::console::Fonts::of(&e.assets).unwrap(), 0, 1, 1).tasks[0];
     e.mouse_down(stop.x0 + 3, stop.y0 + 3, Button::Left);
     e.mouse_up(stop.x0 + 3, stop.y0 + 3, Button::Left);
     e.draw();
@@ -256,8 +255,7 @@ fn a_touch_screen_edits_the_line_in_its_box() {
     assert_eq!(e.debug.console.input, "step 4");
     // A tap on the line asks for the box.
     let w = e.debug.window(Kind::Console).unwrap();
-    let font = crate::editor::ui::font(&e.assets).unwrap();
-    let line = super::console::layout(w.rect, font, 0, 0, 1).input;
+    let line = super::console::layout(w.rect, super::console::Fonts::of(&e.assets).unwrap(), 0, 0, 1).input;
     e.mouse_down(line.x0 + 30, line.y0 + 4, Button::Left);
     e.mouse_up(line.x0 + 30, line.y0 + 4, Button::Left);
     assert_eq!(e.take_text_tapped().map(|f| f.text), Some("step 4".to_owned()));
@@ -291,4 +289,77 @@ fn the_window_moves_closes_and_isnt_the_worksheet() {
     e.run();
     key(&mut e, VK_F8);
     assert_eq!(e.env.keys, [VK_F8]);
+}
+
+#[test]
+#[allow(clippy::naive_bytecount)]
+fn the_log_and_the_line_are_fixed_pitch_and_keep_ampersands() {
+    let mut e = console();
+    let fonts = super::console::Fonts::of(&e.assets).unwrap();
+    assert_eq!(fonts.mono.face, "Widget Mono");
+    let w = |t: &str| crate::editor::ui::width(fonts.mono, t);
+    assert_eq!(w("iiii"), w("MMMM"));
+    assert_eq!(crate::editor::ui::width(fonts.bold, "while"), w("while"));
+    // `&` is drawn, not taken for a mnemonic.
+    e.debug.console.add(super::console::LineKind::Info, "a && b & c");
+    e.draw();
+    let ink = |e: &Editor| e.surface.pixels.iter().filter(|&&p| p == 0).count();
+    let with = ink(&e);
+    e.debug.console.lines.back_mut().unwrap().text = "a    b   c".to_owned();
+    e.draw();
+    assert!(ink(&e) < with);
+}
+
+/// Writes a picture of the console with coloured lines to `CONSOLE_LOOK`.
+#[test]
+#[ignore = "writes a picture to CONSOLE_LOOK"]
+fn console_look() {
+    use super::console::LineKind;
+    use super::highlight::Syntax;
+    let Some(path) = std::env::var_os("CONSOLE_LOOK") else {
+        return;
+    };
+    let mut e = console();
+    e.debug.runtimes.has_program = true;
+    let c = &mut e.debug.console;
+    c.add_in(
+        LineKind::Input,
+        "> parts().filter(p => p.kind === \"bulb\" && p.on)",
+        Some(Syntax::Js),
+    );
+    c.add_in(
+        LineKind::Result,
+        "[ { name: \"Lamp\", id: 2, on: true } ]",
+        Some(Syntax::Js),
+    );
+    c.add_in(
+        LineKind::Input,
+        "> /* several\n  lines */ for (let i = 0; i < 3; i++) {\n    await ticks(0x3c); log(`i = ${i}`)\n  }",
+        Some(Syntax::Js),
+    );
+    c.add(LineKind::Info, "i = 0");
+    c.add_in(
+        LineKind::Input,
+        "> :until Lamp == on max 120 # wait",
+        Some(Syntax::Commands),
+    );
+    c.add_in(
+        LineKind::Input,
+        "> :press \"Big switch\" #7 1.5",
+        Some(Syntax::Commands),
+    );
+    c.add(
+        LineKind::Error,
+        "console:1:7  no part called \"Lamb\"\n 1 | press Lamb\n   |       ^^^^",
+    );
+    c.add(LineKind::Warn, "Scripts stopped.");
+    e.text_input("const s = 'åäö'; // typed");
+    e.draw();
+    let pal = e.assets.palette();
+    let s = &e.surface;
+    let mut out = format!("P6 {} {} 255\n", s.width, s.height).into_bytes();
+    for &i in &s.pixels {
+        out.extend_from_slice(&pal[usize::from(i)]);
+    }
+    std::fs::write(path, out).unwrap();
 }

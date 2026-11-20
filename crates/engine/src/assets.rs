@@ -113,16 +113,19 @@ pub const FONT_DIRS: [&str; 2] = ["WIN31/SVGA", "SVGA"];
 
 /// The port's own fonts, behind the CD's: Wine's free MS Sans Serif and
 /// Small Fonts (LGPL 2.1 or later, the same metrics as Windows'), and
-/// "Widget Sans" (`tools/make-sans-font.py`, Liberation Sans under the SIL
-/// OFL 1.1) for the gadgets' "Helvetica". crates/engine/fonts/README.md.
+/// "Widget Sans" (`tools/make-fonts.py`, Liberation Sans under the SIL
+/// OFL 1.1) for the gadgets' "Helvetica", "Widget Mono" (Liberation Mono)
+/// for the debug console. crates/engine/fonts/README.md.
 const BUNDLED_FON: [&[u8]; 2] = [
     include_bytes!("../fonts/SSERIFE.FON"),
     include_bytes!("../fonts/SMALLE.FON"),
 ];
-const BUNDLED_FNT: [&[u8]; 3] = [
+const BUNDLED_FNT: [&[u8]; 5] = [
     include_bytes!("../fonts/WSANS16.FNT"),
     include_bytes!("../fonts/WSANS16B.FNT"),
     include_bytes!("../fonts/WSANS24.FNT"),
+    include_bytes!("../fonts/WMONO13.FNT"),
+    include_bytes!("../fonts/WMONO13B.FNT"),
 ];
 
 /// The port's own fonts ([`BUNDLED_FON`], [`BUNDLED_FNT`]).

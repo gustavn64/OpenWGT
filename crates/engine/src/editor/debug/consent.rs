@@ -4,7 +4,8 @@
 //! comes with scripts." with three answers:
 //!
 //! - **Show** (the first, what Enter does): the console opens with the
-//!   scripts listed (`scripts`), none of them run; each runs only when
+//!   scripts listed (`scripts`) and their texts written out, none of them
+//!   run; each runs only when
 //!   its ▶ is pressed. The debugging tools are turned on for the session
 //!   for it if they were off (not in the settings: they are off again
 //!   next time).
@@ -89,6 +90,9 @@ impl Editor {
                     self.set_debug_tools(true);
                 }
                 self.open_window(Kind::Console);
+                for i in 0..self.doc.scripts.len() {
+                    self.show_script(super::scripts::Which::Widget(i));
+                }
                 let text = tr("The widget's scripts are listed above; none of them runs until you start it.");
                 self.debug.console.add(LineKind::Info, text);
             }

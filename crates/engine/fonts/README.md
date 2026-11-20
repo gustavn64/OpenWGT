@@ -13,8 +13,13 @@ without them, such as the OS/2 one, still draws its text.
   ([LICENSE-LGPL-2.1.txt](LICENSE-LGPL-2.1.txt)).
 - `WSANS16.FNT`, `WSANS16B.FNT`, `WSANS24.FNT` ("Widget Sans" 16, 16 bold,
   24 pixels): Liberation Sans 2.1, which has Arial's metrics, drawn as
-  bitmaps by `tools/make-sans-font.py` for the gadgets' "Helvetica" (Arial
+  bitmaps by `tools/make-fonts.py` for the gadgets' "Helvetica" (Arial
   under Windows). © 2010 Google Corporation, © 2012 Red Hat, Inc., under
   the SIL Open Font License 1.1
   ([LICENSE-OFL-1.1.txt](LICENSE-OFL-1.1.txt)); being a modified version,
   it doesn't carry the Reserved Font Names "Liberation" or "Arimo".
+- `WMONO13.FNT`, `WMONO13B.FNT` ("Widget Mono" 13 and 13 bold pixels, 7
+  wide): Liberation Mono 2.1, which has Courier New's metrics, drawn the
+  same way for the debug console (the bold struck twice). © 2010 Google Corporation, © 2012 Red
+  Hat, Inc., under the SIL Open Font License 1.1; nor does it carry the
+  Reserved Font Names "Liberation" or "Cousine".

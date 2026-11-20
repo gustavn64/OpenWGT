@@ -6,6 +6,9 @@
 //! the tools are on, or the last line run), with Keep to put it in the
 //! widget.
 //!
+//! A click on a row's name writes its script's text in the console, in
+//! its language's colours, to read before running it.
+//!
 //! A script of the widget's runs with what a script that came with a
 //! widget may do ([`Caps::EMBEDDED`]): never open or load other widgets,
 //! however it was started. The console's own (typed, dropped) may do
@@ -52,6 +55,20 @@ pub enum Which {
 pub enum Press {
     RunStop,
     Other,
+    /// The row's name: its script's text shown.
+    Read,
+}
+
+/// The colours to show a script in `language` in.
+fn syntax_of(language: &str) -> Option<super::highlight::Syntax> {
+    use super::highlight::Syntax;
+    if language.eq_ignore_ascii_case("JavaScript") {
+        Some(Syntax::Js)
+    } else if language == crate::script::cmd::LANGUAGE {
+        Some(Syntax::Commands)
+    } else {
+        None
+    }
 }
 
 /// The language a script file is in, by its name: `.js` JavaScript,
@@ -200,6 +217,10 @@ impl Editor {
             return;
         }
         let (script, caps) = match which {
+            _ if press == Press::Read => {
+                self.show_script(which);
+                return;
+            }
             Which::Widget(i) => match self.doc.scripts.get(i) {
                 Some(s) => (s.clone(), Caps::EMBEDDED),
                 None => return,
@@ -223,7 +244,25 @@ impl Editor {
                 Which::Last => self.keep_last_script(),
                 Which::Part(_) => {}
             },
+            Press::Read => {}
         }
+    }
+
+    /// Writes script `which`'s text in the console under its name, in its
+    /// language's colours.
+    pub(super) fn show_script(&mut self, which: Which) {
+        let script = match which {
+            Which::Widget(i) => self.doc.scripts.get(i).cloned(),
+            Which::Last => self.loose_script().cloned(),
+            Which::Part(_) => None,
+        };
+        let Some(s) = script else { return };
+        let c = &mut self.debug.console;
+        c.add(
+            LineKind::Info,
+            &format!("\u{2014} {} ({}) \u{2014}", s.name, s.language),
+        );
+        c.add_in(LineKind::Info, s.source.trim_end(), syntax_of(&s.language));
     }
 
     /// The widget's script `i` taken out of it (stopped if it runs).

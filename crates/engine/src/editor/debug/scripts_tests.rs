@@ -49,10 +49,17 @@ fn press(e: &mut Editor, n: usize, which: Press) {
     e.draw();
     let w = e.debug.window(Kind::Console).unwrap();
     let font = crate::editor::ui::font(&e.assets).unwrap();
-    let l = e.debug.console.layout(w.rect, font);
+    let l = e
+        .debug
+        .console
+        .layout(w.rect, super::console::Fonts::of(&e.assets).unwrap());
     let row = &e.debug.console.rows[n];
     let (run, other) = buttons(font, l.rows[n], row.which);
-    let b = if which == Press::RunStop { run } else { other };
+    let b = match which {
+        Press::RunStop => run,
+        Press::Other => other,
+        Press::Read => crate::gfx::IRect::new(l.rows[n].x0, l.rows[n].y0, l.rows[n].x0 + 20, l.rows[n].y1),
+    };
     let (x, y) = (b.x0 + b.width() / 2, b.y0 + b.height() / 2);
     e.mouse_down(x, y, Button::Left);
     e.mouse_up(x, y, Button::Left);
@@ -231,7 +238,10 @@ fn the_line_takes_several_lines() {
     e.draw();
     let w = e.debug.window(Kind::Console).unwrap();
     let font = crate::editor::ui::font(&e.assets).unwrap();
-    let l = e.debug.console.layout(w.rect, font);
+    let l = e
+        .debug
+        .console
+        .layout(w.rect, super::console::Fonts::of(&e.assets).unwrap());
     assert_eq!(l.input.height(), 3 * i32::from(font.height) + 6);
     // Enter runs it all, a script: the console's last one.
     key(&mut e, VK_RETURN);
@@ -245,4 +255,30 @@ fn the_line_takes_several_lines() {
     e.text_input("log four");
     key(&mut e, VK_RETURN);
     assert_eq!(e.debug.console.last.unwrap().source, last.source);
+}
+
+#[test]
+fn a_click_on_a_scripts_name_shows_its_text_in_colour() {
+    use super::console::LineKind;
+    use super::highlight::Syntax;
+    let (mut e, ..) = console();
+    e.doc.scripts.push(Script {
+        name: "blink".to_owned(),
+        language: crate::script::cmd::LANGUAGE.to_owned(),
+        source: "press Switch # on\nstep 5\n".to_owned(),
+    });
+    e.draw();
+    press(&mut e, 0, Press::Read);
+    let lines: Vec<_> = e.debug.console.lines.iter().rev().take(3).collect();
+    assert_eq!(lines[2].text, "\u{2014} blink (commands) \u{2014}");
+    assert_eq!(lines[1].text, "press Switch # on");
+    assert_eq!(lines[0].text, "step 5");
+    assert!(
+        lines[..2]
+            .iter()
+            .all(|l| l.kind == LineKind::Info && l.syntax == Some(Syntax::Commands))
+    );
+    assert!(lines[0].more && !lines[1].more);
+    // Nothing ran.
+    assert_eq!(whiches(&e), [(Which::Widget(0), false)]);
 }

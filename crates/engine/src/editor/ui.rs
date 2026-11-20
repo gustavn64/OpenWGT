@@ -30,6 +30,17 @@ pub fn font(assets: &Assets) -> Option<&Font> {
     assets.font("MS Sans Serif", 13, false)
 }
 
+/// A fixed-pitch font as high as [`font`], for the debug console: Courier
+/// New or Courier where the overrides carry one, else the port's own
+/// "Widget Mono" (Liberation Mono, with Courier New's metrics); bold if
+/// `bold` and there's one.
+#[must_use]
+pub fn mono(assets: &Assets, bold: bool) -> Option<&Font> {
+    ["Courier New", "Courier", "Widget Mono"]
+        .iter()
+        .find_map(|face| assets.font(face, 13, bold))
+}
+
 /// A window's edge, as round a toolbar: lit on the top and left, shaded
 /// on the bottom and right, with a dark outline so it stands off the
 /// worksheet.
