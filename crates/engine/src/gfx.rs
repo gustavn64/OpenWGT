@@ -335,6 +335,57 @@ impl Surface {
     }
 }
 
+/// The Strip Chart's picture: `WWGADGET`'s sheet 1049, frame 1.
+const STRIP_CHART: (u32, u16) = (1049, 1);
+/// The palette's light grey (191, 191, 191): the Strip Chart's grid.
+pub const LIGHT_GREY: u8 = 15;
+
+/// Mends a picture a CD got wrong. The Swedish edition's (Uppfinnarverkstan)
+/// pictures lost their light grey ([`LIGHT_GREY`]) here and there, left
+/// out as if it were see-through; in the Strip Chart that's the whole grid,
+/// so the plot was white, and showed what was behind it while dragged. The
+/// holes there that are walled in (none in the English pictures) are
+/// filled with the grey. Elsewhere such holes are drawn on purpose, so the
+/// other pictures are left as they are.
+pub fn mend(m: Module, id: u32, n: u16, img: &mut Image) {
+    if m != Module::Gadget || (id, n) != STRIP_CHART {
+        return;
+    }
+    let (w, h) = (usize::from(img.width), usize::from(img.height));
+    // The see-through pixels the frame's edge reaches.
+    let mut outside = vec![false; w * h];
+    let mut stack: Vec<usize> = (0..w * h)
+        .filter(|&i| {
+            let (x, y) = (i % w, i / w);
+            (x == 0 || y == 0 || x == w - 1 || y == h - 1) && !img.opaque[i]
+        })
+        .collect();
+    for &i in &stack {
+        outside[i] = true;
+    }
+    while let Some(i) = stack.pop() {
+        let (x, y) = (i % w, i / w);
+        let near = [
+            (x > 0).then(|| i - 1),
+            (x + 1 < w).then_some(i + 1),
+            (y > 0).then(|| i - w),
+            (y + 1 < h).then_some(i + w),
+        ];
+        for j in near.into_iter().flatten() {
+            if !img.opaque[j] && !outside[j] {
+                outside[j] = true;
+                stack.push(j);
+            }
+        }
+    }
+    for ((px, op), out) in img.pixels.iter_mut().zip(&mut img.opaque).zip(&outside) {
+        if !*op && !out {
+            *px = LIGHT_GREY;
+            *op = true;
+        }
+    }
+}
+
 /// The picture sheets, decoded as they're first drawn.
 #[derive(Default)]
 pub struct Pictures {
@@ -364,7 +415,10 @@ impl Pictures {
         if let Some(f) = self.frames.borrow().get(&(m, id, n)) {
             return f.clone();
         }
-        let img = self.sheet(assets, m, id).and_then(|s| s.decode(n).ok()).map(Rc::new);
+        let img = self.sheet(assets, m, id).and_then(|s| s.decode(n).ok()).map(|mut img| {
+            mend(m, id, n, &mut img);
+            Rc::new(img)
+        });
         self.frames.borrow_mut().insert((m, id, n), img.clone());
         img
     }
@@ -385,6 +439,31 @@ impl Pictures {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    /// A 5×4 frame from rows of `#` (drawn) and `.` (see-through).
+    fn frame(rows: &[&str]) -> Image {
+        let mut img = Image::new(5, 4);
+        for (y, r) in rows.iter().enumerate() {
+            for (x, c) in r.chars().enumerate() {
+                img.opaque[y * 5 + x] = c == '#';
+            }
+        }
+        img
+    }
+
+    #[test]
+    fn the_strip_charts_walled_in_holes_are_grey() {
+        let rows = ["..#..", "#.#.#", "##.##", "#####"];
+        let mut img = frame(&rows);
+        mend(Module::Gadget, STRIP_CHART.0, STRIP_CHART.1, &mut img);
+        // (1, 1) and (3, 1) are open to the top edge; (2, 2) is walled in.
+        assert_eq!((img.get(1, 1), img.get(3, 1), img.get(0, 0)), (None, None, None));
+        assert_eq!(img.get(2, 2), Some(LIGHT_GREY));
+        // Other pictures are as drawn.
+        let mut other = frame(&rows);
+        mend(Module::Gadget, 1050, 1, &mut other);
+        assert_eq!(other, frame(&rows));
+    }
 
     #[test]
     fn clips_fills_and_lines() {
