@@ -40,6 +40,10 @@ pub struct Tip {
     pub at: (i32, i32),
 }
 
+/// The wire under the pointer while the widget runs: orange, apart from
+/// the wires' green and red.
+pub const HOT_WIRE: [u8; 3] = [255, 140, 0];
+
 /// The pointer's stillness and the note it has.
 #[derive(Debug, Clone, Default)]
 pub struct Hover {
@@ -121,6 +125,24 @@ impl Editor {
         near.or_else(|| worksheet::joint_at(&self.doc, p).map(|(w, _)| Target::Wire(w)))
             .or_else(|| worksheet::wire_at(&self.doc, p).map(|(w, _)| Target::Wire(w)))
             .or_else(|| worksheet::gadget_at(&self.doc, p).map(Target::Part))
+    }
+
+    /// The wire under the pointer while the widget runs with the tools
+    /// on: drawn whole with the wide pen, in [`HOT_WIRE`] (editing's
+    /// selection is green, a segment at a time).
+    pub(in crate::editor) fn hot_wire(&self) -> Option<usize> {
+        if !self.running
+            || !self.debugging()
+            || self.drag.is_some()
+            || self.menu.is_open()
+            || !self.over_view(self.mouse)
+        {
+            return None;
+        }
+        match self.debug_target(Self::to_view(self.mouse))? {
+            Target::Wire(w) => Some(w),
+            _ => None,
+        }
     }
 
     /// The note's lines for `t`, and the first picture in them.

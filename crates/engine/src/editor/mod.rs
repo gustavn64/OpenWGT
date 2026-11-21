@@ -2803,6 +2803,7 @@ impl Editor {
             Some(Drag::Gadget { g, .. }) => Some(*g),
             _ => None,
         };
+        let hot = self.hot_wire();
         self.draw_background(view);
         let s = &mut self.surface;
         let mut cx = DrawCx {
@@ -2840,6 +2841,12 @@ impl Editor {
                     }
                 }
                 _ => {}
+            }
+        }
+        if let Some(w) = hot.filter(|&w| w < doc.wires.len()) {
+            let c = crate::gadget::nearest(&self.assets.palette(), debug::HOT_WIRE);
+            for seg in worksheet::wire_points(doc, w, None).windows(2) {
+                worksheet::gdi_line(s, seg[0], seg[1], c, 2);
             }
         }
         if let Some(Drag::NewWire {

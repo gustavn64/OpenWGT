@@ -497,3 +497,26 @@ fn a_script_changing_the_run_keeps_the_puzzle_unsolved() {
     win(&mut e);
     assert!(e.profile.get(key).is_some());
 }
+
+#[test]
+fn the_wire_under_the_pointer_is_wide_and_orange_while_it_runs() {
+    let mut e = debugging();
+    let (sw, _) = switch_and_bulb(&mut e);
+    let pts = crate::editor::worksheet::wire_points(&e.doc, 0, None);
+    let (a, b) = (pts[0], pts[1]);
+    let mid = (i32::midpoint(a.0, b.0), i32::midpoint(a.1, b.1));
+    let orange = crate::gadget::nearest(&e.assets.palette(), super::HOT_WIRE);
+    let at = |e: &Editor, p: (i32, i32)| e.surface.get(p.0, p.1 + BAR_H);
+    // Editing: the selection's green, not orange.
+    hover(&mut e, mid);
+    assert_ne!(at(&e, mid), Some(orange));
+    e.run();
+    e.press(sw, None).unwrap();
+    hover(&mut e, mid);
+    assert_eq!(at(&e, mid), Some(orange));
+    assert_eq!(e.hot_wire(), Some(0));
+    // Off it, none.
+    hover(&mut e, (mid.0, mid.1 + 30));
+    assert_eq!(e.hot_wire(), None);
+    assert_ne!(at(&e, mid), Some(orange));
+}

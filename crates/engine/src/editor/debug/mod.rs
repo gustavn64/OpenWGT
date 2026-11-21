@@ -42,6 +42,7 @@ mod window;
 
 pub use console::{Line, LineKind};
 pub use control::{Speed, is_command};
+pub use overlay::HOT_WIRE;
 
 use std::collections::VecDeque;
 
