@@ -125,6 +125,7 @@ fn prepare(o: &Options, editor: &mut Editor, args: &crate::Args) -> Result<(), S
     let dir = o.out.clone().unwrap_or_else(|| PathBuf::from("."));
     std::fs::create_dir_all(&dir).map_err(|e| format!("{}: {e}", dir.display()))?;
     editor.debug.sink = Box::new(Out { dir });
+    editor.debug.script_dir = o.file.as_ref().and_then(|f| f.parent()).map(Path::to_path_buf);
     if let Some(s) = o.seed {
         editor.env.rng = s;
     }

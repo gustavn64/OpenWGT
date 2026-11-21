@@ -220,3 +220,20 @@ fn what_a_script_defines_is_checked() {
     let e = rt.define(3, "while (true) {}").unwrap_err();
     assert!(e.to_string().contains("ran too long"), "{e}");
 }
+
+/// `examples/scripts/bigger-part.js`, as the docs give it.
+#[test]
+fn the_example_part_gives_the_bigger() {
+    let code = include_str!("../../../examples/scripts/bigger-part.js");
+    let (mut b, mut s) = bench(code, true);
+    assert_eq!(s.def().name, "Bigger");
+    b.start(&mut s);
+    b.source(0, Source::number(3.0));
+    b.source(1, Source::number(5.0));
+    b.tick_at(&mut s, 0);
+    assert_eq!(b.out(&s, 2), Value::Number(5.0));
+    b.source(0, Source::number(9.0));
+    b.tick_at(&mut s, 1);
+    assert_eq!(b.out(&s, 2), Value::Number(9.0));
+    assert!(!b.core.broken);
+}

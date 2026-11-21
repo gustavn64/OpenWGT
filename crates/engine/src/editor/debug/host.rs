@@ -673,9 +673,29 @@ impl Host for Editor {
     }
 
     fn open_file(&mut self, path: &str) -> HostResult<()> {
-        let data = self
-            .files
-            .read(std::path::Path::new(path))
+        // Next to the script's file, then as given (from the current
+        // folder), then one of the sample widgets by name, as File ▸ Open
+        // finds them.
+        let p = std::path::Path::new(path);
+        let near = self
+            .debug
+            .script_dir
+            .as_ref()
+            .filter(|_| p.is_relative())
+            .map(|d| d.join(p));
+        let sample = |e| {
+            let name = p.file_name().map(|n| n.to_string_lossy().into_owned());
+            self.assets
+                .samples
+                .iter()
+                .find(|(s, _)| name.as_ref().is_some_and(|n| s.eq_ignore_ascii_case(n)))
+                .map(|(_, b)| b.clone())
+                .ok_or(e)
+        };
+        let data = near
+            .and_then(|n| self.files.read(&n).ok())
+            .map_or_else(|| self.files.read(p), Ok)
+            .or_else(sample)
             .map_err(|e| error(ErrorKind::Document, format!("{path}: {e}")))?;
         let name = path.rsplit(['/', '\\']).next().unwrap_or(path).to_owned();
         self.open_dropped_file(name, Some(path.to_owned()), data)

@@ -75,6 +75,9 @@ pub struct Debugger {
     /// Whether a script has run out of time (the program's clock): its
     /// waits then end with an error.
     pub deadline: Option<Box<dyn Fn() -> bool>>,
+    /// The folder of the script file the program runs (`--script`): a
+    /// script's `open` looks for a relative path there first.
+    pub script_dir: Option<std::path::PathBuf>,
     /// The wall clock the widget sees while a script lets time pass:
     /// hours, minutes, seconds.
     pub local_time: (u32, u32, u32),
@@ -171,6 +174,7 @@ impl Default for Debugger {
             ended: None,
             assets_for: None,
             deadline: None,
+            script_dir: None,
             local_time: (12, 0, 0),
             tools: false,
             new_tools: None,

@@ -130,8 +130,12 @@ pause, a tick at a time, slow motion, the values of wires and parts under
 the mouse, probes drawn as a graph, a watch list, breakpoints, and a
 timeline that goes back. Its console (F8) runs scripts in JavaScript or
 the built-in command language, which a widget can keep and which ask
-before they run; `--script FILE` runs one from the command line, with
-`--headless` without a window ([docs/widget-scripts.md](docs/widget-scripts.md)).
+before they run; a double-click on a scripted part, or a script's name,
+opens it in a script editor (vim keys if you like, or your own editor);
+`--script FILE` runs one from the command line, with `--headless`
+without a window and `--watch` again each time it's saved
+([docs/scripting.md](docs/scripting.md), examples in
+[examples/scripts](examples/scripts)).
 
 Widgets travel as links too ([docs/web.md](docs/web.md#widget-links)):
 File ▸ Copy Link to Widget puts one on the clipboard, which opens the
@@ -253,6 +257,7 @@ it), else the one picked in Options ▸ Settings, else the system's. Swedish Ope
 - [docs/gadgets/io.md](docs/gadgets/io.md): input and display parts
 - [docs/oscilloscope.md](docs/oscilloscope.md): the port's own parts and the Oscilloscope
 - [docs/net-parts.md](docs/net-parts.md): the Sender and Receiver, and their relay
+- [docs/scripting.md](docs/scripting.md): writing scripts: the command language, JavaScript, the editor, the command line
 - [docs/widget-scripts.md](docs/widget-scripts.md): the debugging tools' names and scripts, in the console and in widgets
 - [docs/scripting-js-engine.md](docs/scripting-js-engine.md): why QuickJS runs the JavaScript
 

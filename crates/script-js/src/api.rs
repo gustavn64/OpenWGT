@@ -311,3 +311,27 @@ pub fn names(of: Of, word: &str) -> Vec<String> {
         .map(|i| i.name.to_owned())
         .collect()
 }
+
+/// Everything as Markdown tables, for `docs/scripting.md`: the globals,
+/// then each interface's members.
+#[must_use]
+pub fn markdown() -> String {
+    let mut s = String::new();
+    for of in [Of::Global, Of::Part, Of::Wire, Of::Clock, Of::Mouse, Of::Console] {
+        let title = match of {
+            Of::Global => "Globals",
+            Of::Part => "A part (`part(...)`)",
+            Of::Wire => "A wire (`wire(...)`)",
+            Of::Clock => "`clock`",
+            Of::Mouse => "`mouse`",
+            Of::Console => "`console`",
+        };
+        let _ = write!(s, "**{title}**\n\n| | |\n|---|---|\n");
+        for i in ITEMS.iter().filter(|i| i.of == of) {
+            let decl = i.decl.strip_prefix("function ").unwrap_or(i.decl).replace('|', "\\|");
+            let _ = writeln!(s, "| `{decl}` | {} |", i.doc.replace('|', "\\|"));
+        }
+        s.push('\n');
+    }
+    s.trim_end().to_owned() + "\n"
+}

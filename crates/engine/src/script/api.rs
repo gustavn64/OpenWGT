@@ -171,3 +171,50 @@ pub fn near(name: &str) -> Vec<&'static str> {
     v.sort_unstable();
     v.into_iter().map(|(_, n)| n).take(3).collect()
 }
+
+/// The commands as a Markdown table, for `docs/scripting.md`.
+#[must_use]
+pub fn markdown() -> String {
+    let mut s = String::from("| Command | What it does |\n|---|---|\n");
+    for c in COMMANDS {
+        let not_embedded = if c.cap == Cap::Document {
+            " *(not in a widget's own scripts)*"
+        } else {
+            ""
+        };
+        let _ = writeln!(s, "| `{}` | {}{not_embedded} |", usage(c), c.doc.replace('|', "\\|"));
+    }
+    s
+}
+
+/// `doc` with what's between `<!-- name -->` and `<!-- /name -->` made
+/// `body`; `None` without the marks.
+#[must_use]
+pub fn fill(doc: &str, name: &str, body: &str) -> Option<String> {
+    let (open, close) = (format!("<!-- {name} -->\n"), format!("<!-- /{name} -->"));
+    let a = doc.find(&open)? + open.len();
+    let b = a + doc[a..].find(&close)?;
+    Some(format!("{}{body}{}", &doc[..a], &doc[b..]))
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    /// `docs/scripting.md`'s table of the commands is this one's
+    /// (`UPDATE_DOCS=1 cargo test -p engine` writes it again).
+    #[test]
+    fn the_docs_list_every_command() {
+        let path = concat!(env!("CARGO_MANIFEST_DIR"), "/../../docs/scripting.md");
+        let doc = std::fs::read_to_string(path).unwrap();
+        let now = fill(&doc, "commands", &markdown()).expect("the marks");
+        if std::env::var_os("UPDATE_DOCS").is_some() {
+            std::fs::write(path, &now).unwrap();
+        } else {
+            assert!(
+                doc == now,
+                "docs/scripting.md's commands are out of date: UPDATE_DOCS=1 cargo test -p engine"
+            );
+        }
+    }
+}

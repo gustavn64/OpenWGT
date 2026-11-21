@@ -530,3 +530,20 @@ assertEqual(speed(1), 1);
     let r = run(&mut e, &mut Js::new(), src);
     assert!(r.passed(), "{r:?}\n{}", log.text());
 }
+
+/// `docs/scripting.md`'s tables of the API are this one's
+/// (`UPDATE_DOCS=1 cargo test -p script-js` writes them again).
+#[test]
+fn the_docs_list_the_api() {
+    let path = concat!(env!("CARGO_MANIFEST_DIR"), "/../../docs/scripting.md");
+    let doc = std::fs::read_to_string(path).unwrap();
+    let now = engine::script::api::fill(&doc, "javascript", &api::markdown()).expect("the marks");
+    if std::env::var_os("UPDATE_DOCS").is_some() {
+        std::fs::write(path, &now).unwrap();
+    } else {
+        assert!(
+            doc == now,
+            "docs/scripting.md's JavaScript API is out of date: UPDATE_DOCS=1 cargo test -p script-js"
+        );
+    }
+}

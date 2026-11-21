@@ -49,7 +49,9 @@ it in the widget (under a name of its own): a `.js`, `.mjs`, `.txt` or
 until ▶), or the last script of several lines typed (Ctrl+Enter or
 Shift+Enter starts another line; Enter runs them all). With the tools
 off, a dropped file opens as a widget, as before. A click on a script's
-name writes its text in the console, to read before running it.
+name opens it in the script editor, to read or change before running it
+(the console's last script, not the widget's, has its text written in
+the console). `docs/scripting.md` tells the languages and the editor.
 
 The console's log and line are in a fixed-pitch font (Courier New or
 Courier where the overrides carry one, else the port's own Widget Mono,
@@ -139,9 +141,11 @@ definePart({
   length byte and UTF-8, the lists after a count byte), then the script
   to the chunk's end. So the part has its knots before its script ever
   runs.
-- **Giving it a script**: with the tools on, drop a `.js` file that calls
-  `definePart` onto the window: the selected scripted part takes it, else
-  a new one does. Its wires go if its knots change; Undo takes it back.
+- **Giving it a script**: with the tools on, a double-click on the part
+  opens its script in the script editor (`docs/scripting.md`), where
+  Apply gives it the text; or drop a `.js` file that calls `definePart`
+  onto the window: the selected scripted part takes it, else a new one
+  does. Its wires go if its knots change; Undo takes it back.
 - **Consent**: a part's script is one of the widget's scripts for the
   question above. Until it may run the part is inert, drawn with a
   padlock ("script not allowed"); the console's Scripts list has a row for

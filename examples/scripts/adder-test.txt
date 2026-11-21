@@ -1,0 +1,21 @@
+# A half adder, tested: the sample widget ADDER.WGT that comes with the
+# game. Two switches, A and B; a bulb for their sum (#11) and one for the
+# carry (#10).
+#
+#   openwgt --open --headless --script examples/scripts/adder-test.txt
+#
+# It exits with 0 if every check held, 1 if one didn't.
+
+open ADDER.WGT
+run
+
+press A
+step 2
+expect #11 == on        # 1 + 0: the sum is on
+expect #10 == off       # no carry
+
+press B
+step 2
+expect #11 == off       # 1 + 1: the sum is off
+expect #10 == on        # and it carries
+log A + B: sum {#11}, carry {#10}

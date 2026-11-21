@@ -1,0 +1,13 @@
+# The egg timer, TIMER.WGT: a plunger starts a stop watch; when it gets to
+# the constant (20 seconds) the bulb lights. This waits for that, checks
+# it took 20 seconds, and takes a picture.
+#
+#   openwgt --open --headless --script examples/scripts/egg-timer.txt --out shots
+
+open TIMER.WGT
+run
+press #4                    # the plunger
+until #8 == on max 1500     # the bulb; 1500 ticks is 25 seconds
+print #5                    # the stop watch
+expect #5 >= 20
+shot egg-timer
