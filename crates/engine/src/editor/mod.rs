@@ -1261,6 +1261,10 @@ impl Editor {
                     self.debug_tools(),
                     self.full_screen,
                 ));
+                let vim = self.vim_keys();
+                if let Some(b) = &mut self.settings {
+                    b.vim_keys = vim;
+                }
             }
             id if debug::is_command(id) => self.debug_command(id),
             // Printing: nothing to print to.
@@ -1685,7 +1689,10 @@ impl Editor {
                 return;
             }
             if dbl {
-                self.open_settings(g);
+                // A scripted part's settings are its script.
+                if !self.edit_part(g) {
+                    self.open_settings(g);
+                }
             } else {
                 self.snapshot();
                 self.set_dirty();
@@ -2246,6 +2253,7 @@ impl Editor {
                 self.new_enhanced = Some(on);
             }
             settings::Outcome::DebugTools(on) => self.debug_tools_changed(on),
+            settings::Outcome::VimKeys(on) => self.vim_keys_changed(on),
             settings::Outcome::Language(l) => self.change_lang = Some(l),
             settings::Outcome::ChangeCd => {
                 self.settings = None;

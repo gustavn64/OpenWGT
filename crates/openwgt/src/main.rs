@@ -493,6 +493,11 @@ impl App for Workshop {
         {
             save_debug_tools(path, on);
         }
+        if let Some(on) = self.editor.take_vim_keys()
+            && let Some(path) = &self.settings_file
+        {
+            save_switch(path, VIM_KEYS, on);
+        }
         let cmds = self.editor.take_sounds();
         self.sound.play(cmds);
         self.editor.draw();
@@ -884,23 +889,37 @@ fn save_enhanced(path: &Path, on: bool) {
 /// (`enhance.debugging_tools`, off unless it says on).
 const DEBUG_TOOLS: &str = "debugging_tools";
 
-/// Whether the debugging tools are on in the settings file at `settings`.
-fn debug_tools(settings: Option<&Path>) -> bool {
+/// Vim keys in the script editor (`enhance.vim_keys`, off unless it says
+/// on).
+const VIM_KEYS: &str = "vim_keys";
+
+/// Whether the switch `key` is on in the settings file at `settings`.
+fn switch(settings: Option<&Path>, key: &str) -> bool {
     settings.is_some_and(|p| {
         platform::settings::EnhanceSettings::load(p)
             .overrides
             .iter()
             .rev()
-            .find(|(k, _)| k == DEBUG_TOOLS)
+            .find(|(k, _)| k == key)
             .is_some_and(|&(_, on)| on)
     })
 }
 
-/// Keeps the debugging tools' switch in the settings file at `path`.
-fn save_debug_tools(path: &Path, on: bool) {
-    if let Err(e) = platform::settings::EnhanceSettings::save(path, None, &[(DEBUG_TOOLS, on)], &[]) {
+/// Whether the debugging tools are on in the settings file at `settings`.
+fn debug_tools(settings: Option<&Path>) -> bool {
+    switch(settings, DEBUG_TOOLS)
+}
+
+/// Keeps the switch `key` in the settings file at `path`.
+fn save_switch(path: &Path, key: &str, on: bool) {
+    if let Err(e) = platform::settings::EnhanceSettings::save(path, None, &[(key, on)], &[]) {
         eprintln!("{}: {e}", path.display());
     }
+}
+
+/// Keeps the debugging tools' switch in the settings file at `path`.
+fn save_debug_tools(path: &Path, on: bool) {
+    save_switch(path, DEBUG_TOOLS, on);
 }
 
 fn start(args: &Args, assets: Assets) -> Result<(), platform::Error> {
@@ -961,6 +980,7 @@ fn start(args: &Args, assets: Assets) -> Result<(), platform::Error> {
     }
     editor.set_enhanced(enhanced(settings_file.as_deref()));
     editor.set_debug_tools(debug_tools(settings_file.as_deref()));
+    editor.set_vim_keys(switch(settings_file.as_deref(), VIM_KEYS));
     // The debugging tools' console takes JavaScript (`:` before a line
     // for the built-in commands).
     #[cfg(feature = "js")]

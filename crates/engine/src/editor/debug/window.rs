@@ -25,6 +25,8 @@ pub enum Kind {
     Graph,
     Watch,
     Timeline,
+    /// The script editor (`edit`).
+    Editor,
 }
 
 /// A window: what it is and where.
@@ -157,6 +159,8 @@ pub struct Colours {
     pub maroon: u8,
     pub grey: u8,
     pub light_grey: u8,
+    /// Selected text's background.
+    pub selection: u8,
 }
 
 impl Colours {
@@ -173,6 +177,7 @@ impl Colours {
             maroon: n([150, 20, 20]),
             grey: n([128, 128, 128]),
             light_grey: n([220, 220, 220]),
+            selection: n([180, 205, 255]),
         }
     }
 

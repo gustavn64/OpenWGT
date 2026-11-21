@@ -258,7 +258,7 @@ fn the_line_takes_several_lines() {
 }
 
 #[test]
-fn a_click_on_a_scripts_name_shows_its_text_in_colour() {
+fn a_click_on_a_scripts_name_opens_it_in_the_editor() {
     use super::console::LineKind;
     use super::highlight::Syntax;
     let (mut e, ..) = console();
@@ -269,16 +269,26 @@ fn a_click_on_a_scripts_name_shows_its_text_in_colour() {
     });
     e.draw();
     press(&mut e, 0, Press::Read);
+    let ed = e.debug.editing.as_ref().unwrap();
+    assert_eq!(ed.code.text(), "press Switch # on\nstep 5\n");
+    assert_eq!(ed.syntax, Syntax::Commands);
+    assert!(e.debug.window(Kind::Editor).is_some());
+    // Nothing ran.
+    assert_eq!(whiches(&e), [(Which::Widget(0), false)]);
+    // The console's last script, not the widget's, is written in the log.
+    e.doc.scripts.clear();
+    drop_file(&mut e, "two.txt", "log a\nlog b\n");
+    key(&mut e, VK_F8);
+    key(&mut e, VK_F8);
+    e.draw();
+    assert_eq!(whiches(&e), [(Which::Last, false)]);
+    press(&mut e, 0, Press::Read);
     let lines: Vec<_> = e.debug.console.lines.iter().rev().take(3).collect();
-    assert_eq!(lines[2].text, "\u{2014} blink (commands) \u{2014}");
-    assert_eq!(lines[1].text, "press Switch # on");
-    assert_eq!(lines[0].text, "step 5");
+    assert_eq!(lines[2].text, "\u{2014} two.txt (commands) \u{2014}");
+    assert_eq!((lines[1].text.as_str(), lines[0].text.as_str()), ("log a", "log b"));
     assert!(
         lines[..2]
             .iter()
             .all(|l| l.kind == LineKind::Info && l.syntax == Some(Syntax::Commands))
     );
-    assert!(lines[0].more && !lines[1].more);
-    // Nothing ran.
-    assert_eq!(whiches(&e), [(Which::Widget(0), false)]);
 }

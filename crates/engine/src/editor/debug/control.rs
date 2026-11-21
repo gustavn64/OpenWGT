@@ -328,6 +328,9 @@ impl Editor {
             self.command(id);
             return true;
         }
+        if self.editor_has_keys() {
+            return self.editor_key(vk);
+        }
         self.console_has_keys() && self.console_key(vk)
     }
 }

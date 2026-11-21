@@ -60,7 +60,7 @@ pub enum Press {
 }
 
 /// The colours to show a script in `language` in.
-fn syntax_of(language: &str) -> Option<super::highlight::Syntax> {
+pub(super) fn syntax_of(language: &str) -> Option<super::highlight::Syntax> {
     use super::highlight::Syntax;
     if language.eq_ignore_ascii_case("JavaScript") {
         Some(Syntax::Js)
@@ -209,6 +209,16 @@ impl Editor {
 
     /// A row's button pressed.
     pub(super) fn script_press(&mut self, which: Which, press: Press) {
+        // The name: the script in the editor (the console's last one,
+        // which isn't the widget's, in the log).
+        if press == Press::Read {
+            match which {
+                Which::Widget(i) => self.edit_script(i),
+                Which::Part(id) => self.edit_part_id(id),
+                Which::Last => self.show_script(which),
+            }
+            return;
+        }
         if let Which::Part(id) = which {
             if press == Press::RunStop {
                 let on = self.part_allowed(id).unwrap_or(false);

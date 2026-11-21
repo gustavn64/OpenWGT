@@ -45,8 +45,8 @@ impl Editor {
         self.debug.windows.retain(|w| w.kind != kind);
         let rect = window::keep_in(rect, area, menu::BAR_H);
         self.debug.windows.push(Win { kind, rect });
-        if kind == Kind::Console {
-            self.debug.focus = Some(Kind::Console);
+        if matches!(kind, Kind::Console | Kind::Editor) {
+            self.debug.focus = Some(kind);
             if let Some(h) = &mut self.help {
                 h.active = false;
             }
@@ -147,6 +147,7 @@ impl Editor {
                 false
             }
             Kind::Timeline => self.timeline_click(w.rect, p),
+            Kind::Editor => self.editor_click(w.rect, p),
         }
     }
 
@@ -174,6 +175,7 @@ impl Editor {
                     self.timeline_drag(w.rect, (x, y), false);
                 }
             }
+            Drag::Client { kind: Kind::Editor } => self.editor_drag((x, y)),
             Drag::Client { .. } => {}
         }
         true
@@ -212,6 +214,7 @@ impl Editor {
         match w.kind {
             Kind::Console => self.console_wheel(dy),
             Kind::Graph => self.graph_wheel(dy),
+            Kind::Editor => self.editor_wheel(dy),
             Kind::Watch | Kind::Timeline => {}
         }
         true
@@ -220,6 +223,10 @@ impl Editor {
     /// Text typed: the console's while it has the keyboard. Whether it
     /// took it.
     pub(in crate::editor) fn debug_text(&mut self, typed: &str) -> bool {
+        if self.editor_has_keys() {
+            self.editor_text(typed);
+            return true;
+        }
         if !self.console_has_keys() {
             return false;
         }
@@ -239,6 +246,10 @@ impl Editor {
     /// The clipboard's text asked for by Ctrl+V: the console's, while it
     /// has the keyboard. Whether it took it.
     pub(in crate::editor) fn debug_paste(&mut self, text: &str) -> bool {
+        if self.editor_has_keys() {
+            self.editor_paste(text);
+            return true;
+        }
         if !self.console_has_keys() {
             return false;
         }
@@ -249,12 +260,19 @@ impl Editor {
     /// The console's line as the focused text field, while it has the
     /// keyboard.
     pub(in crate::editor) fn debug_focused_text(&self) -> Option<TextField> {
+        if self.editor_has_keys() {
+            return self.editor_field();
+        }
         self.console_has_keys().then(|| self.console_field())
     }
 
     /// The focused text field edited elsewhere: the console's line, if it's
     /// that. Whether it was.
     pub(in crate::editor) fn debug_set_focused_text(&mut self, text: &str) -> bool {
+        if self.editor_has_keys() {
+            self.set_editor_text(text);
+            return true;
+        }
         if !self.console_has_keys() {
             return false;
         }
@@ -284,6 +302,8 @@ impl Editor {
             self.watch_values();
         }
         self.debug.shown = self.timeline_shown();
+        self.editor_prepare();
+        self.debug.editor_title = self.editor_title();
     }
 }
 
@@ -296,6 +316,11 @@ fn first_place(kind: Kind, area: IRect) -> IRect {
         Kind::Graph => IRect::sized(area.x1 - 8 - (w - 16).min(400), area.y0 + 114, (w - 16).min(400), 200),
         Kind::Watch => IRect::sized(area.x1 - 8 - 280, area.y1 - 150, 280, 145),
         Kind::Timeline => IRect::sized(area.x0 + 60, area.y0 + 22, (w - 120).clamp(160, 440), 88),
+        Kind::Editor => {
+            let ew = (w - 40).clamp(160, 560);
+            let eh = (area.height() - 60).clamp(90, 380);
+            IRect::sized(area.x0 + (w - ew) / 2, area.y0 + 30, ew, eh)
+        }
     }
 }
 
@@ -334,6 +359,7 @@ impl Debugger {
                 Kind::Graph => tr("Graph"),
                 Kind::Watch => tr("Watch List"),
                 Kind::Timeline => tr("Timeline"),
+                Kind::Editor => &self.editor_title,
             };
             window::draw(s, font, w.rect, title, active);
             let old = s.set_clip(window::client(w.rect).intersect(s.clip()));
@@ -346,6 +372,11 @@ impl Debugger {
                 Kind::Graph => self.graph.draw(s, font, w.rect, col, &self.observed.probes, self.time),
                 Kind::Watch => watch::draw(s, font, w.rect, col, &self.observed),
                 Kind::Timeline => timeline::draw(s, font, w.rect, col, self.shown),
+                Kind::Editor => {
+                    if let Some(e) = &self.editing {
+                        e.draw(s, fonts, font, w.rect, active, col);
+                    }
+                }
             }
             s.set_clip(old);
         }

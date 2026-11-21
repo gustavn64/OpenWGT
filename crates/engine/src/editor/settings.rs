@@ -40,14 +40,16 @@ const SMALL: i32 = 23;
 const CHECK_H: i32 = 16;
 /// The enhancements' note under their switch.
 const NOTE: &str = "The parts tray shows a whole folder at once; windows drag whole.";
-/// The height the debugging tools' switch adds (with the enhancements on).
-const DEBUG_H: i32 = CHECK_H + 4;
+/// The height the debugging tools' switches add (with the enhancements on):
+/// theirs and the script editor's vim keys'.
+const DEBUG_H: i32 = 2 * (CHECK_H + 4);
 
 /// The parts a letter presses: their labels' underlined letters.
-const MNEMONIC_PARTS: [(Part, &str); 7] = [
+const MNEMONIC_PARTS: [(Part, &str); 8] = [
     (Part::Auto, "&Automatic (the display's)"),
     (Part::Enhanced, "&Enhancements"),
     (Part::DebugTools, "&Debugging tools"),
+    (Part::VimKeys, "&Vim keys in the script editor"),
     (Part::FullScreen, "&Full screen"),
     (Part::Language, "&Language:"),
     (Part::ChangeCd, "&Change CD..."),
@@ -62,6 +64,8 @@ pub enum Outcome {
     Enhanced(bool),
     /// The debugging tools on or off.
     DebugTools(bool),
+    /// Vim keys in the script editor on or off.
+    VimKeys(bool),
     /// Another language (without a CD): the game switches to it at once.
     Language(Lang),
     /// Play without the CD: the game starts again on the port's own
@@ -84,13 +88,14 @@ enum Part {
     Bigger,
     Enhanced,
     DebugTools,
+    VimKeys,
     Language,
     FullScreen,
     ChangeCd,
     NoCd,
 }
 
-const PARTS: [Part; 11] = [
+const PARTS: [Part; 12] = [
     Part::Close,
     Part::CloseBox,
     Part::Auto,
@@ -98,6 +103,7 @@ const PARTS: [Part; 11] = [
     Part::Bigger,
     Part::Enhanced,
     Part::DebugTools,
+    Part::VimKeys,
     Part::Language,
     Part::FullScreen,
     Part::ChangeCd,
@@ -106,6 +112,7 @@ const PARTS: [Part; 11] = [
 
 /// The window.
 #[derive(Debug, Clone)]
+#[allow(clippy::struct_excessive_bools)]
 pub struct SettingsBox {
     /// The scale asked for and the one it gives now.
     pub scale: Scale,
@@ -113,6 +120,8 @@ pub struct SettingsBox {
     pub enhanced: bool,
     /// The debugging tools' switch, shown while the enhancements are on.
     pub debug_tools: bool,
+    /// Vim keys in the script editor, under the tools' switch.
+    pub vim_keys: bool,
     /// The language played in, and what decides it: only the player's
     /// choice can be changed here. The language button goes round the
     /// languages, each press switching to the next.
@@ -182,6 +191,7 @@ impl SettingsBox {
             current,
             enhanced,
             debug_tools,
+            vim_keys: false,
             lang,
             lang_from,
             full_screen,
@@ -204,6 +214,7 @@ impl SettingsBox {
             self.full_screen,
         );
         b.move_to((self.window.x0, self.window.y0));
+        b.vim_keys = self.vim_keys;
         b
     }
 
@@ -264,11 +275,8 @@ impl SettingsBox {
         // The debugging tools' switch, under the enhancements' note while
         // they're on.
         let debug_tools = IRect::sized(x + 17, enhanced.y1 + note + 4, inner - 17, CHECK_H);
-        let below = if self.enhanced {
-            debug_tools.y1
-        } else {
-            enhanced.y1 + note
-        };
+        let vim_keys = IRect::sized(x + 34, debug_tools.y1 + 4, inner - 34, CHECK_H);
+        let below = if self.enhanced { vim_keys.y1 } else { enhanced.y1 + note };
         let full_screen = IRect::sized(x, below + MARGIN, inner, CHECK_H);
         let close = IRect::sized(
             self.window.x1 - FRAME - MARGIN - BUTTON_W,
@@ -287,6 +295,7 @@ impl SettingsBox {
             bigger,
             enhanced,
             debug_tools,
+            vim_keys,
             language,
             full_screen,
             change_cd,
@@ -304,6 +313,7 @@ impl SettingsBox {
             Part::Bigger => l.bigger,
             Part::Enhanced => l.enhanced,
             Part::DebugTools => l.debug_tools,
+            Part::VimKeys => l.vim_keys,
             Part::Language => l.language,
             Part::FullScreen => l.full_screen,
             Part::ChangeCd => l.change_cd,
@@ -326,6 +336,7 @@ impl SettingsBox {
             Part::Bigger => self.shown() < MAX_SCALE,
             Part::Language => self.lang_from == LangFrom::Player,
             Part::DebugTools => self.enhanced,
+            Part::VimKeys => self.enhanced && self.debug_tools,
             // Only with a CD: without one the game is on the packs.
             Part::NoCd => self.lang_from == LangFrom::Cd,
             _ => true,
@@ -360,6 +371,10 @@ impl SettingsBox {
             Part::DebugTools => {
                 self.debug_tools = !self.debug_tools;
                 Outcome::DebugTools(self.debug_tools)
+            }
+            Part::VimKeys => {
+                self.vim_keys = !self.vim_keys;
+                Outcome::VimKeys(self.vim_keys)
             }
             Part::Language => {
                 // The next language, round.
@@ -431,6 +446,7 @@ impl SettingsBox {
         self.act(part)
     }
 
+    #[allow(clippy::too_many_lines)]
     pub fn draw(&self, s: &mut Surface, assets: &Assets) {
         let Some(font) = ui::font(assets) else { return };
         let l = self.layout(assets);
@@ -487,6 +503,12 @@ impl SettingsBox {
         if self.enhanced {
             let (r, on, down) = (l.debug_tools, self.debug_tools, pressed(Part::DebugTools));
             check(s, font, r, tr("&Debugging tools"), on, down);
+            let (r, on, down) = (l.vim_keys, self.vim_keys, pressed(Part::VimKeys));
+            if self.debug_tools {
+                check(s, font, r, tr("&Vim keys in the script editor"), on, down);
+            } else {
+                grey_check(s, font, r, tr("&Vim keys in the script editor"), on);
+            }
         }
         let language = if self.lang_from == LangFrom::Cd {
             trf("Language: the CD's ({})", &[self.lang.name()])
@@ -540,11 +562,24 @@ struct Layout {
     bigger: IRect,
     enhanced: IRect,
     debug_tools: IRect,
+    vim_keys: IRect,
     language: IRect,
     full_screen: IRect,
     change_cd: IRect,
     no_cd: IRect,
     close: IRect,
+}
+
+/// A check box that can't be changed now: greyed.
+fn grey_check(s: &mut Surface, font: &formats::fnt::Font, r: IRect, text: &str, on: bool) {
+    let b = IRect::sized(r.x0, r.y0 + (r.height() - 13) / 2, 13, 13);
+    s.fill(b, ui::FACE);
+    ui::sunken(s, b);
+    if on {
+        check_mark(s, b.x0 + 3, b.y0 + 3);
+    }
+    let ty = r.y0 + (r.height() - i32::from(font.height)) / 2;
+    ui::grey_label(s, font, r.x0 + 17, ty, text);
 }
 
 /// A check box with its label, as the dialogs draw theirs.
@@ -584,6 +619,7 @@ mod tests {
             current: 2.0,
             enhanced: true,
             debug_tools: false,
+            vim_keys: false,
             lang: Lang::En,
             lang_from: LangFrom::Player,
             full_screen: false,
@@ -594,7 +630,10 @@ mod tests {
         assert_eq!(b.key(0x6b), Outcome::Scale(Scale::Fixed(2.25)));
         assert_eq!(b.key(0x41), Outcome::Scale(Scale::Auto));
         assert_eq!(b.key(0x41), Outcome::Scale(Scale::Fixed(2.0)));
+        assert_eq!(b.key(0x56), Outcome::None, "vim keys only with the tools");
         assert_eq!(b.key(0x44), Outcome::DebugTools(true));
+        assert_eq!(b.key(0x56), Outcome::VimKeys(true));
+        assert_eq!(b.key(0x56), Outcome::VimKeys(false));
         assert_eq!(b.key(0x44), Outcome::DebugTools(false));
         assert_eq!(b.key(0x45), Outcome::Enhanced(false));
         assert_eq!(

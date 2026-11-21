@@ -8,6 +8,7 @@
 //! The tools are there only with the enhancements on and their own
 //! switch in Settings ("Debugging tools", off at first).
 
+mod code;
 mod consent;
 #[cfg(test)]
 mod consent_tests;
@@ -16,6 +17,9 @@ mod console;
 mod console_tests;
 mod context;
 mod control;
+mod edit;
+#[cfg(test)]
+mod edit_tests;
 mod graph;
 mod highlight;
 mod host;
@@ -77,6 +81,15 @@ pub struct Debugger {
     /// host to keep.
     tools: bool,
     new_tools: Option<bool>,
+    /// The script editor's text, and those closed unapplied.
+    pub editing: Option<edit::Editing>,
+    drafts: Vec<edit::Editing>,
+    /// Vim keys in the script editor (Settings), and their change for the
+    /// host to keep.
+    vim_keys: bool,
+    new_vim_keys: Option<bool>,
+    /// The editor's title, as the window draws it.
+    editor_title: String,
     /// The run's control: held, slowed, helped.
     run: RunControl,
     /// Debug ▸ Stop Scripts, for the program running them.
@@ -158,6 +171,11 @@ impl Default for Debugger {
             local_time: (12, 0, 0),
             tools: false,
             new_tools: None,
+            editing: None,
+            drafts: Vec::new(),
+            vim_keys: false,
+            new_vim_keys: None,
+            editor_title: String::new(),
             run: RunControl::default(),
             stop_scripts: false,
             scripts_running: false,
