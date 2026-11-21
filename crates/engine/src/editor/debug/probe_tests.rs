@@ -58,7 +58,7 @@ fn a_probe_records_each_change() {
     e.press(sw, None).unwrap();
     e.step(5).unwrap();
     let p = &e.debug.observed.probes[0];
-    assert_eq!(p.name, "Switch #1.out");
+    assert_eq!(p.name, "Light Switch #1.out");
     assert_eq!(
         p.changes,
         [
@@ -190,7 +190,7 @@ fn the_popup_offers_the_tools_for_what_is_under_the_pointer() {
     e.mouse_down(c.0, c.1, Button::Right);
     e.mouse_up(c.0, c.1, Button::Right);
     let pop = e.debug.popup.clone().expect("a popup");
-    assert_eq!(pop.title, "Switch #1.out");
+    assert_eq!(pop.title, "Light Switch #1.out");
     // Down to the first (Show Graph), Enter.
     e.key_down(VK_DOWN);
     e.key_down(VK_RETURN);

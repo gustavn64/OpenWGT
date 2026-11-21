@@ -125,8 +125,8 @@ impl Editor {
             Some(k) => select::knot(&p, k).ok().map(|k| usize::from(k.index)),
         };
         match k {
-            Some(k) => format!("{}.{}", who(&p), knot_name(&p, k)),
-            None => who(&p),
+            Some(k) => format!("{}.{}", who(&self.assets, &p), knot_name(&p, k)),
+            None => who(&self.assets, &p),
         }
     }
 

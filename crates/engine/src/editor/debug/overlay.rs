@@ -59,26 +59,39 @@ pub struct Hover {
 pub fn show(v: &Val) -> String {
     match v {
         Val::None => "—".into(),
-        Val::Bool(b) => (if *b { "on" } else { "off" }).into(),
+        Val::Bool(b) => tr(if *b { "on" } else { "off" }).into(),
         Val::Number(n) => format_number(*n, &mut 0).trim().to_owned(),
-        Val::Picture(p) => format!("picture {p}"),
+        Val::Picture(p) => trf("picture {}", &[&p.to_string()]),
         Val::Sound { rate, len } => {
             let secs = if *rate == 0 {
                 0.0
             } else {
                 f64::from(*len) / f64::from(*rate)
             };
-            format!("sound {secs:.1} s")
+            trf("sound {} s", &[&format!("{secs:.1}")])
         }
-        Val::NoObject => "no object".into(),
+        Val::NoObject => tr("no object").into(),
     }
 }
 
-/// A part for the note: its name or label, else its kind and id.
-pub(super) fn who(p: &PartInfo) -> String {
+/// A part's kind in the game's words, as the tray names it (`Glödlampa`
+/// in Swedish), else as scripts do (`Light Bulb`).
+pub(super) fn kind_title(assets: &Assets, p: &PartInfo) -> String {
+    <[u8; 4]>::try_from(p.tag.as_bytes())
+        .ok()
+        .and_then(|t| super::super::tray::index_of(crate::gadget::Tag(t)))
+        .and_then(|i| assets.string(2500 + u32::from(i)))
+        .map(|s| s.trim().to_owned())
+        .filter(|s| !s.is_empty())
+        .unwrap_or_else(|| p.kind_words())
+}
+
+/// A part for the note: its name or label, else its kind and id (`#7`,
+/// the same in every language, as scripts know it).
+pub(super) fn who(assets: &Assets, p: &PartInfo) -> String {
     match p.name.as_ref().or(p.label.as_ref()) {
         Some(n) => format!("\"{n}\""),
-        None => format!("{} {}", p.kind_words(), p.id),
+        None => format!("{} {}", kind_title(assets, p), p.id),
     }
 }
 
@@ -142,18 +155,28 @@ impl Editor {
                     value = format!("{value}  ({})", tr("changed, unread"));
                 }
                 vec![
-                    format!("{}.{} -> {}.{}", who(&a), knot_name(&a, sk), who(&b), knot_name(&b, dk)),
+                    format!(
+                        "{}.{} -> {}.{}",
+                        who(&self.assets, &a),
+                        knot_name(&a, sk),
+                        who(&self.assets, &b),
+                        knot_name(&b, dk)
+                    ),
                     value,
                 ]
             }
             Target::Knot(g, k) => {
                 let p = self.info(g);
                 let v = p.knots.get(k).map_or(Val::None, |k| k.value.clone());
-                vec![format!("{}.{}: {}", who(&p), knot_name(&p, k), val(&v))]
+                vec![format!("{}.{}: {}", who(&self.assets, &p), knot_name(&p, k), val(&v))]
             }
             Target::Part(g) => {
                 let p = self.info(g);
-                let mut lines = vec![p.describe()];
+                let what = format!("{} {}", kind_title(&self.assets, &p), p.id);
+                let mut lines = vec![match p.name.as_ref().or(p.label.as_ref()) {
+                    Some(n) => format!("\"{n}\" ({what})"),
+                    None => what,
+                }];
                 // Its outputs; for a part with none, what comes in.
                 let outputs = p.knots.iter().any(|k| !k.input);
                 for (k, knot) in p.knots.iter().enumerate() {

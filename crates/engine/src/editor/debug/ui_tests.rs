@@ -316,7 +316,7 @@ fn the_note_shows_wires_knots_and_parts() {
         .find(|&k| e.doc.gadgets[b].core.knots[k].is_input())
         .unwrap();
     let w = Format {
-        sw: format!("Switch {sw}"),
+        sw: format!("Light Switch {sw}"),
         bulb: format!("Light Bulb {bulb}"),
     };
     // Editing: nothing on the wire yet.
