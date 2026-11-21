@@ -755,6 +755,7 @@ impl Editor {
     /// widget's own run on.
     pub(in crate::editor) fn debug_frame(&mut self, ms: u64) {
         self.part_scripts_said();
+        self.editor_poll();
         if self.debug.runtimes.busy {
             return;
         }

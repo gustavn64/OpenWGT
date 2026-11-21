@@ -198,3 +198,43 @@ return { out: a > b ? a : b ?? null };\n  },\n});\n";
     }
     std::fs::write(path, out).unwrap();
 }
+
+#[test]
+fn the_players_own_editor_saves_into_the_part() {
+    use std::cell::RefCell;
+    use std::rc::Rc;
+    let (mut e, g) = with_part();
+    // A file in memory: what the program wrote, and the next save.
+    let opened: Rc<RefCell<Vec<(String, String)>>> = Rc::default();
+    let saved: Rc<RefCell<Option<String>>> = Rc::default();
+    let (o, s) = (opened.clone(), saved.clone());
+    e.set_external_editor(super::External {
+        open: Box::new(move |name, text| {
+            o.borrow_mut().push((name.to_owned(), text.to_owned()));
+            Ok(format!("/tmp/{name}"))
+        }),
+        changed: Box::new(move |_| s.borrow_mut().take()),
+    });
+    assert!(e.edit_part(g));
+    e.draw();
+    // Its button, left of Apply.
+    let w = e.debug.window(Kind::Editor).unwrap();
+    let l = layout(w.rect, Fonts::of(&e.assets).unwrap(), 1);
+    let (x, y) = (l.external.x0 + 4, l.external.y0 + 4);
+    e.mouse_down(x, y, Button::Left);
+    e.mouse_up(x, y, Button::Left);
+    assert_eq!(
+        opened.borrow().as_slice(),
+        [("Adder-1.js".to_owned(), "name:Adder in:a,b out:sum".to_owned())]
+    );
+    assert!(
+        e.console_text()
+            .contains("/tmp/Adder-1.js: saved there, it comes back here.")
+    );
+    // Saved there: here, and applied.
+    *saved.borrow_mut() = Some("name:Adder in:a,b out:sum,carry\r\n".into());
+    e.update(16, (12, 0, 0));
+    assert_eq!(text(&e), "name:Adder in:a,b out:sum,carry\n");
+    assert_eq!(scripted(&e).def().outputs, ["sum", "carry"]);
+    assert!(e.console_text().contains("/tmp/Adder-1.js changed: read again."));
+}

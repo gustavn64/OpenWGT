@@ -8,7 +8,7 @@
 //! `openwgt [--open] [--lang=en|sv|fr] [--opengfx[=DIR]] [--opensfx[=DIR]]
 //! [--opendata[=DIR]] [--overrides=DIR] [--export=DIR] [--no-audio]
 //! [--window-size=WxH] [--fullscreen|--windowed] [--ui-scale=N|auto]
-//! [--relay=URL] [--help] [--script FILE [--headless] [--out DIR] [--seed N]
+//! [--relay=URL] [--help] [--script FILE [--headless] [--watch] [--out DIR] [--seed N]
 //! [--budget N] [--timeout S]] [CD] [WIDGET.WGT|LINK]` ([`USAGE`]), where
 //! `CD` is the game's CD: an ISO image or a folder with its files (default:
 //! the one `.iso` in the current directory, else `orig`), and `LINK` a
@@ -40,6 +40,8 @@ macro_rules! println {
 }
 
 mod cd;
+#[cfg(not(target_arch = "wasm32"))]
+mod external;
 mod files;
 mod net;
 #[cfg(not(target_arch = "wasm32"))]
@@ -72,7 +74,7 @@ const LINK_PAGE: &str = "https://gustavn.se/openwgt/play/";
 const USAGE: &str =
     "usage: openwgt [--open] [--lang=en|sv|fr] [--opengfx[=DIR]] [--opensfx[=DIR]] [--opendata[=DIR]] [--overrides=DIR] [--export=DIR] [--no-audio] [--window-size=WxH] \
 [--fullscreen|--windowed] [--ui-scale=N|auto] [--relay=URL] [--help] \
-[--script FILE [--headless] [--out DIR] [--seed N] [--budget N] [--timeout S]] [CD] [WIDGET.WGT|LINK]
+[--script FILE [--headless] [--watch] [--out DIR] [--seed N] [--budget N] [--timeout S]] [CD] [WIDGET.WGT|LINK]
 
   CD               the game's CD: an ISO image or a folder with its files
                    (default: the .iso in the current directory, else orig)
@@ -112,7 +114,8 @@ const USAGE: &str =
   --out DIR        where the script's shots go (default: here)
   --seed N         the parts' random numbers start from N
   --budget N       the work a script may do between two waits
-  --timeout S      stops a headless script after S seconds";
+  --timeout S      stops a headless script after S seconds
+  --watch          runs the script again each time its file is saved";
 
 #[derive(Clone)]
 struct Args {
@@ -298,6 +301,8 @@ fn args(mut it: impl Iterator<Item = std::ffi::OsString>) -> Args {
             }
             #[cfg(not(target_arch = "wasm32"))]
             "--headless" => a.script.headless = true,
+            #[cfg(not(target_arch = "wasm32"))]
+            "--watch" => a.script.watch = true,
             #[cfg(not(target_arch = "wasm32"))]
             "--script" | "--out" | "--seed" | "--budget" | "--timeout" => {
                 a.script.set(&key, value()).unwrap_or_else(|e| usage_error(&e));
@@ -736,7 +741,18 @@ fn main() {
         return;
     }
     if args.script.headless {
-        std::process::exit(script::run_without_window(&args, assets));
+        if !args.script.watch {
+            std::process::exit(script::run_without_window(&args, assets));
+        }
+        // Again each time the script is saved, each run from the start.
+        let mut first = Some(assets);
+        loop {
+            let a = first.take().unwrap_or_else(|| {
+                assets_for(&args, cd.as_deref(), lang).unwrap_or_else(|e| fail(&format!("{}: {e}", cd_path.display())))
+            });
+            let code = script::run_without_window(&args, a);
+            script::wait_for_change(&args.script, code);
+        }
     }
     if let Err(e) = start(&args, assets) {
         fail(&e.to_string());
@@ -958,6 +974,9 @@ fn start(args: &Args, assets: Assets) -> Result<(), platform::Error> {
         copy: Box::new(platform::clipboard::set_text),
         paste: Box::new(platform::clipboard::request_text),
     });
+    // The script editor's texts in the player's own editor too.
+    #[cfg(not(target_arch = "wasm32"))]
+    editor.set_external_editor(external::external());
     // The network parts connect as soon as the widget is open.
     editor
         .net

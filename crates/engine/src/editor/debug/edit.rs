@@ -35,11 +35,27 @@ pub struct Editing {
     pub code: Code,
     /// Why the last Apply didn't take.
     pub error: Option<String>,
+    /// The file it's open in in the player's own editor
+    /// ([`External`]), read again as it's saved.
+    pub file: Option<String>,
+}
+
+/// The player's own text editor, from the program (natively): a script
+/// written to a file and opened there, and the file read again each time
+/// it's saved.
+pub struct External {
+    /// Writes `text` to a file called after `name` and opens it in the
+    /// editor; the file, or what went wrong.
+    pub open: Box<dyn FnMut(&str, &str) -> Result<String, String>>,
+    /// The file's text if it changed since it was opened or last read.
+    pub changed: Box<dyn FnMut(&str) -> Option<String>>,
 }
 
 /// The buttons' bar under the text.
 const BAR_H: i32 = 26;
 const BUTTON_W: i32 = 70;
+/// The external editor's button.
+const EXTERNAL_W: i32 = 118;
 /// The most drafts kept for texts not being edited now.
 const MAX_DRAFTS: usize = 8;
 
@@ -51,6 +67,7 @@ pub struct Layout {
     pub text_x: i32,
     pub apply: IRect,
     pub close: IRect,
+    pub external: IRect,
     pub status: (i32, i32),
     pub cell: i32,
     pub line_h: i32,
@@ -70,6 +87,7 @@ pub fn layout(r: IRect, fonts: Fonts, lines: usize) -> Layout {
     let by = c.y1 - BAR_H + 2;
     let close = IRect::sized(c.x1 - 2 - BUTTON_W, by, BUTTON_W, BAR_H - 4);
     let apply = IRect::sized(close.x0 - 6 - BUTTON_W, by, BUTTON_W, BAR_H - 4);
+    let external = IRect::sized(apply.x0 - 6 - EXTERNAL_W, by, EXTERNAL_W, BAR_H - 4);
     let rows = usize::try_from((area.height() - 4) / line_h).unwrap_or(1).max(1);
     let cols = usize::try_from((area.x1 - text_x - 4) / cell).unwrap_or(1).max(1);
     Layout {
@@ -77,6 +95,7 @@ pub fn layout(r: IRect, fonts: Fonts, lines: usize) -> Layout {
         text_x,
         apply,
         close,
+        external,
         status: (c.x0 + 4, by + 4),
         cell,
         line_h,
@@ -139,6 +158,7 @@ impl Editing {
         r: IRect,
         focused: bool,
         col: Colours,
+        external: bool,
     ) {
         let code = &self.code;
         let l = layout(r, fonts, code.lines.len());
@@ -206,11 +226,15 @@ impl Editing {
             Some(e) => (e.lines().next().unwrap_or_default().to_owned(), col.red),
             None => (code.status(), ui::BLACK),
         };
-        let old = s.set_clip(IRect::new(l.status.0, l.status.1, l.apply.x0 - 4, l.status.1 + 20).intersect(s.clip()));
+        let right = if external { l.external.x0 } else { l.apply.x0 };
+        let old = s.set_clip(IRect::new(l.status.0, l.status.1, right - 4, l.status.1 + 20).intersect(s.clip()));
         plain(s, fonts.mono, l.status.0, l.status.1, &status, c);
         s.set_clip(old);
         ui::button(s, font, l.apply, tr("&Apply"), false, true, code.changed());
         ui::button(s, font, l.close, tr("Close"), false, false, true);
+        if external {
+            ui::button(s, font, l.external, tr("&External editor"), false, false, true);
+        }
     }
 }
 
@@ -278,6 +302,7 @@ impl Editor {
                     syntax,
                     code: Code::new(text, vim),
                     error: None,
+                    file: None,
                 },
             });
         }
@@ -432,6 +457,10 @@ impl Editor {
             self.close_window(Kind::Editor);
             return false;
         }
+        if self.debug.external.is_some() && l.external.contains(p.0, p.1) {
+            self.edit_externally();
+            return false;
+        }
         if !l.area.contains(p.0, p.1) {
             return false;
         }
@@ -492,6 +521,59 @@ impl Editor {
             e.code.select_all();
             e.code.paste(text);
         }
+    }
+
+    /// The program's way to the player's own text editor.
+    pub fn set_external_editor(&mut self, x: External) {
+        self.debug.external = Some(x);
+    }
+
+    /// The text being edited opened in the player's own editor.
+    pub(super) fn edit_externally(&mut self) {
+        let name = self.editing_name();
+        let Some(x) = &mut self.debug.external else { return };
+        let Some(e) = &mut self.debug.editing else { return };
+        let ext = match e.syntax {
+            Syntax::Js => "js",
+            Syntax::Commands => "txt",
+        };
+        // `Adder #1` as `Adder-1`.
+        let stem = name
+            .split(|c: char| !c.is_alphanumeric())
+            .filter(|w| !w.is_empty())
+            .collect::<Vec<_>>()
+            .join("-");
+        let stem = if stem.is_empty() { "script".to_owned() } else { stem };
+        match (x.open)(&format!("{stem}.{ext}"), &e.code.text()) {
+            Ok(file) => {
+                let text = trf("{}: saved there, it comes back here.", &[&file]);
+                e.file = Some(file);
+                e.error = None;
+                self.debug.console.add(LineKind::Info, &text);
+            }
+            Err(msg) => {
+                e.error = Some(msg.clone());
+                self.debug.console.add(LineKind::Error, &msg);
+            }
+        }
+    }
+
+    /// The file of the text being edited, read again if it's been saved
+    /// in the player's editor: the text in the window, and applied.
+    pub(in crate::editor) fn editor_poll(&mut self) {
+        let Some(x) = &mut self.debug.external else { return };
+        let Some(e) = &mut self.debug.editing else { return };
+        let Some(file) = e.file.clone() else { return };
+        let Some(text) = (x.changed)(&file) else { return };
+        let text = text.replace("\r\n", "\n");
+        if text == e.code.text() {
+            return;
+        }
+        e.code.select_all();
+        e.code.paste(&text);
+        let said = trf("{} changed: read again.", &[&file]);
+        self.debug.console.add(LineKind::Info, &said);
+        self.editor_apply();
     }
 
     /// Vim keys in the script editor on or off (Settings).

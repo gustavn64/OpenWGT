@@ -11,12 +11,14 @@
 //! - `--budget N`: the work it may do between two waits (commands; for
 //!   JavaScript roughly operations);
 //! - `--timeout S`: stops it after `S` seconds of real time (headless).
+//! - `--watch`: runs it again each time its file is saved: in the window
+//!   at once (what ran stopped), headless once the last run ended.
 //!
 //! What it logs goes to the standard output, errors and failed checks to
 //! the standard error.
 
-use std::path::PathBuf;
-use std::time::{Duration, Instant};
+use std::path::{Path, PathBuf};
+use std::time::{Duration, Instant, SystemTime};
 
 use engine::doc::Document;
 use engine::editor::Editor;
@@ -33,6 +35,8 @@ pub struct Options {
     pub seed: Option<u64>,
     pub budget: Option<u64>,
     pub timeout: Option<f64>,
+    /// `--watch`: again each time the file is saved.
+    pub watch: bool,
 }
 
 impl Options {
@@ -59,6 +63,27 @@ impl Options {
             _ => return Err(format!("unknown option {key}")),
         }
         Ok(())
+    }
+}
+
+/// How often `--watch` looks at the file.
+const WATCH_EVERY: Duration = Duration::from_millis(300);
+
+fn modified(path: &Path) -> Option<SystemTime> {
+    std::fs::metadata(path).and_then(|m| m.modified()).ok()
+}
+
+/// After a headless run ended with `code`: waits for the script's file
+/// to be saved again (`--watch`).
+pub fn wait_for_change(o: &Options, code: i32) {
+    let Some(file) = &o.file else { return };
+    let was = modified(file);
+    eprintln!(
+        "-- {}: exit {code}; waiting for it to be saved again (Ctrl+C stops) --",
+        file.display()
+    );
+    while modified(file) == was {
+        std::thread::sleep(WATCH_EVERY);
     }
 }
 
@@ -227,6 +252,9 @@ pub struct Windowed {
     task: TaskId,
     file: String,
     done: bool,
+    /// With `--watch`: the file, when it last changed, and when it was
+    /// last looked at.
+    watch: Option<(PathBuf, Option<SystemTime>, Instant)>,
 }
 
 impl Windowed {
@@ -244,16 +272,55 @@ impl Windowed {
         prepare(o, editor, args)?;
         let mut rt = runtime(o, &file)?;
         let task = rt.start(&file, &src, Caps::ALL, editor).map_err(|e| e.to_string())?;
+        let watch = o
+            .file
+            .as_ref()
+            .filter(|_| o.watch)
+            .map(|p| (p.clone(), modified(p), Instant::now()));
         Ok(Some(Windowed {
             rt,
             task,
             file,
             done: false,
+            watch,
         }))
+    }
+
+    /// With `--watch`, the file saved since it last started: it starts
+    /// again (what ran is stopped).
+    fn again(&mut self, editor: &mut Editor) {
+        let Some((path, seen, looked)) = &mut self.watch else {
+            return;
+        };
+        if looked.elapsed() < WATCH_EVERY {
+            return;
+        }
+        *looked = Instant::now();
+        let now = modified(path);
+        if now == *seen {
+            return;
+        }
+        *seen = now;
+        let Ok(src) = std::fs::read_to_string(&*path) else {
+            return;
+        };
+        self.rt.cancel(None);
+        editor.log(Level::Info, &format!("-- {}: saved; running it again --", self.file));
+        match self.rt.start(&self.file, &src, Caps::ALL, editor) {
+            Ok(t) => {
+                self.task = t;
+                self.done = false;
+            }
+            Err(e) => {
+                editor.log(Level::Error, &e.to_string());
+                self.done = true;
+            }
+        }
     }
 
     /// A frame of `ms` passed.
     pub fn frame(&mut self, editor: &mut Editor, ms: u64) {
+        self.again(editor);
         let stop = editor.debug.take_stop_scripts();
         editor.debug.scripts_running = !self.done;
         if self.done {

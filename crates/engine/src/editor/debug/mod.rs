@@ -46,6 +46,7 @@ mod window;
 
 pub use console::{Line, LineKind};
 pub use control::{Speed, is_command};
+pub use edit::External;
 pub use overlay::HOT_WIRE;
 
 use std::collections::VecDeque;
@@ -90,6 +91,8 @@ pub struct Debugger {
     new_vim_keys: Option<bool>,
     /// The editor's title, as the window draws it.
     editor_title: String,
+    /// The player's own text editor, if the program has a way to it.
+    external: Option<edit::External>,
     /// The run's control: held, slowed, helped.
     run: RunControl,
     /// Debug ▸ Stop Scripts, for the program running them.
@@ -176,6 +179,7 @@ impl Default for Debugger {
             vim_keys: false,
             new_vim_keys: None,
             editor_title: String::new(),
+            external: None,
             run: RunControl::default(),
             stop_scripts: false,
             scripts_running: false,

@@ -374,7 +374,7 @@ impl Debugger {
                 Kind::Timeline => timeline::draw(s, font, w.rect, col, self.shown),
                 Kind::Editor => {
                     if let Some(e) = &self.editing {
-                        e.draw(s, fonts, font, w.rect, active, col);
+                        e.draw(s, fonts, font, w.rect, active, col, self.external.is_some());
                     }
                 }
             }
