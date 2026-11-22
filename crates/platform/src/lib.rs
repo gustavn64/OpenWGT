@@ -806,7 +806,8 @@ impl<A: App> Runner<A> {
     }
 
     /// A key, unless it toggles fullscreen; `letter` is the letter it
-    /// types in the keyboard's layout. Whether the game got it.
+    /// types in the keyboard's layout. Whether what it types goes on to
+    /// the game (a key the game has no code for types too).
     fn key(&mut self, code: KeyCode, letter: Option<u16>, pressed: bool, repeat: bool) -> bool {
         if pressed && fullscreen_key(code, self.modifiers) {
             if !repeat {
@@ -821,8 +822,9 @@ impl<A: App> Runner<A> {
             self.swallowed.swap_remove(i);
             return false;
         }
+        // A key the game has no code for still types what it types.
         let Some(vk) = keys::virtual_key(code) else {
-            return false;
+            return pressed;
         };
         let held = self.held.iter().position(|&(c, _)| c == code);
         let vk = match (pressed, held) {

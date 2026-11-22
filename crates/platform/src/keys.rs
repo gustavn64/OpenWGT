@@ -2,8 +2,8 @@
 
 use winit::keyboard::KeyCode;
 
-/// The virtual-key code Windows reports for `code`, for the keys a German
-/// keyboard and the game have in common.
+/// The virtual-key code Windows reports for `code`, for the keys a
+/// European keyboard and the game have in common.
 pub(crate) fn virtual_key(code: KeyCode) -> Option<u16> {
     Some(match code {
         KeyCode::KeyA => 0x41,
@@ -101,6 +101,21 @@ pub(crate) fn virtual_key(code: KeyCode) -> Option<u16> {
         KeyCode::Backslash => 0xdc,
         KeyCode::BracketRight => 0xdd,
         KeyCode::Quote => 0xde,
+        // The key between the left Shift and Z on European keyboards:
+        // `<` and `>` (`VK_OEM_102`).
+        KeyCode::IntlBackslash => 0xe2,
         _ => return None,
     })
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn the_key_of_less_than() {
+        // `<` and `>` on a Swedish or German keyboard.
+        assert_eq!(virtual_key(KeyCode::IntlBackslash), Some(0xe2));
+        assert_eq!(virtual_key(KeyCode::Backslash), Some(0xdc));
+    }
 }
