@@ -1,7 +1,7 @@
 # Homebrew's cask, for a tap of one's own (packaging/README.md):
 # brew install --cask gustavn64/tap/openwgt
 cask "openwgt" do
-  version "0.12.0"
+  version "0.13.0"
   sha256 "0000000000000000000000000000000000000000000000000000000000000000"
 
   url "https://github.com/gustavn64/OpenWGT/releases/download/v#{version}/openwgt-macos.dmg"

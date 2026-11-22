@@ -1,6 +1,6 @@
 [package]
 name = "script-js-clock"
-version = "0.12.0"
+version = "0.13.0"
 description = "The clock QuickJS asks the browser build's module for"
 edition.workspace = true
 license.workspace = true

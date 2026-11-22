@@ -3,7 +3,7 @@
 # own, the build's context). No game data: players bring their CD
 # image or play without it.
 #
-#   docker run -p 8080:80 ghcr.io/gustavn64/openwgt   (or :0.12.0, a release)
+#   docker run -p 8080:80 ghcr.io/gustavn64/openwgt   (or :0.13.0, a release)
 #   (then http://localhost:8080/)
 FROM nginx:1.31-alpine
 COPY openwgt-web/ /usr/share/nginx/html/

@@ -1,6 +1,6 @@
 [package]
 name = "formats"
-version = "0.12.0"
+version = "0.13.0"
 description = "Parsers for Widget Workshop's data files"
 edition.workspace = true
 license.workspace = true
