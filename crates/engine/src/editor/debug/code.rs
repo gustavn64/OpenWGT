@@ -1520,6 +1520,8 @@ impl Code {
                     Mode::Insert => "-- INSERT --".into(),
                     Mode::Visual => "-- VISUAL --".into(),
                     Mode::VisualLine => "-- VISUAL LINE --".into(),
+                    // Shown, so it's plain that the vim keys are on.
+                    Mode::Normal if v.pending.is_empty() => "-- NORMAL --".into(),
                     Mode::Normal => v.pending.clone(),
                 }
             }
@@ -1672,7 +1674,7 @@ mod tests {
         assert_eq!(keys(&mut c, ":wq<CR>"), Out::ApplyClose);
         assert_eq!(keys(&mut c, "x:q!<CR>"), Out::Discard);
         keys(&mut c, "i<Esc>");
-        assert_eq!(c.status(), "1:2");
+        assert_eq!(c.status(), "-- NORMAL --   1:2");
         keys(&mut c, "i");
         assert!(c.status().starts_with("-- INSERT --"));
     }
